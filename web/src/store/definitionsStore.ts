@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { deleteHandle, ensurePermission, getHandle, putHandle } from '../handleStore';
 import { fuzzyMatch } from '../search/fuzzy';
+import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -73,6 +74,8 @@ export interface DefinitionsStore {
   definitions: Map<DefinitionsKey, DefinitionRecord>;
   /** Per-record dirty flag — present means the record differs from disk. */
   dirty: Set<DefinitionsKey>;
+  /** Reverse-reference index, lazily built once after each loadAll(). */
+  referencedByIndex: import('./referencedByIndex').ReferencedByIndex;
   /** Folders discovered in the directory, in original order. */
   folders: string[];
   /** Last time loadAll completed. */
@@ -167,6 +170,10 @@ export interface DefinitionsStore {
   /** Find the storage key for a bare asset name (cross-reference resolver).
    *  Returns null if not found in any folder. */
   findKeyById: (assetId: string) => DefinitionsKey | null;
+
+  /** Look up which records reference a given asset id. Returns [] when the
+   *  asset isn't referenced or the index hasn't been built yet. */
+  referencedBy: (assetId: string) => import('./referencedByIndex').IncomingRef[];
 
   /** Resolve a definition_ref class name (no leading U) to its folder. */
   folderForClass: (bareClassName: string) => string | null;
@@ -994,6 +1001,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   definitions: new Map(),
   dirty: new Set(),
+  referencedByIndex: new Map(),
   folders: [],
   loadedAt: null,
   loading: false,
@@ -1200,6 +1208,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         loading: false,
         toast: { kind: 'info', text: `Loaded ${defs.size} bundled definitions across ${folders.length} folders. Save As… to write changes to disk.` },
       });
+      {
+        const idx = buildReferencedByIndex(get().definitions);
+        set({ referencedByIndex: idx });
+      }
       get().autoCreateMissingRefs();
     } catch (e) {
       set({
@@ -1266,6 +1278,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
             : `Save As: wrote ${saved}, failed ${failed}. See console.`,
         },
       });
+      {
+        const idx = buildReferencedByIndex(get().definitions);
+        set({ referencedByIndex: idx });
+      }
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') {
         set({ toast: { kind: 'error', text: String(e) } });
@@ -1311,6 +1327,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         loading: false,
         toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
       });
+      {
+        const idx = buildReferencedByIndex(get().definitions);
+        set({ referencedByIndex: idx });
+      }
       // Self-heal dangling refs by minting blank assets where the
       // class is known. Toast inside autoCreateMissingRefs replaces
       // the "Loaded N definitions" toast on success.
@@ -1339,6 +1359,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       nextDirty.delete(k);
     }
     set({ definitions: nextDefs, dirty: nextDirty });
+    const updated = get().definitions.get(k);
+    if (updated) {
+      const idx = get().referencedByIndex;
+      reindexRecord(idx, k, updated.folder, updated.json?.properties);
+      set({ referencedByIndex: new Map(idx) });   // new Map ref so subscribers re-render
+    }
   },
 
   replaceJson: (k, json) => {
@@ -1355,6 +1381,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       nextDirty.delete(k);
     }
     set({ definitions: nextDefs, dirty: nextDirty });
+    const updated = get().definitions.get(k);
+    if (updated) {
+      const idx = get().referencedByIndex;
+      reindexRecord(idx, k, updated.folder, updated.json?.properties);
+      set({ referencedByIndex: new Map(idx) });
+    }
   },
 
   saveOne: async (k) => {
@@ -1530,6 +1562,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
     return null;
   },
+
+  referencedBy: (assetId) => get().referencedByIndex.get(assetId) ?? [],
 
   folderForClass: (bareClassName) => {
     if (!bareClassName) return null;
@@ -1908,6 +1942,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       propertySchema: buildPropertySchema(nextDefs),
       toast: { kind: 'info', text: `Created ${id}.json (unsaved).` },
     });
+    {
+      const idx = get().referencedByIndex;
+      reindexRecord(idx, k, rec.folder, rec.json?.properties);
+      set({ referencedByIndex: new Map(idx) });
+    }
     return k;
   },
 
@@ -1949,6 +1988,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       selectedKey: newKey,
       toast: { kind: 'info', text: `Duplicated to ${newId}.json (unsaved).` },
     });
+    {
+      const idx = get().referencedByIndex;
+      reindexRecord(idx, newKey, rec.folder, rec.json?.properties);
+      set({ referencedByIndex: new Map(idx) });
+    }
     return newKey;
   },
 
@@ -1987,6 +2031,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     nextDirty.delete(k);
     let scrubbedAssets = 0;
     let scrubbedRefs = 0;
+    const scrubbedKeys: DefinitionsKey[] = [];
     for (const [refKey, refRec] of nextDefs) {
       const cleaned = scrubRefsToId(refRec.json, deletedId);
       if (cleaned.changed) {
@@ -1994,6 +2039,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         nextDirty.add(refKey);
         scrubbedAssets++;
         scrubbedRefs += cleaned.removedCount;
+        scrubbedKeys.push(refKey);
       }
     }
     const cur = get();
@@ -2010,6 +2056,23 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
           : `Deleted ${rec.id}.json`,
       },
     });
+    {
+      const idx = get().referencedByIndex;
+      // Drop every entry contributed by the deleted record itself.
+      for (const [targetId, list] of idx) {
+        const filtered = list.filter((r) => r.ownerKey !== k);
+        if (filtered.length === 0) idx.delete(targetId);
+        else if (filtered.length !== list.length) idx.set(targetId, filtered);
+      }
+      // Re-walk each cascade-scrubbed record so stale entries pointing at
+      // other targets get pruned too.
+      const defsAfter = get().definitions;
+      for (const sk of scrubbedKeys) {
+        const sr = defsAfter.get(sk);
+        if (sr) reindexRecord(idx, sk, sr.folder, sr.json?.properties);
+      }
+      set({ referencedByIndex: new Map(idx) });
+    }
   },
 
   autoCreateMissingRefs: () => {
