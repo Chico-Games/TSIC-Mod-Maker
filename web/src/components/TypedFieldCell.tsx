@@ -10,7 +10,7 @@ interface Props {
   propertyName: string;
   parentTypeName: string;
   refAdapter: RefAdapter;
-  pinAdapter: PinAdapter;
+  pinAdapter?: PinAdapter;
   onChange: (next: any) => void;
   path: (string | number)[];
 }

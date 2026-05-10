@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../../store/definitionsStore';
+import { useAppStore } from '../../store/appStore';
 import { humanizeAssetId } from '../definitionsNaming';
 import { getFolderTheme } from '../folderTheme';
 import { ItemPalette } from '../ItemPalette';
@@ -9,6 +10,7 @@ import { type RankedHit } from '../../search/fuzzy';
 import { useHybridSearch } from '../../search/hybrid';
 import { useJumpToDefinition } from '../useJumpToDefinition';
 import { SearchBox } from '../SearchBox';
+import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { DetailPane } from './DetailPane';
 import { ResizeHandle } from './ResizeHandle';
@@ -55,7 +57,20 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+  const selectFolder = useDefinitionsStore((s) => s.selectFolder);
+  const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
+  const setTab = useAppStore((s) => s.setTab);
   const jumpToDef = useJumpToDefinition();
+
+  const refAdapterForSheet = useRefAdapter((id) => {
+    const k = findKeyById(id);
+    if (!k) return;
+    const rec = definitions.get(k);
+    if (!rec) return;
+    selectFolder(rec.folder);
+    selectDefinition(k);
+    setTab('definitions');
+  });
 
   const warningCtx: WarningCtx = useMemo(() => ({
     records: definitions,
@@ -382,6 +397,8 @@ export function ClassBrowserTab({ folder, config }: Props) {
             <SpreadsheetView
               rows={rows.map((r) => ({ key: r.key, rec: definitions.get(r.key)! })).filter((r) => r.rec)}
               config={config}
+              refAdapter={refAdapterForSheet}
+              onChange={(k, path, next) => updateValueAtPath(k, path, next)}
               onPickRow={(k) => { setSelectedKey(k); setSelectedKeys(new Set([k])); setMode('detail'); }}
             />
           )}

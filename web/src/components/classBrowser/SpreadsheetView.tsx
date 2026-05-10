@@ -2,10 +2,14 @@ import { useMemo, useState } from 'react';
 import type { ClassBrowserConfig, Column } from './types';
 import type { DefinitionRecord, DefinitionsKey } from '../../store/definitionsStore';
 import { humanizeAssetId } from '../definitionsNaming';
+import { TypedFieldCell } from '../TypedFieldCell';
+import type { RefAdapter } from '../TypedValueEditor';
 
 interface Props {
   rows: { key: DefinitionsKey; rec: DefinitionRecord }[];
   config: ClassBrowserConfig;
+  refAdapter: RefAdapter;
+  onChange: (key: DefinitionsKey, path: (string | number)[], next: any) => void;
   onPickRow: (key: DefinitionsKey) => void;
 }
 
@@ -27,7 +31,22 @@ function fmt(v: any, kind: Column['kind']): string {
   }
 }
 
-export function SpreadsheetView({ rows, config, onPickRow }: Props) {
+function envelopePathFor(col: Column): string[] | null {
+  if (col.envelopePath) return col.envelopePath;
+  if (col.path.length === 0) return null;
+  if (col.path[col.path.length - 1] !== 'value') return null;
+  return col.path.slice(0, -1);
+}
+
+function isTypedEnvelope(v: any): boolean {
+  return v != null && typeof v === 'object' && typeof v.type === 'string';
+}
+
+function bareClass(rec: DefinitionRecord): string {
+  return String(rec.json?.class ?? '').replace(/^U/, '');
+}
+
+export function SpreadsheetView({ rows, config, refAdapter, onChange, onPickRow }: Props) {
   const [sortKey, setSortKey] = useState<string>('id');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
@@ -55,7 +74,7 @@ export function SpreadsheetView({ rows, config, onPickRow }: Props) {
     });
   }, [rows, sortKey, sortDir, allCols]);
 
-  const click = (k: string) => {
+  const clickHeader = (k: string) => {
     if (sortKey === k) setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     else { setSortKey(k); setSortDir('asc'); }
   };
@@ -63,22 +82,50 @@ export function SpreadsheetView({ rows, config, onPickRow }: Props) {
   return (
     <div className="spreadsheet">
       <div className="spreadsheet-head">
+        <div className="spreadsheet-h open-col" aria-hidden></div>
         {allCols.map((c) => (
           <div
             key={c.key}
             className={`spreadsheet-h ${sortKey === c.key ? 'sorted' : ''}`}
             style={{ width: c.width }}
-            onClick={() => click(c.key)}
+            onClick={() => clickHeader(c.key)}
           >{c.label}{sortKey === c.key ? (sortDir === 'asc' ? ' ▴' : ' ▾') : ''}</div>
         ))}
       </div>
       <div className="spreadsheet-body">
         {sorted.map(({ key, rec }) => (
-          <div key={key} className="spreadsheet-row" onClick={() => onPickRow(key)}>
+          <div key={key} className="spreadsheet-row">
+            <button
+              className="spreadsheet-open"
+              title="Open in Detail"
+              onClick={(e) => { e.stopPropagation(); onPickRow(key); }}
+            >↗</button>
             {allCols.map((c) => {
-              const raw = readPath(rec, c.path);
-              const display = c.key === 'id' ? rec.id : c.key === 'display_name' ? (raw ?? humanizeAssetId(rec.id)) : fmt(raw, c.kind);
-              return <div key={c.key} className="spreadsheet-cell" style={{ width: c.width }}>{display as string}</div>;
+              if (c.key === 'id') {
+                return (
+                  <div key={c.key} className="spreadsheet-cell id" style={{ width: c.width }} onClick={() => onPickRow(key)}>{rec.id}</div>
+                );
+              }
+              const envPath = envelopePathFor(c);
+              const env = envPath ? readPath(rec, envPath) : null;
+              const editable = isTypedEnvelope(env);
+              if (!editable) {
+                const raw = readPath(rec, c.path);
+                const display = c.key === 'display_name' ? (raw ?? humanizeAssetId(rec.id)) : fmt(raw, c.kind);
+                return <div key={c.key} className="spreadsheet-cell" style={{ width: c.width }}>{display as string}</div>;
+              }
+              return (
+                <div key={c.key} className="spreadsheet-cell editable" style={{ width: c.width }}>
+                  <TypedFieldCell
+                    typed={env}
+                    propertyName={envPath![envPath!.length - 1] as string}
+                    parentTypeName={bareClass(rec)}
+                    refAdapter={refAdapter}
+                    onChange={(next) => onChange(key, envPath as (string | number)[], next)}
+                    path={envPath as (string | number)[]}
+                  />
+                </div>
+              );
             })}
           </div>
         ))}

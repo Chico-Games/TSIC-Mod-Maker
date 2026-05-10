@@ -5,7 +5,11 @@ export type ColumnKind = 'string' | 'number' | 'bool' | 'tag' | 'ref' | 'count';
 export interface Column {
   key: string;
   label: string;
-  path: string[];                 // path WITHIN record.json (no leading 'json' or 'properties' — relative to root)
+  path: string[];                 // path WITHIN record.json. Read-only fallback uses this verbatim.
+  /** Explicit envelope path for the editable cell. If omitted, derived by
+   *  dropping a trailing 'value' segment from `path`. If neither yields a
+   *  typed envelope at the resolved location, the cell renders read-only. */
+  envelopePath?: string[];
   kind: ColumnKind;
   width?: number;
 }

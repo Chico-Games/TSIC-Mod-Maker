@@ -45,13 +45,32 @@ async function waitForServer(url, timeoutMs = 15000) {
     await page.waitForSelector('.smart-effects', { timeout: 5000 });
     console.log('OK Smart effects view rendered');
 
-    // ---- Spreadsheet view ----
+    // ---- Spreadsheet view (sort + edit) ----
     await page.click('.vertical-subtab:has-text("Crafting Materials")');
     await page.click('.mode-toggle button:has-text("Spreadsheet")');
     await page.waitForSelector('.spreadsheet');
     // Sort by Wt.
     await page.click('.spreadsheet-h:has-text("Wt")');
     console.log('OK Spreadsheet sort');
+
+    // Find the first editable numeric cell and bump it.
+    const firstEditable = page.locator('.spreadsheet-cell.editable input[type="number"]').first();
+    await firstEditable.waitFor({ state: 'visible', timeout: 5000 });
+    const beforeVal = await firstEditable.inputValue();
+    const beforeNum = Number(beforeVal) || 0;
+    const nextVal = beforeNum + 1;
+    await firstEditable.fill(String(nextVal));
+    await firstEditable.blur();
+    // Switch back to detail and check the same numeric field reflects the change.
+    await page.click('.mode-toggle button:has-text("Detail")');
+    const detailFirst = page.locator('.detail-pane input[type="number"]').first();
+    await detailFirst.waitFor({ state: 'visible', timeout: 5000 });
+    const matched = await page.evaluate((expected) => {
+      const inputs = Array.from(document.querySelectorAll('.detail-pane input[type="number"]'));
+      return inputs.some((i) => Number((i).value) === expected);
+    }, nextVal);
+    if (!matched) throw new Error(`edited value ${nextVal} not visible in detail-pane number inputs`);
+    console.log('OK Spreadsheet edit reflected in Detail');
 
     // ---- Furniture tab + Damageable + cross-link ----
     await page.click('.tabs button:has-text("Furniture")');
