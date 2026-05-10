@@ -228,6 +228,29 @@
   background: rgba(95, 179, 255, 0.1);
 }
 .def-ref-slot.selected { box-shadow: 0 0 0 1px var(--accent); border-color: var(--accent); }
+
+/* Item↔StaticItem inline partner section in the Definitions tab. */
+.def-partner-section {
+  border-top: 2px solid var(--accent);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.def-partner-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.def-partner-head h4 { margin: 0; font-size: 13px; }
+.def-partner-head .spacer { flex: 1; }
+.def-partner-toggle {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
 .col-sub-label { margin-top: 6px; }
 .recipe-arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 18px; }
 .upgrade-col { grid-column: 2 / 4; }

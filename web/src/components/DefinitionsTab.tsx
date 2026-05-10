@@ -527,6 +527,14 @@ export function DefinitionsTab() {
                 }}
                 onRename={(bareName) => renameAsset(selectedKey!, bareName)}
                 pairKey={findItemStaticPair(selectedKey!)}
+                partnerRec={(() => {
+                  const pk = findItemStaticPair(selectedKey!);
+                  return pk ? definitions.get(pk) ?? null : null;
+                })()}
+                onPartnerChange={(path, value) => {
+                  const pk = findItemStaticPair(selectedKey!);
+                  if (pk) updateValueAtPath(pk, path, value);
+                }}
                 onJumpToPair={(k) => {
                   const rec = definitions.get(k);
                   if (!rec) return;
@@ -573,6 +581,8 @@ function DefinitionEditor({
   onRename,
   pairKey,
   onJumpToPair,
+  partnerRec,
+  onPartnerChange,
   classNodes,
   pinAdapter,
   refAdapter,
@@ -591,6 +601,12 @@ function DefinitionEditor({
   onRename: (newBareName: string) => void;
   pairKey: string | null;
   onJumpToPair: (key: string) => void;
+  /** When the selected asset has an Item↔StaticItem partner, the
+   *  partner record is passed in so its properties render inline
+   *  under the main editor — letting the user edit both halves of
+   *  the pair without jumping. */
+  partnerRec?: { folder: string; id: string; json: any } | null;
+  onPartnerChange?: (path: (string | number)[], value: any) => void;
   classNodes: Map<string, { name: string; parents: string[]; folder: string | null }>;
   pinAdapter: PinAdapter;
   refAdapter: RefAdapter;
@@ -609,6 +625,9 @@ function DefinitionEditor({
   const [propSearch, setPropSearch] = useState('');
   const [groupBy, setGroupBy] = useState<'default' | 'type' | 'category'>('default');
   const [bareNameDraft, setBareNameDraft] = useState(humanizeAssetId(rec.id));
+  // Item↔StaticItem inline partner panel: collapsible, defaults open
+  // when a partner exists so users see both halves at once.
+  const [showPartner, setShowPartner] = useState(true);
 
   useEffect(() => {
     setPropSearch('');
@@ -729,6 +748,38 @@ function DefinitionEditor({
               groupBy={groupBy}
               pinAdapter={pinAdapter}
             />
+          </section>
+        )}
+
+        {partnerRec && pairKey && onPartnerChange && (
+          <section className="def-section def-partner-section">
+            <div className="def-partner-head">
+              <button
+                className="def-partner-toggle"
+                onClick={() => setShowPartner((v) => !v)}
+                title={showPartner ? 'Collapse partner properties' : 'Expand partner properties'}
+              >
+                {showPartner ? '▼' : '▶'}
+              </button>
+              <h4>
+                ↔ Partner: <code>{partnerRec.id}</code>
+                <span className="muted small"> · {partnerRec.folder.replace(/_definitions?$/, '').replace(/_/g, ' ')}</span>
+              </h4>
+              <div className="spacer" />
+              <button onClick={() => onJumpToPair(pairKey)}>Open partner →</button>
+            </div>
+            {showPartner && partnerRec.json && 'properties' in partnerRec.json && (
+              <TypedPropertiesEditor
+                properties={partnerRec.json.properties ?? {}}
+                parentTypeName={String(partnerRec.json.class ?? '').replace(/^U/, '')}
+                onChange={(v) => onPartnerChange(['properties'], v)}
+                refAdapter={refAdapter}
+                showAllFields={showAllFields}
+                propertySearch=""
+                groupBy="default"
+                pinAdapter={pinAdapter}
+              />
+            )}
           </section>
         )}
 
