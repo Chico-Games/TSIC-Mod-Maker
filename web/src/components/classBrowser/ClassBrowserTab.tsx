@@ -16,6 +16,7 @@ import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { WhereUsedPanel } from './WhereUsedPanel';
 import { SpreadsheetView } from './SpreadsheetView';
+import { CompareView } from './CompareView';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
@@ -219,7 +220,10 @@ export function ClassBrowserTab({ folder, config }: Props) {
               onPickRow={(k) => { setSelectedKey(k); setSelectedKeys(new Set([k])); setMode('detail'); }}
             />
           )}
-          {mode === 'compare' && <div className="empty-state-mini">Compare view (coming next).</div>}
+          {mode === 'compare' && selectedKeys.size >= 2 && (
+            <CompareView selected={Array.from(selectedKeys).slice(0, 3)} />
+          )}
+          {mode === 'compare' && selectedKeys.size < 2 && <div className="empty-state-mini">Pick 2 or 3 records on the rail to compare.</div>}
         </EchoPublishingPane>
 
         <ItemPalette
