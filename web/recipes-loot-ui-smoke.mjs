@@ -1,6 +1,5 @@
 // Headed Playwright smoke for the new IA tabs:
 //   Recipes & Loot (Stations / Furniture / Tech Tree / Enemies / Biome)
-//   Furniture Loot
 //   Validations
 //
 // Each interactive flow is tested against an in-memory directory fixture
@@ -27,8 +26,9 @@
 //     - recipe card → station row drag moves the recipe across ARRs
 //   Furniture sub-tab
 //     - rail loads, selecting a furniture shows death loot + upgrade
-//   Furniture Loot tab
-//     - LD_ asset opens, items_to_drop count is visible
+//     - disclosure caret on a death-loot row expands the linked
+//       LootDefinition's TypedPropertiesEditor inline
+//     - mutating items_to_drop persists across furniture switching
 //   Validations tab
 //     - station-with-no-ARR appears as an issue
 //   Universal copy/paste

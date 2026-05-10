@@ -28,12 +28,11 @@ The first run loads the **bundled defaults** baked into the build at `web/public
 
 - **Recipes & Loot** — five sub-tabs:
   - **Stations**: pick a crafting / production / plantable station; the right pane shows recipes pulled from its `available_recipe_rules_definition` (ARR). Each recipe renders as a card whose layout adapts to its class (`UCraftRecipeDefinition`, `UPlantRecipeDefinition`, `UFurnitureUpgradeRecipe`). Plantable stations include the `grow_stages` editor.
-  - **Furniture**: per-furniture page; edits death loot tables (`loot_dropped_on_death`) and the upgrade recipe inline.
+  - **Furniture**: per-furniture page; edits death loot tables (`loot_dropped_on_death`) and the upgrade recipe inline. Each death-loot ref expands in place to reveal the linked `LootDefinition`'s editor — no tab switch.
   - **Tech Tree**: dagre-layered DAG of items / recipes / stations driven by the loaded definitions.
   - **Enemies**: per-enemy `death_drop_table` editor, envelope-driven.
   - **Biome**: per-biome editor of the `LSP_<biome>_Floor` / `LSP_<biome>_Furniture` LootSpawnPoint pair.
-- **Furniture Loot** — flat browser/editor over `loot_definitions/`. The same LD_ assets that biomes and furniture reference.
-- **Definitions** — schema-aware editor for any record. Three-pane layout (folder rail, file list, typed-envelope editor). The new sub-tabs cover the common authoring flows; this tab is authoritative for everything else.
+- **Definitions** — schema-aware editor for any record. Three-pane layout (folder rail, file list, typed-envelope editor). The new sub-tabs cover the common authoring flows; this tab is authoritative for everything else, including orphan `LootDefinition` (`LD_*`) assets not yet referenced by any furniture.
 - **Validations** — orphan refs, missing Item↔StaticItem partners, stations with no/missing ARRs, empty/orphan ARRs, recipes with no inputs/outputs, FurnitureUpgradeRecipe whose target is unset/missing, orphan loot tables.
 
 ## Drag-and-drop
@@ -86,7 +85,6 @@ web/
       TechTreeSubTab.tsx
       EnemiesSubTab.tsx
       BiomeSubTab.tsx
-      FurnitureLootTab.tsx
       DefinitionsTab.tsx               # typed-envelope editor (large)
       ValidationsTab.tsx
       RecipeCard.tsx
