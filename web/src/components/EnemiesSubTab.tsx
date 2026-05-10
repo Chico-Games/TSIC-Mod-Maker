@@ -6,6 +6,7 @@ import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
+import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 
 const ENEMY_FOLDER = 'enemy_definitions';
 
@@ -46,11 +47,11 @@ export function EnemiesSubTab() {
     return out;
   }, [definitions]);
 
-  const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((r) => r.id.toLowerCase().includes(q) || r.displayName.toLowerCase().includes(q));
-  }, [rows, filter]);
+  type EnemyRow = { key: DefinitionsKey; id: string; displayName: string };
+  const filtered = useMemo<RankedHit<EnemyRow>[]>(
+    () => fuzzyRankMulti(rows, filter, (r) => [r.displayName, r.id]),
+    [rows, filter],
+  );
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 
@@ -70,15 +71,15 @@ export function EnemiesSubTab() {
           />
         </div>
         <div className="rail-body">
-          {filtered.map((r) => (
+          {filtered.map((h) => (
             <button
-              key={r.key}
-              className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
-              onClick={() => setSelectedKey(r.key)}
+              key={h.item.key}
+              className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
+              onClick={() => setSelectedKey(h.item.key)}
               style={{ borderLeft: '3px solid #ef6c6c' }}
             >
               <span className="emoji" aria-hidden>👹</span>
-              <span className="label"><HighlightedText text={r.displayName} query={filter} /></span>
+              <span className="label"><HighlightedText text={h.item.displayName} ranges={h.ranges} /></span>
             </button>
           ))}
           {filtered.length === 0 && <div className="empty-state-mini">No enemies loaded.</div>}

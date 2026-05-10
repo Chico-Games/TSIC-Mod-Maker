@@ -7,6 +7,7 @@ import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
 import { ItemPalette } from './ItemPalette';
 import { HighlightedText } from './HighlightedText';
+import { fuzzyRankMulti } from '../search/fuzzy';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -76,17 +77,15 @@ export function StationsSubTab() {
     return out;
   }, [definitions]);
 
-  const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    if (!q) return stations;
-    return stations.filter((s) =>
-      s.id.toLowerCase().includes(q) || s.displayName.toLowerCase().includes(q),
-    );
+  type RankedRow = { row: StationRow; ranges: ReadonlyArray<readonly [number, number]> };
+  const filtered = useMemo<RankedRow[]>(() => {
+    const ranked = fuzzyRankMulti(stations, filter, (s) => [s.displayName, s.id]);
+    return ranked.map((r) => ({ row: r.item, ranges: r.ranges }));
   }, [stations, filter]);
 
   const grouped = useMemo(() => {
-    const g: Record<StationGroup, StationRow[]> = { crafting: [], production: [], plantable: [] };
-    for (const s of filtered) g[s.group].push(s);
+    const g: Record<StationGroup, RankedRow[]> = { crafting: [], production: [], plantable: [] };
+    for (const r of filtered) g[r.row.group].push(r);
     return g;
   }, [filtered]);
 
@@ -170,13 +169,13 @@ export function StationsSubTab() {
               <div className="rail-group-header">
                 <span aria-hidden>{GROUP_EMOJI[g]}</span> {GROUP_LABEL[g]} <span className="muted">({grouped[g].length})</span>
               </div>
-              {grouped[g].map((s) => (
+              {grouped[g].map((r) => (
                 <StationRailRow
-                  key={s.key}
-                  row={s}
-                  selected={selectedKey === s.key}
-                  onSelect={() => setSelectedKey(s.key)}
-                  highlight={filter}
+                  key={r.row.key}
+                  row={r.row}
+                  ranges={r.ranges}
+                  selected={selectedKey === r.row.key}
+                  onSelect={() => setSelectedKey(r.row.key)}
                 />
               ))}
             </div>
@@ -230,7 +229,7 @@ export function StationsSubTab() {
   );
 }
 
-function StationRailRow({ row, selected, onSelect, highlight }: { row: StationRow; selected: boolean; onSelect: () => void; highlight: string }) {
+function StationRailRow({ row, selected, onSelect, ranges }: { row: StationRow; selected: boolean; onSelect: () => void; ranges: ReadonlyArray<readonly [number, number]> }) {
   const dndCtx = useDndContext();
   const activeType = (dndCtx.active?.data?.current as any)?.type;
   // Only recipe cards can drop on a station row — block other drags from
@@ -249,7 +248,7 @@ function StationRailRow({ row, selected, onSelect, highlight }: { row: StationRo
       style={{ borderLeft: `3px solid ${theme.color}` }}
     >
       <span className="emoji" aria-hidden>{theme.emoji}</span>
-      <span className="label"><HighlightedText text={row.displayName} query={highlight} /></span>
+      <span className="label"><HighlightedText text={row.displayName} ranges={ranges} /></span>
     </button>
   );
 }

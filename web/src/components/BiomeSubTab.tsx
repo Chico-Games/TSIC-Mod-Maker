@@ -5,6 +5,7 @@ import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
+import { fuzzyRank } from '../search/fuzzy';
 
 const LSP_FOLDER = 'loot_spawn_point_definitions';
 
@@ -57,9 +58,7 @@ export function BiomeSubTab() {
   }, [definitions]);
 
   const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    if (!q) return biomes;
-    return biomes.filter((b) => b.biome.toLowerCase().includes(q));
+    return fuzzyRank(biomes, filter, (b) => b.biome);
   }, [biomes, filter]);
 
   if (selectedBiome == null && biomes.length > 0) setSelectedBiome(biomes[0].biome);
@@ -81,17 +80,17 @@ export function BiomeSubTab() {
           />
         </div>
         <div className="rail-body">
-          {filtered.map((b) => (
+          {filtered.map((h) => (
             <button
-              key={b.biome}
-              className={`rail-row ${selectedBiome === b.biome ? 'selected' : ''}`}
-              onClick={() => setSelectedBiome(b.biome)}
+              key={h.item.biome}
+              className={`rail-row ${selectedBiome === h.item.biome ? 'selected' : ''}`}
+              onClick={() => setSelectedBiome(h.item.biome)}
               style={{ borderLeft: '3px solid #f0d77a' }}
             >
               <span className="emoji" aria-hidden>✨</span>
-              <span className="label"><HighlightedText text={b.biome} query={filter} /></span>
+              <span className="label"><HighlightedText text={h.item.biome} ranges={h.ranges} /></span>
               <span className="muted small">
-                {b.floorKey ? '🟫' : '·'}{b.furnitureKey ? '🪑' : '·'}
+                {h.item.floorKey ? '🟫' : '·'}{h.item.furnitureKey ? '🪑' : '·'}
               </span>
             </button>
           ))}

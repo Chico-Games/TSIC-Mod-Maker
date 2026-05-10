@@ -92,10 +92,10 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
               >
                 <span className="hit-emoji" aria-hidden>{theme.emoji}</span>
                 <span className="hit-label" style={{ color: theme.color }}>
-                  <HighlightedText text={humanizeAssetId(h.id)} query={q} />
+                  <HighlightedText text={h.id} ranges={h.matchPath === 'id' ? h.ranges : undefined} query={h.matchPath === 'id' ? undefined : q} />
                 </span>
                 <span className="hit-kind">{h.folder}</span>
-                <span className="hit-sub">{h.matchPath}: <HighlightedText text={h.snippet} query={q} /></span>
+                <span className="hit-sub">{h.matchPath}: <HighlightedText text={h.snippet} ranges={h.matchPath !== 'id' ? h.ranges : undefined} /></span>
               </div>
             );
           })}

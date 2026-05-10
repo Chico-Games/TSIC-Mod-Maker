@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { deleteHandle, ensurePermission, getHandle, putHandle } from '../handleStore';
+import { fuzzyMatch } from '../search/fuzzy';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -244,13 +245,16 @@ export interface DefinitionsStore {
   deleteDefinition: (key: DefinitionsKey) => Promise<void>;
 
   /** Global search — returns up to `limit` matches by id, asset_path, or any
-   *  string property value. */
+   *  string property value. Uses token-aware fuzzy ranking; the
+   *  `ranges` array tells the renderer which substrings of `id` to
+   *  highlight (snippet highlighting falls back to substring). */
   searchAll: (query: string, limit?: number) => Array<{
     key: DefinitionsKey;
     folder: string;
     id: string;
     matchPath: string;
     snippet: string;
+    ranges: Array<[number, number]>;
   }>;
 
   /** Find every reference whose target asset name doesn't exist in the
@@ -1770,31 +1774,43 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   searchAll: (query, limit = 200) => {
     const { definitions } = get();
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     if (!q) return [];
-    const out: Array<{ key: DefinitionsKey; folder: string; id: string; matchPath: string; snippet: string }> = [];
+    type Hit = { key: DefinitionsKey; folder: string; id: string; matchPath: string; snippet: string; ranges: Array<[number, number]>; score: number };
+    const idHits: Hit[] = [];
+    const valueHits: Hit[] = [];
+    const qLower = q.toLowerCase();
     for (const [k, rec] of definitions) {
-      if (out.length >= limit) break;
-      // ID match (highest signal).
-      if (rec.id.toLowerCase().includes(q)) {
-        out.push({ key: k, folder: rec.folder, id: rec.id, matchPath: 'id', snippet: rec.id });
+      // Token-aware fuzzy match on the id first (highest signal).
+      const idMatch = fuzzyMatch(rec.id, q);
+      if (idMatch) {
+        idHits.push({
+          key: k, folder: rec.folder, id: rec.id,
+          matchPath: 'id', snippet: rec.id,
+          ranges: idMatch.ranges, score: idMatch.score + 1000,
+        });
         continue;
       }
-      // Walk the JSON looking for string values matching the query — but
-      // skip envelope-meta keys (type/class/struct_name/...) so the user
-      // doesn't see hits on type tags.
-      const found = walkForString(rec.json, q);
+      // Substring fall-through for values inside the JSON. Fuzzy on
+      // every leaf string would be too slow on a 2000-record set.
+      const found = walkForString(rec.json, qLower);
       if (found) {
-        out.push({
-          key: k,
-          folder: rec.folder,
-          id: rec.id,
-          matchPath: found.path,
-          snippet: found.value,
+        const idx = found.value.toLowerCase().indexOf(qLower);
+        const ranges: Array<[number, number]> = idx >= 0
+          ? [[idx, idx + qLower.length]]
+          : [];
+        valueHits.push({
+          key: k, folder: rec.folder, id: rec.id,
+          matchPath: found.path, snippet: found.value,
+          ranges, score: 100 - found.path.length * 0.5,
         });
       }
     }
-    return out;
+    idHits.sort((a, b) => b.score - a.score);
+    valueHits.sort((a, b) => b.score - a.score);
+    const out = [...idHits, ...valueHits].slice(0, limit);
+    // Strip the score field — not part of the public type.
+    return out.map(({ score: _drop, ...rest }) => rest);
   },
 
   findOrphanReferences: () => {

@@ -5,6 +5,7 @@ import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
+import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 
 const DEFAULT_ITEM_FOLDERS = [
   'consumable_definitions',
@@ -37,17 +38,25 @@ export function ItemPalette({ folders, title }: Props) {
   }, [folders, allFolders]);
   const [enabled, setEnabled] = useState<Set<string>>(initialFolders);
 
-  const items = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    const out: { id: string; folder: string; class: string }[] = [];
+  type ItemRow = { id: string; folder: string; class: string; humanLabel: string };
+  const inFolder = useMemo<ItemRow[]>(() => {
+    const out: ItemRow[] = [];
     for (const rec of definitions.values()) {
       if (!enabled.has(rec.folder)) continue;
-      if (q && !rec.id.toLowerCase().includes(q) && !humanizeAssetId(rec.id).toLowerCase().includes(q)) continue;
-      out.push({ id: rec.id, folder: rec.folder, class: String(rec.json?.class ?? '').replace(/^U/, '') });
+      out.push({
+        id: rec.id,
+        folder: rec.folder,
+        class: String(rec.json?.class ?? '').replace(/^U/, ''),
+        humanLabel: humanizeAssetId(rec.id),
+      });
     }
     out.sort((a, b) => a.id.localeCompare(b.id));
     return out;
-  }, [definitions, enabled, filter]);
+  }, [definitions, enabled]);
+
+  const items = useMemo<RankedHit<ItemRow>[]>(() => {
+    return fuzzyRankMulti(inFolder, filter, (it) => [it.humanLabel, it.id]);
+  }, [inFolder, filter]);
 
   const toggleFolder = (f: string) => {
     setEnabled((cur) => {
@@ -91,9 +100,9 @@ export function ItemPalette({ folders, title }: Props) {
         <VirtualList
           items={items}
           rowHeight={32}
-          keyOf={(it) => `${it.folder}/${it.id}`}
-          renderItem={(it) => (
-            <PaletteItem id={it.id} folder={it.folder} cls={it.class} highlight={filter} />
+          keyOf={(h) => `${h.item.folder}/${h.item.id}`}
+          renderItem={(h) => (
+            <PaletteItem id={h.item.id} folder={h.item.folder} cls={h.item.class} ranges={h.ranges} />
           )}
         />
       </div>
@@ -102,7 +111,7 @@ export function ItemPalette({ folders, title }: Props) {
   );
 }
 
-function PaletteItem({ id, folder, cls, highlight }: { id: string; folder: string; cls: string; highlight: string }) {
+function PaletteItem({ id, folder, cls, ranges }: { id: string; folder: string; cls: string; ranges: ReadonlyArray<readonly [number, number]> }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${folder}/${id}`,
     data: { type: 'palette-item', class: cls, value: id } as any,
@@ -118,7 +127,7 @@ function PaletteItem({ id, folder, cls, highlight }: { id: string; folder: strin
       title={`${id} · ${cls}`}
     >
       <span className="emoji" aria-hidden>{t.emoji}</span>
-      <span className="label"><HighlightedText text={humanizeAssetId(id)} query={highlight} /></span>
+      <span className="label"><HighlightedText text={humanizeAssetId(id)} ranges={ranges} /></span>
       <span className="cls" style={{ color: t.color }}>{cls}</span>
     </div>
   );

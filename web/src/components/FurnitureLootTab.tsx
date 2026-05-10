@@ -8,6 +8,7 @@ import { useRefAdapter } from './useRefAdapter';
 import { ItemPalette } from './ItemPalette';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
+import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 
 const LOOT_FOLDER = 'loot_definitions';
 
@@ -32,8 +33,9 @@ export function FurnitureLootTab() {
   const [filter, setFilter] = useState('');
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
 
-  const rows = useMemo(() => {
-    const out: { key: DefinitionsKey; id: string; itemCount: number }[] = [];
+  type LootRow = { key: DefinitionsKey; id: string; itemCount: number };
+  const rows = useMemo<LootRow[]>(() => {
+    const out: LootRow[] = [];
     for (const [k, rec] of definitions) {
       if (rec.folder !== LOOT_FOLDER) continue;
       const items = rec.json?.properties?.items_to_drop;
@@ -44,10 +46,8 @@ export function FurnitureLootTab() {
     return out;
   }, [definitions]);
 
-  const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter((r) => r.id.toLowerCase().includes(q));
+  const filtered = useMemo<RankedHit<LootRow>[]>(() => {
+    return fuzzyRankMulti(rows, filter, (r) => [humanizeAssetId(r.id), r.id]);
   }, [rows, filter]);
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
@@ -74,19 +74,19 @@ export function FurnitureLootTab() {
             className="rail-body"
             items={filtered}
             rowHeight={30}
-            keyOf={(r) => r.key}
-            renderItem={(r) => (
+            keyOf={(h) => h.item.key}
+            renderItem={(h) => (
               <button
-                className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
-                onClick={() => setSelectedKey(r.key)}
+                className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
+                onClick={() => setSelectedKey(h.item.key)}
                 style={{ borderLeft: `3px solid ${theme.color}` }}
-                title={r.id}
+                title={h.item.id}
               >
                 <span className="emoji" aria-hidden>{theme.emoji}</span>
                 <span className="label">
-                  <HighlightedText text={humanizeAssetId(r.id)} query={filter} />
+                  <HighlightedText text={humanizeAssetId(h.item.id)} ranges={h.ranges} />
                 </span>
-                <span className="muted small">{r.itemCount}</span>
+                <span className="muted small">{h.item.itemCount}</span>
               </button>
             )}
           />
