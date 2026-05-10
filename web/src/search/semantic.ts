@@ -126,7 +126,9 @@ class Semantic {
 
   /** Build vectors for every item that doesn't already have one.
    *  Idempotent — items keyed in `vectors` are skipped. The batch
-   *  size keeps the worker queue moving and the UI responsive. */
+   *  size keeps the worker queue moving and the UI responsive.
+   *  After each batch we re-broadcast the current status so any
+   *  subscribed chips see the updated `indexedCount`. */
   async indexItems<T>(
     items: readonly T[],
     keyOf: (item: T) => string,
@@ -146,11 +148,28 @@ class Semantic {
     const BATCH = 32;
     for (let i = 0; i < todo.length; i += BATCH) {
       const slice = todo.slice(i, i + BATCH);
-      const vectors = await this.embedBatch(slice.map((s) => s.text));
+      let vectors: number[][];
+      try {
+        vectors = await this.embedBatch(slice.map((s) => s.text));
+      } catch (e) {
+        // Mark error and stop — every subsequent batch would also
+        // fail. Subscribers can render the failure.
+        this.setStatus('error', {
+          stage: 'error',
+          message: e instanceof Error ? e.message : String(e),
+        });
+        throw e;
+      }
       for (let k = 0; k < slice.length; k++) {
         this.vectors.set(slice[k].key, new Float32Array(vectors[k]));
       }
-      onProgress?.(Math.min(i + BATCH, todo.length), todo.length);
+      const done = Math.min(i + BATCH, todo.length);
+      onProgress?.(done, todo.length);
+      // Re-fire status so chip subscribers re-read indexedCount.
+      this.setStatus(this._status, {
+        stage: this._status === 'ready' ? 'ready' : 'loading',
+        message: `indexed ${done}/${todo.length}`,
+      });
     }
   }
 
