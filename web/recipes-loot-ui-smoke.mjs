@@ -177,7 +177,10 @@ async function waitForServer(url, timeoutMs = 15000) {
             class: 'UCraftingStationDefinition', parent_classes: ['UFurnitureDefinition', 'UDataAsset', 'UObject'],
             properties: {
               display_name: txt('Crafting Bench Tier 3'),
-              // No ARR set — Validations should flag this.
+              // ARR ref points at a NON-EXISTENT asset. The auto-create
+              // load path should mint ARR_BenchT3 the first time we
+              // open this folder.
+              available_recipe_rules_definition: ref('AvailableRecipeRulesDefinition', 'ARR_BenchT3'),
             },
           }, null, 2) + '\n',
         },
@@ -426,10 +429,14 @@ async function waitForServer(url, timeoutMs = 15000) {
     //    renders with 3 tier pills. T1 has 2 recipes, T2 has 1, T3 has 0.
     const benchFamily = page.locator('.rail-family', { hasText: 'Crafting Bench' });
     if ((await benchFamily.count()) < 1) throw new Error('expected Bench family row');
-    const tierPills = benchFamily.locator('.tier-pill');
+    // The "+ Tier" affordance is its own pill (.tier-pill-add); count
+    // only the real tier pills.
+    const tierPills = benchFamily.locator('.tier-pill:not(.tier-pill-add)');
     const pillCount = await tierPills.count();
     if (pillCount !== 3) throw new Error(`expected 3 tier pills; got ${pillCount}`);
-    console.log(`OK: Bench family rendered with ${pillCount} tier pills`);
+    const addTierCount = await benchFamily.locator('.tier-pill-add').count();
+    if (addTierCount !== 1) throw new Error(`expected 1 + tier add pill; got ${addTierCount}`);
+    console.log(`OK: Bench family rendered with ${pillCount} tier pills + 1 add affordance`);
 
     // Total count badge on the family head should be 3 (2+1+0).
     const familyCount = await benchFamily.locator('.rail-family-head .rail-count').textContent();
@@ -563,20 +570,68 @@ async function waitForServer(url, timeoutMs = 15000) {
     if (ldCount?.trim() !== '2') throw new Error(`expected items_to_drop count 2; got "${ldCount}"`);
     console.log('OK: Furniture Loot rail shows items_to_drop count = 2');
 
-    // ── Validations tab: FD_BenchTier3_CS has no ARR — should appear.
+    // ── Validations tab: FD_BenchTier3_CS has a dangling ARR ref;
+    //    the auto-create load step should have minted ARR_BenchT3 with
+    //    an empty recipes array — so the issue is "empty ARR" not
+    //    "ARR missing".
     await page.getByRole('button', { name: 'Validations', exact: true }).click();
     await page.waitForSelector('.validations-layout');
-    const noArrIssue = page.locator('.val-row', { hasText: 'FD_BenchTier3_CS has no available_recipe_rules_definition' });
-    if ((await noArrIssue.count()) < 1) throw new Error('expected validation issue for Tier3 missing ARR');
-    console.log('OK: Validations surfaces "station has no ARR" for FD_BenchTier3_CS');
+    const emptyArrIssue = page.locator('.val-row', { hasText: 'ARR_BenchT3 has no recipes' });
+    if ((await emptyArrIssue.count()) < 1) {
+      throw new Error('expected validation issue for empty auto-created ARR_BenchT3');
+    }
+    console.log('OK: auto-create minted ARR_BenchT3; Validations flags it as empty');
+
+    // ── + New affordances: Stations rail "+ Crafting" creates a new
+    //    crafting station + an empty ARR linked to it.
+    await page.getByRole('button', { name: 'Recipes & Loot', exact: true }).click();
+    await page.locator('.subtab', { hasText: 'Stations' }).click();
+    await page.waitForSelector('.recipe-card');
+    const stationCountBefore = await page.locator('.rail-row, .rail-family').count();
+    await page.getByRole('button', { name: '＋ Crafting' }).click();
+    await page.waitForTimeout(150);
+    const stationCountAfter = await page.locator('.rail-row, .rail-family').count();
+    if (stationCountAfter <= stationCountBefore) {
+      throw new Error(`expected new station rail entry; before=${stationCountBefore} after=${stationCountAfter}`);
+    }
+    // Newly created station should be selected and have its ARR set.
+    const newStationTitle = await page.locator('.station-title h2').first().textContent();
+    if (!newStationTitle?.toLowerCase().includes('new')) {
+      throw new Error(`expected new station to be selected; got "${newStationTitle}"`);
+    }
+    console.log('OK: + Crafting created a new station + ARR, auto-selected');
+
+    // ── + Tier on the Bench family creates the next tier.
+    const benchFam = page.locator('.rail-family', { hasText: 'Crafting Bench' });
+    const tiersBefore = await benchFam.locator('.tier-pill:not(.tier-pill-add)').count();
+    await benchFam.locator('.tier-pill-add').click();
+    await page.waitForTimeout(150);
+    const tiersAfter = await benchFam.locator('.tier-pill:not(.tier-pill-add)').count();
+    if (tiersAfter !== tiersBefore + 1) {
+      throw new Error(`expected ${tiersBefore + 1} tier pills after + Tier; got ${tiersAfter}`);
+    }
+    console.log(`OK: + Tier minted the next tier (${tiersBefore} → ${tiersAfter})`);
+
+    // ── Middle-click jump: middle-click a palette item, expect to
+    //    land in the Definitions tab on that asset.
+    await page.locator('.palette-item', { hasText: 'Wood' }).first().click({ button: 'middle' });
+    await page.waitForTimeout(150);
+    const defEditorTitle = await page.locator('.def-editor-head .def-name-input').first().inputValue().catch(() => '');
+    if (defEditorTitle !== 'Wood') {
+      throw new Error(`middle-click jump expected Definitions tab on Wood; got "${defEditorTitle}"`);
+    }
+    console.log('OK: middle-click on palette item jumped to its Definitions editor');
 
     // ── Universal copy/paste: switch back to Stations sub-tab, copy
     //    Sword's Inputs array, paste into Hammer's Inputs array.
     await page.getByRole('button', { name: 'Recipes & Loot', exact: true }).click();
     await page.locator('.subtab', { hasText: 'Stations' }).click();
+    await page.waitForSelector('.stations-layout');
+    // Force-pick Bench Tier 1 so we know there are recipes to work
+    // with (the previous test step left selection on a +Tier-minted
+    // empty station).
+    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
     await page.waitForSelector('.recipe-card');
-    // Make sure Tier 1 is still selected — pick its tier pill again.
-    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill', { hasText: 'T1' }).click();
     await page.waitForTimeout(120);
 
     // Click Sword's Inputs label (col-label-button) to select that array.

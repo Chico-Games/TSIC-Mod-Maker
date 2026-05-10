@@ -6,6 +6,7 @@ import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { SearchableSelect, type SelectOption } from './SearchableSelect';
 import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/dispatch';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 interface Props {
   ownerKey: string;
@@ -94,6 +95,7 @@ export function DefRefSlot(props: Props) {
 
   const targetKey = refValue ? findKeyById(refValue) : null;
   const targetRec = targetKey ? definitions.get(targetKey) : null;
+  const jumpToDef = useJumpToDefinition();
   const theme = targetRec ? getFolderTheme(targetRec.folder) : { emoji: '·', color: '#9aa0a6' };
 
   const options = useMemo<SelectOption[]>(() => {
@@ -159,8 +161,10 @@ export function DefRefSlot(props: Props) {
       ref={setDropRef}
       className={`def-ref-slot ${isOver ? 'over' : ''} ${isDragging ? 'dragging' : ''} ${activeData && !accepts ? 'rejects' : ''} ${isSelected ? 'selected' : ''}`}
       style={{ borderLeft: `3px solid ${theme.color}` }}
-      title={refClass ? `Accepts ${refClass}` : undefined}
+      title={`${refClass ? `Accepts ${refClass}` : ''}${refValue ? '\nMiddle-click to open ' + refValue : ''}`.trim() || undefined}
       onClick={onSlotClick}
+      onAuxClick={(e) => { if (e.button === 1 && refValue) { e.preventDefault(); jumpToDef(refValue); } }}
+      onMouseDown={(e) => { if (e.button === 1 && refValue) e.preventDefault(); }}
     >
       <span
         ref={setDragRef}

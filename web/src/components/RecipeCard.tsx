@@ -6,6 +6,7 @@ import { humanizeAssetId } from './definitionsNaming';
 import { DefRefSlot } from './DefRefSlot';
 import { GrowStagesEditor } from './GrowStagesEditor';
 import { NumberSlider } from './NumberSlider';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 interface Props {
   recipeKey: string;
@@ -26,6 +27,7 @@ export function RecipeCard({ recipeKey, arrKey, selected, onSelect }: Props) {
 
   const rec = definitions.get(recipeKey);
   const cls = String(rec?.json?.class ?? '').replace(/^U/, '');
+  const jumpToDef = useJumpToDefinition();
 
   const props = rec?.json?.properties ?? {};
   const inputMap: any = props.input;
@@ -122,7 +124,13 @@ export function RecipeCard({ recipeKey, arrKey, selected, onSelect }: Props) {
     >
       <header className="recipe-card-head">
         <span {...listeners} {...attributes} className="recipe-grab" title="drag to move">⋮⋮</span>
-        <code className="recipe-id">{rec.id}</code>
+        <code
+          className="recipe-id"
+          title={`${rec.id} — middle-click to open in Definitions`}
+          onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(rec.id); } }}
+          onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+          style={{ cursor: 'alias' }}
+        >{rec.id}</code>
         <span className="recipe-cls">{cls}</span>
         <div className="spacer" />
         <button

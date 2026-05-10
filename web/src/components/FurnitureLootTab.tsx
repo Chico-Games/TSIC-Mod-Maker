@@ -9,6 +9,7 @@ import { ItemPalette } from './ItemPalette';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 const LOOT_FOLDER = 'loot_definitions';
 
@@ -19,6 +20,7 @@ export function FurnitureLootTab() {
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
+  const jumpToDef = useJumpToDefinition();
 
   const refAdapter = useRefAdapter((id) => {
     const k = findKeyById(id);
@@ -80,7 +82,9 @@ export function FurnitureLootTab() {
                 className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
                 onClick={() => setSelectedKey(h.item.key)}
                 style={{ borderLeft: `3px solid ${theme.color}` }}
-                title={h.item.id}
+                title={`${h.item.id}\nMiddle-click to open in Definitions`}
+                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
+                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
               >
                 <span className="emoji" aria-hidden>{theme.emoji}</span>
                 <span className="label">

@@ -8,6 +8,7 @@ import { RecipeCard } from './RecipeCard';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -28,6 +29,7 @@ export function FurnitureSubTab() {
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+  const jumpToDef = useJumpToDefinition();
 
   const [filter, setFilter] = useState('');
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
@@ -98,6 +100,14 @@ export function FurnitureSubTab() {
             placeholder="search…"
             onChange={(e) => setFilter(e.target.value)}
           />
+          <div className="rail-add-row">
+            <button className="add-row" onClick={() => {
+              let n = 1;
+              while (findKeyById(`FD_NewFurniture${n}_DF`)) n++;
+              const k = createDefinitionForClass('DamageableFurnitureDefinition', `FD_NewFurniture${n}_DF`);
+              if (k) setSelectedKey(k);
+            }}>＋ New furniture</button>
+          </div>
         </div>
         {filtered.length === 0 ? (
           <div className="empty-state-mini">No furniture loaded.</div>
@@ -112,6 +122,9 @@ export function FurnitureSubTab() {
                 className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
                 onClick={() => setSelectedKey(h.item.key)}
                 style={{ borderLeft: `3px solid ${getFolderTheme(FURNITURE_FOLDER).color}` }}
+                title={`${h.item.displayName} (${h.item.id})\nMiddle-click to open in Definitions`}
+                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
+                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
               >
                 <span className="emoji" aria-hidden>🪑</span>
                 <span className="label"><HighlightedText text={h.item.displayName} ranges={h.ranges} /></span>

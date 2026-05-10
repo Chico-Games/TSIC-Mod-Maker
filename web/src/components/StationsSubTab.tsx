@@ -9,6 +9,7 @@ import { RecipeCard } from './RecipeCard';
 import { ItemPalette } from './ItemPalette';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti } from '../search/fuzzy';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -234,6 +235,85 @@ export function StationsSubTab() {
     updateValueAtPath(selectedArrKey, path, nextArray);
   };
 
+  /** + New station of the given group. Mints a fresh
+   *  {Crafting,Production,Plantable}Station and an empty ARR for it,
+   *  links the two, then selects the new station. */
+  const onNewStation = (group: StationGroup) => {
+    const cls =
+      group === 'crafting' ? 'CraftingStationDefinition' :
+      group === 'production' ? 'ProductionStationDefinition' :
+      'PlantableDefinition';
+    const tag =
+      group === 'crafting' ? 'CS' :
+      group === 'production' ? 'PS' :
+      'PL';
+    let stem = `New${cls.replace(/Definition$/, '')}`;
+    let n = 1;
+    while (findKeyById(`FD_${stem}_${tag}`)) stem = `New${cls.replace(/Definition$/, '')}${++n}`;
+    const stationId = `FD_${stem}_${tag}`;
+    const stationKey = createDefinitionForClass(cls, stationId);
+    if (!stationKey) return;
+    // Mint an empty ARR and point the station at it.
+    const arrId = `ARR_${stem}`;
+    const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
+    if (arrKey) {
+      const recipeRefClass = group === 'plantable' ? 'PlantRecipeDefinition' : 'CraftRecipeDefinition';
+      updateValueAtPath(arrKey, ['properties', 'production_machine_rules'], {
+        type: 'struct',
+        struct_name: 'ProductionMachineRules',
+        value: {
+          recipes: { type: 'array', element_type: { type: 'definition_ref', class: recipeRefClass }, value: [] },
+        },
+      });
+    }
+    updateValueAtPath(stationKey, ['properties', 'available_recipe_rules_definition'], {
+      type: 'definition_ref',
+      class: 'AvailableRecipeRulesDefinition',
+      value: arrId,
+    });
+    setSelectedKey(stationKey);
+  };
+
+  /** + Tier — mint the next tier of an existing family by cloning the
+   *  highest-tier station's id and bumping the number. Always creates
+   *  a fresh ARR linked to it. */
+  const onNewTier = (family: typeof families.crafting[number]) => {
+    if (family.members.length === 0) return;
+    const top = family.members[family.members.length - 1].row;
+    const nextTier = (top.tier || 0) + 1;
+    // Build new id: replace TierN with Tier(N+1) or append TierN
+    // when the source had no tier marker.
+    let newId = top.id;
+    if (/Tier\d+/.test(newId)) {
+      newId = newId.replace(/Tier\d+/, `Tier${nextTier}`);
+    } else {
+      const m = newId.match(/^(.+?)(_[A-Z]{2,3})$/);
+      newId = m ? `${m[1]}Tier${nextTier}${m[2]}` : `${newId}Tier${nextTier}`;
+    }
+    if (findKeyById(newId)) return;
+    const cls = String(definitions.get(top.key)?.json?.class ?? '').replace(/^U/, '');
+    const stationKey = createDefinitionForClass(cls, newId);
+    if (!stationKey) return;
+    const arrId = `ARR_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}`;
+    const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
+    if (arrKey) {
+      const recipeRefClass = top.group === 'plantable' ? 'PlantRecipeDefinition' : 'CraftRecipeDefinition';
+      updateValueAtPath(arrKey, ['properties', 'production_machine_rules'], {
+        type: 'struct',
+        struct_name: 'ProductionMachineRules',
+        value: {
+          recipes: { type: 'array', element_type: { type: 'definition_ref', class: recipeRefClass }, value: [] },
+        },
+      });
+    }
+    updateValueAtPath(stationKey, ['properties', 'available_recipe_rules_definition'], {
+      type: 'definition_ref',
+      class: 'AvailableRecipeRulesDefinition',
+      value: arrId,
+    });
+    setSelectedKey(stationKey);
+  };
+
   return (
     <div className="stations-layout">
       <aside className="rail">
@@ -245,6 +325,11 @@ export function StationsSubTab() {
             placeholder="search…"
             onChange={(e) => setFilter(e.target.value)}
           />
+          <div className="rail-add-row">
+            <button className="add-row" onClick={() => onNewStation('crafting')} title="New crafting station">＋ Crafting</button>
+            <button className="add-row" onClick={() => onNewStation('production')} title="New production station">＋ Production</button>
+            <button className="add-row" onClick={() => onNewStation('plantable')} title="New plantable station">＋ Plantable</button>
+          </div>
         </div>
         <div className="rail-body">
           {(Object.keys(families) as StationGroup[]).map((g) => {
@@ -271,6 +356,7 @@ export function StationsSubTab() {
                       members={fam.members}
                       selectedKey={selectedKey}
                       onSelect={(k) => setSelectedKey(k)}
+                      onAddTier={() => onNewTier(fam)}
                     />
                   ),
                 )}
@@ -343,12 +429,16 @@ function StationRailRow({ row, selected, onSelect, ranges }: { row: StationRow; 
     disabled: activeType !== 'recipe-card',
   });
   const theme = getFolderTheme(row.folder);
+  const jumpToDef = useJumpToDefinition();
   return (
     <button
       ref={setNodeRef}
       className={`rail-row ${selected ? 'selected' : ''} ${isOver ? 'over' : ''}`}
       onClick={onSelect}
       style={{ borderLeft: `3px solid ${theme.color}` }}
+      title={`${row.displayName} (${row.id})\nMiddle-click to open in Definitions`}
+      onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(row.id); } }}
+      onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
     >
       <span className="emoji" aria-hidden>{theme.emoji}</span>
       <span className="label"><HighlightedText text={row.displayName} ranges={ranges} /></span>
@@ -368,10 +458,12 @@ function StationFamilyRow({
   members,
   selectedKey,
   onSelect,
+  onAddTier,
 }: {
   members: Array<{ row: StationRow; ranges: ReadonlyArray<readonly [number, number]> }>;
   selectedKey: DefinitionsKey | null;
   onSelect: (k: DefinitionsKey) => void;
+  onAddTier?: () => void;
 }) {
   const theme = getFolderTheme(members[0].row.folder);
   const familyName = familyDisplayName(members.map((m) => m.row));
@@ -411,6 +503,9 @@ function StationFamilyRow({
             </button>
           );
         })}
+        {onAddTier && (
+          <button className="tier-pill tier-pill-add" onClick={onAddTier} title="Mint the next tier">＋</button>
+        )}
       </div>
     </div>
   );

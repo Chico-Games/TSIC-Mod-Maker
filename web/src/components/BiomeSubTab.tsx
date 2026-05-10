@@ -86,6 +86,19 @@ export function BiomeSubTab() {
               className={`rail-row ${selectedBiome === h.item.biome ? 'selected' : ''}`}
               onClick={() => setSelectedBiome(h.item.biome)}
               style={{ borderLeft: '3px solid #f0d77a' }}
+              title={`${h.item.biome}\nMiddle-click to open Floor/Furniture LSP in Definitions`}
+              onAuxClick={(e) => {
+                if (e.button !== 1) return;
+                e.preventDefault();
+                const target = h.item.floorKey ?? h.item.furnitureKey;
+                if (!target) return;
+                const rec = definitions.get(target);
+                if (!rec) return;
+                selectFolder(rec.folder);
+                selectDefinition(target);
+                setTab('definitions');
+              }}
+              onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
             >
               <span className="emoji" aria-hidden>✨</span>
               <span className="label"><HighlightedText text={h.item.biome} ranges={h.ranges} /></span>

@@ -7,12 +7,37 @@ import { humanizeAssetId } from './definitionsNaming';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 const RECIPE_FOLDERS = new Set([
   'craft_recipe_definitions',
   'plant_recipe_definitions',
   'furniture_upgrade_recipe',
 ]);
+
+/** Tags the exporter typically appends to a class's asset ids. We use
+ *  it to suggest a sensible default suffix when minting a new asset
+ *  in a folder we don't have an idTemplate for yet. */
+const FOLDER_ID_SUFFIX: Record<string, string> = {
+  consumable_definitions: '_CN',
+  crafting_material_definitions: '_CM',
+  constructable_item_definitions: '_CI',
+  ammo_definitions: '_AM',
+  seed_item_definitions: '_SD',
+  static_item_definitions: '_SI',
+  equippable_definitions: '_EQ',
+  glove_definitions: '_GL',
+  trap_item_definitions: '_TR',
+};
+function inferIdSuffix(folder: string): string { return FOLDER_ID_SUFFIX[folder] ?? ''; }
+
+/** Reverse the folder-naming convention used by the typed editor. */
+function folderToClassName(folder: string): string {
+  // Drop trailing "_definitions" / "_definition", camelCase the rest.
+  const trimmed = folder.replace(/_definitions?$/, '');
+  const camel = trimmed.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+  return `${camel}Definition`;
+}
 
 const DEFAULT_ITEM_FOLDERS = [
   'consumable_definitions',
@@ -43,6 +68,7 @@ export function ItemPalette({ folders, title }: Props) {
   const selectedRecipeKey = useAppStore((s) => s.selectedRecipeKey);
   const selectedStationKey = useAppStore((s) => s.selectedStationKey);
   const selectRecipe = useAppStore((s) => s.selectRecipe);
+  const jumpToDef = useJumpToDefinition();
 
   const [filter, setFilter] = useState('');
   // Folder pick: starts from the requested defaults and re-seeds when
@@ -276,6 +302,36 @@ export function ItemPalette({ folders, title }: Props) {
           );
         })}
       </div>
+      <div className="palette-folders palette-add-row">
+        <span className="palette-add-label">＋ Add</span>
+        {(folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f)).map((f) => {
+          const t = getFolderTheme(f);
+          // Derive the bare class name from the folder. e.g.
+          // "consumable_definitions" → "ConsumableDefinition".
+          const cls = folderToClassName(f);
+          return (
+            <button
+              key={f}
+              className="folder-chip"
+              title={`Mint a new ${cls}`}
+              style={{ color: t.color, borderColor: t.color }}
+              onClick={() => {
+                let n = 1;
+                const tag = inferIdSuffix(f);
+                let id = `ID_New${n}${tag}`;
+                while (findKeyById(id)) {
+                  n++;
+                  id = `ID_New${n}${tag}`;
+                }
+                createDefinitionForClass(cls, id);
+              }}
+            >
+              <span aria-hidden>{t.emoji}</span>
+              {f.replace(/_definitions?$/, '')}
+            </button>
+          );
+        })}
+      </div>
       <div className="palette-list">
         <VirtualList
           items={items}
@@ -291,6 +347,7 @@ export function ItemPalette({ folders, title }: Props) {
               totalUse={totalUsage.get(h.item.id) ?? 0}
               onClick={onClickItem}
               onRightClick={onRightClickItem}
+              onMiddleClick={(id) => jumpToDef(id)}
             />
           )}
         />
@@ -316,9 +373,10 @@ interface PaletteItemProps {
   totalUse: number;
   onClick: (id: string, cls: string) => void;
   onRightClick: (id: string) => void;
+  onMiddleClick: (id: string) => void;
 }
 
-function PaletteItem({ id, folder, cls, ranges, recipeUse, totalUse, onClick, onRightClick }: PaletteItemProps) {
+function PaletteItem({ id, folder, cls, ranges, recipeUse, totalUse, onClick, onRightClick, onMiddleClick }: PaletteItemProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${folder}/${id}`,
     data: { type: 'palette-item', class: cls, value: id } as any,
@@ -331,9 +389,11 @@ function PaletteItem({ id, folder, cls, ranges, recipeUse, totalUse, onClick, on
       {...attributes}
       className={`palette-item ${isDragging ? 'dragging' : ''} ${recipeUse > 0 ? 'in-recipe' : ''}`}
       style={{ borderLeft: `3px solid ${t.color}` }}
-      title={`${id} · ${cls}\nIn this recipe: ${recipeUse}\nAcross all recipes: ${totalUse}`}
+      title={`${id} · ${cls}\nIn this recipe: ${recipeUse}\nAcross all recipes: ${totalUse}\nMiddle-click to open in Definitions`}
       onClick={() => onClick(id, cls)}
       onContextMenu={(e) => { e.preventDefault(); onRightClick(id); }}
+      onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); onMiddleClick(id); } }}
+      onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); /* suppress autoscroll */ }}
     >
       <span className="emoji" aria-hidden>{t.emoji}</span>
       <span className="label"><HighlightedText text={humanizeAssetId(id)} ranges={ranges} /></span>

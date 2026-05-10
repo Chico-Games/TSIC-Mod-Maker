@@ -142,6 +142,12 @@ export interface DefinitionsStore {
   /** Pick a folder and write the entire current working set to it as
    *  Save As. Replaces the saved directory handle. */
   saveAs: () => Promise<void>;
+  /** Walk every loaded asset for `definition_ref` envelopes whose
+   *  value is set but doesn't resolve. For each missing target whose
+   *  class is known, mint a blank asset of that class. Returns the
+   *  count of newly created records. Idempotent — runs at the end of
+   *  load paths so the dataset is always self-consistent. */
+  autoCreateMissingRefs: () => { created: number; skipped: number };
 
   /** Update a single property on a definition (deep path). */
   updateValueAtPath: (key: DefinitionsKey, path: (string | number)[], value: any) => void;
@@ -1064,6 +1070,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         loading: false,
         toast: { kind: 'info', text: `Loaded ${defs.size} bundled definitions across ${folders.length} folders. Save As… to write changes to disk.` },
       });
+      get().autoCreateMissingRefs();
     } catch (e) {
       set({
         loading: false,
@@ -1174,6 +1181,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         loading: false,
         toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
       });
+      // Self-heal dangling refs by minting blank assets where the
+      // class is known. Toast inside autoCreateMissingRefs replaces
+      // the "Loaded N definitions" toast on success.
+      get().autoCreateMissingRefs();
     } catch (e) {
       set({
         loading: false,
@@ -1518,7 +1529,53 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const parents = node?.parents ? [...node.parents] : Array.isArray(rec.json?.parent_classes)
       ? rec.json.parent_classes
       : [];
-    const nextJson = { ...rec.json, class: want, parent_classes: parents };
+    // Find a template asset of the new class to learn its expected
+    // property shape. We retain only the current properties whose
+    // name AND envelope `type` match the template — anything else
+    // would be unreadable by the new class. The template's missing
+    // properties are added with blank values so the typed editor
+    // immediately shows the full schema.
+    let template: any = null;
+    for (const r of cur.definitions.values()) {
+      if (r === rec) continue;
+      if (String(r.json?.class ?? '') === want) { template = r.json; break; }
+    }
+    if (!template) {
+      for (const r of cur.definitions.values()) {
+        if (r === rec) continue;
+        const parentChain = r.json?.parent_classes;
+        if (Array.isArray(parentChain) && parentChain.includes(want)) { template = r.json; break; }
+      }
+    }
+    // Additive merge: retain every property from the source that
+    // type-matches the new class's expected shape (so type-incompat
+    // properties are replaced with the new template's blank), append
+    // any template properties the source lacked, and KEEP everything
+    // else as-is. The user can clean up unwanted leftovers manually
+    // — destructive deletion on class swap loses too much work.
+    const oldProps: Record<string, any> = (rec.json?.properties ?? {}) as any;
+    const mergedProps: Record<string, any> = { ...oldProps };
+    let kept = Object.keys(oldProps).length;
+    let added = 0;
+    let replaced = 0;
+    if (template?.properties && typeof template.properties === 'object') {
+      const tmplProps = template.properties as Record<string, any>;
+      for (const [name, tmplVal] of Object.entries(tmplProps)) {
+        const oldVal = oldProps[name];
+        if (!oldVal) {
+          mergedProps[name] = blankifyTypedValue(tmplVal);
+          added++;
+        } else if (
+          typeof oldVal === 'object' && typeof tmplVal === 'object' &&
+          (oldVal as any).type !== (tmplVal as any).type
+        ) {
+          mergedProps[name] = blankifyTypedValue(tmplVal);
+          replaced++;
+          kept--; // we replaced one we initially counted as kept
+        }
+      }
+    }
+    const nextJson = { ...rec.json, class: want, parent_classes: parents, properties: mergedProps };
     const nextRec: DefinitionRecord = { ...rec, json: nextJson };
     const nextDefs = new Map(cur.definitions);
     nextDefs.set(k, nextRec);
@@ -1529,15 +1586,18 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       nextDirty.delete(k);
     }
     const targetFolder = node?.folder ?? folderForBareClass(want.slice(1));
+    const moveNote = targetFolder && targetFolder !== rec.folder
+      ? ` — file moves to ${targetFolder}/ on save.`
+      : '.';
+    const propNote = template
+      ? ` Kept ${kept}, added ${added}${replaced ? `, replaced ${replaced} mismatched` : ''} propert${kept + added + replaced === 1 ? 'y' : 'ies'}.`
+      : '';
     set({
       definitions: nextDefs,
       dirty: nextDirty,
       toast: {
         kind: 'info',
-        text:
-          targetFolder && targetFolder !== rec.folder
-            ? `Class set to ${want} — file moves to ${targetFolder}/ on save.`
-            : `Class set to ${want}.`,
+        text: `Class set to ${want}${moveNote}${propNote}`,
       },
     });
   },
@@ -1770,6 +1830,50 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       selectedKey: cur.selectedKey === k ? null : cur.selectedKey,
       toast: { kind: 'info', text: `Deleted ${rec.id}.json` },
     });
+  },
+
+  autoCreateMissingRefs: () => {
+    const { definitions, classNodes } = get();
+    const known = new Set<string>();
+    for (const rec of definitions.values()) known.add(rec.id);
+    // Collect missing (class, value) pairs once before mutating; then
+    // create each unique target. Using a map keyed by value+class so a
+    // ref appearing in many assets only mints one new file.
+    const missing = new Map<string, { cls: string; value: string }>();
+    for (const rec of definitions.values()) {
+      walkTypedEnvelopes(rec.json?.properties ?? {}, [], (typed) => {
+        if (typed.type !== 'definition_ref') return;
+        const cls = String(typed.class ?? '');
+        const value = typed.value;
+        if (!cls || !value || typeof value !== 'string') return;
+        if (known.has(value)) return;
+        // Only mint when the target's class is known to the loaded
+        // hierarchy — guards against engine refs (e.g. ScpAbilitySet)
+        // that live outside the export.
+        const knownClass =
+          classNodes.has(`U${cls}`) || classNodes.has(cls);
+        if (!knownClass) return;
+        missing.set(`${cls}:${value}`, { cls, value });
+      });
+    }
+    let created = 0;
+    let skipped = 0;
+    for (const { cls, value } of missing.values()) {
+      const k = get().createDefinitionForClass(cls, value);
+      if (k) {
+        created++;
+        known.add(value);
+      } else {
+        skipped++;
+      }
+    }
+    if (created > 0) {
+      set({ toast: {
+        kind: 'info',
+        text: `Auto-created ${created} missing asset${created === 1 ? '' : 's'} from dangling refs.`,
+      } });
+    }
+    return { created, skipped };
   },
 
   searchAll: (query, limit = 200) => {

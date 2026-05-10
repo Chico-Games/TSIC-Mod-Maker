@@ -7,6 +7,7 @@ import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { useJumpToDefinition } from './useJumpToDefinition';
 
 const ENEMY_FOLDER = 'enemy_definitions';
 
@@ -23,6 +24,7 @@ export function EnemiesSubTab() {
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
+  const jumpToDef = useJumpToDefinition();
 
   const refAdapter = useRefAdapter((assetId) => {
     const k = findKeyById(assetId);
@@ -77,6 +79,9 @@ export function EnemiesSubTab() {
               className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
               onClick={() => setSelectedKey(h.item.key)}
               style={{ borderLeft: '3px solid #ef6c6c' }}
+              title={`${h.item.displayName} (${h.item.id})\nMiddle-click to open in Definitions`}
+              onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
+              onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
             >
               <span className="emoji" aria-hidden>👹</span>
               <span className="label"><HighlightedText text={h.item.displayName} ranges={h.ranges} /></span>
