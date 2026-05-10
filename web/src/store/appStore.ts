@@ -1,7 +1,50 @@
 import { create } from 'zustand';
 
-export type AppTab = 'recipes-loot' | 'definitions' | 'validations';
+export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'validations';
 export type RecipesSubTab = 'stations' | 'furniture' | 'tech-tree' | 'enemies' | 'biome';
+
+export type ItemsSubTab =
+  | 'crafting-materials' | 'consumables' | 'constructables' | 'equippables'
+  | 'gloves' | 'ammo' | 'seeds' | 'traps' | 'static-items';
+
+export type FurnitureSubTab =
+  | 'furniture' | 'damageable' | 'toggleable' | 'with-components'
+  | 'storage' | 'universal-storage'
+  | 'crafting-stations' | 'production-stations' | 'plantable'
+  | 'elevator' | 'teleporter' | 'death-box' | 'containment-cage' | 'shopping-cart'
+  | 'spawn-points' | 'enemy-spawn-points' | 'interactable-text';
+
+export const ITEMS_SUBTAB_FOLDER: Record<ItemsSubTab, string> = {
+  'crafting-materials': 'crafting_material_definitions',
+  'consumables': 'consumable_definitions',
+  'constructables': 'constructable_item_definitions',
+  'equippables': 'equippable_definitions',
+  'gloves': 'glove_definitions',
+  'ammo': 'ammo_definitions',
+  'seeds': 'seed_item_definitions',
+  'traps': 'trap_item_definitions',
+  'static-items': 'static_item_definitions',
+};
+
+export const FURNITURE_SUBTAB_FOLDER: Record<FurnitureSubTab, string> = {
+  'furniture': 'furniture_definitions',
+  'damageable': 'damageable_furniture_definitions',
+  'toggleable': 'toggleable_furniture_definitions',
+  'with-components': 'furniture_with_components_definitions',
+  'storage': 'storage_definitions',
+  'universal-storage': 'universal_storage_definitions',
+  'crafting-stations': 'crafting_station_definitions',
+  'production-stations': 'production_station_definitions',
+  'plantable': 'plantable_definitions',
+  'elevator': 'elevator_definitions',
+  'teleporter': 'teleporter_definitions',
+  'death-box': 'death_box_definitions',
+  'containment-cage': 'containment_cage_definitions',
+  'shopping-cart': 'shopping_cart_definitions',
+  'spawn-points': 'spawn_point_definitions',
+  'enemy-spawn-points': 'enemy_spawn_point_definitions',
+  'interactable-text': 'interactable_text_definitions',
+};
 
 /** Path-anchored selection (an array or a slot inside a definition's
  *  `properties` tree). Used by the universal copy / paste keybindings. */
@@ -22,6 +65,8 @@ export type Clipboard =
 interface AppStore {
   tab: AppTab;
   recipesSubTab: RecipesSubTab;
+  itemsSubTab: ItemsSubTab;
+  furnitureSubTab: FurnitureSubTab;
   searchOpen: boolean;
 
   /** Station rail selection on the Stations sub-tab — also used by
@@ -38,6 +83,8 @@ interface AppStore {
 
   setTab: (t: AppTab) => void;
   setRecipesSubTab: (t: RecipesSubTab) => void;
+  setItemsSubTab: (t: ItemsSubTab) => void;
+  setFurnitureSubTab: (t: FurnitureSubTab) => void;
   setSearchOpen: (open: boolean) => void;
 
   selectStation: (k: string | null) => void;
@@ -48,11 +95,19 @@ interface AppStore {
 
 const LS_TAB = 'tsic.app.tab.v1';
 const LS_SUB = 'tsic.app.recipesSub.v1';
+const LS_ITEMS_SUB = 'tsic.app.itemsSub.v1';
+const LS_FURN_SUB = 'tsic.app.furnitureSub.v1';
 
 function loadTab(): AppTab {
   try {
     const v = localStorage.getItem(LS_TAB);
-    if (v === 'recipes-loot' || v === 'definitions' || v === 'validations') return v;
+    if (
+      v === 'recipes-loot' ||
+      v === 'items' ||
+      v === 'furniture' ||
+      v === 'definitions' ||
+      v === 'validations'
+    ) return v;
     // Legacy: a previous build had a 'furniture-loot' top-level tab.
     // Map it onto Recipes & Loot so old localStorage doesn't strand
     // users on a blank tab.
@@ -67,10 +122,26 @@ function loadSub(): RecipesSubTab {
   } catch { /* noop */ }
   return 'stations';
 }
+function loadItemsSub(): ItemsSubTab {
+  try {
+    const v = localStorage.getItem(LS_ITEMS_SUB);
+    if (v && v in ITEMS_SUBTAB_FOLDER) return v as ItemsSubTab;
+  } catch { /* noop */ }
+  return 'crafting-materials';
+}
+function loadFurnSub(): FurnitureSubTab {
+  try {
+    const v = localStorage.getItem(LS_FURN_SUB);
+    if (v && v in FURNITURE_SUBTAB_FOLDER) return v as FurnitureSubTab;
+  } catch { /* noop */ }
+  return 'furniture';
+}
 
 export const useAppStore = create<AppStore>((set) => ({
   tab: loadTab(),
   recipesSubTab: loadSub(),
+  itemsSubTab: loadItemsSub(),
+  furnitureSubTab: loadFurnSub(),
   searchOpen: false,
   selectedStationKey: null,
   selectedRecipeKey: null,
@@ -83,6 +154,14 @@ export const useAppStore = create<AppStore>((set) => ({
   setRecipesSubTab: (t) => {
     try { localStorage.setItem(LS_SUB, t); } catch { /* noop */ }
     set({ recipesSubTab: t });
+  },
+  setItemsSubTab: (t) => {
+    try { localStorage.setItem(LS_ITEMS_SUB, t); } catch { /* noop */ }
+    set({ itemsSubTab: t });
+  },
+  setFurnitureSubTab: (t) => {
+    try { localStorage.setItem(LS_FURN_SUB, t); } catch { /* noop */ }
+    set({ furnitureSubTab: t });
   },
   setSearchOpen: (open) => set({ searchOpen: open }),
   selectStation: (k) => set({
