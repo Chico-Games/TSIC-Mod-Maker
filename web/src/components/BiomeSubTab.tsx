@@ -21,6 +21,7 @@ export function BiomeSubTab() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
+  const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
@@ -78,6 +79,16 @@ export function BiomeSubTab() {
             placeholder="search…"
             onChange={(e) => setFilter(e.target.value)}
           />
+          <div className="rail-add-row">
+            <button className="add-row" onClick={() => {
+              let n = 1;
+              while (findKeyById(`LSP_New${n}_Floor`) || findKeyById(`LSP_New${n}_Furniture`)) n++;
+              const stem = `New${n}`;
+              const floorKey = createDefinitionForClass('LootSpawnPointDefinition', `LSP_${stem}_Floor`);
+              const furnKey = createDefinitionForClass('LootSpawnPointDefinition', `LSP_${stem}_Furniture`);
+              if (floorKey || furnKey) setSelectedBiome(stem);
+            }} title="Mint a Floor + Furniture LSP pair for a new biome">＋ New biome</button>
+          </div>
         </div>
         <div className="rail-body">
           {filtered.map((h) => (

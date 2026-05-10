@@ -73,7 +73,9 @@ export function ReferenceViewer({
                 <a
                   className="def-refs-link"
                   onClick={() => onJump(r.targetKey!)}
-                  title={r.refValue}
+                  onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); onJump(r.targetKey!); } }}
+                  onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+                  title={`${r.refValue} — middle-click to open`}
                 >
                   {humanizeAssetId(r.refValue)}
                 </a>
@@ -102,7 +104,9 @@ export function ReferenceViewer({
                 <a
                   className="def-refs-link"
                   onClick={() => onJump(r.sourceKey)}
-                  title={r.sourceId}
+                  onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); onJump(r.sourceKey); } }}
+                  onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+                  title={`${r.sourceId} — middle-click to open`}
                 >
                   {humanizeAssetId(r.sourceId)}
                 </a>

@@ -68,6 +68,13 @@ export function ItemPalette({ folders, title }: Props) {
   const selectedRecipeKey = useAppStore((s) => s.selectedRecipeKey);
   const selectedStationKey = useAppStore((s) => s.selectedStationKey);
   const selectRecipe = useAppStore((s) => s.selectRecipe);
+  const tab = useAppStore((s) => s.tab);
+  const recipesSubTab = useAppStore((s) => s.recipesSubTab);
+  // Click-to-author only fires while the user is actually on the
+  // Stations sub-tab. Without this gate, scrolling the palette in any
+  // other tab (Furniture, Enemies, Biome, FurnitureLoot, Definitions)
+  // would still mutate whatever recipe was last selected on Stations.
+  const authoringActive = tab === 'recipes-loot' && recipesSubTab === 'stations';
   const jumpToDef = useJumpToDefinition();
 
   const [filter, setFilter] = useState('');
@@ -164,6 +171,7 @@ export function ItemPalette({ folders, title }: Props) {
    *  new recipe whose `output` is the clicked item and append it to
    *  the station's ARR. */
   const onClickItem = (id: string, cls: string) => {
+    if (!authoringActive) return;
     if (selectedRecipeKey) {
       stackInputItem(selectedRecipeKey, id, cls, +1);
       return;
@@ -222,6 +230,7 @@ export function ItemPalette({ folders, title }: Props) {
   /** Right-click decrements (or removes) the item from the selected
    *  recipe's input map. No-op without a recipe selected. */
   const onRightClickItem = (id: string) => {
+    if (!authoringActive) return;
     if (!selectedRecipeKey) return;
     stackInputItem(selectedRecipeKey, id, '', -1);
   };
@@ -354,11 +363,13 @@ export function ItemPalette({ folders, title }: Props) {
       </div>
       <div className="palette-count">
         {items.length.toLocaleString()} items
-        {selectedRecipeKey
-          ? <span className="palette-hint"> · click adds to recipe input · right-click −1</span>
-          : selectedStationKey
-            ? <span className="palette-hint"> · click creates a new recipe with that output</span>
-            : <span className="palette-hint"> · pick a station to author</span>}
+        {!authoringActive
+          ? <span className="palette-hint"> · drag items to slots · middle-click to open</span>
+          : selectedRecipeKey
+            ? <span className="palette-hint"> · click adds to recipe input · right-click −1</span>
+            : selectedStationKey
+              ? <span className="palette-hint"> · click creates a new recipe with that output</span>
+              : <span className="palette-hint"> · pick a station to author</span>}
       </div>
     </div>
   );

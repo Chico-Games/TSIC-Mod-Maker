@@ -21,6 +21,7 @@ export function EnemiesSubTab() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
+  const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
@@ -71,6 +72,14 @@ export function EnemiesSubTab() {
             placeholder="search…"
             onChange={(e) => setFilter(e.target.value)}
           />
+          <div className="rail-add-row">
+            <button className="add-row" onClick={() => {
+              let n = 1;
+              while (findKeyById(`ED_New${n}`)) n++;
+              const k = createDefinitionForClass('EnemyDefinition', `ED_New${n}`);
+              if (k) setSelectedKey(k);
+            }}>＋ New enemy</button>
+          </div>
         </div>
         <div className="rail-body">
           {filtered.map((h) => (

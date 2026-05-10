@@ -622,6 +622,32 @@ async function waitForServer(url, timeoutMs = 15000) {
     }
     console.log('OK: middle-click on palette item jumped to its Definitions editor');
 
+    // ── Click-to-author tab gating: switch to Furniture sub-tab and
+    //    click a palette item — Stations recipe count must not change
+    //    (would only happen if click-to-author leaked across tabs).
+    await page.getByRole('button', { name: 'Recipes & Loot', exact: true }).click();
+    await page.waitForSelector('.subtab-strip');
+    await page.locator('.subtab', { hasText: 'Stations' }).click();
+    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
+    await page.waitForSelector('.recipe-card');
+    const swordPreClickRecipeCountForGate = await page.locator('.recipe-card', { hasText: 'RD_Sword_CR' }).count();
+    await page.locator('.subtab', { hasText: 'Furniture' }).click();
+    await page.waitForSelector('.furniture-layout');
+    // Click a palette item while on Furniture tab — must NOT mutate
+    // any recipe.
+    const palettePostSwitch = page.locator('.palette-item').first();
+    if (await palettePostSwitch.count()) {
+      await palettePostSwitch.click();
+      await page.waitForTimeout(120);
+    }
+    await page.locator('.subtab', { hasText: 'Stations' }).click();
+    await page.waitForSelector('.recipe-card');
+    const swordPostClickRecipeCount = await page.locator('.recipe-card', { hasText: 'RD_Sword_CR' }).count();
+    if (swordPostClickRecipeCount !== swordPreClickRecipeCountForGate) {
+      throw new Error('click-to-author leaked across tabs (Sword recipe count drifted)');
+    }
+    console.log('OK: click-to-author is gated to the Stations sub-tab');
+
     // ── Universal copy/paste: switch back to Stations sub-tab, copy
     //    Sword's Inputs array, paste into Hammer's Inputs array.
     await page.getByRole('button', { name: 'Recipes & Loot', exact: true }).click();
@@ -656,6 +682,22 @@ async function waitForServer(url, timeoutMs = 15000) {
       throw new Error(`expected Hammer's input qty to be 2 after paste; got "${hammerQty}"`);
     }
     console.log('OK: Ctrl+C / Ctrl+V replaced Hammer inputs with Sword inputs (qty preserved)');
+
+    // ── Delete cascade: with Hammer still in the ARR, delete it via
+    //    its card's "×" button. The ARR JSON written on the next Save
+    //    must NOT carry a ref to RD_Hammer_CR anymore — the scrub
+    //    cleared the entry from production_machine_rules.recipes.
+    page.once('dialog', (d) => d.accept());
+    const hammerCardForDelete = page.locator('.recipe-card', { hasText: 'RD_Hammer_CR' }).first();
+    await hammerCardForDelete.locator('button.danger').click();
+    await page.waitForTimeout(200);
+    await page.getByRole('button', { name: /^💾 Save/ }).click();
+    await page.waitForTimeout(300);
+    const arrAfterDelete = await page.evaluate(() => window._mockWrites['ARR_BenchT1.json'] || '');
+    if (arrAfterDelete.includes('"value": "RD_Hammer_CR"')) {
+      throw new Error('ARR still references the deleted recipe — cascade failed');
+    }
+    console.log('OK: deleting a recipe cascades — ARR no longer references it');
 
     if (consoleErrors.length > 0) {
       console.error('Console errors:');

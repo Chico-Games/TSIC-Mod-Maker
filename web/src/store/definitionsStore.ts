@@ -418,6 +418,84 @@ function walkTypedEnvelopes(
   }
 }
 
+/** Walk a record's JSON, removing every reference to `deletedId`.
+ *  Returns the new JSON plus stats. Standalone def_refs lose their
+ *  value (kept as empty so the slot stays in the editor); array
+ *  entries that ARE def_refs to the id get spliced out; map entries
+ *  whose key is a def_ref to the id are removed. The function is
+ *  pure — it deep-copies on first mutation so untouched branches
+ *  share structure with the input. */
+function scrubRefsToId(
+  root: any,
+  deletedId: string,
+): { next: any; changed: boolean; removedCount: number } {
+  let removedCount = 0;
+  let changed = false;
+  function walk(node: any): any {
+    if (node == null) return node;
+    if (Array.isArray(node)) {
+      // Filter out array entries that ARE def_refs to deletedId, then
+      // recurse into the rest.
+      const filtered: any[] = [];
+      let arrChanged = false;
+      for (const item of node) {
+        if (
+          item && typeof item === 'object' &&
+          item.type === 'definition_ref' &&
+          String(item.value ?? '') === deletedId
+        ) {
+          arrChanged = true;
+          changed = true;
+          removedCount++;
+          continue;
+        }
+        // Map entries are { key, value } objects — drop the whole
+        // entry when the key resolves to the deleted id.
+        if (
+          item && typeof item === 'object' &&
+          item.key && typeof item.key === 'object' &&
+          item.key.type === 'definition_ref' &&
+          String(item.key.value ?? '') === deletedId
+        ) {
+          arrChanged = true;
+          changed = true;
+          removedCount++;
+          continue;
+        }
+        const w = walk(item);
+        if (w !== item) arrChanged = true;
+        filtered.push(w);
+      }
+      return arrChanged ? filtered : node;
+    }
+    if (typeof node === 'object') {
+      // Standalone def_ref envelope pointing at the deleted id —
+      // clear the value (keep the envelope so the slot still renders).
+      if (
+        node.type === 'definition_ref' &&
+        String(node.value ?? '') === deletedId
+      ) {
+        changed = true;
+        removedCount++;
+        return { ...node, value: '' };
+      }
+      let objChanged = false;
+      const out: any = Array.isArray(node) ? [...node] : { ...node };
+      for (const k of Object.keys(node)) {
+        const w = walk(node[k]);
+        if (w !== node[k]) {
+          out[k] = w;
+          objChanged = true;
+        }
+      }
+      return objChanged ? out : node;
+    }
+    return node;
+  }
+  const next = walk(root);
+  return { next, changed, removedCount };
+}
+
 function setIn(target: any, path: (string | number)[], value: any): any {
   if (path.length === 0) return value;
   const [head, ...rest] = path;
@@ -1817,10 +1895,30 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         return;
       }
     }
+    // Cascade: every other asset that references the deleted id must
+    // be cleaned up so autoCreateMissingRefs doesn't silently revive
+    // the asset on next reload. We scrub each typed envelope:
+    //   • a standalone def_ref → set value to '' (keeps the slot but
+    //     unbound)
+    //   • an array entry that IS a def_ref to the id → splice it out
+    //   • a map entry whose key resolves to the id → splice it out
+    // The owning record gets marked dirty so the cleanup persists.
+    const deletedId = rec.id;
     const nextDefs = new Map(definitions);
     nextDefs.delete(k);
     const nextDirty = new Set(dirty);
     nextDirty.delete(k);
+    let scrubbedAssets = 0;
+    let scrubbedRefs = 0;
+    for (const [refKey, refRec] of nextDefs) {
+      const cleaned = scrubRefsToId(refRec.json, deletedId);
+      if (cleaned.changed) {
+        nextDefs.set(refKey, { ...refRec, json: cleaned.next });
+        nextDirty.add(refKey);
+        scrubbedAssets++;
+        scrubbedRefs += cleaned.removedCount;
+      }
+    }
     const cur = get();
     set({
       definitions: nextDefs,
@@ -1828,7 +1926,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       classNodes: buildClassNodes(nextDefs, cur.hierarchySidecar),
       propertySchema: buildPropertySchema(nextDefs),
       selectedKey: cur.selectedKey === k ? null : cur.selectedKey,
-      toast: { kind: 'info', text: `Deleted ${rec.id}.json` },
+      toast: {
+        kind: 'info',
+        text: scrubbedAssets > 0
+          ? `Deleted ${rec.id}.json — cleaned ${scrubbedRefs} ref${scrubbedRefs === 1 ? '' : 's'} from ${scrubbedAssets} asset${scrubbedAssets === 1 ? '' : 's'}.`
+          : `Deleted ${rec.id}.json`,
+      },
     });
   },
 
