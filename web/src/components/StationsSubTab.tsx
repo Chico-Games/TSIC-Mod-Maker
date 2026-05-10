@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDndContext, useDroppable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import type { DefinitionsKey } from '../store/definitionsStore';
+import { useAppStore } from '../store/appStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
@@ -34,6 +35,15 @@ interface StationRow {
   group: StationGroup;
   displayName: string;
   arrValue: string;
+  /** How many recipes this station's ARR resolves. Pre-computed so the
+   *  rail row can display the count without re-walking the store. */
+  recipeCount: number;
+  /** Family key — stations sharing this key (different tiers of the
+   *  same item) collapse into one rail entry with quick-swap pills. */
+  familyKey: string;
+  /** Tier extracted from the id's `Tier\d+` segment; 0 when the id
+   *  has no explicit tier. */
+  tier: number;
 }
 
 function readDisplayName(json: any): string {
@@ -47,6 +57,28 @@ function readArrRef(json: any): string {
   return r && typeof r === 'object' ? String(r.value ?? '') : '';
 }
 
+/** Strip the trailing `_XX` exporter tag and any inline `Tier\d+`
+ *  segment so two stations that only differ by tier hash to the same
+ *  key. The result is purely advisory — used to group rail entries. */
+function familyKey(id: string): string {
+  const noTag = id.replace(/_[A-Z]{2,3}$/, '');
+  const noTier = noTag.replace(/Tier\d+/g, '');
+  return noTier;
+}
+
+function tierFromId(id: string): number {
+  const m = id.match(/Tier(\d+)/);
+  return m ? Number(m[1]) : 0;
+}
+
+function familyDisplayName(rows: StationRow[]): string {
+  // Use the lowest-tier station's display name with the "Tier N" trail
+  // stripped. Falls back to humanizing the family key.
+  const base = rows[0];
+  const cleaned = base.displayName.replace(/\s*Tier\s*\d+/i, '').trim();
+  return cleaned || humanizeAssetId(base.familyKey);
+}
+
 export function StationsSubTab() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
@@ -54,7 +86,10 @@ export function StationsSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
 
   const [filter, setFilter] = useState('');
-  const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
+  const selectedKey = useAppStore((s) => s.selectedStationKey);
+  const setSelectedKey = useAppStore((s) => s.selectStation);
+  const selectedRecipeKey = useAppStore((s) => s.selectedRecipeKey);
+  const selectRecipe = useAppStore((s) => s.selectRecipe);
 
   const stations = useMemo<StationRow[]>(() => {
     const out: StationRow[] = [];
@@ -64,18 +99,31 @@ export function StationsSubTab() {
         if (folders.includes(rec.folder)) { group = g; break; }
       }
       if (!group) continue;
+      const arrValue = readArrRef(rec.json);
+      let recipeCount = 0;
+      if (arrValue) {
+        const arrK = findKeyById(arrValue);
+        if (arrK) {
+          const arrRec = definitions.get(arrK);
+          const arr: any = arrRec?.json?.properties?.production_machine_rules?.value?.recipes;
+          if (arr?.type === 'array' && Array.isArray(arr.value)) recipeCount = arr.value.length;
+        }
+      }
       out.push({
         key: k,
         id: rec.id,
         folder: rec.folder,
         group,
         displayName: readDisplayName(rec.json),
-        arrValue: readArrRef(rec.json),
+        arrValue,
+        recipeCount,
+        familyKey: familyKey(rec.id),
+        tier: tierFromId(rec.id),
       });
     }
     out.sort((a, b) => a.displayName.localeCompare(b.displayName));
     return out;
-  }, [definitions]);
+  }, [definitions, findKeyById]);
 
   type RankedRow = { row: StationRow; ranges: ReadonlyArray<readonly [number, number]> };
   const filtered = useMemo<RankedRow[]>(() => {
@@ -83,16 +131,51 @@ export function StationsSubTab() {
     return ranked.map((r) => ({ row: r.item, ranges: r.ranges }));
   }, [stations, filter]);
 
-  const grouped = useMemo(() => {
-    const g: Record<StationGroup, RankedRow[]> = { crafting: [], production: [], plantable: [] };
-    for (const r of filtered) g[r.row.group].push(r);
-    return g;
+  /** Within each station-type, collect tier-related entries into
+   *  families so the rail collapses "Tier 1/2/3" into one selectable
+   *  group with quick-swap pills. Single-member families render as a
+   *  plain row. Sort families by best-match score (rank order) within
+   *  the group so search results stay near the top. */
+  type RankedFamily = {
+    familyKey: string;
+    members: RankedRow[];
+    bestRank: number; // index in `filtered` of the best member
+  };
+  const families = useMemo(() => {
+    const byGroup: Record<StationGroup, RankedFamily[]> = { crafting: [], production: [], plantable: [] };
+    const byKey = new Map<string, RankedFamily>();
+    filtered.forEach((r, idx) => {
+      const compositeKey = `${r.row.group}::${r.row.familyKey}`;
+      let fam = byKey.get(compositeKey);
+      if (!fam) {
+        fam = { familyKey: r.row.familyKey, members: [], bestRank: idx };
+        byKey.set(compositeKey, fam);
+        byGroup[r.row.group].push(fam);
+      }
+      fam.members.push(r);
+    });
+    // Sort each family's members by tier ascending (no-tier last).
+    for (const list of Object.values(byGroup)) {
+      list.sort((a, b) => a.bestRank - b.bestRank);
+      for (const fam of list) {
+        fam.members.sort((a, b) => {
+          const at = a.row.tier || 99;
+          const bt = b.row.tier || 99;
+          if (at !== bt) return at - bt;
+          return a.row.displayName.localeCompare(b.row.displayName);
+        });
+      }
+    }
+    return byGroup;
   }, [filtered]);
 
-  // Default-select first station the first render of each load.
-  if (selectedKey == null && stations.length > 0) {
-    setSelectedKey(stations[0].key);
-  }
+  // Default-select the first station the first time this tab mounts
+  // with data loaded. Skipped if the user already picked one.
+  useEffect(() => {
+    if (selectedKey == null && stations.length > 0) {
+      setSelectedKey(stations[0].key);
+    }
+  }, [selectedKey, stations, setSelectedKey]);
 
   const selectedStation = selectedKey ? definitions.get(selectedKey) : null;
   const selectedRow = selectedKey ? stations.find((s) => s.key === selectedKey) ?? null : null;
@@ -164,22 +247,36 @@ export function StationsSubTab() {
           />
         </div>
         <div className="rail-body">
-          {(Object.keys(grouped) as StationGroup[]).map((g) => (
-            <div key={g} className="rail-group">
-              <div className="rail-group-header">
-                <span aria-hidden>{GROUP_EMOJI[g]}</span> {GROUP_LABEL[g]} <span className="muted">({grouped[g].length})</span>
+          {(Object.keys(families) as StationGroup[]).map((g) => {
+            const fams = families[g];
+            const total = fams.reduce((n, f) => n + f.members.length, 0);
+            if (total === 0) return null;
+            return (
+              <div key={g} className="rail-group">
+                <div className="rail-group-header">
+                  <span aria-hidden>{GROUP_EMOJI[g]}</span> {GROUP_LABEL[g]} <span className="muted">({total})</span>
+                </div>
+                {fams.map((fam) =>
+                  fam.members.length === 1 ? (
+                    <StationRailRow
+                      key={fam.members[0].row.key}
+                      row={fam.members[0].row}
+                      ranges={fam.members[0].ranges}
+                      selected={selectedKey === fam.members[0].row.key}
+                      onSelect={() => setSelectedKey(fam.members[0].row.key)}
+                    />
+                  ) : (
+                    <StationFamilyRow
+                      key={fam.familyKey}
+                      members={fam.members}
+                      selectedKey={selectedKey}
+                      onSelect={(k) => setSelectedKey(k)}
+                    />
+                  ),
+                )}
               </div>
-              {grouped[g].map((r) => (
-                <StationRailRow
-                  key={r.row.key}
-                  row={r.row}
-                  ranges={r.ranges}
-                  selected={selectedKey === r.row.key}
-                  onSelect={() => setSelectedKey(r.row.key)}
-                />
-              ))}
-            </div>
-          ))}
+            );
+          })}
           {stations.length === 0 && (
             <div className="empty-state-mini">No stations loaded.</div>
           )}
@@ -204,7 +301,13 @@ export function StationsSubTab() {
             {selectedArr ? (
               <div className="recipe-stack">
                 {recipeKeys.map((r) => (
-                  <RecipeCard key={r.key} recipeKey={r.key} arrKey={selectedArrKey!} />
+                  <RecipeCard
+                    key={r.key}
+                    recipeKey={r.key}
+                    arrKey={selectedArrKey!}
+                    selected={selectedRecipeKey === r.key}
+                    onSelect={() => selectRecipe(selectedRecipeKey === r.key ? null : r.key)}
+                  />
                 ))}
                 {recipeKeys.length === 0 && (
                   <div className="empty-state-mini">No recipes in this ARR yet.</div>
@@ -249,6 +352,66 @@ function StationRailRow({ row, selected, onSelect, ranges }: { row: StationRow; 
     >
       <span className="emoji" aria-hidden>{theme.emoji}</span>
       <span className="label"><HighlightedText text={row.displayName} ranges={ranges} /></span>
+      {row.recipeCount > 0 && (
+        <span className="rail-count" title={`${row.recipeCount} recipe${row.recipeCount === 1 ? '' : 's'}`}>{row.recipeCount}</span>
+      )}
     </button>
+  );
+}
+
+/** Quick-swap row: stations sharing a family key (e.g. tier variants
+ *  of the same bench) collapse into one entry with tier pills. The
+ *  member whose row is currently selected highlights, and clicking a
+ *  different pill swaps the selection without changing the rail's
+ *  scroll position. */
+function StationFamilyRow({
+  members,
+  selectedKey,
+  onSelect,
+}: {
+  members: Array<{ row: StationRow; ranges: ReadonlyArray<readonly [number, number]> }>;
+  selectedKey: DefinitionsKey | null;
+  onSelect: (k: DefinitionsKey) => void;
+}) {
+  const theme = getFolderTheme(members[0].row.folder);
+  const familyName = familyDisplayName(members.map((m) => m.row));
+  const selectedMember = members.find((m) => m.row.key === selectedKey);
+  const familySelected = !!selectedMember;
+  const totalRecipes = members.reduce((n, m) => n + m.row.recipeCount, 0);
+  return (
+    <div
+      className={`rail-family ${familySelected ? 'selected' : ''}`}
+      style={{ borderLeft: `3px solid ${theme.color}` }}
+    >
+      <button
+        className="rail-family-head"
+        onClick={() => onSelect(selectedMember?.row.key ?? members[0].row.key)}
+        title={members.map((m) => m.row.displayName).join(' · ')}
+      >
+        <span className="emoji" aria-hidden>{theme.emoji}</span>
+        <span className="label">
+          <HighlightedText text={familyName} ranges={selectedMember?.ranges ?? members[0].ranges} />
+        </span>
+        {totalRecipes > 0 && <span className="rail-count">{totalRecipes}</span>}
+      </button>
+      <div className="rail-family-tiers">
+        {members.map((m) => {
+          const tier = m.row.tier;
+          const label = tier > 0 ? `T${tier}` : 'base';
+          const isSel = selectedKey === m.row.key;
+          return (
+            <button
+              key={m.row.key}
+              className={`tier-pill ${isSel ? 'selected' : ''}`}
+              onClick={() => onSelect(m.row.key)}
+              title={`${m.row.displayName} · ${m.row.recipeCount} recipe${m.row.recipeCount === 1 ? '' : 's'}`}
+            >
+              {label}
+              {m.row.recipeCount > 0 && <span className="tier-pill-count">{m.row.recipeCount}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useAppStore } from '../store/appStore';
 import { humanizeAssetId } from './definitionsNaming';
 import { DefRefSlot } from './DefRefSlot';
 import { GrowStagesEditor } from './GrowStagesEditor';
@@ -11,9 +12,14 @@ interface Props {
   /** Owning ARR — needed if we ever want to remove the recipe ref from
    *  the array on delete. */
   arrKey: string;
+  /** Whether this card is the currently-selected recipe. Drives the
+   *  visual outline + governs ItemPalette click-to-add behaviour. */
+  selected?: boolean;
+  /** Toggle selection on click. */
+  onSelect?: () => void;
 }
 
-export function RecipeCard({ recipeKey, arrKey }: Props) {
+export function RecipeCard({ recipeKey, arrKey, selected, onSelect }: Props) {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
@@ -105,7 +111,14 @@ export function RecipeCard({ recipeKey, arrKey }: Props) {
   return (
     <div
       ref={setNodeRef}
-      className={`recipe-card ${isDragging ? 'dragging' : ''}`}
+      className={`recipe-card ${isDragging ? 'dragging' : ''} ${selected ? 'selected' : ''}`}
+      onClick={(e) => {
+        // Don't grab selection when the click happens on a real input,
+        // button, slot, etc. — those have their own behaviour.
+        const tag = (e.target as HTMLElement).closest('input,button,select,textarea,.def-ref-slot,.recipe-grab,[role=button]');
+        if (tag) return;
+        onSelect?.();
+      }}
     >
       <header className="recipe-card-head">
         <span {...listeners} {...attributes} className="recipe-grab" title="drag to move">⋮⋮</span>
@@ -124,7 +137,7 @@ export function RecipeCard({ recipeKey, arrKey }: Props) {
 
       <div className="recipe-body">
         <div className="recipe-col input-col">
-          <div className="col-label">Inputs</div>
+          <ArrayHeader label="Inputs" ownerKey={recipeKey} path={['properties', 'input']} />
           {inputRows.map(({ entry, i }: { entry: any; i: number }) => (
             <DefRefSlot
               key={i}
@@ -143,7 +156,7 @@ export function RecipeCard({ recipeKey, arrKey }: Props) {
           <>
             <div className="recipe-arrow">→</div>
             <div className="recipe-col output-col">
-              <div className="col-label">Outputs</div>
+              <ArrayHeader label="Outputs" ownerKey={recipeKey} path={['properties', 'output']} />
               {outputRows.map(({ entry, i }: { entry: any; i: number }) => (
                 <DefRefSlot
                   key={i}
@@ -210,5 +223,24 @@ export function RecipeCard({ recipeKey, arrKey }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Clickable column / array label that sets pathSelection. Lets the
+ *  user copy/paste the entire array (or map) the column represents. */
+function ArrayHeader({ label, ownerKey, path }: { label: string; ownerKey: string; path: (string | number)[] }) {
+  const pathSel = useAppStore((s) => s.pathSelection);
+  const selectPath = useAppStore((s) => s.selectPath);
+  const isSelected = !!pathSel && pathSel.ownerKey === ownerKey
+    && pathSel.path.length === path.length
+    && pathSel.path.every((p, i) => p === path[i]);
+  return (
+    <button
+      className={`col-label col-label-button ${isSelected ? 'selected' : ''}`}
+      onClick={(e) => { e.stopPropagation(); selectPath(isSelected ? null : { ownerKey, path }); }}
+      title="Click to select this array (Ctrl+C / Ctrl+V)"
+    >
+      {label}
+    </button>
   );
 }

@@ -23,6 +23,7 @@ import { ValidationsTab } from './components/ValidationsTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
 import { dispatchDnD, type DragSource, type DropTarget } from './dnd/dispatch';
+import { copyCurrentSelection, pasteCurrentSelection } from './clipboard';
 
 export function App() {
   const tab = useAppStore((s) => s.tab);
@@ -77,7 +78,35 @@ export function App() {
         return;
       }
       if (inField) return;
-      if (e.key === 'Escape') setSearchOpen(false);
+      // Universal copy / paste — routes through clipboard.ts using
+      // whatever the user has selected (slot, array/map header, recipe).
+      if ((e.ctrlKey || e.metaKey) && k === 'c') {
+        const cb = copyCurrentSelection();
+        if (cb) {
+          e.preventDefault();
+          useDefinitionsStore.getState().setToast({
+            kind: 'info',
+            text: `Copied ${cb.kind === 'recipe' ? 'recipe' : cb.kind}.`,
+          });
+        }
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && k === 'v') {
+        const res = pasteCurrentSelection();
+        if (res.ok) {
+          e.preventDefault();
+          useDefinitionsStore.getState().setToast({ kind: 'info', text: 'Pasted.' });
+        } else if (res.reason) {
+          useDefinitionsStore.getState().setToast({ kind: 'error', text: `Paste: ${res.reason}` });
+        }
+        return;
+      }
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        // Clear selection on Escape so the next keypress doesn't
+        // accidentally hit the previously selected slot.
+        useAppStore.getState().selectPath(null);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

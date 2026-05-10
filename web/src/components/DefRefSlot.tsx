@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useDndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useAppStore } from '../store/appStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { SearchableSelect, type SelectOption } from './SearchableSelect';
@@ -73,6 +74,24 @@ export function DefRefSlot(props: Props) {
     disabled: !refValue,
   });
 
+  // Path-anchored selection: clicking the slot (NOT the picker / qty
+  // input) makes it the universal selection target so Ctrl+C and
+  // Ctrl+V route to / from this cell.
+  const pathSel = useAppStore((s) => s.pathSelection);
+  const selectPath = useAppStore((s) => s.selectPath);
+  const isSelected = !!pathSel && pathSel.ownerKey === ownerKey
+    && pathSel.path.length === path.length
+    && pathSel.path.every((p, i) => p === path[i]);
+  const onSlotClick = (e: React.MouseEvent) => {
+    // Don't steal selection when the click landed on a real input,
+    // button, the SearchableSelect trigger, or the drag handle.
+    const interactive = (e.target as HTMLElement).closest(
+      'input,button,select,textarea,.ss-trigger,.ss-popover,.def-ref-grab,.def-ref-remove',
+    );
+    if (interactive) return;
+    selectPath(isSelected ? null : { ownerKey, path });
+  };
+
   const targetKey = refValue ? findKeyById(refValue) : null;
   const targetRec = targetKey ? definitions.get(targetKey) : null;
   const theme = targetRec ? getFolderTheme(targetRec.folder) : { emoji: '·', color: '#9aa0a6' };
@@ -138,9 +157,10 @@ export function DefRefSlot(props: Props) {
   return (
     <div
       ref={setDropRef}
-      className={`def-ref-slot ${isOver ? 'over' : ''} ${isDragging ? 'dragging' : ''} ${activeData && !accepts ? 'rejects' : ''}`}
+      className={`def-ref-slot ${isOver ? 'over' : ''} ${isDragging ? 'dragging' : ''} ${activeData && !accepts ? 'rejects' : ''} ${isSelected ? 'selected' : ''}`}
       style={{ borderLeft: `3px solid ${theme.color}` }}
       title={refClass ? `Accepts ${refClass}` : undefined}
+      onClick={onSlotClick}
     >
       <span
         ref={setDragRef}
