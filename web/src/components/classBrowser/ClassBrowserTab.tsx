@@ -15,10 +15,16 @@ import { TypedPropertiesEditor } from '../TypedValueEditor';
 import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider } from './PropertyEchoContext';
 import type { ClassBrowserConfig } from './types';
+import { DEFAULT_WARNINGS } from './RowWarnings';
+import type { WarningRule, WarningSeverity, WarningCtx } from './types';
 
 interface Props {
   folder: string;
   config: ClassBrowserConfig;
+}
+
+function severityOrder(s: WarningSeverity): number {
+  switch (s) { case 'error': return 3; case 'warn': return 2; case 'info': return 1; }
 }
 
 export function ClassBrowserTab({ folder, config }: Props) {
@@ -40,6 +46,29 @@ export function ClassBrowserTab({ folder, config }: Props) {
     selectDefinition(k);
     setTab('definitions');
   });
+
+  const warningCtx: WarningCtx = useMemo(() => ({
+    records: definitions,
+    findKeyById,
+    createDefinitionForClass,
+    updateValueAtPath,
+  }), [definitions, findKeyById, createDefinitionForClass, updateValueAtPath]);
+
+  const allRules = useMemo<WarningRule[]>(
+    () => [...DEFAULT_WARNINGS, ...(config.warnings ?? [])],
+    [config.warnings],
+  );
+
+  const warningsForRow = (key: DefinitionsKey): { rule: WarningRule; text: string }[] => {
+    const rec = definitions.get(key);
+    if (!rec) return [];
+    const out: { rule: WarningRule; text: string }[] = [];
+    for (const rule of allRules) {
+      const text = rule.test(rec, warningCtx);
+      if (text) out.push({ rule, text });
+    }
+    return out;
+  };
 
   const [filter, setFilter] = useState('');
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
@@ -108,6 +137,24 @@ export function ClassBrowserTab({ folder, config }: Props) {
                   <span className="label">
                     <HighlightedText text={humanizeAssetId(h.item.id)} ranges={h.ranges} />
                   </span>
+                  {(() => {
+                    const ws = warningsForRow(h.item.key);
+                    if (ws.length === 0) return null;
+                    const top = ws.sort((a, b) => severityOrder(b.rule.severity) - severityOrder(a.rule.severity))[0];
+                    return (
+                      <span
+                        className={`row-warning sev-${top.rule.severity}`}
+                        title={ws.map(w => `[${w.rule.severity}] ${w.text}`).join('\n')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (top.rule.fix) {
+                            const rec = definitions.get(h.item.key);
+                            if (rec) top.rule.fix(rec, warningCtx);
+                          }
+                        }}
+                      >{ws.length}</span>
+                    );
+                  })()}
                 </button>
               )}
             />
