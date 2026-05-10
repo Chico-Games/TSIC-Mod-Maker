@@ -15,6 +15,7 @@ import { TypedPropertiesEditor } from '../TypedValueEditor';
 import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { WhereUsedPanel } from './WhereUsedPanel';
+import { SpreadsheetView } from './SpreadsheetView';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
@@ -75,7 +76,17 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
   const [selectedKeys, setSelectedKeys] = useState<Set<DefinitionsKey>>(() => new Set());
   const [lastClickedKey, setLastClickedKey] = useState<DefinitionsKey | null>(null);
-  const [mode, setMode] = useState<'detail' | 'spreadsheet' | 'compare'>('detail');
+  const MODE_LS_KEY = `tsic.classBrowser.${folder}.mode.v1`;
+  const [mode, setMode] = useState<'detail' | 'spreadsheet' | 'compare'>(() => {
+    try {
+      const v = localStorage.getItem(MODE_LS_KEY);
+      if (v === 'detail' || v === 'spreadsheet' || v === 'compare') return v;
+    } catch { /* noop */ }
+    return 'detail';
+  });
+  useEffect(() => {
+    try { localStorage.setItem(MODE_LS_KEY, mode); } catch { /* noop */ }
+  }, [mode, MODE_LS_KEY]);
   const [bulkOpen, setBulkOpen] = useState(false);
 
   // Stub — real impl in Task 17.
@@ -97,7 +108,11 @@ export function ClassBrowserTab({ folder, config }: Props) {
     setSelectedKey(null);
     setSelectedKeys(new Set());
     setLastClickedKey(null);
-    setMode('detail');
+    try {
+      const v = localStorage.getItem(`tsic.classBrowser.${folder}.mode.v1`);
+      if (v === 'detail' || v === 'spreadsheet' || v === 'compare') setMode(v);
+      else setMode('detail');
+    } catch { setMode('detail'); }
   }, [folder]);
 
   const filtered = useHybridSearch(
@@ -168,6 +183,11 @@ export function ClassBrowserTab({ folder, config }: Props) {
         />
 
         <EchoPublishingPane>
+          <div className="mode-toggle">
+            <button className={mode === 'detail' ? 'active' : ''} onClick={() => setMode('detail')}>Detail</button>
+            <button className={mode === 'spreadsheet' ? 'active' : ''} onClick={() => setMode('spreadsheet')}>Spreadsheet</button>
+            <button className={mode === 'compare' ? 'active' : ''} disabled={selectedKeys.size < 2} onClick={() => setMode('compare')}>Compare</button>
+          </div>
           {mode === 'detail' && (selected && selectedKey ? (
             <>
               <header className="station-header">
@@ -192,7 +212,13 @@ export function ClassBrowserTab({ folder, config }: Props) {
               {selected && <WhereUsedPanel assetId={selected.id} />}
             </>
           ) : <div className="empty-state-mini">Pick a record from the rail.</div>)}
-          {mode === 'spreadsheet' && <div className="empty-state-mini">Spreadsheet view (coming next).</div>}
+          {mode === 'spreadsheet' && (
+            <SpreadsheetView
+              rows={rows.map((r) => ({ key: r.key, rec: definitions.get(r.key)! })).filter((r) => r.rec)}
+              config={config}
+              onPickRow={(k) => { setSelectedKey(k); setSelectedKeys(new Set([k])); setMode('detail'); }}
+            />
+          )}
           {mode === 'compare' && <div className="empty-state-mini">Compare view (coming next).</div>}
         </EchoPublishingPane>
 
