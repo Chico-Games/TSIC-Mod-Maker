@@ -97,6 +97,38 @@ async function waitForServer(url, timeoutMs = 15000) {
     if (restored !== after) throw new Error(`rail width didn't restore after expand: expected ${after}, got ${restored}`);
     console.log('OK Rail re-expand restored width');
 
+    // ---- Pin to right: split view ----
+    // Sub-tab with at least two records.
+    await page.click('.vertical-subtab:has-text("Damageable")');
+    await page.waitForSelector('.rail-row');
+
+    const railRows = page.locator('.rail-row');
+    await railRows.nth(0).click();
+    // Capture the first record's id (rendered in the .station-sub > code).
+    await page.waitForSelector('.detail-pane .station-sub code');
+    const firstId = await page.locator('.detail-pane .station-sub code').first().innerText();
+
+    // Pin it.
+    await page.click('.detail-pane .pin-btn:has-text("Pin")');
+    await page.waitForSelector('.split-pane');
+    const paneCount = await page.locator('.detail-pane').count();
+    if (paneCount !== 2) throw new Error(`expected 2 detail-panes after pin, got ${paneCount}`);
+
+    // Click a different rail row.
+    await railRows.nth(1).click();
+    const leftId = await page.locator('.split-pane .split-half.left .station-sub code').innerText();
+    const rightId = await page.locator('.split-pane .split-half.right .station-sub code').innerText();
+    if (leftId === rightId) throw new Error(`left and right show the same record after switching: ${leftId}`);
+    if (rightId !== firstId) throw new Error(`right pane should still show pinned id ${firstId}, got ${rightId}`);
+    console.log('OK Pin to right + switch left');
+
+    // Unpin.
+    await page.click('.detail-pane.pinned .pin-btn:has-text("Unpin")');
+    await page.waitForSelector('.detail-pane:not(.pinned)');
+    const splitGone = await page.locator('.split-pane').count();
+    if (splitGone !== 0) throw new Error('split-pane should be gone after unpin');
+    console.log('OK Unpin');
+
     await browser.close();
     console.log('items-furniture-ui-smoke: ALL OK');
   } finally {

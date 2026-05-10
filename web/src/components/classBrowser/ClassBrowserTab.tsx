@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../../store/definitionsStore';
 import { humanizeAssetId } from '../definitionsNaming';
 import { getFolderTheme } from '../folderTheme';
@@ -43,6 +43,12 @@ const RAIL_MIN_W = 180;
 const PALETTE_MIN_W = 200;
 const RAIL_MAX_W = 600;
 const PALETTE_MAX_W = 600;
+
+const SPLIT_RATIO_LS = (folder: string) => `tsic.classBrowser.${folder}.split.ratio.v1`;
+const PIN_LS = (folder: string) => `tsic.classBrowser.${folder}.pin.v1`;
+const SPLIT_DEFAULT_RATIO = 0.5;
+const SPLIT_MIN_RATIO = 0.2;
+const SPLIT_MAX_RATIO = 0.8;
 
 export function ClassBrowserTab({ folder, config }: Props) {
   const definitions = useDefinitionsStore((s) => s.definitions);
@@ -112,6 +118,38 @@ export function ClassBrowserTab({ folder, config }: Props) {
   useEffect(() => { try { localStorage.setItem(RAIL_COLLAPSED_LS, railCollapsed ? '1' : '0'); } catch { /* noop */ } }, [railCollapsed]);
   useEffect(() => { try { localStorage.setItem(PALETTE_COLLAPSED_LS, paletteCollapsed ? '1' : '0'); } catch { /* noop */ } }, [paletteCollapsed]);
 
+  // Pin + split state — per-folder.
+  const [pinnedKey, setPinnedKey] = useState<DefinitionsKey | null>(() => {
+    try {
+      const v = localStorage.getItem(PIN_LS(folder));
+      return v && v.length > 0 ? (v as DefinitionsKey) : null;
+    } catch { return null; }
+  });
+  const [splitRatio, setSplitRatio] = useState<number>(() => {
+    try {
+      const v = localStorage.getItem(SPLIT_RATIO_LS(folder));
+      const n = v ? Number(v) : NaN;
+      if (Number.isFinite(n)) return Math.min(SPLIT_MAX_RATIO, Math.max(SPLIT_MIN_RATIO, n));
+    } catch { /* noop */ }
+    return SPLIT_DEFAULT_RATIO;
+  });
+  const [leftCollapsed, setLeftCollapsed] = useState<boolean>(false);
+  const [rightCollapsed, setRightCollapsed] = useState<boolean>(false);
+  const splitContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    try {
+      if (pinnedKey) localStorage.setItem(PIN_LS(folder), pinnedKey);
+      else localStorage.removeItem(PIN_LS(folder));
+    } catch { /* noop */ }
+  }, [pinnedKey, folder]);
+  useEffect(() => { try { localStorage.setItem(SPLIT_RATIO_LS(folder), String(splitRatio)); } catch { /* noop */ } }, [splitRatio, folder]);
+
+  // Stale-pin guard: drop pin when its record is gone.
+  useEffect(() => {
+    if (pinnedKey && !definitions.has(pinnedKey)) setPinnedKey(null);
+  }, [definitions, pinnedKey]);
+
   const duplicateOne = (sourceKey: DefinitionsKey): DefinitionsKey | null => {
     const rec = definitions.get(sourceKey);
     if (!rec) return null;
@@ -160,10 +198,22 @@ export function ClassBrowserTab({ folder, config }: Props) {
     try {
       const k = `tsic.classBrowser.${folder}.mode.v1`;
       const v = localStorage.getItem(k);
-      if (v === 'compare') { localStorage.setItem(k, 'detail'); setMode('detail'); return; }
-      if (v === 'detail' || v === 'spreadsheet') setMode(v);
+      if (v === 'compare') { localStorage.setItem(k, 'detail'); setMode('detail'); }
+      else if (v === 'detail' || v === 'spreadsheet') setMode(v);
       else setMode('detail');
     } catch { setMode('detail'); }
+    // Re-load per-folder pin and split ratio.
+    try {
+      const v = localStorage.getItem(PIN_LS(folder));
+      setPinnedKey(v && v.length > 0 ? (v as DefinitionsKey) : null);
+    } catch { setPinnedKey(null); }
+    try {
+      const v = localStorage.getItem(SPLIT_RATIO_LS(folder));
+      const n = v ? Number(v) : NaN;
+      setSplitRatio(Number.isFinite(n) ? Math.min(SPLIT_MAX_RATIO, Math.max(SPLIT_MIN_RATIO, n)) : SPLIT_DEFAULT_RATIO);
+    } catch { setSplitRatio(SPLIT_DEFAULT_RATIO); }
+    setLeftCollapsed(false);
+    setRightCollapsed(false);
   }, [folder]);
 
   const filtered = useHybridSearch(
@@ -258,11 +308,75 @@ export function ClassBrowserTab({ folder, config }: Props) {
             <button className={mode === 'spreadsheet' ? 'active' : ''} onClick={() => setMode('spreadsheet')}>Spreadsheet</button>
           </div>
           {mode === 'detail' && (
-            <DetailPane
-              assetKey={selectedKey}
-              pinned={false}
-              onRenamed={(k) => setSelectedKey(k)}
-            />
+            pinnedKey == null ? (
+              <DetailPane
+                assetKey={selectedKey}
+                pinned={false}
+                onPin={() => selectedKey && setPinnedKey(selectedKey)}
+                onRenamed={(k) => setSelectedKey(k)}
+              />
+            ) : (
+              <div
+                ref={splitContainerRef}
+                className={`split-pane ${leftCollapsed ? 'left-collapsed' : ''} ${rightCollapsed ? 'right-collapsed' : ''}`}
+                style={{
+                  ['--cb-split-left' as any]: `${splitRatio * 100}%`,
+                  ['--cb-split-right' as any]: `${(1 - splitRatio) * 100}%`,
+                } as React.CSSProperties}
+              >
+                {leftCollapsed ? (
+                  <CollapseStrip side="left" onExpand={() => setLeftCollapsed(false)} label="Expand left pane" />
+                ) : (
+                  <div className="split-half left">
+                    <button
+                      className="split-collapse-btn left"
+                      title="Collapse left pane"
+                      aria-label="Collapse left pane"
+                      onClick={() => setLeftCollapsed(true)}
+                    >‹</button>
+                    <DetailPane
+                      assetKey={selectedKey}
+                      pinned={false}
+                      onPin={() => selectedKey && setPinnedKey(selectedKey)}
+                      onRenamed={(k) => setSelectedKey(k)}
+                    />
+                  </div>
+                )}
+                {!leftCollapsed && !rightCollapsed && (
+                  <ResizeHandle
+                    label="Resize split"
+                    onDelta={(dx) => {
+                      const el = splitContainerRef.current;
+                      if (!el) return;
+                      const width = el.getBoundingClientRect().width;
+                      if (width <= 0) return;
+                      setSplitRatio((r) => {
+                        const next = r + dx / width;
+                        return Math.min(SPLIT_MAX_RATIO, Math.max(SPLIT_MIN_RATIO, next));
+                      });
+                    }}
+                    onReset={() => setSplitRatio(SPLIT_DEFAULT_RATIO)}
+                  />
+                )}
+                {rightCollapsed ? (
+                  <CollapseStrip side="right" onExpand={() => setRightCollapsed(false)} label="Expand right pane" />
+                ) : (
+                  <div className="split-half right">
+                    <button
+                      className="split-collapse-btn right"
+                      title="Collapse right pane"
+                      aria-label="Collapse right pane"
+                      onClick={() => setRightCollapsed(true)}
+                    >›</button>
+                    <DetailPane
+                      assetKey={pinnedKey}
+                      pinned={true}
+                      onUnpin={() => setPinnedKey(null)}
+                    />
+                  </div>
+                )}
+              </div>
+            )
           )}
           {mode === 'spreadsheet' && (
             <SpreadsheetView
