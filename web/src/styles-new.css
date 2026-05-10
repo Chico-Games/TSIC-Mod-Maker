@@ -965,7 +965,11 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 .vertical-subtab .label { flex: 1; }
 .vertical-subtab-body { min-width: 0; min-height: 0; overflow: hidden; }
 
-/* ==== ClassBrowserTab grid ==== */
+/* ==== ClassBrowserTab grid ====
+ * Five explicit columns: rail | rail-handle | middle | palette-handle | palette.
+ * Each direct child anchors itself to its column via grid-column below, so the
+ * middle pane stays in column 3 regardless of which handles render.
+ */
 .class-browser {
   display: grid;
   grid-template-columns:
@@ -996,6 +1000,13 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 .class-browser.rail-collapsed.palette-collapsed {
   grid-template-columns: 24px 0 minmax(0, 1fr) 0 24px;
 }
+.class-browser > .rail,
+.class-browser > .collapse-strip.left  { grid-column: 1; }
+.class-browser > .cb-rail-handle       { grid-column: 2; }
+.class-browser > .class-browser-pane   { grid-column: 3; }
+.class-browser > .cb-palette-handle    { grid-column: 4; }
+.class-browser > .item-palette,
+.class-browser > .collapse-strip.right { grid-column: 5; }
 .rail-collapse-btn, .palette-collapse-btn {
   background: none;
   border: 1px solid var(--divider, #2a2f38);
@@ -1016,6 +1027,11 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 .split-pane.left-collapsed  { grid-template-columns: 24px 0 minmax(0, 1fr); }
 .split-pane.right-collapsed { grid-template-columns: minmax(0, 1fr) 0 24px; }
 .split-pane.left-collapsed.right-collapsed { grid-template-columns: 24px 0 24px; }
+.split-pane > .split-half.left,
+.split-pane > .collapse-strip.left  { grid-column: 1; }
+.split-pane > .cb-split-handle      { grid-column: 2; }
+.split-pane > .split-half.right,
+.split-pane > .collapse-strip.right { grid-column: 3; }
 .split-half {
   position: relative;
   overflow: auto;

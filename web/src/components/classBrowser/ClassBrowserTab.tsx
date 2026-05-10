@@ -311,6 +311,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
 
         {!railCollapsed && (
           <ResizeHandle
+            className="cb-rail-handle"
             label="Resize record list"
             onDelta={(dx) => setRailWidth((w) => clampWidth(w + dx, RAIL_MIN_W, RAIL_MAX_W))}
             onReset={() => setRailWidth(RAIL_DEFAULT_W)}
@@ -359,6 +360,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
                 )}
                 {!leftCollapsed && !rightCollapsed && (
                   <ResizeHandle
+                    className="cb-split-handle"
                     label="Resize split"
                     onDelta={(dx) => {
                       const el = splitContainerRef.current;
@@ -406,6 +408,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
 
         {!paletteCollapsed && (
           <ResizeHandle
+            className="cb-palette-handle"
             label="Resize item palette"
             onDelta={(dx) => setPaletteWidth((w) => clampWidth(w - dx, PALETTE_MIN_W, PALETTE_MAX_W))}
             onReset={() => setPaletteWidth(PALETTE_DEFAULT_W)}

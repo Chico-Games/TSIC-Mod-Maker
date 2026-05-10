@@ -107,7 +107,12 @@ async function waitForServer(url, timeoutMs = 15000) {
     // Collapse the rail.
     await page.click('.rail-collapse-btn');
     await page.waitForSelector('.class-browser.rail-collapsed .collapse-strip');
-    console.log('OK Rail collapse');
+    // Regression: collapsing a side panel must NOT hide the middle pane.
+    const middleBox = await page.locator('.class-browser-pane').boundingBox();
+    if (!middleBox || middleBox.width < 200) {
+      throw new Error(`middle pane was hidden when rail collapsed (width=${middleBox?.width ?? 0})`);
+    }
+    console.log(`OK Rail collapse — middle stayed visible (${Math.round(middleBox.width)}px)`);
 
     // Expand again.
     await page.click('.class-browser.rail-collapsed .collapse-strip');

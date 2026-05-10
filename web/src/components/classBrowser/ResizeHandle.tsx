@@ -11,9 +11,12 @@ interface Props {
   onReset?: () => void;
   /** Optional aria label. */
   label?: string;
+  /** Extra class name — used by the parent grid to assign this handle to a
+   *  specific column via CSS. */
+  className?: string;
 }
 
-export function ResizeHandle({ onDelta, onReset, label = 'Resize' }: Props) {
+export function ResizeHandle({ onDelta, onReset, label = 'Resize', className }: Props) {
   const lastXRef = useRef<number | null>(null);
   const draggingRef = useRef<boolean>(false);
 
@@ -42,7 +45,7 @@ export function ResizeHandle({ onDelta, onReset, label = 'Resize' }: Props) {
 
   return (
     <div
-      className="resize-handle"
+      className={`resize-handle ${className ?? ''}`}
       role="separator"
       aria-orientation="vertical"
       aria-label={label}
