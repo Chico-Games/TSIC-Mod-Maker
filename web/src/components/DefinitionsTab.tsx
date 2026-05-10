@@ -747,6 +747,7 @@ function DefinitionEditor({
               propertySearch={propSearch}
               groupBy={groupBy}
               pinAdapter={pinAdapter}
+              ownerKey={`${rec.folder}/${rec.id}`}
             />
           </section>
         )}
@@ -778,6 +779,7 @@ function DefinitionEditor({
                 propertySearch=""
                 groupBy="default"
                 pinAdapter={pinAdapter}
+                ownerKey={pairKey}
               />
             )}
           </section>

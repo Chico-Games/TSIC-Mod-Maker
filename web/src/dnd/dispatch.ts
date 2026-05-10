@@ -7,8 +7,13 @@ export type DragSource =
 
 /** Drop targets carry an `expectedClass` so the dispatcher (and droppable
  *  hooks) can reject incompatible palette items. The class name is the
- *  bare U-stripped form, e.g. "DamageableFurnitureDefinition". */
+ *  bare U-stripped form, e.g. "DamageableFurnitureDefinition".
+ *
+ *  `def-ref` is the generic type used by the typed-envelope editor in
+ *  the Definitions tab, Enemies / Biome / FurnitureLoot pages — it
+ *  matches every other slot type for the palette-item handler. */
 export type DropTarget =
+  | { type: 'def-ref'; ownerKey: string; path: (string | number)[]; expectedClass: string }
   | { type: 'recipe-input'; ownerKey: string; path: (string | number)[]; expectedClass: string }
   | { type: 'recipe-output'; ownerKey: string; path: (string | number)[]; expectedClass: string }
   | { type: 'upgrade-cost'; ownerKey: string; path: (string | number)[]; expectedClass: string }
@@ -71,6 +76,7 @@ export function dispatchDnD(source: DragSource, target: DropTarget): void {
   //    Class compat is enforced — the slot's expectedClass (or the
   //    existing envelope's class) wins; the source must be compatible.
   if (source.type === 'palette-item' && (
+    target.type === 'def-ref' ||
     target.type === 'recipe-input' ||
     target.type === 'recipe-output' ||
     target.type === 'upgrade-cost' ||
@@ -127,6 +133,7 @@ export function dispatchDnD(source: DragSource, target: DropTarget): void {
   //    in both directions so a Consumable can't end up in a slot that
   //    expects ItemDefinition only because the source had it set.
   if (source.type === 'slot' && (
+    target.type === 'def-ref' ||
     target.type === 'recipe-input' ||
     target.type === 'recipe-output' ||
     target.type === 'upgrade-cost' ||

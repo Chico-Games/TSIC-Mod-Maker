@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useDndContext, useDroppable } from '@dnd-kit/core';
 import { humanizeAssetId, humanizeProperty, isNoisyProperty } from './definitionsNaming';
 import { SearchableSelect, type SelectOption } from './SearchableSelect';
 import { WideToggle } from './WideToggle';
 import { NumberSlider } from './NumberSlider';
 import { getFolderTheme } from './folderTheme';
+import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/dispatch';
 import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
@@ -96,6 +98,14 @@ interface FieldProps {
    *  the property label. Names are global — pinning "weight" pins it on
    *  every asset that has a property called "weight". */
   pinAdapter?: PinAdapter;
+  /** Owning record key (folder/id). When set together with `pathFromRoot`,
+   *  the def_ref editor registers as a DnD drop target so the user can
+   *  drop palette items directly on any property-grid ref. */
+  ownerKey?: string;
+  /** Path from the asset's JSON root to this field (e.g.
+   *  `['properties', 'items_to_drop', 'value', 0, 'value', 'item_to_drop']`).
+   *  Used by the def_ref drop target when wiring DnD. */
+  pathFromRoot?: (string | number)[];
 }
 
 export interface PinAdapter {
@@ -618,10 +628,40 @@ function DefinitionRefEditor({
   parentTypeName,
   refAdapter,
   pinAdapter,
+  ownerKey,
+  pathFromRoot,
 }: FieldProps) {
   const className = String(typed.class ?? '');
   const value = String(typed.value ?? '');
   const meta = propertyName ? refAdapter.getPropertyMeta(parentTypeName, propertyName) : null;
+
+  // Class-aware drop target. Only registers when the field knows its
+  // ownerKey + pathFromRoot (i.e. when the editor was rendered inside
+  // a TypedPropertiesEditor that received an `ownerKey`). Falls back
+  // to a no-op droppable on the legacy code paths.
+  const dnd = useDndContext();
+  const activeData = dnd.active?.data?.current as DragSource | undefined;
+  const accepts = useMemo(() => {
+    if (!activeData) return true;
+    if (!className) return true;
+    if (activeData.type === 'palette-item') return isClassCompatible(activeData.class, className);
+    if (activeData.type === 'slot') return isClassCompatible(activeData.class ?? '', className);
+    return false;
+  }, [activeData, className]);
+  const droppableEnabled = !!ownerKey && !!pathFromRoot;
+  const dropId = droppableEnabled ? `defref-drop:${ownerKey}:${pathFromRoot!.join('.')}` : `defref-noop:${className}`;
+  const { setNodeRef, isOver } = useDroppable({
+    id: dropId,
+    data: droppableEnabled
+      ? ({
+          type: 'def-ref',
+          ownerKey: ownerKey!,
+          path: pathFromRoot!,
+          expectedClass: className,
+        } satisfies DropTarget as any)
+      : undefined,
+    disabled: !droppableEnabled || !accepts,
+  });
 
   const options = useMemo<SelectOption[]>(() => {
     const ids = refAdapter.options(className);
@@ -648,7 +688,11 @@ function DefinitionRefEditor({
   const resolves = !!value && refAdapter.resolves(value);
 
   return (
-    <div className="def-field def-type-color-ref">
+    <div
+      ref={setNodeRef}
+      className={`def-field def-type-color-ref ${isOver ? 'def-ref-over' : ''} ${activeData && droppableEnabled && !accepts ? 'def-ref-rejects' : ''}`}
+      title={droppableEnabled && className ? `Accepts ${className}` : undefined}
+    >
       <FieldHead
         label={label}
         type={`definition_ref · ${className || '?'} · ${options.length} known`}
@@ -706,6 +750,8 @@ function StructEditor({
   propertyName,
   parentTypeName,
   pinAdapter,
+  ownerKey,
+  pathFromRoot,
 }: FieldProps) {
   const fields = (typed.value ?? {}) as Record<string, any>;
   const keys = Object.keys(fields);
@@ -743,6 +789,8 @@ function StructEditor({
             }
             refAdapter={refAdapter}
             path={[...path, k]}
+            pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', k] : undefined}
+            ownerKey={ownerKey}
             pinAdapter={pinAdapter}
           />
         ))}
@@ -788,6 +836,8 @@ function ContainerEditor({
   propertyName,
   parentTypeName,
   pinAdapter,
+  ownerKey,
+  pathFromRoot,
 }: FieldProps) {
   // Handles both array and set — they share the same shape.
   const arr: any[] = Array.isArray(typed.value) ? typed.value : [];
@@ -888,6 +938,8 @@ function ContainerEditor({
               }}
               refAdapter={refAdapter}
               path={[...path, i]}
+              pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i] : undefined}
+              ownerKey={ownerKey}
             />
           </div>
         ))}
@@ -906,6 +958,8 @@ function MapEditor({
   propertyName,
   parentTypeName,
   pinAdapter,
+  ownerKey,
+  pathFromRoot,
 }: FieldProps) {
   const entries: Array<{ key: any; value: any }> = Array.isArray(typed.value) ? typed.value : [];
   const keyType = typed.key_type ?? refAdapter.lookupContainerType(path, 'key_type');
@@ -977,6 +1031,8 @@ function MapEditor({
                 }}
                 refAdapter={refAdapter}
                 path={[...path, i, 'key']}
+                pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i, 'key'] : undefined}
+                ownerKey={ownerKey}
               />
               <TypedField
                 label="value"
@@ -989,6 +1045,8 @@ function MapEditor({
                 }}
                 refAdapter={refAdapter}
                 path={[...path, i, 'value']}
+                pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i, 'value'] : undefined}
+                ownerKey={ownerKey}
               />
             </div>
           </div>
@@ -1091,6 +1149,7 @@ export function TypedPropertiesEditor({
   propertySearch = '',
   groupBy = 'default',
   pinAdapter,
+  ownerKey,
 }: {
   properties: Record<string, any>;
   onChange: (next: Record<string, any>) => void;
@@ -1100,6 +1159,10 @@ export function TypedPropertiesEditor({
   propertySearch?: string;
   groupBy?: 'default' | 'type' | 'category';
   pinAdapter?: PinAdapter;
+  /** Owning record key — when supplied, every nested def_ref editor
+   *  registers as a DnD drop target so palette items / slot drags
+   *  land directly on it. */
+  ownerKey?: string;
 }) {
   const allKeys = Object.keys(properties ?? {}).sort();
   const noisyFiltered = showAllFields ? allKeys : allKeys.filter((k) => !isNoisyProperty(k));
@@ -1164,6 +1227,8 @@ export function TypedPropertiesEditor({
       onChange={(v) => onChange({ ...properties, [k]: v })}
       refAdapter={refAdapter}
       path={[k]}
+      pathFromRoot={ownerKey ? ['properties', k] : undefined}
+      ownerKey={ownerKey}
       pinAdapter={pinAdapter}
     />
   );

@@ -120,6 +120,7 @@ export function EnemiesSubTab() {
               showAllFields={false}
               onChange={(next) => updateValueAtPath(selectedKey, ['properties'], next)}
               refAdapter={refAdapter}
+              ownerKey={selectedKey}
             />
           </>
         ) : (

@@ -126,6 +126,7 @@ export function FurnitureLootTab() {
               showAllFields={false}
               onChange={(next) => updateValueAtPath(selectedKey, ['properties'], next)}
               refAdapter={refAdapter}
+              ownerKey={selectedKey}
             />
           </>
         ) : (

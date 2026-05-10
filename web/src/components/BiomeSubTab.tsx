@@ -142,6 +142,7 @@ export function BiomeSubTab() {
                     showAllFields={false}
                     onChange={(next) => updateValueAtPath(selected.floorKey!, ['properties'], next)}
                     refAdapter={refAdapter}
+                    ownerKey={selected.floorKey}
                   />
                 ) : (
                   <div className="muted">No LSP_{selected.biome}_Floor asset.</div>
@@ -157,6 +158,7 @@ export function BiomeSubTab() {
                     showAllFields={false}
                     onChange={(next) => updateValueAtPath(selected.furnitureKey!, ['properties'], next)}
                     refAdapter={refAdapter}
+                    ownerKey={selected.furnitureKey}
                   />
                 ) : (
                   <div className="muted">No LSP_{selected.biome}_Furniture asset.</div>
