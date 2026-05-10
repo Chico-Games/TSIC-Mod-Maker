@@ -934,12 +934,12 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await page.getByRole('button', { name: /Hide validation/ }).click();
 
     // ─────────────────────────────────────────────────────────────────
-    // New IA: walk the four top-level tabs and the five Recipes & Loot
+    // New IA: walk the three top-level tabs and the five Recipes & Loot
     // sub-tabs. Each one must render its body component without console
     // errors. We don't assert on specific data here — the bundled tree
     // is suppressed in this smoke, so most rails will be empty.
     // ─────────────────────────────────────────────────────────────────
-    for (const t of ['Recipes & Loot', 'Furniture Loot', 'Validations']) {
+    for (const t of ['Recipes & Loot', 'Validations']) {
       await page.getByRole('button', { name: t, exact: true }).click();
       await page.waitForTimeout(80);
     }
