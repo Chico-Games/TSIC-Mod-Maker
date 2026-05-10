@@ -2053,6 +2053,40 @@ body.resizing-col * { cursor: col-resize !important; }
   padding: 4px 0;
 }
 .def-field-row .def-field-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.def-property-tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 360px;
+  padding: 8px 10px;
+  background: var(--panel, #1f2230);
+  color: var(--text, #e8e8ee);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  pointer-events: auto;
+}
+.def-property-tooltip-prose {
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 6px;
+}
+.def-property-tooltip-prose:last-child {
+  margin-bottom: 0;
+}
+.def-property-tooltip-meta {
+  font-size: 11px;
+  color: var(--muted, #9095a6);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+.def-property-tooltip-meta:first-child {
+  margin-top: 0;
+}
 .def-field-row input[type="text"],
 .def-field-row input[type="number"],
 .def-field-row textarea {
