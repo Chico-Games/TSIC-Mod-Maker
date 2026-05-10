@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../../store/definitionsStore';
-import { useAppStore } from '../../store/appStore';
 import { humanizeAssetId } from '../definitionsNaming';
 import { getFolderTheme } from '../folderTheme';
 import { ItemPalette } from '../ItemPalette';
@@ -9,12 +8,9 @@ import { HighlightedText } from '../HighlightedText';
 import { type RankedHit } from '../../search/fuzzy';
 import { useHybridSearch } from '../../search/hybrid';
 import { useJumpToDefinition } from '../useJumpToDefinition';
-import { AssetTitle } from '../AssetTitle';
 import { SearchBox } from '../SearchBox';
-import { TypedPropertiesEditor } from '../TypedValueEditor';
-import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
-import { WhereUsedPanel } from './WhereUsedPanel';
+import { DetailPane } from './DetailPane';
 import { SpreadsheetView } from './SpreadsheetView';
 import { BulkEditDialog } from './BulkEditDialog';
 import type { ClassBrowserConfig } from './types';
@@ -35,20 +31,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
-  const selectFolder = useDefinitionsStore((s) => s.selectFolder);
-  const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
-  const setTab = useAppStore((s) => s.setTab);
   const jumpToDef = useJumpToDefinition();
-
-  const refAdapter = useRefAdapter((id) => {
-    const k = findKeyById(id);
-    if (!k) return;
-    const rec = definitions.get(k);
-    if (!rec) return;
-    selectFolder(rec.folder);
-    selectDefinition(k);
-    setTab('definitions');
-  });
 
   const warningCtx: WarningCtx = useMemo(() => ({
     records: definitions,
@@ -178,7 +161,6 @@ export function ClassBrowserTab({ folder, config }: Props) {
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 
-  const selected = selectedKey ? definitions.get(selectedKey) : null;
   const theme = getFolderTheme(folder);
 
   // Publish the warning-fix context on a global so the RailColumn child can
@@ -218,43 +200,13 @@ export function ClassBrowserTab({ folder, config }: Props) {
             <button className={mode === 'detail' ? 'active' : ''} onClick={() => setMode('detail')}>Detail</button>
             <button className={mode === 'spreadsheet' ? 'active' : ''} onClick={() => setMode('spreadsheet')}>Spreadsheet</button>
           </div>
-          {mode === 'detail' && (selected && selectedKey ? (
-            <>
-              <header className="station-header">
-                <div className="station-title">
-                  <span aria-hidden>{theme.emoji}</span>
-                  <AssetTitle assetKey={selectedKey} onRenamed={(newKey) => setSelectedKey(newKey)} />
-                  <span className="cls">{String(selected.json?.class ?? '').replace(/^U/, '')}</span>
-                  {(() => {
-                    const cls = String(selected.json?.class ?? '');
-                    const setRSub = useAppStore.getState().setRecipesSubTab;
-                    const setTabFn = useAppStore.getState().setTab;
-                    const selectDef = useDefinitionsStore.getState().selectDefinition;
-                    if (cls === 'UDamageableFurnitureDefinition') {
-                      return <button className="cross-link" onClick={() => { setTabFn('recipes-loot'); setRSub('furniture'); selectDef(selectedKey); }}>↗ Edit recipes/loot</button>;
-                    }
-                    if (cls === 'UCraftingStationDefinition' || cls === 'UProductionStationDefinition' || cls === 'UPlantableDefinition') {
-                      return <button className="cross-link" onClick={() => { setTabFn('recipes-loot'); setRSub('stations'); selectDef(selectedKey); useAppStore.getState().selectStation(selectedKey); }}>↗ Edit recipes/loot</button>;
-                    }
-                    return null;
-                  })()}
-                </div>
-                <div className="station-sub">
-                  <span className="muted">id:</span> <code>{selected.id}</code>
-                </div>
-              </header>
-
-              <TypedPropertiesEditor
-                parentTypeName={String(selected.json?.class ?? '').replace(/^U/, '')}
-                properties={selected.json?.properties ?? {}}
-                showAllFields={false}
-                onChange={(next) => updateValueAtPath(selectedKey, ['properties'], next)}
-                refAdapter={refAdapter}
-                ownerKey={selectedKey}
-              />
-              {selected && <WhereUsedPanel assetId={selected.id} />}
-            </>
-          ) : <div className="empty-state-mini">Pick a record from the rail.</div>)}
+          {mode === 'detail' && (
+            <DetailPane
+              assetKey={selectedKey}
+              pinned={false}
+              onRenamed={(k) => setSelectedKey(k)}
+            />
+          )}
           {mode === 'spreadsheet' && (
             <SpreadsheetView
               rows={rows.map((r) => ({ key: r.key, rec: definitions.get(r.key)! })).filter((r) => r.rec)}
