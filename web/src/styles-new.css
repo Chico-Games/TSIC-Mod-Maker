@@ -21,7 +21,6 @@
    need to claim the full width — without `flex: 1` + `width: 100%` they
    shrink to content size and the right rail floats off the page. */
 .recipes-loot-layout,
-.furniture-loot-layout,
 .validations-layout {
   flex: 1;
   width: 100%;
@@ -70,8 +69,7 @@
 .stations-layout,
 .furniture-layout,
 .enemies-layout,
-.biome-layout,
-.furniture-loot-layout {
+.biome-layout {
   display: grid;
   grid-template-columns:
     minmax(220px, clamp(220px, 22%, 320px))
@@ -90,8 +88,7 @@
   .stations-layout,
   .furniture-layout,
   .enemies-layout,
-  .biome-layout,
-  .furniture-loot-layout {
+  .biome-layout {
     grid-template-columns: 200px minmax(0, 1fr) 220px;
   }
 }
