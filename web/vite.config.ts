@@ -11,4 +11,12 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  // Transformers.js ships ESM + WASM that Vite's dep-pre-bundler
+  // mangles. Excluding it keeps the worker import path intact.
+  optimizeDeps: {
+    exclude: ['@huggingface/transformers', 'onnxruntime-web'],
+  },
+  worker: {
+    format: 'es',
+  },
 });
