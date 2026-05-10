@@ -17,6 +17,7 @@ import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { WhereUsedPanel } from './WhereUsedPanel';
 import { SpreadsheetView } from './SpreadsheetView';
 import { CompareView } from './CompareView';
+import { BulkEditDialog } from './BulkEditDialog';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
@@ -257,6 +258,13 @@ export function ClassBrowserTab({ folder, config }: Props) {
           folders={config.paletteFolders ?? [folder, 'crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']}
           title="Items"
         />
+
+        {bulkOpen && (
+          <BulkEditDialog
+            selectedKeys={Array.from(selectedKeys)}
+            onClose={() => setBulkOpen(false)}
+          />
+        )}
       </div>
     </PropertyEchoProvider>
   );

@@ -1076,3 +1076,24 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 .compare-row.diff { background: rgba(232, 196, 94, 0.06); }
 .compare-cell { flex: 1; padding: 6px 10px; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .compare-same summary { cursor: pointer; padding: 6px 0; font-weight: 600; }
+
+.bulk-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+}
+.bulk-dialog {
+  background: var(--surface-1, #1d2128);
+  border: 1px solid var(--divider, #2a2f38);
+  padding: 16px; min-width: 400px; max-width: 600px;
+}
+.bulk-dialog header { font-weight: 600; margin-bottom: 12px; }
+.bulk-dialog footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+.bulk-editor { margin: 12px 0; padding: 8px; background: var(--surface-0, #16191e); }
+.bulk-dialog label { display: block; margin: 8px 0; }
+.bulk-dialog select, .bulk-dialog input[type="text"], .bulk-dialog input[type="number"] {
+  background: var(--surface-0, #16191e);
+  color: var(--text, #d6d8dc);
+  border: 1px solid var(--divider, #2a2f38);
+  padding: 4px 8px;
+  margin-left: 8px;
+}
