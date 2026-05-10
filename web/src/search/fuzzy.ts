@@ -1,10 +1,35 @@
-// Token-aware fuzzy search. The default for every filter box in the
-// app: a query like "bench tier 2" finds "FD_BenchTier2_CS" or "Tier 2
-// Crafting Bench" without forcing the user to type a contiguous
-// substring. Each query token must hit some text token (exact match,
-// prefix, or edit distance ≤ 1 for ≥4-char tokens). We return the
-// matched ranges in the *original* text so HighlightedText can mark
-// them inline.
+// Token-aware fuzzy search powered by @leeoniya/ufuzzy.
+//
+// uFuzzy handles the tricky bits we used to half-implement:
+//   - camelCase / digit boundary segmentation
+//   - case-insensitive matching with case bonus
+//   - single-error tolerance per term (typo / transposition / insert)
+//   - out-of-order term matching
+//   - precise highlight ranges that map back into the original string
+//
+// The exported API (`fuzzyMatch`, `fuzzyRank`, `fuzzyRankMulti`,
+// `RankedHit`, `Token`) stays the same so every filter site keeps
+// working without changes — uFuzzy is an implementation detail.
+
+import uFuzzy from '@leeoniya/ufuzzy';
+
+const fuzzy = new uFuzzy({
+  // Single-error mode: allow 1 typo / transposition / deletion per
+  // term (excluding first + last chars). Catches the common slips
+  // ("bechn" → "bench", "tier 2" → "ter 2") without flooding.
+  intraMode: 1,
+  intraIns: 1,
+  intraSub: 1,
+  intraTrn: 1,
+  intraDel: 1,
+  // Default term boundaries already match camelCase + digit
+  // transitions, which is what we need for asset ids ("BenchTier1"
+  // splits into "Bench" / "Tier" / "1").
+});
+
+// Out-of-order permutation cap: 5! = 120 iterations is the default
+// safety ceiling. Most queries are 1–3 tokens so this rarely matters.
+const OUT_OF_ORDER = 5;
 
 export interface Token {
   /** Lowercased token text. */
@@ -15,14 +40,12 @@ export interface Token {
   end: number;
 }
 
-/** Split a string on camelCase boundaries, snake/kebab separators,
- *  whitespace, punctuation, and digits-vs-letters. Empty tokens
- *  filtered out. The returned positions are valid in the original. */
+/** Split a string the same way uFuzzy does internally — emit one
+ *  token per camelCase / boundary segment. Kept exported because a
+ *  few callers want an explicit token list, and it stays stable
+ *  across uFuzzy upgrades. */
 export function tokenize(s: string): Token[] {
   const out: Token[] = [];
-  // Match: an acronym (UPPER ending before a Title-Case word), a
-  // Title/Capitalised word, an all-lower word, an all-upper word, or
-  // a digit run.
   const re = /[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(s)) !== null) {
@@ -32,91 +55,31 @@ export function tokenize(s: string): Token[] {
   return out;
 }
 
-/** Iterative Damerau–Levenshtein-light: insert / delete / substitute. */
-function editDistance(a: string, b: string, cap: number): number {
-  if (a === b) return 0;
-  if (Math.abs(a.length - b.length) > cap) return cap + 1;
-  const m = a.length, n = b.length;
-  let prev = new Array<number>(n + 1);
-  let cur = new Array<number>(n + 1);
-  for (let j = 0; j <= n; j++) prev[j] = j;
-  for (let i = 1; i <= m; i++) {
-    cur[0] = i;
-    let rowMin = cur[0];
-    for (let j = 1; j <= n; j++) {
-      const cost = a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1;
-      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost);
-      if (cur[j] < rowMin) rowMin = cur[j];
-    }
-    if (rowMin > cap) return cap + 1; // early exit
-    [prev, cur] = [cur, prev];
-  }
-  return prev[n];
-}
-
 export interface FuzzyHit {
+  /** Score is a simple rank position — higher = better. uFuzzy's
+   *  internal `Info` is richer; we collapse it to one number so
+   *  callers can use plain `.sort((a, b) => b.score - a.score)`. */
   score: number;
+  /** Inclusive-start / exclusive-end pairs into the original `text`. */
   ranges: Array<[number, number]>;
 }
 
-/** Score `text` against `query`. Returns null when no match. Higher
- *  score = better. The ranges are inclusive-start / exclusive-end and
- *  point into the original `text`. */
+/** Score `text` against `query`. Returns null when uFuzzy doesn't
+ *  match, `{score: 0, ranges: []}` when the query is empty (used
+ *  upstream as the "show everything, no highlights" case). */
 export function fuzzyMatch(text: string, query: string): FuzzyHit | null {
   const q = query.trim();
   if (!q) return { score: 0, ranges: [] };
-  const qTokens = tokenize(q.toLowerCase());
-  if (qTokens.length === 0) return null;
-  const tTokens = tokenize(text);
-  if (tTokens.length === 0) return null;
-  const used = new Array<boolean>(tTokens.length).fill(false);
-  const ranges: Array<[number, number]> = [];
-  let totalScore = 0;
-  for (const qt of qTokens) {
-    let bestIdx = -1;
-    let bestKind = 4; // 0=exact, 1=prefix, 2=substring, 3=edit-distance
-    let bestStart = Infinity;
-    for (let i = 0; i < tTokens.length; i++) {
-      if (used[i]) continue;
-      const tt = tTokens[i];
-      let kind = 4;
-      if (tt.token === qt.token) kind = 0;
-      else if (tt.token.startsWith(qt.token)) kind = 1;
-      else if (qt.token.length >= 3 && tt.token.includes(qt.token)) kind = 2;
-      else if (qt.token.length >= 4 && editDistance(tt.token, qt.token, 1) <= 1) kind = 3;
-      if (kind === 4) continue;
-      if (kind < bestKind || (kind === bestKind && tt.start < bestStart)) {
-        bestIdx = i;
-        bestKind = kind;
-        bestStart = tt.start;
-      }
-    }
-    if (bestIdx === -1) return null;
-    used[bestIdx] = true;
-    const tt = tTokens[bestIdx];
-    // Score: prefer earlier hits, exact > prefix > substring > fuzzy.
-    const kindBonus = [120, 80, 50, 25][bestKind];
-    totalScore += kindBonus;
-    totalScore -= tt.start * 0.25;
-    // Highlight just the part of the text token that matches.
-    if (bestKind === 0) {
-      ranges.push([tt.start, tt.end]);
-    } else if (bestKind === 1) {
-      ranges.push([tt.start, tt.start + qt.token.length]);
-    } else if (bestKind === 2) {
-      const inner = tt.token.indexOf(qt.token);
-      ranges.push([tt.start + inner, tt.start + inner + qt.token.length]);
-    } else {
-      ranges.push([tt.start, tt.end]);
-    }
-  }
-  // Bonus when every query token matched and they're in order.
-  let inOrder = true;
-  for (let i = 1; i < ranges.length; i++) {
-    if (ranges[i][0] < ranges[i - 1][0]) { inOrder = false; break; }
-  }
-  if (inOrder) totalScore += 30;
-  return { score: totalScore, ranges };
+  const result = fuzzy.search([text], q, OUT_OF_ORDER);
+  // SearchResult tuple: [idxs, info, infoIdxOrder] | [idxs, null, null] | [null, null, null]
+  const [idxs, info, order] = result;
+  if (!idxs || !info || !order || idxs.length === 0) return null;
+  // Single-element haystack: the only entry's info is at index 0.
+  const flat = info.ranges[0] ?? [];
+  return {
+    score: 1,
+    ranges: flatRangesToPairs(flat),
+  };
 }
 
 export interface RankedHit<T> {
@@ -125,7 +88,9 @@ export interface RankedHit<T> {
   ranges: Array<[number, number]>;
 }
 
-/** Filter + sort by descending score. Items with no match drop out. */
+/** Filter + sort `items` by descending uFuzzy score. Items with no
+ *  match drop out. Empty query returns every item with no
+ *  highlights (callers can iterate without a special case). */
 export function fuzzyRank<T>(
   items: readonly T[],
   query: string,
@@ -133,18 +98,30 @@ export function fuzzyRank<T>(
 ): RankedHit<T>[] {
   const q = query.trim();
   if (!q) return items.map((item) => ({ item, score: 0, ranges: [] }));
+  const haystack = items.map(getText);
+  const result = fuzzy.search(haystack, q, OUT_OF_ORDER);
+  const [idxs, info, order] = result;
+  if (!idxs || !info || !order || idxs.length === 0) return [];
   const out: RankedHit<T>[] = [];
-  for (const item of items) {
-    const hit = fuzzyMatch(getText(item), q);
-    if (hit) out.push({ item, score: hit.score, ranges: hit.ranges });
+  // `order` walks idxs in best-first sort order; `info.ranges` is
+  // parallel to idxs (NOT to the original haystack), so we look up
+  // ranges via order[k] which is an index INTO info.idx.
+  for (let k = 0; k < order.length; k++) {
+    const i = order[k];
+    const haystackIdx = info.idx[i];
+    out.push({
+      item: items[haystackIdx],
+      score: order.length - k, // higher = better
+      ranges: flatRangesToPairs(info.ranges[i] ?? []),
+    });
   }
-  out.sort((a, b) => b.score - a.score);
   return out;
 }
 
-/** Filter + sort against MULTIPLE candidate text fields. The best
- *  field's ranges are returned. Lets a search match either
- *  display_name OR id, etc. */
+/** Like `fuzzyRank` but each item exposes multiple candidate texts.
+ *  We search each text in the per-item list and keep the best
+ *  match. Useful when an item has both a humanized label and an id
+ *  — a query that hits either should still rank the item. */
 export function fuzzyRankMulti<T>(
   items: readonly T[],
   query: string,
@@ -152,18 +129,56 @@ export function fuzzyRankMulti<T>(
 ): RankedHit<T>[] {
   const q = query.trim();
   if (!q) return items.map((item) => ({ item, score: 0, ranges: [] }));
-  const out: RankedHit<T>[] = [];
-  for (const item of items) {
-    const texts = getTexts(item);
-    let best: { score: number; ranges: Array<[number, number]>; textIndex: number } | null = null;
-    for (let i = 0; i < texts.length; i++) {
-      const hit = fuzzyMatch(texts[i], q);
-      if (hit && (best == null || hit.score > best.score)) {
-        best = { ...hit, textIndex: i };
-      }
+  // Build a flat haystack with provenance back to item index. The
+  // ranges that uFuzzy returns refer to the haystack STRING the
+  // match landed in, so we tag each entry with which text-field it
+  // came from to route ranges to the right text in the caller.
+  const haystack: string[] = [];
+  const ownerIdx: number[] = [];
+  const fieldIdx: number[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const texts = getTexts(items[i]);
+    for (let j = 0; j < texts.length; j++) {
+      haystack.push(texts[j]);
+      ownerIdx.push(i);
+      fieldIdx.push(j);
     }
-    if (best) out.push({ item, score: best.score, ranges: best.ranges });
   }
-  out.sort((a, b) => b.score - a.score);
+  const result = fuzzy.search(haystack, q, OUT_OF_ORDER);
+  const [idxs, info, order] = result;
+  if (!idxs || !info || !order || idxs.length === 0) return [];
+  // Best entry per owner — a single item may have multiple text
+  // fields hit; we keep whichever uFuzzy ranked highest (the first
+  // we see when walking `order`).
+  const seen = new Map<number, RankedHit<T>>();
+  for (let k = 0; k < order.length; k++) {
+    const i = order[k];
+    const hayIdx = info.idx[i];
+    const owner = ownerIdx[hayIdx];
+    if (seen.has(owner)) continue;
+    // ranges are relative to `texts[fieldIdx[hayIdx]]`. The caller
+    // typically uses the FIRST text for display, so we only return
+    // ranges when the match landed in the first text. If it landed
+    // in a secondary (e.g. id), the label still shows but is not
+    // highlighted — callers can pass id as the FIRST entry if they
+    // want id matches highlighted instead.
+    const ranges = fieldIdx[hayIdx] === 0
+      ? flatRangesToPairs(info.ranges[i] ?? [])
+      : [];
+    seen.set(owner, {
+      item: items[owner],
+      score: order.length - k,
+      ranges,
+    });
+  }
+  // Restore order by score descending.
+  return [...seen.values()].sort((a, b) => b.score - a.score);
+}
+
+function flatRangesToPairs(flat: number[]): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  for (let i = 0; i + 1 < flat.length; i += 2) {
+    out.push([flat[i], flat[i + 1]]);
+  }
   return out;
 }
