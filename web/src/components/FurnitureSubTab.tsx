@@ -245,6 +245,10 @@ export function FurnitureSubTab() {
                   onRenamed={(newKey) => setSelectedKey(newKey)}
                 />
                 <span className="cls">{String(selected.json?.class ?? '').replace(/^U/, '')}</span>
+                <button
+                  className="cross-link"
+                  onClick={() => { useAppStore.getState().setTab('furniture'); useAppStore.getState().setFurnitureSubTab('damageable'); }}
+                >↗ Edit intrinsic</button>
               </div>
               <div className="station-sub">
                 <span className="muted">id:</span> <code>{selected.id}</code>

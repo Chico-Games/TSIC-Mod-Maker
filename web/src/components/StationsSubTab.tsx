@@ -453,6 +453,20 @@ export function StationsSubTab() {
                   onRenamed={(newKey) => setSelectedKey(newKey)}
                 />
                 <span className="cls">{String(selectedStation.json?.class ?? '').replace(/^U/, '')}</span>
+                {(() => {
+                  const cls = String(selectedStation?.json?.class ?? '');
+                  const target = cls === 'UCraftingStationDefinition' ? 'crafting-stations'
+                              : cls === 'UProductionStationDefinition' ? 'production-stations'
+                              : cls === 'UPlantableDefinition' ? 'plantable'
+                              : null;
+                  if (!target) return null;
+                  return (
+                    <button className="cross-link" onClick={() => {
+                      useAppStore.getState().setTab('furniture');
+                      useAppStore.getState().setFurnitureSubTab(target as any);
+                    }}>↗ Edit intrinsic</button>
+                  );
+                })()}
               </div>
               <div className="station-sub">
                 <span className="muted">id:</span> <code>{selectedRow.id}</code>

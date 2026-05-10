@@ -224,6 +224,19 @@ export function ClassBrowserTab({ folder, config }: Props) {
                   <span aria-hidden>{theme.emoji}</span>
                   <AssetTitle assetKey={selectedKey} onRenamed={(newKey) => setSelectedKey(newKey)} />
                   <span className="cls">{String(selected.json?.class ?? '').replace(/^U/, '')}</span>
+                  {(() => {
+                    const cls = String(selected.json?.class ?? '');
+                    const setRSub = useAppStore.getState().setRecipesSubTab;
+                    const setTabFn = useAppStore.getState().setTab;
+                    const selectDef = useDefinitionsStore.getState().selectDefinition;
+                    if (cls === 'UDamageableFurnitureDefinition') {
+                      return <button className="cross-link" onClick={() => { setTabFn('recipes-loot'); setRSub('furniture'); selectDef(selectedKey); }}>↗ Edit recipes/loot</button>;
+                    }
+                    if (cls === 'UCraftingStationDefinition' || cls === 'UProductionStationDefinition' || cls === 'UPlantableDefinition') {
+                      return <button className="cross-link" onClick={() => { setTabFn('recipes-loot'); setRSub('stations'); selectDef(selectedKey); useAppStore.getState().selectStation(selectedKey); }}>↗ Edit recipes/loot</button>;
+                    }
+                    return null;
+                  })()}
                 </div>
                 <div className="station-sub">
                   <span className="muted">id:</span> <code>{selected.id}</code>
