@@ -18,7 +18,6 @@ import { Header } from './components/Header';
 import { CommandPalette } from './components/CommandPalette';
 import { DefinitionsTab } from './components/DefinitionsTab';
 import { RecipesAndLootTab } from './components/RecipesAndLootTab';
-import { FurnitureLootTab } from './components/FurnitureLootTab';
 import { ValidationsTab } from './components/ValidationsTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
@@ -161,7 +160,6 @@ export function App() {
   const renderTab = (t: AppTab) => {
     switch (t) {
       case 'recipes-loot': return <RecipesAndLootTab />;
-      case 'furniture-loot': return <FurnitureLootTab />;
       case 'definitions': return <DefinitionsTab />;
       case 'validations': return <ValidationsTab />;
     }

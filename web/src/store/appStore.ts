@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type AppTab = 'recipes-loot' | 'furniture-loot' | 'definitions' | 'validations';
+export type AppTab = 'recipes-loot' | 'definitions' | 'validations';
 export type RecipesSubTab = 'stations' | 'furniture' | 'tech-tree' | 'enemies' | 'biome';
 
 /** Path-anchored selection (an array or a slot inside a definition's
@@ -52,7 +52,11 @@ const LS_SUB = 'tsic.app.recipesSub.v1';
 function loadTab(): AppTab {
   try {
     const v = localStorage.getItem(LS_TAB);
-    if (v === 'recipes-loot' || v === 'furniture-loot' || v === 'definitions' || v === 'validations') return v;
+    if (v === 'recipes-loot' || v === 'definitions' || v === 'validations') return v;
+    // Legacy: a previous build had a 'furniture-loot' top-level tab.
+    // Map it onto Recipes & Loot so old localStorage doesn't strand
+    // users on a blank tab.
+    if (v === 'furniture-loot') return 'recipes-loot';
   } catch { /* noop */ }
   return 'recipes-loot';
 }
