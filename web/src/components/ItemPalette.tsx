@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
@@ -45,12 +45,21 @@ export function ItemPalette({ folders, title }: Props) {
   const selectRecipe = useAppStore((s) => s.selectRecipe);
 
   const [filter, setFilter] = useState('');
-  // Folder pick: persist between renders. Default to the prop folders that exist.
+  // Folder pick: starts from the requested defaults and re-seeds when
+  // the loaded folder set arrives (the store is asynchronous, so the
+  // first render usually has an empty allFolders).
   const initialFolders = useMemo(() => {
     const seed = (folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f));
     return new Set(seed.length ? seed : allFolders);
   }, [folders, allFolders]);
   const [enabled, setEnabled] = useState<Set<string>>(initialFolders);
+  const [seeded, setSeeded] = useState(initialFolders.size > 0);
+  useEffect(() => {
+    if (!seeded && initialFolders.size > 0) {
+      setEnabled(initialFolders);
+      setSeeded(true);
+    }
+  }, [seeded, initialFolders]);
 
   type ItemRow = { id: string; folder: string; class: string; humanLabel: string };
   const inFolder = useMemo<ItemRow[]>(() => {
