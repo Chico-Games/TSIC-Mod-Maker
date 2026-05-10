@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
@@ -29,6 +30,19 @@ export function UpgradeRecipeSection({ hostKey, upgradedTargetClass }: Props) {
   const upgradeRef: any = host?.json?.properties?.upgrade_recipe;
   const upgradeId = upgradeRef && typeof upgradeRef === 'object' ? String(upgradeRef.value ?? '') : '';
   const upgradeKey = upgradeId ? findKeyById(upgradeId) : null;
+
+  // Auto-mint when the host references an upgrade recipe that
+  // doesn't exist on disk yet — the dataset comes back self-consistent
+  // and the user lands on a working RecipeCard instead of a "doesn't
+  // resolve" message. Idempotent per (hostKey, upgradeId).
+  const lastAutoFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!upgradeId || upgradeKey) return;
+    const sig = `${hostKey}::${upgradeId}`;
+    if (lastAutoFor.current === sig) return;
+    lastAutoFor.current = sig;
+    createDefinitionForClass('FurnitureUpgradeRecipe', upgradeId);
+  }, [hostKey, upgradeId, upgradeKey, createDefinitionForClass]);
 
   const onAdd = () => {
     if (!host || !hostKey) return;
@@ -75,9 +89,8 @@ export function UpgradeRecipeSection({ hostKey, upgradedTargetClass }: Props) {
       {upgradeKey ? (
         <RecipeCard recipeKey={upgradeKey} arrKey={hostKey} />
       ) : upgradeId ? (
-        <div className="empty-state-mini">
-          The upgrade ref doesn't resolve to a loaded asset.
-        </div>
+        // Auto-mint effect above is creating this asset right now.
+        <div className="empty-state-mini">Preparing upgrade recipe…</div>
       ) : (
         <button className="add-row" onClick={onAdd}>
           ＋ Add upgrade recipe for <code>{humanizeAssetId(host?.id ?? '')}</code>

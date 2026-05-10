@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDndContext, useDroppable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import type { DefinitionsKey } from '../store/definitionsStore';
@@ -196,6 +196,27 @@ export function StationsSubTab() {
       setSelectedKey(stations[0].key);
     }
   }, [selectedKey, stations, setSelectedKey]);
+
+  // Auto-create the missing ARR when a station is selected without
+  // one. Removes the dead-end empty state — the user lands on a
+  // working recipe stack regardless of how the station was authored.
+  // Only fires once per (station, missing) — the asset is minted,
+  // the station's `available_recipe_rules_definition` ref is set,
+  // and the chain index resolves on the next render.
+  const lastAutoArrFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!selectedKey) return;
+    const row = stations.find((s) => s.key === selectedKey);
+    if (!row) return;
+    const arrKey = row.arrValue ? findKeyById(row.arrValue) : null;
+    const arrLoaded = arrKey ? !!definitions.get(arrKey) : false;
+    if (arrLoaded) return;
+    if (lastAutoArrFor.current === selectedKey) return;
+    lastAutoArrFor.current = selectedKey;
+    createArrForStation(selectedKey, row.group);
+    // The toast emitted by createDefinitionForClass keeps the user
+    // informed that a fresh ARR was minted.
+  }, [selectedKey, stations, findKeyById, definitions]);
 
   const selectedStation = selectedKey ? definitions.get(selectedKey) : null;
   const selectedRow = selectedKey ? stations.find((s) => s.key === selectedKey) ?? null : null;
@@ -465,15 +486,13 @@ export function StationsSubTab() {
                 </div>
               </div>
             ) : (
-              <div className="empty-state-action">
-                <p className="muted">
-                  This station has no <code>available_recipe_rules_definition</code> set, or its target hasn't loaded.
-                </p>
-                <button
-                  className="primary"
-                  onClick={() => createArrForStation(selectedRow.key, selectedRow.group)}
-                >＋ Create empty ARR for this station</button>
-              </div>
+              // The auto-create effect above mints an ARR for any
+              // station that's missing one; this branch is only
+              // reached for the brief render before the effect
+              // commits, or in the unlikely case where the mint
+              // failed (e.g. unknown class). Show a friendly hint
+              // rather than a wall of text.
+              <div className="empty-state-mini">Preparing recipe stack…</div>
             )}
           </>
         ) : (
