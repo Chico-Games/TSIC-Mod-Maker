@@ -16,7 +16,6 @@ import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { WhereUsedPanel } from './WhereUsedPanel';
 import { SpreadsheetView } from './SpreadsheetView';
-import { CompareView } from './CompareView';
 import { BulkEditDialog } from './BulkEditDialog';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
@@ -79,10 +78,11 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const [selectedKeys, setSelectedKeys] = useState<Set<DefinitionsKey>>(() => new Set());
   const [lastClickedKey, setLastClickedKey] = useState<DefinitionsKey | null>(null);
   const MODE_LS_KEY = `tsic.classBrowser.${folder}.mode.v1`;
-  const [mode, setMode] = useState<'detail' | 'spreadsheet' | 'compare'>(() => {
+  const [mode, setMode] = useState<'detail' | 'spreadsheet'>(() => {
     try {
       const v = localStorage.getItem(MODE_LS_KEY);
-      if (v === 'detail' || v === 'spreadsheet' || v === 'compare') return v;
+      if (v === 'compare') return 'detail'; // legacy migration
+      if (v === 'detail' || v === 'spreadsheet') return v;
     } catch { /* noop */ }
     return 'detail';
   });
@@ -137,8 +137,10 @@ export function ClassBrowserTab({ folder, config }: Props) {
     setSelectedKeys(new Set());
     setLastClickedKey(null);
     try {
-      const v = localStorage.getItem(`tsic.classBrowser.${folder}.mode.v1`);
-      if (v === 'detail' || v === 'spreadsheet' || v === 'compare') setMode(v);
+      const k = `tsic.classBrowser.${folder}.mode.v1`;
+      const v = localStorage.getItem(k);
+      if (v === 'compare') { localStorage.setItem(k, 'detail'); setMode('detail'); return; }
+      if (v === 'detail' || v === 'spreadsheet') setMode(v);
       else setMode('detail');
     } catch { setMode('detail'); }
   }, [folder]);
@@ -215,7 +217,6 @@ export function ClassBrowserTab({ folder, config }: Props) {
           <div className="mode-toggle">
             <button className={mode === 'detail' ? 'active' : ''} onClick={() => setMode('detail')}>Detail</button>
             <button className={mode === 'spreadsheet' ? 'active' : ''} onClick={() => setMode('spreadsheet')}>Spreadsheet</button>
-            <button className={mode === 'compare' ? 'active' : ''} disabled={selectedKeys.size < 2} onClick={() => setMode('compare')}>Compare</button>
           </div>
           {mode === 'detail' && (selected && selectedKey ? (
             <>
@@ -261,10 +262,6 @@ export function ClassBrowserTab({ folder, config }: Props) {
               onPickRow={(k) => { setSelectedKey(k); setSelectedKeys(new Set([k])); setMode('detail'); }}
             />
           )}
-          {mode === 'compare' && selectedKeys.size >= 2 && (
-            <CompareView selected={Array.from(selectedKeys).slice(0, 3)} />
-          )}
-          {mode === 'compare' && selectedKeys.size < 2 && <div className="empty-state-mini">Pick 2 or 3 records on the rail to compare.</div>}
         </EchoPublishingPane>
 
         <ItemPalette
@@ -291,7 +288,7 @@ function RailColumn(props: {
   handleRailClick: (e: React.MouseEvent, k: DefinitionsKey) => void;
   setSelectedKeys: (s: Set<DefinitionsKey>) => void;
   setLastClickedKey: (k: DefinitionsKey | null) => void;
-  setMode: (m: 'detail' | 'spreadsheet' | 'compare') => void;
+  setMode: (m: 'detail' | 'spreadsheet') => void;
   setBulkOpen: (b: boolean) => void;
   duplicateSelected: () => void;
   duplicateOne: (k: DefinitionsKey) => DefinitionsKey | null;
@@ -329,6 +326,15 @@ function RailColumn(props: {
     if (v == null) return '—';
     if (typeof v === 'string') return v.length > 14 ? v.slice(0, 12) + '…' : v;
     if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+    if (typeof v === 'object') {
+      if (v.type === 'array') return `[${(v.value ?? []).length}]`;
+      if (v.type === 'map') return `{${(v.value ?? []).length}}`;
+      if (v.type === 'struct') {
+        const name = v.struct_name ?? 'struct';
+        return name.length > 14 ? name.slice(0, 12) + '…' : name;
+      }
+      if ('value' in v) return fmtEcho(v.value);
+    }
     return JSON.stringify(v).slice(0, 14);
   };
 
@@ -399,7 +405,6 @@ function RailColumn(props: {
       {selectedKeys.size >= 2 && (
         <div className="action-bar">
           <span>{selectedKeys.size} selected</span>
-          <button disabled={selectedKeys.size > 3} title={selectedKeys.size > 3 ? 'Compare supports max 3' : 'Compare'} onClick={() => setMode('compare')}>Compare</button>
           <button onClick={() => setBulkOpen(true)}>Bulk edit…</button>
           <button onClick={() => duplicateSelected()}>Duplicate × {selectedKeys.size}</button>
           <button onClick={() => { setSelectedKeys(new Set()); setLastClickedKey(null); }}>Clear</button>
