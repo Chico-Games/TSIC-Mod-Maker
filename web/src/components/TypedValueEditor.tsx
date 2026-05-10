@@ -8,6 +8,7 @@ import { getFolderTheme } from './folderTheme';
 import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/dispatch';
 import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
 import { PropertyTooltip } from './PropertyTooltip';
+import { SmartEffectsView } from './classBrowser/SmartEffectsView';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -1120,6 +1121,14 @@ export function TypedField(props: FieldProps) {
     case 'definition_ref':
       return <DefinitionRefEditor {...props} />;
     case 'struct':
+      if (typed?.struct_name === 'GameplayEffectsToApply') {
+        return (
+          <SmartEffectsView
+            envelope={typed}
+            onChange={(next) => props.onChange(next)}
+          />
+        );
+      }
       return <StructEditor {...props} />;
     case 'array':
     case 'set':
