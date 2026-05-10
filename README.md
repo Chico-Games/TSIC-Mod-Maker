@@ -32,6 +32,8 @@ The first run loads the **bundled defaults** baked into the build at `web/public
   - **Tech Tree**: dagre-layered DAG of items / recipes / stations driven by the loaded definitions.
   - **Enemies**: per-enemy `death_drop_table` editor, envelope-driven.
   - **Biome**: per-biome editor of the `LSP_<biome>_Floor` / `LSP_<biome>_Furniture` LootSpawnPoint pair.
+- **Items** — vertical sub-tab rail per item folder (Crafting Materials, Consumables, Constructables, Equippables, Gloves, Ammo, Seeds, Traps, Static Items). Each sub-tab uses the shared `<ClassBrowserTab>` with Detail / Spreadsheet / Compare modes, inline row-warning chips, a Where-Used panel, multi-select bulk edit, duplicate, and property-echo on the rail. Equippables and Gloves get a smart effects view that hides the inactive `b_apply_X` pairs. Auto-creates missing static-item partners (`FD_*_SI`) on tab open.
+- **Furniture** — same component, vertical sub-tab rail per furniture folder (Furniture, Damageable, Toggleable, With Components, Storage, Universal Storage, Crafting Stations, Production Stations, Plantable, Elevator, Teleporter, Death Box, Containment Cage, Shopping Cart, Spawn Points, Enemy Spawn Points, Interactable Text). Cross-links to Recipes & Loot for damageable/station records.
 - **Definitions** — schema-aware editor for any record. Three-pane layout (folder rail, file list, typed-envelope editor). The new sub-tabs cover the common authoring flows; this tab is authoritative for everything else, including orphan `LootDefinition` (`LD_*`) assets not yet referenced by any furniture.
 - **Validations** — orphan refs, missing Item↔StaticItem partners, stations with no/missing ARRs, empty/orphan ARRs, recipes with no inputs/outputs, FurnitureUpgradeRecipe whose target is unset/missing, orphan loot tables.
 
@@ -77,6 +79,7 @@ web/
     store/
       definitionsStore.ts              # zustand: load/save, indexes, validations
       appStore.ts                      # zustand: tab + sub-tab + search-open
+      referencedByIndex.ts             # reverse-ref index powering Where-Used
     components/
       Header.tsx
       RecipesAndLootTab.tsx            # sub-tab strip
@@ -85,6 +88,19 @@ web/
       TechTreeSubTab.tsx
       EnemiesSubTab.tsx
       BiomeSubTab.tsx
+      ItemsTab.tsx                     # top-level Items tab (rail of ClassBrowserTab sub-tabs)
+      FurnitureTab.tsx                 # top-level Furniture tab (rail of ClassBrowserTab sub-tabs)
+      classBrowser/                    # shared ClassBrowserTab + per-folder configs + sub-components
+        ClassBrowserTab.tsx            # Detail / Spreadsheet / Compare shell with multi-select + bulk edit
+        configs.ts                     # per-folder column / warning / smart-view config
+        SpreadsheetView.tsx
+        CompareView.tsx
+        SmartEffectsView.tsx           # hides inactive b_apply_X pairs on equippables/gloves
+        WhereUsedPanel.tsx
+        BulkEditDialog.tsx
+        RowWarnings.ts
+        PropertyEchoContext.tsx
+        types.ts
       DefinitionsTab.tsx               # typed-envelope editor (large)
       ValidationsTab.tsx
       RecipeCard.tsx
