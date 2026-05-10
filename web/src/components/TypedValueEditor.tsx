@@ -7,6 +7,7 @@ import { NumberSlider } from './NumberSlider';
 import { getFolderTheme } from './folderTheme';
 import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/dispatch';
 import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
+import { PropertyTooltip } from './PropertyTooltip';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -223,24 +224,26 @@ function FieldHead({
   label,
   type,
   controls,
-  tooltip,
+  meta,
   propertyName,
   pinAdapter,
 }: {
   label?: string;
   type: string;
   controls?: React.ReactNode;
-  tooltip?: string | null;
+  meta?: PropertyMeta | null;
   propertyName?: string;
   pinAdapter?: PinAdapter;
 }) {
   return (
     <div className="def-field-head">
-      <span className="def-field-label" title={tooltip ?? undefined}>
-        <PinToggle propertyName={propertyName} pinAdapter={pinAdapter} />
-        {label !== undefined && <>{label} </>}
-        <span className="def-type">{type}</span>
-      </span>
+      <PropertyTooltip meta={meta}>
+        <span className="def-field-label">
+          <PinToggle propertyName={propertyName} pinAdapter={pinAdapter} />
+          {label !== undefined && <>{label} </>}
+          <span className="def-type">{type}</span>
+        </span>
+      </PropertyTooltip>
       {controls && <div className="def-field-controls">{controls}</div>}
     </div>
   );
@@ -251,7 +254,7 @@ function PrimitiveRow({
   type,
   children,
   onDelete,
-  tooltip,
+  meta,
   className,
   propertyName,
   pinAdapter,
@@ -260,7 +263,7 @@ function PrimitiveRow({
   type: string;
   children: React.ReactNode;
   onDelete?: () => void;
-  tooltip?: string | null;
+  meta?: PropertyMeta | null;
   className?: string;
   propertyName?: string;
   pinAdapter?: PinAdapter;
@@ -268,10 +271,12 @@ function PrimitiveRow({
   return (
     <div className={`def-field def-field-row ${className ?? ''}`.trim()}>
       {label !== undefined && (
-        <span className="def-field-label" title={tooltip ?? undefined}>
-          <PinToggle propertyName={propertyName} pinAdapter={pinAdapter} />
-          {label} <span className="def-type">{type}</span>
-        </span>
+        <PropertyTooltip meta={meta}>
+          <span className="def-field-label">
+            <PinToggle propertyName={propertyName} pinAdapter={pinAdapter} />
+            {label} <span className="def-type">{type}</span>
+          </span>
+        </PropertyTooltip>
       )}
       {children}
       {onDelete && (
@@ -302,7 +307,7 @@ function BoolEditor({
       label={label}
       type="bool"
       onDelete={onDelete}
-      tooltip={meta?.tooltip}
+      meta={meta}
       className="def-type-color-bool"
       propertyName={propertyName}
       pinAdapter={pinAdapter}
@@ -337,7 +342,7 @@ function NumberEditor({
       label={label}
       type={typed.type}
       onDelete={onDelete}
-      tooltip={meta?.tooltip}
+      meta={meta}
       className="def-type-color-number"
       propertyName={propertyName}
       pinAdapter={pinAdapter}
@@ -396,7 +401,7 @@ function StringLikeEditor({
       label={label}
       type={typed.type}
       onDelete={onDelete}
-      tooltip={meta?.tooltip}
+      meta={meta}
       className="def-type-color-string"
       propertyName={propertyName}
       pinAdapter={pinAdapter}
@@ -481,7 +486,7 @@ function EnumEditor({
       label={label}
       type={`enum${enumLabel}`}
       onDelete={onDelete}
-      tooltip={meta?.tooltip}
+      meta={meta}
       className="def-type-color-enum"
       propertyName={propertyName}
       pinAdapter={pinAdapter}
@@ -522,7 +527,7 @@ function GameplayTagEditor({
       label={label}
       type="gameplay_tag"
       onDelete={onDelete}
-      tooltip={meta?.tooltip}
+      meta={meta}
       className="def-type-color-tag"
       propertyName={propertyName}
       pinAdapter={pinAdapter}
@@ -556,7 +561,7 @@ function GameplayTagContainerEditor({
       <FieldHead
         label={label}
         type={`gameplay_tag_container · ${tags.length}`}
-        tooltip={meta?.tooltip}
+        meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}
         controls={
@@ -696,7 +701,7 @@ function DefinitionRefEditor({
       <FieldHead
         label={label}
         type={`definition_ref · ${className || '?'} · ${options.length} known`}
-        tooltip={meta?.tooltip}
+        meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}
         controls={
@@ -764,7 +769,7 @@ function StructEditor({
       <FieldHead
         label={label}
         type={`struct · ${typed.struct_name ?? '?'} · ${keys.length} fields`}
-        tooltip={meta?.tooltip}
+        meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}
         controls={
@@ -858,7 +863,7 @@ function ContainerEditor({
       <FieldHead
         label={label}
         type={`${typed.type} · ${arr.length}`}
-        tooltip={meta?.tooltip}
+        meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}
         controls={
@@ -970,7 +975,7 @@ function MapEditor({
       <FieldHead
         label={label}
         type={`map · ${entries.length}`}
-        tooltip={meta?.tooltip}
+        meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}
         controls={
