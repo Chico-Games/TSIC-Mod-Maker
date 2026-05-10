@@ -14,6 +14,7 @@ import { SearchBox } from '../SearchBox';
 import { TypedPropertiesEditor } from '../TypedValueEditor';
 import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
+import { WhereUsedPanel } from './WhereUsedPanel';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
@@ -144,6 +145,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
                 refAdapter={refAdapter}
                 ownerKey={selectedKey}
               />
+              {selected && <WhereUsedPanel assetId={selected.id} />}
             </>
           ) : (
             <div className="empty-state-mini">Pick a record from the rail.</div>
