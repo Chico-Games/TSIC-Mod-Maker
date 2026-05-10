@@ -10,8 +10,8 @@ export type DragSource =
  *  bare U-stripped form, e.g. "DamageableFurnitureDefinition".
  *
  *  `def-ref` is the generic type used by the typed-envelope editor in
- *  the Definitions tab, Enemies / Biome / FurnitureLoot pages — it
- *  matches every other slot type for the palette-item handler. */
+ *  the Definitions tab and the Enemies / Biome sub-tabs — it matches
+ *  every other slot type for the palette-item handler. */
 export type DropTarget =
   | { type: 'def-ref'; ownerKey: string; path: (string | number)[]; expectedClass: string }
   | { type: 'recipe-input'; ownerKey: string; path: (string | number)[]; expectedClass: string }

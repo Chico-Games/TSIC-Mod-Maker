@@ -81,8 +81,8 @@ export function ItemPalette({ folders, title, autoFolders }: Props) {
   const recipesSubTab = useAppStore((s) => s.recipesSubTab);
   // Click-to-author only fires while the user is actually on the
   // Stations sub-tab. Without this gate, scrolling the palette in any
-  // other tab (Furniture, Enemies, Biome, FurnitureLoot, Definitions)
-  // would still mutate whatever recipe was last selected on Stations.
+  // other tab (Furniture, Enemies, Biome, Definitions) would still
+  // mutate whatever recipe was last selected on Stations.
   const authoringActive = tab === 'recipes-loot' && recipesSubTab === 'stations';
   const jumpToDef = useJumpToDefinition();
 
