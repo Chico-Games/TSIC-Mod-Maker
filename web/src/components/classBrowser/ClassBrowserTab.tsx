@@ -90,8 +90,34 @@ export function ClassBrowserTab({ folder, config }: Props) {
   }, [mode, MODE_LS_KEY]);
   const [bulkOpen, setBulkOpen] = useState(false);
 
-  // Stub — real impl in Task 17.
-  const duplicateSelected = () => { /* placeholder */ };
+  const duplicateOne = (sourceKey: DefinitionsKey): DefinitionsKey | null => {
+    const rec = definitions.get(sourceKey);
+    if (!rec) return null;
+    const base = rec.id;
+    const tryIds = [`${base}_Copy`, ...Array.from({ length: 50 }, (_, i) => `${base}_Copy${i + 2}`)];
+    let newId: string | null = null;
+    for (const id of tryIds) { if (!findKeyById(id)) { newId = id; break; } }
+    if (!newId) return null;
+    const newKey = createDefinitionForClass(rec.json?.class?.replace(/^U/, ''), newId);
+    if (!newKey) return null;
+    // Deep-clone properties from the source.
+    const cloned = structuredClone(rec.json?.properties ?? {});
+    updateValueAtPath(newKey, ['properties'], cloned);
+    return newKey;
+  };
+
+  const duplicateSelected = () => {
+    const sources = Array.from(selectedKeys);
+    let last: DefinitionsKey | null = null;
+    for (const k of sources) {
+      const newKey = duplicateOne(k);
+      if (newKey) last = newKey;
+    }
+    if (last) {
+      setSelectedKey(last);
+      setSelectedKeys(new Set([last]));
+    }
+  };
 
   type Row = { key: DefinitionsKey; id: string };
   const rows = useMemo<Row[]>(() => {
@@ -172,6 +198,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
           setMode={setMode}
           setBulkOpen={setBulkOpen}
           duplicateSelected={duplicateSelected}
+          duplicateOne={duplicateOne}
           theme={theme}
           config={config}
           findKeyById={findKeyById}
@@ -246,6 +273,7 @@ function RailColumn(props: {
   setMode: (m: 'detail' | 'spreadsheet' | 'compare') => void;
   setBulkOpen: (b: boolean) => void;
   duplicateSelected: () => void;
+  duplicateOne: (k: DefinitionsKey) => DefinitionsKey | null;
   theme: { color: string; emoji: string };
   config: ClassBrowserConfig;
   findKeyById: (id: string) => DefinitionsKey | null;
@@ -258,7 +286,7 @@ function RailColumn(props: {
 }) {
   const {
     filtered, selectedKey, setSelectedKey, selectedKeys, handleRailClick,
-    setSelectedKeys, setLastClickedKey, setMode, setBulkOpen, duplicateSelected,
+    setSelectedKeys, setLastClickedKey, setMode, setBulkOpen, duplicateSelected, duplicateOne,
     theme, config, findKeyById,
     createDefinitionForClass, filter, setFilter, jumpToDef, warningsForRow, definitions,
   } = props;
@@ -324,6 +352,11 @@ function RailColumn(props: {
                 <span className="emoji" aria-hidden>{theme.emoji}</span>
                 <span className="label"><HighlightedText text={humanizeAssetId(h.item.id)} ranges={h.ranges} /></span>
                 {echoVal != null && <span className="row-echo">{echoVal}</span>}
+                <button
+                  className="row-dup"
+                  title="Duplicate"
+                  onClick={(e) => { e.stopPropagation(); duplicateOne(h.item.key); }}
+                >⎘</button>
                 {top && (
                   <span
                     className={`row-warning sev-${top.rule.severity}`}
