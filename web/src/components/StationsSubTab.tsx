@@ -6,6 +6,7 @@ import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
 import { ItemPalette } from './ItemPalette';
+import { HighlightedText } from './HighlightedText';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -175,6 +176,7 @@ export function StationsSubTab() {
                   row={s}
                   selected={selectedKey === s.key}
                   onSelect={() => setSelectedKey(s.key)}
+                  highlight={filter}
                 />
               ))}
             </div>
@@ -228,7 +230,7 @@ export function StationsSubTab() {
   );
 }
 
-function StationRailRow({ row, selected, onSelect }: { row: StationRow; selected: boolean; onSelect: () => void }) {
+function StationRailRow({ row, selected, onSelect, highlight }: { row: StationRow; selected: boolean; onSelect: () => void; highlight: string }) {
   const dndCtx = useDndContext();
   const activeType = (dndCtx.active?.data?.current as any)?.type;
   // Only recipe cards can drop on a station row — block other drags from
@@ -247,7 +249,7 @@ function StationRailRow({ row, selected, onSelect }: { row: StationRow; selected
       style={{ borderLeft: `3px solid ${theme.color}` }}
     >
       <span className="emoji" aria-hidden>{theme.emoji}</span>
-      <span className="label">{row.displayName}</span>
+      <span className="label"><HighlightedText text={row.displayName} query={highlight} /></span>
     </button>
   );
 }

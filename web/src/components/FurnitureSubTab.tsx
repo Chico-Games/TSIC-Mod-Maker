@@ -5,6 +5,8 @@ import { getFolderTheme } from './folderTheme';
 import { DefRefSlot } from './DefRefSlot';
 import { ItemPalette } from './ItemPalette';
 import { RecipeCard } from './RecipeCard';
+import { VirtualList } from './VirtualList';
+import { HighlightedText } from './HighlightedText';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -98,20 +100,26 @@ export function FurnitureSubTab() {
             onChange={(e) => setFilter(e.target.value)}
           />
         </div>
-        <div className="rail-body">
-          {filtered.map((r) => (
-            <button
-              key={r.key}
-              className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
-              onClick={() => setSelectedKey(r.key)}
-              style={{ borderLeft: `3px solid ${getFolderTheme(FURNITURE_FOLDER).color}` }}
-            >
-              <span className="emoji" aria-hidden>🪑</span>
-              <span className="label">{r.displayName}</span>
-            </button>
-          ))}
-          {filtered.length === 0 && <div className="empty-state-mini">No furniture loaded.</div>}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="empty-state-mini">No furniture loaded.</div>
+        ) : (
+          <VirtualList
+            className="rail-body"
+            items={filtered}
+            rowHeight={30}
+            keyOf={(r) => r.key}
+            renderItem={(r) => (
+              <button
+                className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
+                onClick={() => setSelectedKey(r.key)}
+                style={{ borderLeft: `3px solid ${getFolderTheme(FURNITURE_FOLDER).color}` }}
+              >
+                <span className="emoji" aria-hidden>🪑</span>
+                <span className="label"><HighlightedText text={r.displayName} query={filter} /></span>
+              </button>
+            )}
+          />
+        )}
       </aside>
 
       <section className="furniture-pane">

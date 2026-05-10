@@ -3,6 +3,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
+import { VirtualList } from './VirtualList';
+import { HighlightedText } from './HighlightedText';
 
 const DEFAULT_ITEM_FOLDERS = [
   'consumable_definitions',
@@ -86,18 +88,21 @@ export function ItemPalette({ folders, title }: Props) {
         })}
       </div>
       <div className="palette-list">
-        {items.slice(0, 200).map((it) => (
-          <PaletteItem key={`${it.folder}/${it.id}`} id={it.id} folder={it.folder} cls={it.class} />
-        ))}
-        {items.length > 200 && (
-          <div className="palette-more">+{items.length - 200} more — refine filter</div>
-        )}
+        <VirtualList
+          items={items}
+          rowHeight={32}
+          keyOf={(it) => `${it.folder}/${it.id}`}
+          renderItem={(it) => (
+            <PaletteItem id={it.id} folder={it.folder} cls={it.class} highlight={filter} />
+          )}
+        />
       </div>
+      <div className="palette-count">{items.length.toLocaleString()} items</div>
     </div>
   );
 }
 
-function PaletteItem({ id, folder, cls }: { id: string; folder: string; cls: string }) {
+function PaletteItem({ id, folder, cls, highlight }: { id: string; folder: string; cls: string; highlight: string }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette:${folder}/${id}`,
     data: { type: 'palette-item', class: cls, value: id } as any,
@@ -113,7 +118,7 @@ function PaletteItem({ id, folder, cls }: { id: string; folder: string; cls: str
       title={`${id} · ${cls}`}
     >
       <span className="emoji" aria-hidden>{t.emoji}</span>
-      <span className="label">{humanizeAssetId(id)}</span>
+      <span className="label"><HighlightedText text={humanizeAssetId(id)} query={highlight} /></span>
       <span className="cls" style={{ color: t.color }}>{cls}</span>
     </div>
   );

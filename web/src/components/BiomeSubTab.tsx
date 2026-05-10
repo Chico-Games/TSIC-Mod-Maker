@@ -4,6 +4,7 @@ import { useAppStore } from '../store/appStore';
 import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
+import { HighlightedText } from './HighlightedText';
 
 const LSP_FOLDER = 'loot_spawn_point_definitions';
 
@@ -88,7 +89,7 @@ export function BiomeSubTab() {
               style={{ borderLeft: '3px solid #f0d77a' }}
             >
               <span className="emoji" aria-hidden>✨</span>
-              <span className="label">{b.biome}</span>
+              <span className="label"><HighlightedText text={b.biome} query={filter} /></span>
               <span className="muted small">
                 {b.floorKey ? '🟫' : '·'}{b.furnitureKey ? '🪑' : '·'}
               </span>

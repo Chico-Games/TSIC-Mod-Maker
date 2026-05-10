@@ -5,6 +5,7 @@ import { humanizeAssetId } from './definitionsNaming';
 import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
+import { HighlightedText } from './HighlightedText';
 
 const ENEMY_FOLDER = 'enemy_definitions';
 
@@ -77,7 +78,7 @@ export function EnemiesSubTab() {
               style={{ borderLeft: '3px solid #ef6c6c' }}
             >
               <span className="emoji" aria-hidden>👹</span>
-              <span className="label">{r.displayName}</span>
+              <span className="label"><HighlightedText text={r.displayName} query={filter} /></span>
             </button>
           ))}
           {filtered.length === 0 && <div className="empty-state-mini">No enemies loaded.</div>}

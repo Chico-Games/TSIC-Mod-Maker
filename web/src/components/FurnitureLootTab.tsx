@@ -6,6 +6,8 @@ import { getFolderTheme } from './folderTheme';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { ItemPalette } from './ItemPalette';
+import { VirtualList } from './VirtualList';
+import { HighlightedText } from './HighlightedText';
 
 const LOOT_FOLDER = 'loot_definitions';
 
@@ -65,22 +67,30 @@ export function FurnitureLootTab() {
             onChange={(e) => setFilter(e.target.value)}
           />
         </div>
-        <div className="rail-body">
-          {filtered.map((r) => (
-            <button
-              key={r.key}
-              className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
-              onClick={() => setSelectedKey(r.key)}
-              style={{ borderLeft: `3px solid ${theme.color}` }}
-              title={r.id}
-            >
-              <span className="emoji" aria-hidden>{theme.emoji}</span>
-              <span className="label">{humanizeAssetId(r.id)}</span>
-              <span className="muted small">{r.itemCount}</span>
-            </button>
-          ))}
-          {filtered.length === 0 && <div className="empty-state-mini">No loot tables.</div>}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="empty-state-mini">No loot tables.</div>
+        ) : (
+          <VirtualList
+            className="rail-body"
+            items={filtered}
+            rowHeight={30}
+            keyOf={(r) => r.key}
+            renderItem={(r) => (
+              <button
+                className={`rail-row ${selectedKey === r.key ? 'selected' : ''}`}
+                onClick={() => setSelectedKey(r.key)}
+                style={{ borderLeft: `3px solid ${theme.color}` }}
+                title={r.id}
+              >
+                <span className="emoji" aria-hidden>{theme.emoji}</span>
+                <span className="label">
+                  <HighlightedText text={humanizeAssetId(r.id)} query={filter} />
+                </span>
+                <span className="muted small">{r.itemCount}</span>
+              </button>
+            )}
+          />
+        )}
       </aside>
 
       <section className="loot-pane">

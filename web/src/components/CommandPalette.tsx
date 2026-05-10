@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
+import { HighlightedText } from './HighlightedText';
 import type { AppTab } from '../store/appStore';
 
 interface Props {
@@ -90,9 +91,11 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
                 onClick={() => choose(i)}
               >
                 <span className="hit-emoji" aria-hidden>{theme.emoji}</span>
-                <span className="hit-label" style={{ color: theme.color }}>{humanizeAssetId(h.id)}</span>
+                <span className="hit-label" style={{ color: theme.color }}>
+                  <HighlightedText text={humanizeAssetId(h.id)} query={q} />
+                </span>
                 <span className="hit-kind">{h.folder}</span>
-                <span className="hit-sub">{h.matchPath}: {h.snippet}</span>
+                <span className="hit-sub">{h.matchPath}: <HighlightedText text={h.snippet} query={q} /></span>
               </div>
             );
           })}
