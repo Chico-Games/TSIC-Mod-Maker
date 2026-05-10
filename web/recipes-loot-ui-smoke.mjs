@@ -611,13 +611,12 @@ async function waitForServer(url, timeoutMs = 15000) {
     console.log('OK: Stations sub-tab "+ Add upgrade recipe" mints the upgrade and renders it');
 
     // ── Furniture sub-tab: select FD_Aircon_DF and confirm the death
-    //    loot list + upgrade recipe inline section render — the upgrade
-    //    section now renders via UpgradeRecipeSection and is badged.
+    //    loot list + upgrade recipe inline section render. The Furniture
+    //    sub-tab is now the only authoring surface for LootDefinition
+    //    contents — each loot entry has a disclosure caret that expands
+    //    the linked LootDefinition's TypedPropertiesEditor inline.
     await page.locator('.subtab', { hasText: 'Furniture' }).click();
     await page.waitForSelector('.furniture-layout');
-    // Furniture rail now renders every entry as a .rail-family
-    // (singletons + chains share the same shape) — click the head
-    // of the Aircon entry.
     await page.locator('.rail-family-head', { hasText: 'Aircon' }).first().click();
     await page.waitForTimeout(150);
     const lootEntries = await page.locator('.loot-entry').count();
@@ -628,14 +627,51 @@ async function waitForServer(url, timeoutMs = 15000) {
     if (upgradeCard < 1) throw new Error('expected the Aircon upgrade recipe card to render');
     console.log('OK: Furniture sub-tab renders loot + badged upgrade recipe card');
 
-    // ── Furniture Loot top-level tab: open LD_Aircon and check the
-    //    items_to_drop count badge in the rail.
-    await page.getByRole('button', { name: 'Furniture Loot', exact: true }).click();
-    await page.waitForSelector('.furniture-loot-layout');
-    const ldRow = page.locator('.rail-row', { hasText: 'Aircon' }).first();
-    const ldCount = await ldRow.locator('.muted.small').first().textContent();
-    if (ldCount?.trim() !== '2') throw new Error(`expected items_to_drop count 2; got "${ldCount}"`);
-    console.log('OK: Furniture Loot rail shows items_to_drop count = 2');
+    // ── Disclosure caret on the Aircon's first loot entry expands the
+    //    linked LootDefinition's TypedPropertiesEditor inline. Verify
+    //    items_to_drop renders, mutate it (add an entry), navigate to a
+    //    different furniture and back, confirm the change persisted.
+    const aircon = page.locator('.furniture-pane');
+    const firstLoot = aircon.locator('.loot-entry').first();
+    const caret = firstLoot.locator('.death-loot-caret');
+    if ((await caret.count()) !== 1) throw new Error('expected one disclosure caret per loot entry');
+    if (await caret.getAttribute('disabled') !== null) throw new Error('caret should be enabled when ref resolves');
+    await caret.click();
+    await page.waitForTimeout(120);
+    const inlineEditor = firstLoot.locator('.death-loot-row-body .def-properties');
+    if ((await inlineEditor.count()) !== 1) throw new Error('expected inline TypedPropertiesEditor (.def-properties) after expand');
+    // The LootDefinition's only regular-array property is items_to_drop —
+    // gameplay_tags renders as .def-array-strings (color-tag), not as
+    // .def-array-items (color-array). Scope to .def-type-color-array so
+    // we don't pick up the tag editor.
+    const itemsField = inlineEditor.locator('.def-field.def-type-color-array').first();
+    if ((await itemsField.count()) !== 1) throw new Error('expected one items_to_drop array field in inline editor');
+    const itemsBefore = await itemsField.locator('.def-array-item').count();
+    // FieldHead's "+ Add" button (literal label "+ Add" with one space)
+    // appends a fresh ItemToDrop struct to the array.
+    await itemsField.locator('button', { hasText: '+ Add' }).first().click();
+    await page.waitForTimeout(120);
+    const itemsAfterAdd = await itemsField.locator('.def-array-item').count();
+    if (itemsAfterAdd !== itemsBefore + 1) {
+      throw new Error(`expected items_to_drop to grow by 1; before=${itemsBefore} after=${itemsAfterAdd}`);
+    }
+    // Switch to a different furniture, then back to Aircon. Expansion
+    // state is ephemeral by design (resets on selection change), so we
+    // re-expand and confirm the underlying LootDefinition still has the
+    // added entry.
+    await page.locator('.rail-family-head').nth(1).click();
+    await page.waitForTimeout(120);
+    await page.locator('.rail-family-head', { hasText: 'Aircon' }).first().click();
+    await page.waitForTimeout(120);
+    await page.locator('.furniture-pane .loot-entry').first().locator('.death-loot-caret').click();
+    await page.waitForTimeout(120);
+    const itemsAfterReturn = await page.locator('.furniture-pane .loot-entry').first()
+      .locator('.death-loot-row-body .def-properties .def-field.def-type-color-array')
+      .first().locator('.def-array-item').count();
+    if (itemsAfterReturn !== itemsAfterAdd) {
+      throw new Error(`expected loot edit to persist across selection; expected=${itemsAfterAdd} got=${itemsAfterReturn}`);
+    }
+    console.log('OK: inline LootDefinition editor expands, edits persist, expansion state is ephemeral');
 
     // ── Validations tab: FD_BenchTier3_CS has a dangling ARR ref;
     //    the auto-create load step should have minted ARR_BenchT3 with
