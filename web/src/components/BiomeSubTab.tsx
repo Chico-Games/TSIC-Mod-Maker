@@ -6,6 +6,7 @@ import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRank } from '../search/fuzzy';
+import { inferAcceptedFolders } from '../inferFolders';
 
 const LSP_FOLDER = 'loot_spawn_point_definitions';
 
@@ -22,6 +23,7 @@ export function BiomeSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+  const classNodes = useDefinitionsStore((s) => s.classNodes);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
@@ -67,6 +69,18 @@ export function BiomeSubTab() {
   const selected = selectedBiome ? biomes.find((b) => b.biome === selectedBiome) ?? null : null;
   const floorRec = selected?.floorKey ? definitions.get(selected.floorKey) : null;
   const furnRec = selected?.furnitureKey ? definitions.get(selected.furnitureKey) : null;
+
+  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
+    if (!floorRec && !furnRec) return null;
+    const lookups = { records: definitions, findKeyById, classNodes };
+    const a = floorRec ? inferAcceptedFolders(floorRec, lookups) : null;
+    const b = furnRec ? inferAcceptedFolders(furnRec, lookups) : null;
+    if (!a && !b) return null;
+    const out = new Set<string>();
+    if (a) for (const f of a) out.add(f);
+    if (b) for (const f of b) out.add(f);
+    return out;
+  }, [definitions, findKeyById, classNodes, floorRec, furnRec]);
 
   return (
     <div className="biome-layout">
@@ -171,7 +185,11 @@ export function BiomeSubTab() {
         )}
       </section>
 
-      <ItemPalette folders={['loot_definitions']} title="Loot tables" />
+      <ItemPalette
+        folders={['loot_definitions']}
+        title="Loot tables"
+        autoFolders={paletteAutoFolders}
+      />
     </div>
   );
 }

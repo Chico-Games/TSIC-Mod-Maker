@@ -9,6 +9,7 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
+import { inferAcceptedFolders } from '../inferFolders';
 
 const ENEMY_FOLDER = 'enemy_definitions';
 
@@ -23,6 +24,7 @@ export function EnemiesSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+  const classNodes = useDefinitionsStore((s) => s.classNodes);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
@@ -61,6 +63,11 @@ export function EnemiesSubTab() {
 
   const selected = selectedKey ? definitions.get(selectedKey) : null;
   const props: any = selected?.json?.properties ?? {};
+
+  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
+    if (!selected) return null;
+    return inferAcceptedFolders(selected, { records: definitions, findKeyById, classNodes });
+  }, [definitions, findKeyById, classNodes, selected]);
 
   return (
     <div className="enemies-layout">
@@ -132,7 +139,11 @@ export function EnemiesSubTab() {
         )}
       </section>
 
-      <ItemPalette folders={['crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']} title="Drops" />
+      <ItemPalette
+        folders={['crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']}
+        title="Drops"
+        autoFolders={paletteAutoFolders}
+      />
     </div>
   );
 }

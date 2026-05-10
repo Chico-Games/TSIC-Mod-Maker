@@ -14,6 +14,7 @@ import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
 import { AssetTitle } from './AssetTitle';
 import { AddPicker } from './AddPicker';
+import { inferAcceptedFolders } from '../inferFolders';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -76,6 +77,7 @@ export function StationsSubTab() {
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
+  const classNodes = useDefinitionsStore((s) => s.classNodes);
 
   const [filter, setFilter] = useState('');
   const selectedKey = useAppStore((s) => s.selectedStationKey);
@@ -199,6 +201,18 @@ export function StationsSubTab() {
   const selectedRow = selectedKey ? stations.find((s) => s.key === selectedKey) ?? null : null;
   const selectedArrKey = selectedRow?.arrValue ? findKeyById(selectedRow.arrValue) : null;
   const selectedArr = selectedArrKey ? definitions.get(selectedArrKey) : null;
+
+  /** Auto-filter the items palette by the classes referenced by the
+   *  selected recipe. With ONLY a station selected the palette stays
+   *  on its prop defaults — restricting to ARR/recipe classes alone
+   *  would hide every material the user wants to drag into recipes,
+   *  which is the whole point of the palette. */
+  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
+    if (!selectedRecipeKey) return null;
+    const recipeRec = definitions.get(selectedRecipeKey);
+    if (!recipeRec) return null;
+    return inferAcceptedFolders(recipeRec, { records: definitions, findKeyById, classNodes });
+  }, [definitions, findKeyById, classNodes, selectedRecipeKey]);
 
   type RecipeRef = { class: string; value: string };
   const recipeRefs = useMemo<RecipeRef[]>(() => {
@@ -470,7 +484,7 @@ export function StationsSubTab() {
         )}
       </section>
 
-      <ItemPalette />
+      <ItemPalette autoFolders={paletteAutoFolders} />
     </div>
   );
 }

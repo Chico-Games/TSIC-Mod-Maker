@@ -11,6 +11,7 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
+import { inferAcceptedFolders } from '../inferFolders';
 
 const LOOT_FOLDER = 'loot_definitions';
 
@@ -19,6 +20,7 @@ export function FurnitureLootTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+  const classNodes = useDefinitionsStore((s) => s.classNodes);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
@@ -58,6 +60,11 @@ export function FurnitureLootTab() {
 
   const selected = selectedKey ? definitions.get(selectedKey) : null;
   const theme = getFolderTheme(LOOT_FOLDER);
+
+  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
+    if (!selected) return null;
+    return inferAcceptedFolders(selected, { records: definitions, findKeyById, classNodes });
+  }, [definitions, findKeyById, classNodes, selected]);
 
   return (
     <div className="furniture-loot-layout">
@@ -138,7 +145,11 @@ export function FurnitureLootTab() {
         )}
       </section>
 
-      <ItemPalette folders={['crafting_material_definitions', 'consumable_definitions', 'constructable_item_definitions', 'ammo_definitions']} title="Items" />
+      <ItemPalette
+        folders={['crafting_material_definitions', 'consumable_definitions', 'constructable_item_definitions', 'ammo_definitions']}
+        title="Items"
+        autoFolders={paletteAutoFolders}
+      />
     </div>
   );
 }

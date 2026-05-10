@@ -10,6 +10,7 @@ import { useJumpToDefinition } from './useJumpToDefinition';
 import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
 import { AssetTitle } from './AssetTitle';
+import { inferAcceptedFolders } from '../inferFolders';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -42,6 +43,7 @@ export function FurnitureSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
+  const classNodes = useDefinitionsStore((s) => s.classNodes);
   const jumpToDef = useJumpToDefinition();
 
   const chainIndex = useMemo(() => buildUpgradeChains(definitions, (rec) => rec.folder === FURNITURE_FOLDER), [definitions]);
@@ -106,6 +108,11 @@ export function FurnitureSubTab() {
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 
   const selected = selectedKey ? definitions.get(selectedKey) : null;
+
+  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
+    if (!selected) return null;
+    return inferAcceptedFolders(selected, { records: definitions, findKeyById, classNodes });
+  }, [definitions, findKeyById, classNodes, selected]);
   const props: any = selected?.json?.properties ?? {};
   const lootArrayEnvelope: any = props.loot_dropped_on_death;
   const lootEntries: any[] = lootArrayEnvelope?.type === 'array' && Array.isArray(lootArrayEnvelope.value)
@@ -259,7 +266,11 @@ export function FurnitureSubTab() {
         )}
       </section>
 
-      <ItemPalette folders={['loot_definitions', 'damageable_furniture_definitions', 'crafting_material_definitions']} title="Drop targets" />
+      <ItemPalette
+        folders={['loot_definitions', 'damageable_furniture_definitions', 'crafting_material_definitions']}
+        title="Drop targets"
+        autoFolders={paletteAutoFolders}
+      />
     </div>
   );
 }

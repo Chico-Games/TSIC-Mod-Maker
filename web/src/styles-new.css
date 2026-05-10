@@ -345,12 +345,20 @@
 }
 .palette-header h3 { margin: 0; font-size: 13px; font-weight: 600; }
 .palette-header input { width: 100%; }
-.palette-folders {
+.palette-folders-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px 8px;
   border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.palette-folders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 .folder-chip {
   background: transparent;
@@ -359,8 +367,20 @@
   padding: 2px 8px;
   font-size: 11px;
   color: var(--muted);
+  cursor: pointer;
 }
+.folder-chip:hover { color: var(--text); }
 .folder-chip.on { color: var(--text); }
+.folder-chip.auto::after {
+  content: '✦';
+  margin-left: 4px;
+  font-size: 9px;
+  opacity: 0.6;
+}
+.folder-chip-toggle {
+  background: var(--panel-2);
+  font-weight: 600;
+}
 .palette-list {
   flex: 1;
   overflow-y: auto;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
@@ -53,13 +53,19 @@ const DEFAULT_ITEM_FOLDERS = [
 ];
 
 interface Props {
-  /** Folders to show in the palette by default. */
+  /** Folders to show in the palette by default. Used as the source
+   *  for the chip strip when `autoFolders` is null. */
   folders?: string[];
   /** Title above the palette. */
   title?: string;
+  /** When set, the palette's chip strip contains the union of these
+   *  folders + the prop `folders` defaults. The chips inside
+   *  `autoFolders` are switched on by default; the rest are off. The
+   *  set is rebuilt whenever the selection changes. */
+  autoFolders?: Set<string> | null;
 }
 
-export function ItemPalette({ folders, title }: Props) {
+export function ItemPalette({ folders, title, autoFolders }: Props) {
   const allFolders = useDefinitionsStore((s) => s.folders);
   const definitions = useDefinitionsStore((s) => s.definitions);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
@@ -79,21 +85,51 @@ export function ItemPalette({ folders, title }: Props) {
   const jumpToDef = useJumpToDefinition();
 
   const [filter, setFilter] = useState('');
-  // Folder pick: starts from the requested defaults and re-seeds when
-  // the loaded folder set arrives (the store is asynchronous, so the
-  // first render usually has an empty allFolders).
-  const initialFolders = useMemo(() => {
-    const seed = (folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f));
-    return new Set(seed.length ? seed : allFolders);
-  }, [folders, allFolders]);
-  const [enabled, setEnabled] = useState<Set<string>>(initialFolders);
-  const [seeded, setSeeded] = useState(initialFolders.size > 0);
+
+  /** The union of every folder we want to show in the chip strip:
+   *  prop defaults ∪ auto-inferred (when supplied). On a real
+   *  selection only the auto-inferred folders are switched on, but
+   *  the user still sees the full set so they can flip extras on. */
+  const visibleFolders = useMemo(() => {
+    const propSet = new Set(
+      (folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f)),
+    );
+    if (autoFolders) {
+      for (const f of autoFolders) if (allFolders.includes(f)) propSet.add(f);
+    }
+    return propSet.size > 0 ? [...propSet] : [...allFolders];
+  }, [folders, allFolders, autoFolders]);
+
+  /** When `autoFolders` is provided we use it as the default-on set;
+   *  otherwise fall back to all visible folders being on. */
+  const autoDefault = useMemo(() => {
+    if (autoFolders && autoFolders.size > 0) {
+      const inter = new Set<string>();
+      for (const f of autoFolders) if (allFolders.includes(f)) inter.add(f);
+      return inter;
+    }
+    return new Set(visibleFolders);
+  }, [autoFolders, allFolders, visibleFolders]);
+
+  const [enabled, setEnabled] = useState<Set<string>>(autoDefault);
+  const [seeded, setSeeded] = useState(autoDefault.size > 0);
+  // Track the last auto-default we applied so we re-apply only when
+  // it really changes (selection moved). User toggles after the
+  // re-application persist until the next selection change.
+  const lastAutoSig = useRef<string>('');
   useEffect(() => {
-    if (!seeded && initialFolders.size > 0) {
-      setEnabled(initialFolders);
+    const sig = [...autoDefault].sort().join('|');
+    if (sig !== lastAutoSig.current) {
+      lastAutoSig.current = sig;
+      if (autoDefault.size > 0) {
+        setEnabled(new Set(autoDefault));
+        setSeeded(true);
+      }
+    } else if (!seeded && autoDefault.size > 0) {
+      setEnabled(new Set(autoDefault));
       setSeeded(true);
     }
-  }, [seeded, initialFolders]);
+  }, [autoDefault, seeded]);
 
   type ItemRow = { id: string; folder: string; class: string; humanLabel: string };
   const inFolder = useMemo<ItemRow[]>(() => {
@@ -283,6 +319,31 @@ export function ItemPalette({ folders, title }: Props) {
     });
   };
 
+  /** Solo / invert. Right-click on a folder chip:
+   *   - if the chip is the only one currently on → invert (everything
+   *     except this one);
+   *   - otherwise → solo (only this one).
+   *  This matches the pattern used in DCC track tools. */
+  const onContextFolder = (f: string) => {
+    setEnabled((cur) => {
+      const onlyThis = cur.size === 1 && cur.has(f);
+      if (onlyThis) {
+        // Invert.
+        const next = new Set(visibleFolders);
+        next.delete(f);
+        return next;
+      }
+      return new Set([f]);
+    });
+  };
+
+  const allOn = visibleFolders.every((f) => enabled.has(f));
+  const allOff = enabled.size === 0;
+  const onAllToggle = () => {
+    setEnabled(allOn ? new Set() : new Set(visibleFolders));
+  };
+  const onResetAuto = () => setEnabled(new Set(autoDefault));
+
   return (
     <div className="item-palette">
       <div className="palette-header">
@@ -294,23 +355,41 @@ export function ItemPalette({ folders, title }: Props) {
           onChange={(e) => setFilter(e.target.value)}
         />
       </div>
-      <div className="palette-folders">
-        {(folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f)).map((f) => {
-          const t = getFolderTheme(f);
-          const on = enabled.has(f);
-          return (
-            <button
-              key={f}
-              className={`folder-chip ${on ? 'on' : ''}`}
-              onClick={() => toggleFolder(f)}
-              title={f}
-              style={on ? { borderColor: t.color, color: t.color } : undefined}
-            >
-              <span aria-hidden>{t.emoji}</span>
-              {f.replace(/_definitions?$/, '')}
-            </button>
-          );
-        })}
+      <div className="palette-folders-bar">
+        <button
+          className="folder-chip folder-chip-toggle"
+          onClick={onAllToggle}
+          title={allOn ? 'Turn all folders off' : 'Turn all folders on'}
+        >
+          {allOn ? '◉ all' : allOff ? '○ all' : '◐ all'}
+        </button>
+        {autoFolders && autoFolders.size > 0 && (
+          <button
+            className="folder-chip folder-chip-toggle"
+            onClick={onResetAuto}
+            title="Reset chips to the inferred set for the current selection"
+          >↺ auto</button>
+        )}
+        <div className="palette-folders">
+          {visibleFolders.map((f) => {
+            const t = getFolderTheme(f);
+            const on = enabled.has(f);
+            const isAuto = autoFolders?.has(f);
+            return (
+              <button
+                key={f}
+                className={`folder-chip ${on ? 'on' : ''} ${isAuto ? 'auto' : ''}`}
+                onClick={() => toggleFolder(f)}
+                onContextMenu={(e) => { e.preventDefault(); onContextFolder(f); }}
+                title={`${f}${isAuto ? '\nInferred from the selected record.' : ''}\nClick: toggle\nRight-click: solo (or invert when this is the only one on)`}
+                style={on ? { borderColor: t.color, color: t.color } : undefined}
+              >
+                <span aria-hidden>{t.emoji}</span>
+                {f.replace(/_definitions?$/, '')}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <div className="palette-folders palette-add-row">
         <AddPicker

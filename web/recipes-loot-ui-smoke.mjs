@@ -521,9 +521,43 @@ async function waitForServer(url, timeoutMs = 15000) {
     }
     console.log('OK: ARR_BenchT1.json carries the new RD_FromWood_CR ref');
 
+    // ── Auto-filter the palette by the selected recipe's accepted
+    //    classes. RD_Sword_CR has CraftingMaterial inputs only — so
+    //    while it's selected the Consumable folder chip should be
+    //    OFF (Bread hidden) and the CraftingMaterial chip ON (Wood
+    //    visible).
+    await page.locator('.recipe-card', { hasText: 'RD_Sword_CR' }).first().click();
+    await page.waitForTimeout(150);
+    const woodVisible = await page.locator('.palette-item', { hasText: 'Wood' }).count();
+    const breadVisible = await page.locator('.palette-item', { hasText: 'Bread' }).count();
+    if (woodVisible < 1) throw new Error('expected Wood in auto-filtered palette');
+    if (breadVisible !== 0) throw new Error(`expected Bread hidden by auto-filter; got ${breadVisible}`);
+    console.log('OK: palette auto-filtered to recipe accepted classes (Wood visible, Bread hidden)');
+
+    // Right-click solo: right-click crafting_material chip → that
+    // becomes the only one on. Clicking ALL toggle should enable all.
+    const matChip = page.locator('.folder-chip', { hasText: 'crafting_material' }).first();
+    await matChip.click({ button: 'right' });
+    await page.waitForTimeout(80);
+    // Click ALL toggle → everything on → Bread becomes visible.
+    await page.locator('.folder-chip-toggle').first().click();
+    await page.waitForTimeout(120);
+    const breadAfterAll = await page.locator('.palette-item', { hasText: 'Bread' }).count();
+    if (breadAfterAll < 1) throw new Error('All-on toggle did not turn every folder on');
+    console.log('OK: All-on toggle reveals every chip\'s items');
+
     // ── Class-aware drop rejection: drag a Consumable palette item
     //    over a CraftingMaterial-only slot and confirm the slot shows
     //    the .rejects style, and dropping doesn't change the slot.
+    // The auto-filter restricts the palette to the recipe's input
+    // class — flip "all on" so the Consumable chip turns on, then
+    // pick Bread.
+    const allChip = page.locator('.folder-chip-toggle').first();
+    if (await allChip.count()) {
+      const allText = (await allChip.textContent()) || '';
+      if (!/◉/.test(allText)) await allChip.click();
+      await page.waitForTimeout(100);
+    }
     const consumableChip = page.locator('.palette-item', { hasText: 'Bread' }).first();
     const swordCard = page.locator('.recipe-card', { hasText: 'RD_Sword_CR' }).first();
     const swordInputSlot = swordCard.locator('.input-col .def-ref-slot').first();
