@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../../store/definitionsStore';
 import { useAppStore } from '../../store/appStore';
 import { humanizeAssetId } from '../definitionsNaming';
@@ -13,7 +13,7 @@ import { AssetTitle } from '../AssetTitle';
 import { SearchBox } from '../SearchBox';
 import { TypedPropertiesEditor } from '../TypedValueEditor';
 import { useRefAdapter } from '../useRefAdapter';
-import { PropertyEchoProvider } from './PropertyEchoContext';
+import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
@@ -98,70 +98,31 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const selected = selectedKey ? definitions.get(selectedKey) : null;
   const theme = getFolderTheme(folder);
 
+  // Publish the warning-fix context on a global so the RailColumn child can
+  // invoke rule.fix(rec, ctx) without us threading another prop down. Only
+  // one ClassBrowserTab is mounted at a time, so collisions aren't possible.
+  // This is a deliberate small hack to keep the RailColumn signature lean.
+  (window as any).__cbCtx = warningCtx;
+
   return (
     <PropertyEchoProvider>
       <div className="class-browser">
-        <aside className="rail">
-          <div className="rail-header">
-            <h3>{config.label}</h3>
-            <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
-            <div className="rail-add-row">
-              <button className="add-row" onClick={() => {
-                let n = 1;
-                const tpl = config.idTemplate ?? ((i: number) => `ID_New${i}`);
-                let id = tpl(n);
-                while (findKeyById(id)) { n++; id = tpl(n); }
-                const k = createDefinitionForClass(config.newRecordClass, id);
-                if (k) setSelectedKey(k);
-              }}>＋ New {config.label}</button>
-            </div>
-          </div>
-          {filtered.length === 0 ? (
-            <div className="empty-state-mini">No records.</div>
-          ) : (
-            <VirtualList
-              className="rail-body"
-              items={filtered}
-              rowHeight={30}
-              keyOf={(h) => h.item.key}
-              renderItem={(h) => (
-                <button
-                  className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
-                  onClick={() => setSelectedKey(h.item.key)}
-                  style={{ borderLeft: `3px solid ${theme.color}` }}
-                  title={`${h.item.id}\nMiddle-click to open in Definitions`}
-                  onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
-                  onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
-                >
-                  <span className="emoji" aria-hidden>{theme.emoji}</span>
-                  <span className="label">
-                    <HighlightedText text={humanizeAssetId(h.item.id)} ranges={h.ranges} />
-                  </span>
-                  {(() => {
-                    const ws = warningsForRow(h.item.key);
-                    if (ws.length === 0) return null;
-                    const top = ws.sort((a, b) => severityOrder(b.rule.severity) - severityOrder(a.rule.severity))[0];
-                    return (
-                      <span
-                        className={`row-warning sev-${top.rule.severity}`}
-                        title={ws.map(w => `[${w.rule.severity}] ${w.text}`).join('\n')}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (top.rule.fix) {
-                            const rec = definitions.get(h.item.key);
-                            if (rec) top.rule.fix(rec, warningCtx);
-                          }
-                        }}
-                      >{ws.length}</span>
-                    );
-                  })()}
-                </button>
-              )}
-            />
-          )}
-        </aside>
+        <RailColumn
+          filtered={filtered}
+          selectedKey={selectedKey}
+          setSelectedKey={setSelectedKey}
+          theme={theme}
+          config={config}
+          findKeyById={findKeyById}
+          createDefinitionForClass={createDefinitionForClass}
+          filter={filter}
+          setFilter={setFilter}
+          jumpToDef={jumpToDef}
+          warningsForRow={warningsForRow}
+          definitions={definitions}
+        />
 
-        <section className="class-browser-pane">
+        <EchoPublishingPane>
           {selected && selectedKey ? (
             <>
               <header className="station-header">
@@ -187,7 +148,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
           ) : (
             <div className="empty-state-mini">Pick a record from the rail.</div>
           )}
-        </section>
+        </EchoPublishingPane>
 
         <ItemPalette
           folders={config.paletteFolders ?? [folder, 'crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']}
@@ -196,4 +157,119 @@ export function ClassBrowserTab({ folder, config }: Props) {
       </div>
     </PropertyEchoProvider>
   );
+}
+
+function RailColumn(props: {
+  filtered: any[];
+  selectedKey: DefinitionsKey | null;
+  setSelectedKey: (k: DefinitionsKey) => void;
+  theme: { color: string; emoji: string };
+  config: ClassBrowserConfig;
+  findKeyById: (id: string) => DefinitionsKey | null;
+  createDefinitionForClass: (cls: string, id: string) => DefinitionsKey | null;
+  filter: string;
+  setFilter: (s: string) => void;
+  jumpToDef: (id: string) => void;
+  warningsForRow: (k: DefinitionsKey) => { rule: WarningRule; text: string }[];
+  definitions: Map<DefinitionsKey, any>;
+}) {
+  const {
+    filtered, selectedKey, setSelectedKey, theme, config, findKeyById,
+    createDefinitionForClass, filter, setFilter, jumpToDef, warningsForRow, definitions,
+  } = props;
+  const { echo, setEcho } = usePropertyEcho();
+
+  // Esc clears the property-echo (so the rail doesn't get stuck showing it).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setEcho(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setEcho]);
+
+  const valueAtPath = (json: any, path: string[]): any => {
+    let cur: any = json;
+    for (const seg of path) { if (cur == null) return undefined; cur = cur[seg]; }
+    return cur;
+  };
+  const fmtEcho = (v: any): string => {
+    if (v == null) return '—';
+    if (typeof v === 'string') return v.length > 14 ? v.slice(0, 12) + '…' : v;
+    if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+    return JSON.stringify(v).slice(0, 14);
+  };
+
+  return (
+    <aside className="rail">
+      <div className="rail-header">
+        <h3>{config.label}</h3>
+        <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
+        <div className="rail-add-row">
+          <button className="add-row" onClick={() => {
+            let n = 1;
+            const tpl = config.idTemplate ?? ((i: number) => `ID_New${i}`);
+            let id = tpl(n);
+            while (findKeyById(id)) { n++; id = tpl(n); }
+            const k = createDefinitionForClass(config.newRecordClass, id);
+            if (k) setSelectedKey(k);
+          }}>＋ New {config.label}</button>
+        </div>
+      </div>
+      {filtered.length === 0 ? (
+        <div className="empty-state-mini">No records.</div>
+      ) : (
+        <VirtualList
+          className="rail-body"
+          items={filtered}
+          rowHeight={30}
+          keyOf={(h: any) => h.item.key}
+          renderItem={(h: any) => {
+            const rec = definitions.get(h.item.key);
+            const echoVal = echo && rec ? fmtEcho(valueAtPath(rec.json, echo.path)) : null;
+            const ws = warningsForRow(h.item.key);
+            const top = ws.length ? ws.sort((a, b) => severityOrder(b.rule.severity) - severityOrder(a.rule.severity))[0] : null;
+            return (
+              <button
+                className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
+                onClick={() => setSelectedKey(h.item.key)}
+                style={{ borderLeft: `3px solid ${theme.color}` }}
+                title={`${h.item.id}\nMiddle-click to open in Definitions`}
+                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
+                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+              >
+                <span className="emoji" aria-hidden>{theme.emoji}</span>
+                <span className="label"><HighlightedText text={humanizeAssetId(h.item.id)} ranges={h.ranges} /></span>
+                {echoVal != null && <span className="row-echo">{echoVal}</span>}
+                {top && (
+                  <span
+                    className={`row-warning sev-${top.rule.severity}`}
+                    title={ws.map((w) => `[${w.rule.severity}] ${w.text}`).join('\n')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (top.rule.fix) {
+                        const rec2 = definitions.get(h.item.key);
+                        if (rec2) top.rule.fix(rec2, (window as any).__cbCtx);
+                      }
+                    }}
+                  >{ws.length}</span>
+                )}
+              </button>
+            );
+          }}
+        />
+      )}
+    </aside>
+  );
+}
+
+function EchoPublishingPane({ children }: { children: ReactNode }) {
+  const { setEcho } = usePropertyEcho();
+  const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    let el: HTMLElement | null = e.target as HTMLElement;
+    while (el) {
+      const p = el.dataset?.propPath;
+      if (p) { try { setEcho({ path: JSON.parse(p) as string[] }); } catch { /* ignore bad json */ } return; }
+      el = el.parentElement;
+    }
+  };
+  return <section className="class-browser-pane" onClickCapture={onClick}>{children}</section>;
 }

@@ -1223,19 +1223,25 @@ export function TypedPropertiesEditor({
   }, [groupBy, unpinnedKeys, properties, refAdapter, parentTypeName]);
 
   const renderField = (k: string) => (
-    <TypedField
-      key={k}
-      label={humanizeProperty(k)}
-      typed={properties[k]}
-      propertyName={k}
-      parentTypeName={parentTypeName}
-      onChange={(v) => onChange({ ...properties, [k]: v })}
-      refAdapter={refAdapter}
-      path={[k]}
-      pathFromRoot={ownerKey ? ['properties', k] : undefined}
-      ownerKey={ownerKey}
-      pinAdapter={pinAdapter}
-    />
+    // data-prop-path here marks each TOP-LEVEL property row so that the
+    // ClassBrowser's EchoPublishingPane can pick up the clicked field path
+    // and broadcast it to rail rows. We deliberately do NOT add this
+    // attribute inside nested struct/array editors — only the top-level
+    // properties of a record are echoed.
+    <div key={k} data-prop-path={JSON.stringify(['properties', k])}>
+      <TypedField
+        label={humanizeProperty(k)}
+        typed={properties[k]}
+        propertyName={k}
+        parentTypeName={parentTypeName}
+        onChange={(v) => onChange({ ...properties, [k]: v })}
+        refAdapter={refAdapter}
+        path={[k]}
+        pathFromRoot={ownerKey ? ['properties', k] : undefined}
+        ownerKey={ownerKey}
+        pinAdapter={pinAdapter}
+      />
+    </div>
   );
 
   return (
