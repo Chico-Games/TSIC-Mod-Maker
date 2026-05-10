@@ -11,6 +11,8 @@ import { useJumpToDefinition } from '../useJumpToDefinition';
 import { SearchBox } from '../SearchBox';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
 import { DetailPane } from './DetailPane';
+import { ResizeHandle } from './ResizeHandle';
+import { CollapseStrip } from './CollapseStrip';
 import { SpreadsheetView } from './SpreadsheetView';
 import { BulkEditDialog } from './BulkEditDialog';
 import type { ClassBrowserConfig } from './types';
@@ -25,6 +27,22 @@ interface Props {
 function severityOrder(s: WarningSeverity): number {
   switch (s) { case 'error': return 3; case 'warn': return 2; case 'info': return 1; }
 }
+
+function clampWidth(n: number, min: number, max: number): number {
+  if (!Number.isFinite(n)) return min;
+  return Math.max(min, Math.min(max, n));
+}
+
+const RAIL_W_LS = 'tsic.classBrowser.layout.rail.w.v1';
+const PALETTE_W_LS = 'tsic.classBrowser.layout.palette.w.v1';
+const RAIL_COLLAPSED_LS = 'tsic.classBrowser.layout.rail.collapsed.v1';
+const PALETTE_COLLAPSED_LS = 'tsic.classBrowser.layout.palette.collapsed.v1';
+const RAIL_DEFAULT_W = 260;
+const PALETTE_DEFAULT_W = 280;
+const RAIL_MIN_W = 180;
+const PALETTE_MIN_W = 200;
+const RAIL_MAX_W = 600;
+const PALETTE_MAX_W = 600;
 
 export function ClassBrowserTab({ folder, config }: Props) {
   const definitions = useDefinitionsStore((s) => s.definitions);
@@ -73,6 +91,26 @@ export function ClassBrowserTab({ folder, config }: Props) {
     try { localStorage.setItem(MODE_LS_KEY, mode); } catch { /* noop */ }
   }, [mode, MODE_LS_KEY]);
   const [bulkOpen, setBulkOpen] = useState(false);
+
+  // Layout state — global across folders.
+  const [railWidth, setRailWidth] = useState<number>(() => {
+    try { const v = localStorage.getItem(RAIL_W_LS); if (v) return clampWidth(Number(v), RAIL_MIN_W, RAIL_MAX_W); } catch { /* noop */ }
+    return RAIL_DEFAULT_W;
+  });
+  const [paletteWidth, setPaletteWidth] = useState<number>(() => {
+    try { const v = localStorage.getItem(PALETTE_W_LS); if (v) return clampWidth(Number(v), PALETTE_MIN_W, PALETTE_MAX_W); } catch { /* noop */ }
+    return PALETTE_DEFAULT_W;
+  });
+  const [railCollapsed, setRailCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem(RAIL_COLLAPSED_LS) === '1'; } catch { return false; }
+  });
+  const [paletteCollapsed, setPaletteCollapsed] = useState<boolean>(() => {
+    try { return localStorage.getItem(PALETTE_COLLAPSED_LS) === '1'; } catch { return false; }
+  });
+  useEffect(() => { try { localStorage.setItem(RAIL_W_LS, String(railWidth)); } catch { /* noop */ } }, [railWidth]);
+  useEffect(() => { try { localStorage.setItem(PALETTE_W_LS, String(paletteWidth)); } catch { /* noop */ } }, [paletteWidth]);
+  useEffect(() => { try { localStorage.setItem(RAIL_COLLAPSED_LS, railCollapsed ? '1' : '0'); } catch { /* noop */ } }, [railCollapsed]);
+  useEffect(() => { try { localStorage.setItem(PALETTE_COLLAPSED_LS, paletteCollapsed ? '1' : '0'); } catch { /* noop */ } }, [paletteCollapsed]);
 
   const duplicateOne = (sourceKey: DefinitionsKey): DefinitionsKey | null => {
     const rec = definitions.get(sourceKey);
@@ -171,29 +209,48 @@ export function ClassBrowserTab({ folder, config }: Props) {
 
   return (
     <PropertyEchoProvider>
-      <div className="class-browser">
-        <RailColumn
-          filtered={filtered}
-          selectedKey={selectedKey}
-          setSelectedKey={setSelectedKey}
-          selectedKeys={selectedKeys}
-          handleRailClick={handleRailClick}
-          setSelectedKeys={setSelectedKeys}
-          setLastClickedKey={setLastClickedKey}
-          setMode={setMode}
-          setBulkOpen={setBulkOpen}
-          duplicateSelected={duplicateSelected}
-          duplicateOne={duplicateOne}
-          theme={theme}
-          config={config}
-          findKeyById={findKeyById}
-          createDefinitionForClass={createDefinitionForClass}
-          filter={filter}
-          setFilter={setFilter}
-          jumpToDef={jumpToDef}
-          warningsForRow={warningsForRow}
-          definitions={definitions}
-        />
+      <div
+        className={`class-browser ${railCollapsed ? 'rail-collapsed' : ''} ${paletteCollapsed ? 'palette-collapsed' : ''}`}
+        style={{
+          ['--cb-rail-w' as any]: `${railWidth}px`,
+          ['--cb-palette-w' as any]: `${paletteWidth}px`,
+        } as React.CSSProperties}
+      >
+        {railCollapsed ? (
+          <CollapseStrip side="left" onExpand={() => setRailCollapsed(false)} label="Expand record list" />
+        ) : (
+          <RailColumn
+            filtered={filtered}
+            selectedKey={selectedKey}
+            setSelectedKey={setSelectedKey}
+            selectedKeys={selectedKeys}
+            handleRailClick={handleRailClick}
+            setSelectedKeys={setSelectedKeys}
+            setLastClickedKey={setLastClickedKey}
+            setMode={setMode}
+            setBulkOpen={setBulkOpen}
+            duplicateSelected={duplicateSelected}
+            duplicateOne={duplicateOne}
+            theme={theme}
+            config={config}
+            findKeyById={findKeyById}
+            createDefinitionForClass={createDefinitionForClass}
+            filter={filter}
+            setFilter={setFilter}
+            jumpToDef={jumpToDef}
+            warningsForRow={warningsForRow}
+            definitions={definitions}
+            onCollapse={() => setRailCollapsed(true)}
+          />
+        )}
+
+        {!railCollapsed && (
+          <ResizeHandle
+            label="Resize record list"
+            onDelta={(dx) => setRailWidth((w) => clampWidth(w + dx, RAIL_MIN_W, RAIL_MAX_W))}
+            onReset={() => setRailWidth(RAIL_DEFAULT_W)}
+          />
+        )}
 
         <EchoPublishingPane>
           <div className="mode-toggle">
@@ -216,10 +273,23 @@ export function ClassBrowserTab({ folder, config }: Props) {
           )}
         </EchoPublishingPane>
 
-        <ItemPalette
-          folders={config.paletteFolders ?? [folder, 'crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']}
-          title="Items"
-        />
+        {!paletteCollapsed && (
+          <ResizeHandle
+            label="Resize item palette"
+            onDelta={(dx) => setPaletteWidth((w) => clampWidth(w - dx, PALETTE_MIN_W, PALETTE_MAX_W))}
+            onReset={() => setPaletteWidth(PALETTE_DEFAULT_W)}
+          />
+        )}
+
+        {paletteCollapsed ? (
+          <CollapseStrip side="right" onExpand={() => setPaletteCollapsed(false)} label="Expand item palette" />
+        ) : (
+          <ItemPalette
+            folders={config.paletteFolders ?? [folder, 'crafting_material_definitions', 'consumable_definitions', 'ammo_definitions']}
+            title="Items"
+            onCollapse={() => setPaletteCollapsed(true)}
+          />
+        )}
 
         {bulkOpen && (
           <BulkEditDialog
@@ -253,12 +323,14 @@ function RailColumn(props: {
   jumpToDef: (id: string) => void;
   warningsForRow: (k: DefinitionsKey) => { rule: WarningRule; text: string }[];
   definitions: Map<DefinitionsKey, any>;
+  onCollapse?: () => void;
 }) {
   const {
     filtered, selectedKey, setSelectedKey, selectedKeys, handleRailClick,
     setSelectedKeys, setLastClickedKey, setMode, setBulkOpen, duplicateSelected, duplicateOne,
     theme, config, findKeyById,
     createDefinitionForClass, filter, setFilter, jumpToDef, warningsForRow, definitions,
+    onCollapse,
   } = props;
   const { echo, setEcho } = usePropertyEcho();
 
@@ -293,6 +365,9 @@ function RailColumn(props: {
   return (
     <aside className="rail">
       <div className="rail-header">
+        {onCollapse && (
+          <button className="rail-collapse-btn" title="Collapse" aria-label="Collapse record list" onClick={onCollapse}>‹</button>
+        )}
         <h3>{config.label}</h3>
         <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
         <div className="rail-add-row">

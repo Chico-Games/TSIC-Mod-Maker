@@ -65,6 +65,38 @@ async function waitForServer(url, timeoutMs = 15000) {
     await page.waitForSelector('.tab.active:has-text("Recipes & Loot")');
     console.log('OK Cross-link to Recipes & Loot');
 
+    // ---- Layout: resize and collapse the rail ----
+    await page.click('.tabs button:has-text("Furniture")');
+    await page.waitForSelector('.class-browser');
+
+    const grid = page.locator('.class-browser');
+    const before = await grid.evaluate((el) => getComputedStyle(el).getPropertyValue('--cb-rail-w').trim());
+    // Drag the first resize-handle (rail) by +60px.
+    const handle = page.locator('.class-browser > .resize-handle').first();
+    const box = await handle.boundingBox();
+    if (!box) throw new Error('rail resize handle not found');
+    const startX = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    await page.mouse.move(startX, y);
+    await page.mouse.down();
+    await page.mouse.move(startX + 60, y, { steps: 6 });
+    await page.mouse.up();
+    const after = await grid.evaluate((el) => getComputedStyle(el).getPropertyValue('--cb-rail-w').trim());
+    if (before === after) throw new Error(`rail width did not change after drag: ${before} -> ${after}`);
+    console.log(`OK Rail resize ${before} -> ${after}`);
+
+    // Collapse the rail.
+    await page.click('.rail-collapse-btn');
+    await page.waitForSelector('.class-browser.rail-collapsed .collapse-strip');
+    console.log('OK Rail collapse');
+
+    // Expand again.
+    await page.click('.class-browser.rail-collapsed .collapse-strip');
+    await page.waitForSelector('.class-browser:not(.rail-collapsed)');
+    const restored = await grid.evaluate((el) => getComputedStyle(el).getPropertyValue('--cb-rail-w').trim());
+    if (restored !== after) throw new Error(`rail width didn't restore after expand: expected ${after}, got ${restored}`);
+    console.log('OK Rail re-expand restored width');
+
     await browser.close();
     console.log('items-furniture-ui-smoke: ALL OK');
   } finally {

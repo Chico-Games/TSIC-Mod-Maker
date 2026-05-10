@@ -65,9 +65,12 @@ interface Props {
    *  `autoFolders` are switched on by default; the rest are off. The
    *  set is rebuilt whenever the selection changes. */
   autoFolders?: Set<string> | null;
+  /** When set, renders a chevron button in the header that calls this to
+   *  collapse the palette in the parent layout. */
+  onCollapse?: () => void;
 }
 
-export function ItemPalette({ folders, title, autoFolders }: Props) {
+export function ItemPalette({ folders, title, autoFolders, onCollapse }: Props) {
   const allFolders = useDefinitionsStore((s) => s.folders);
   const definitions = useDefinitionsStore((s) => s.definitions);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
@@ -352,6 +355,9 @@ export function ItemPalette({ folders, title, autoFolders }: Props) {
   return (
     <div className="item-palette">
       <div className="palette-header">
+        {onCollapse && (
+          <button className="palette-collapse-btn" title="Collapse" aria-label="Collapse item palette" onClick={onCollapse}>›</button>
+        )}
         <h3>{title ?? 'Items'}</h3>
         <SearchBox value={filter} onChange={setFilter} placeholder="filter…" />
       </div>
