@@ -8,7 +8,8 @@ import { useRefAdapter } from './useRefAdapter';
 import { ItemPalette } from './ItemPalette';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { type RankedHit } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
 import { SearchBox } from './SearchBox';
@@ -53,9 +54,12 @@ export function FurnitureLootTab() {
     return out;
   }, [definitions]);
 
-  const filtered = useMemo<RankedHit<LootRow>[]>(() => {
-    return fuzzyRankMulti(rows, filter, (r) => [humanizeAssetId(r.id), r.id]);
-  }, [rows, filter]);
+  const filtered = useHybridSearch(
+    rows,
+    filter,
+    (r) => [humanizeAssetId(r.id), r.id],
+    { semanticKey: (r) => r.key },
+  ) as RankedHit<LootRow>[];
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 

@@ -5,7 +5,8 @@ import { getFolderTheme } from './folderTheme';
 import { DefRefSlot } from './DefRefSlot';
 import { ItemPalette } from './ItemPalette';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { type RankedHit } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
@@ -71,9 +72,12 @@ export function FurnitureSubTab() {
     return out;
   }, [definitions, chainIndex]);
 
-  const filtered = useMemo<RankedHit<FurnitureRow>[]>(() => {
-    return fuzzyRankMulti(rows, filter, (r) => [r.displayName, r.id]);
-  }, [rows, filter]);
+  const filtered = useHybridSearch(
+    rows,
+    filter,
+    (r) => [r.displayName, r.id],
+    { semanticKey: (r) => r.key },
+  ) as RankedHit<FurnitureRow>[];
 
   /** Group ranked rows by familyKey so chains render as a single
    *  rail entry with quick-swap tier pills, like the Stations rail. */

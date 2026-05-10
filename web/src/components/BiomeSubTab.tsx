@@ -5,7 +5,7 @@ import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRank } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { inferAcceptedFolders } from '../inferFolders';
 import { SearchBox } from './SearchBox';
 
@@ -61,9 +61,15 @@ export function BiomeSubTab() {
     return [...map.values()].sort((a, b) => a.biome.localeCompare(b.biome));
   }, [definitions]);
 
-  const filtered = useMemo(() => {
-    return fuzzyRank(biomes, filter, (b) => b.biome);
-  }, [biomes, filter]);
+  // Biomes don't have a single asset key (each is a Floor + Furniture
+  // pair) — pass the floor key as the semantic key so 'desert' →
+  // matches the LSP_Desert_Floor embedding.
+  const filtered = useHybridSearch(
+    biomes,
+    filter,
+    (b) => [b.biome],
+    { semanticKey: (b) => b.floorKey ?? b.furnitureKey ?? null },
+  );
 
   if (selectedBiome == null && biomes.length > 0) setSelectedBiome(biomes[0].biome);
 

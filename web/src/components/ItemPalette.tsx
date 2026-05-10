@@ -6,7 +6,8 @@ import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { type RankedHit } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AddPicker } from './AddPicker';
 import { SearchBox } from './SearchBox';
@@ -148,9 +149,12 @@ export function ItemPalette({ folders, title, autoFolders }: Props) {
     return out;
   }, [definitions, enabled]);
 
-  const items = useMemo<RankedHit<ItemRow>[]>(() => {
-    return fuzzyRankMulti(inFolder, filter, (it) => [it.humanLabel, it.id]);
-  }, [inFolder, filter]);
+  const items = useHybridSearch(
+    inFolder,
+    filter,
+    (it) => [it.humanLabel, it.id],
+    { semanticKey: (it) => `${it.folder}/${it.id}` },
+  ) as RankedHit<ItemRow>[];
 
   /** Total usage of every item across every recipe in the dataset.
    *  Walks input + output maps once per render-of-changed-data and

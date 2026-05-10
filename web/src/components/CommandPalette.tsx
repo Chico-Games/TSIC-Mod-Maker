@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useDefinitionsStore, type DefinitionRecord, type DefinitionsKey } from '../store/definitionsStore';
+import { useEffect, useRef, useState } from 'react';
+import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { HighlightedText } from './HighlightedText';
 import { SearchBox } from './SearchBox';
 import { getSemantic, type SemanticStatus } from '../search/semantic';
+import { semanticTextFor } from '../search/semanticText';
 import type { AppTab } from '../store/appStore';
 
 interface Props {
@@ -20,29 +21,8 @@ interface PaletteHit {
   matchPath: string;
   snippet: string;
   ranges: Array<[number, number]>;
-  /** When set, semantic ranking placed this hit; surfaces a small
-   *  badge so the user knows why it appeared. */
+  /** Cosine similarity when a semantic-only result. */
   semantic?: { score: number };
-}
-
-/** Build the text we hand the embedder for each asset. The richer
- *  the input, the better semantic matching gets — we throw in the
- *  humanized id, display_name, description, and bare class so a
- *  query like "food" lights up the consumables. */
-function semanticTextFor(rec: DefinitionRecord): string {
-  const parts: string[] = [humanizeAssetId(rec.id)];
-  const props = rec.json?.properties ?? {};
-  const dn = props.display_name;
-  if (dn && typeof dn === 'object' && typeof dn.value === 'string' && dn.value) {
-    parts.push(dn.value);
-  }
-  const desc = props.description;
-  if (desc && typeof desc === 'object' && typeof desc.value === 'string' && desc.value) {
-    parts.push(desc.value);
-  }
-  const cls = String(rec.json?.class ?? '').replace(/^U/, '').replace(/Definition$/, '');
-  if (cls) parts.push(cls.replace(/([a-z])([A-Z])/g, '$1 $2'));
-  return parts.join(' · ');
 }
 
 export function CommandPalette({ open, onClose, onJump }: Props) {
@@ -53,17 +33,19 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
 
   const [q, setQ] = useState('');
   const [cursor, setCursor] = useState(0);
-  const [semanticMode, setSemanticMode] = useState(false);
-  const [semanticStatus, setSemanticStatus] = useState<SemanticStatus>('cold');
-  const [semanticProgress, setSemanticProgress] = useState<{ done: number; total: number } | null>(null);
-  const [semanticDownload, setSemanticDownload] = useState<number | null>(null);
   const [hits, setHits] = useState<PaletteHit[]>([]);
+  const [semanticStatus, setSemanticStatus] = useState<SemanticStatus>('cold');
+  const [semanticDownload, setSemanticDownload] = useState<number | null>(null);
+  const [indexedCount, setIndexedCount] = useState(0);
 
-  // Subscribe to worker progress so we can render a live status line.
+  // Stay in sync with the store-level semantic singleton.
   useEffect(() => {
     const sem = getSemantic();
+    setSemanticStatus(sem.status);
+    setIndexedCount(sem.indexedCount);
     const off = sem.subscribe((s, p) => {
       setSemanticStatus(s);
+      setIndexedCount(getSemantic().indexedCount);
       if (p?.stage === 'downloading' && typeof p.progress === 'number') {
         setSemanticDownload(p.progress);
       }
@@ -79,80 +61,54 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
     }
   }, [open]);
 
-  // Fuzzy path: instant, runs every keystroke.
+  // Combined fuzzy + semantic. Fuzzy resolves immediately; semantic
+  // is appended once the index is ready and the query stabilizes.
+  const reqRef = useRef(0);
   useEffect(() => {
-    if (semanticMode) return;
     if (!q.trim()) { setHits([]); return; }
-    setHits(searchAll(q, 60).map((h) => ({ ...h })));
-  }, [q, semanticMode, searchAll]);
+    const my = ++reqRef.current;
 
-  // Semantic path: kicks the worker, runs an embed per query. We
-  // debounce a bit because embedding has noticeable latency.
-  const semanticReqId = useRef(0);
-  useEffect(() => {
-    if (!semanticMode) return;
-    const my = ++semanticReqId.current;
-    if (!q.trim()) { setHits([]); return; }
+    // 1) Instant fuzzy results via the store's existing searchAll
+    //    (which also walks string property values, not just ids).
+    const fuzzyHits: PaletteHit[] = searchAll(q, 60).map((h) => ({ ...h }));
+    setHits(fuzzyHits);
+
+    // 2) Semantic-only matches appended after a short debounce.
+    if (semanticStatus !== 'ready') return;
     const timer = setTimeout(async () => {
-      const sem = getSemantic();
-      const allItems = [...definitions.entries()].map(([key, rec]) => ({ key, rec }));
       try {
+        const sem = getSemantic();
+        const allItems = [...definitions.entries()].map(([key, rec]) => ({ key, rec }));
         const ranked = await sem.search(
           q,
           allItems,
           (it) => it.key,
-          { limit: 50, minScore: 0.2 },
+          { limit: 60, minScore: 0.25 },
         );
-        if (my !== semanticReqId.current) return; // outdated
-        setHits(ranked.map(({ item, score }) => ({
-          key: item.key,
-          folder: item.rec.folder,
-          id: item.rec.id,
-          matchPath: 'semantic',
-          snippet: semanticTextFor(item.rec),
-          ranges: [],
-          semantic: { score },
-        })));
+        if (my !== reqRef.current) return;
+        const seen = new Set(fuzzyHits.map((h) => h.key));
+        const semanticOnly: PaletteHit[] = [];
+        for (const r of ranked) {
+          if (seen.has(r.item.key)) continue;
+          semanticOnly.push({
+            key: r.item.key,
+            folder: r.item.rec.folder,
+            id: r.item.rec.id,
+            matchPath: 'semantic',
+            snippet: semanticTextFor(r.item.rec),
+            ranges: [],
+            semantic: { score: r.score },
+          });
+        }
+        if (semanticOnly.length > 0) setHits([...fuzzyHits, ...semanticOnly]);
       } catch (e) {
-        if (my !== semanticReqId.current) return;
-        console.warn('[semantic] search failed', e);
-        setHits([]);
+        console.warn('[semantic] palette search failed', e);
       }
     }, 220);
     return () => clearTimeout(timer);
-  }, [q, semanticMode, definitions]);
+  }, [q, semanticStatus, searchAll, definitions]);
 
   useEffect(() => { setCursor(0); }, [q]);
-
-  const indexedCount = useMemo(() => getSemantic().indexedCount, [semanticStatus]);
-  const totalCount = definitions.size;
-
-  /** Toggle semantic mode. The first time it goes ON we kick the
-   *  worker (downloads the model) and embed every loaded asset. */
-  const toggleSemantic = async () => {
-    const next = !semanticMode;
-    setSemanticMode(next);
-    if (!next) return;
-    const sem = getSemantic();
-    if (sem.indexedCount < totalCount) {
-      await sem.warmup().catch(() => { /* error surfaces via subscribe */ });
-      const items = [...definitions.entries()];
-      let lastEmit = 0;
-      await sem.indexItems(
-        items,
-        ([k]) => k,
-        ([, rec]) => semanticTextFor(rec),
-        (done, total) => {
-          // Throttle setState to one update every ~50 items.
-          if (done - lastEmit >= 50 || done === total) {
-            lastEmit = done;
-            setSemanticProgress({ done, total });
-          }
-        },
-      );
-      setSemanticProgress(null);
-    }
-  };
 
   if (!open) return null;
 
@@ -180,17 +136,15 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
     }
   };
 
+  const totalCount = definitions.size;
   const semanticBadge = (() => {
-    if (!semanticMode) return null;
     if (semanticStatus === 'error') return <span className="palette-mode-state error">model failed</span>;
     if (semanticDownload != null && semanticDownload < 100) {
       return <span className="palette-mode-state">downloading {semanticDownload}%</span>;
     }
-    if (semanticProgress) {
-      return <span className="palette-mode-state">indexing {semanticProgress.done}/{semanticProgress.total}</span>;
-    }
-    if (semanticStatus === 'loading') return <span className="palette-mode-state">loading model…</span>;
-    return <span className="palette-mode-state ready">{indexedCount}/{totalCount} indexed</span>;
+    if (semanticStatus === 'ready') return <span className="palette-mode-state ready">🧠 {indexedCount}/{totalCount}</span>;
+    if (semanticStatus === 'loading') return <span className="palette-mode-state">🧠 loading…</span>;
+    return null;
   })();
 
   return (
@@ -201,19 +155,10 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
           <SearchBox
             value={q}
             onChange={setQ}
-            placeholder={semanticMode
-              ? 'Semantic search — try "food", "wooden", "weapon"…'
-              : 'Search definitions by id or value…'}
+            placeholder='Search — exact id, value, or concept ("food", "wooden")…'
             autoFocus
             onKeyDown={onKey}
           />
-          <button
-            className={`palette-mode-btn ${semanticMode ? 'on' : ''}`}
-            onClick={() => void toggleSemantic()}
-            title={semanticMode
-              ? 'Switch to fuzzy text search'
-              : 'Switch to semantic search (loads ~25 MB model on first use)'}
-          >🧠 {semanticMode ? 'Semantic' : 'Fuzzy'}</button>
           {semanticBadge}
         </div>
         <div className="palette-results">
@@ -222,9 +167,7 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
           )}
           {hits.length === 0 && !q.trim() && (
             <div className="palette-empty">
-              {semanticMode
-                ? 'Type a concept — "food", "tier 2 weapon", "wooden"…'
-                : 'Type to search across every loaded definition'}
+              Type to search — exact ids and concepts both land hits.
             </div>
           )}
           {hits.map((h, i) => {
@@ -232,7 +175,7 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
             return (
               <div
                 key={h.key}
-                className={`palette-hit ${i === cursor ? 'cursor' : ''}`}
+                className={`palette-hit ${i === cursor ? 'cursor' : ''} ${h.semantic ? 'semantic' : ''}`}
                 onMouseEnter={() => setCursor(i)}
                 onClick={() => choose(i)}
               >
@@ -241,13 +184,13 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
                   <HighlightedText
                     text={humanizeAssetId(h.id)}
                     ranges={h.matchPath === 'id' ? h.ranges : undefined}
-                    query={h.matchPath === 'id' ? undefined : (semanticMode ? undefined : q)}
+                    query={h.matchPath === 'id' || h.semantic ? undefined : q}
                   />
                 </span>
                 <span className="hit-kind">{h.folder}</span>
                 <span className="hit-sub">
                   {h.semantic
-                    ? <>sim {h.semantic.score.toFixed(2)} · <em>{h.snippet.slice(0, 80)}</em></>
+                    ? <>🧠 sim {h.semantic.score.toFixed(2)} · <em>{h.snippet.slice(0, 80)}</em></>
                     : <>{h.matchPath}: <HighlightedText text={h.snippet} ranges={h.matchPath !== 'id' ? h.ranges : undefined} /></>}
                 </span>
               </div>
@@ -256,7 +199,7 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
         </div>
         <div className="palette-footer">
           <kbd>↑</kbd><kbd>↓</kbd> navigate · <kbd>↵</kbd> open · <kbd>esc</kbd> close
-          {semanticMode && <span className="muted small"> · semantic via MiniLM-L6-v2</span>}
+          {semanticStatus === 'ready' && <span className="muted small"> · semantic via MiniLM-L6-v2</span>}
         </div>
       </div>
     </div>

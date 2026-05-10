@@ -8,7 +8,7 @@ import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
 import { ItemPalette } from './ItemPalette';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRankMulti } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
@@ -147,10 +147,16 @@ export function StationsSubTab() {
   }, [definitions, findKeyById, stationGroupOf, chainIndex]);
 
   type RankedRow = { row: StationRow; ranges: ReadonlyArray<readonly [number, number]> };
-  const filtered = useMemo<RankedRow[]>(() => {
-    const ranked = fuzzyRankMulti(stations, filter, (s) => [s.displayName, s.id]);
-    return ranked.map((r) => ({ row: r.item, ranges: r.ranges }));
-  }, [stations, filter]);
+  const ranked = useHybridSearch(
+    stations,
+    filter,
+    (s) => [s.displayName, s.id],
+    { semanticKey: (s) => s.key },
+  );
+  const filtered = useMemo<RankedRow[]>(
+    () => ranked.map((r) => ({ row: r.item, ranges: r.ranges })),
+    [ranked],
+  );
 
   /** Within each station-type, collect tier-related entries into
    *  families so the rail collapses "Tier 1/2/3" into one selectable

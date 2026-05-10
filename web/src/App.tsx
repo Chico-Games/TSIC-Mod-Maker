@@ -24,6 +24,8 @@ import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
 import { dispatchDnD, type DragSource, type DropTarget } from './dnd/dispatch';
 import { copyCurrentSelection, pasteCurrentSelection } from './clipboard';
+import { getSemantic } from './search/semantic';
+import { semanticTextFor } from './search/semanticText';
 
 export function App() {
   const tab = useAppStore((s) => s.tab);
@@ -65,6 +67,36 @@ export function App() {
   useEffect(() => {
     void useDefinitionsStore.getState().bootstrap();
   }, []);
+
+  // Auto-warm the semantic index in the background after definitions
+  // load. The model download happens once per browser, embeddings are
+  // computed in batches, and every search box hooks into the same
+  // cached vectors via useHybridSearch. While indexing, fuzzy
+  // matches still work; once the index is ready every filter
+  // appends concept matches automatically.
+  const definitions = useDefinitionsStore((s) => s.definitions);
+  useEffect(() => {
+    if (definitions.size === 0) return;
+    let cancelled = false;
+    void (async () => {
+      const sem = getSemantic();
+      try {
+        // warmup is a no-op when the worker is already loaded.
+        await sem.warmup();
+        if (cancelled) return;
+        await sem.indexItems(
+          [...definitions.entries()],
+          ([k]) => k,
+          ([, rec]) => semanticTextFor(rec),
+        );
+      } catch (e) {
+        // The semantic store surfaces errors via subscribe; nothing
+        // else needs to fail because the model couldn't load.
+        console.warn('[semantic] background index failed', e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [definitions]);
 
   // Keyboard shortcuts.
   useEffect(() => {

@@ -6,7 +6,8 @@ import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
-import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
+import { type RankedHit } from '../search/fuzzy';
+import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
 import { SearchBox } from './SearchBox';
@@ -55,10 +56,12 @@ export function EnemiesSubTab() {
   }, [definitions]);
 
   type EnemyRow = { key: DefinitionsKey; id: string; displayName: string };
-  const filtered = useMemo<RankedHit<EnemyRow>[]>(
-    () => fuzzyRankMulti(rows, filter, (r) => [r.displayName, r.id]),
-    [rows, filter],
-  );
+  const filtered = useHybridSearch(
+    rows,
+    filter,
+    (r) => [r.displayName, r.id],
+    { semanticKey: (r) => r.key },
+  ) as RankedHit<EnemyRow>[];
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 

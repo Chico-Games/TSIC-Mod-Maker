@@ -1,5 +1,6 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore, type AppTab } from '../store/appStore';
+import { SemanticChip } from './SemanticChip';
 
 export function Header() {
   const directoryHandle = useDefinitionsStore((s) => s.directoryHandle);
@@ -36,6 +37,7 @@ export function Header() {
         {dirtyCount > 0 && <span className="dirty"> · {dirtyCount} unsaved</span>}
         {loading && <span> · loading…</span>}
       </span>
+      <SemanticChip />
       <div className="spacer" />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
       <button onClick={pickDirectory} disabled={!fsa}>📂 Open folder</button>
