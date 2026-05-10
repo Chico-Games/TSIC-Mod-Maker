@@ -473,6 +473,40 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 }
 .upgrade-recipe-section .recipe-card { border-color: rgba(216, 176, 107, 0.4); }
 
+/* Inline +Add upgrade-tier affordance — always visible on a selected
+   station/furniture so the user can chain a new tier even when there
+   are no existing siblings to surface a family +Tier pill. */
+.upgrade-tier-action {
+  padding: 4px 0 8px 0;
+  display: flex;
+  justify-content: flex-start;
+}
+.upgrade-tier-action button {
+  background: rgba(216, 176, 107, 0.08);
+  color: #d8b06b;
+  border: 1px dashed #d8b06b;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.upgrade-tier-action button:hover { background: rgba(216, 176, 107, 0.18); }
+
+/* Empty-state with an inline action (e.g. "+ Create empty ARR")
+   replaces a plain error message — surfaces a fix instead of a dead
+   end. */
+.empty-state-action {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.empty-state-action p { margin: 0; }
+
 /* Drop highlight when a compatible drag is hovering a typed-envelope
    def_ref editor inside the property grid (Definitions tab, Enemies,
    Biome, Furniture Loot). Mirrors the .def-ref-slot styles so the two

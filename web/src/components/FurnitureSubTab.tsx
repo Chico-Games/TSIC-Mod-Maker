@@ -260,6 +260,14 @@ export function FurnitureSubTab() {
               hostKey={selectedKey}
               upgradedTargetClass={String(selected.json?.class ?? '').replace(/^U/, '')}
             />
+            <div className="upgrade-tier-action">
+              <button onClick={() => {
+                const row = rows.find((r) => r.key === selectedKey);
+                if (row) onNewFurnitureTier(row);
+              }}>
+                ＋ Add upgrade tier (mints next furniture + linking recipe)
+              </button>
+            </div>
           </>
         ) : (
           <div className="empty-state-mini">Pick a furniture from the rail.</div>

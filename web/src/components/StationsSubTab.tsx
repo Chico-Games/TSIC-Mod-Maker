@@ -266,6 +266,36 @@ export function StationsSubTab() {
     updateValueAtPath(selectedArrKey, path, nextArray);
   };
 
+  /** Mint an empty ARR for an existing station and wire the station's
+   *  `available_recipe_rules_definition` ref. Used both by + New
+   *  station (which mints both at once) and by the "+ Create empty
+   *  ARR" affordance shown when a station has no ARR set. */
+  const createArrForStation = (stationKey: DefinitionsKey, group: StationGroup) => {
+    const station = definitions.get(stationKey);
+    if (!station) return null;
+    const stem = station.id.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '');
+    let arrId = `ARR_${stem}`;
+    let n = 2;
+    while (findKeyById(arrId)) arrId = `ARR_${stem}${n++}`;
+    const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
+    if (arrKey) {
+      const recipeRefClass = group === 'plantable' ? 'PlantRecipeDefinition' : 'CraftRecipeDefinition';
+      updateValueAtPath(arrKey, ['properties', 'production_machine_rules'], {
+        type: 'struct',
+        struct_name: 'ProductionMachineRules',
+        value: {
+          recipes: { type: 'array', element_type: { type: 'definition_ref', class: recipeRefClass }, value: [] },
+        },
+      });
+    }
+    updateValueAtPath(stationKey, ['properties', 'available_recipe_rules_definition'], {
+      type: 'definition_ref',
+      class: 'AvailableRecipeRulesDefinition',
+      value: arrId,
+    });
+    return arrKey;
+  };
+
   /** + New station of the given group. Mints a fresh
    *  {Crafting,Production,Plantable}Station and an empty ARR for it,
    *  links the two, then selects the new station. */
@@ -284,38 +314,17 @@ export function StationsSubTab() {
     const stationId = `FD_${stem}_${tag}`;
     const stationKey = createDefinitionForClass(cls, stationId);
     if (!stationKey) return;
-    // Mint an empty ARR and point the station at it.
-    const arrId = `ARR_${stem}`;
-    const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
-    if (arrKey) {
-      const recipeRefClass = group === 'plantable' ? 'PlantRecipeDefinition' : 'CraftRecipeDefinition';
-      updateValueAtPath(arrKey, ['properties', 'production_machine_rules'], {
-        type: 'struct',
-        struct_name: 'ProductionMachineRules',
-        value: {
-          recipes: { type: 'array', element_type: { type: 'definition_ref', class: recipeRefClass }, value: [] },
-        },
-      });
-    }
-    updateValueAtPath(stationKey, ['properties', 'available_recipe_rules_definition'], {
-      type: 'definition_ref',
-      class: 'AvailableRecipeRulesDefinition',
-      value: arrId,
-    });
+    createArrForStation(stationKey, group);
     setSelectedKey(stationKey);
   };
 
-  /** + Tier — mint the next tier of an existing family. Builds the
-   *  asset id by bumping `Tier\d+` or appending it; mints an empty
-   *  ARR linked to it; AND wires the chain by creating a fresh
-   *  UFurnitureUpgradeRecipe whose upgraded_furniture_definition
-   *  points at the new station and writing the back-reference on
-   *  the previous tier. The chain index picks up the link on the
-   *  next render. */
-  const onNewTier = (family: typeof families.crafting[number]) => {
-    if (family.members.length === 0) return;
-    const top = family.members[family.members.length - 1].row;
-    const nextTier = (top.tier || 0) + 1;
+  /** + Add upgrade tier on `top`. Mints a new station that follows
+   *  `top` in the upgrade chain, plus a fresh
+   *  UFurnitureUpgradeRecipe that links them. Works on a singleton
+   *  (turning it into a 2-member chain) and on the top of an
+   *  existing family. */
+  const onAddUpgradeTier = (top: StationRow) => {
+    const nextTier = (top.tier || 1) + (top.tier > 0 ? 1 : 1);
     let newId = top.id;
     if (/Tier\d+/.test(newId)) {
       newId = newId.replace(/Tier\d+/, `Tier${nextTier}`);
@@ -327,28 +336,9 @@ export function StationsSubTab() {
     const cls = String(definitions.get(top.key)?.json?.class ?? '').replace(/^U/, '');
     const stationKey = createDefinitionForClass(cls, newId);
     if (!stationKey) return;
-    // ARR for the new tier.
-    const arrId = `ARR_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}`;
-    const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
-    if (arrKey) {
-      const recipeRefClass = top.group === 'plantable' ? 'PlantRecipeDefinition' : 'CraftRecipeDefinition';
-      updateValueAtPath(arrKey, ['properties', 'production_machine_rules'], {
-        type: 'struct',
-        struct_name: 'ProductionMachineRules',
-        value: {
-          recipes: { type: 'array', element_type: { type: 'definition_ref', class: recipeRefClass }, value: [] },
-        },
-      });
-    }
-    updateValueAtPath(stationKey, ['properties', 'available_recipe_rules_definition'], {
-      type: 'definition_ref',
-      class: 'AvailableRecipeRulesDefinition',
-      value: arrId,
-    });
+    createArrForStation(stationKey, top.group);
     // Wire the upgrade chain: mint an upgrade recipe that links the
-    // previous tier to the new one. The station's class field on the
-    // ref doesn't have to literally match its parent chain — the
-    // editor preserves the property regardless.
+    // previous tier to the new one.
     const upgradeRecipeId = `RD_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}_CN`;
     const upgradeKey = createDefinitionForClass('FurnitureUpgradeRecipe', upgradeRecipeId);
     if (upgradeKey) {
@@ -368,6 +358,12 @@ export function StationsSubTab() {
       value: upgradeRecipeId,
     });
     setSelectedKey(stationKey);
+  };
+
+  /** Wraps onAddUpgradeTier for the family-row "+ Tier" pill. */
+  const onNewTier = (family: typeof families.crafting[number]) => {
+    if (family.members.length === 0) return;
+    onAddUpgradeTier(family.members[family.members.length - 1].row);
   };
 
   return (
@@ -455,6 +451,11 @@ export function StationsSubTab() {
               hostKey={selectedRow.key}
               upgradedTargetClass={String(selectedStation.json?.class ?? '').replace(/^U/, '')}
             />
+            <div className="upgrade-tier-action">
+              <button onClick={() => onAddUpgradeTier(selectedRow)}>
+                ＋ Add upgrade tier (mints next station + linking recipe)
+              </button>
+            </div>
             {selectedArr ? (
               <div className="recipe-stack">
                 {recipeKeys.map((r) => (
@@ -474,8 +475,14 @@ export function StationsSubTab() {
                 </div>
               </div>
             ) : (
-              <div className="empty-state-mini">
-                This station has no <code>available_recipe_rules_definition</code> set, or it does not resolve.
+              <div className="empty-state-action">
+                <p className="muted">
+                  This station has no <code>available_recipe_rules_definition</code> set, or its target hasn't loaded.
+                </p>
+                <button
+                  className="primary"
+                  onClick={() => createArrForStation(selectedRow.key, selectedRow.group)}
+                >＋ Create empty ARR for this station</button>
               </div>
             )}
           </>
