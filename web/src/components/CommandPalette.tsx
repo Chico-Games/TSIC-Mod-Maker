@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { HighlightedText } from './HighlightedText';
+import { SearchBox } from './SearchBox';
 import type { AppTab } from '../store/appStore';
 
 interface Props {
@@ -18,13 +19,11 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
 
   const [q, setQ] = useState('');
   const [cursor, setCursor] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setQ('');
       setCursor(0);
-      setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [open]);
 
@@ -66,11 +65,11 @@ export function CommandPalette({ open, onClose, onJump }: Props) {
       <div className="palette-modal" onClick={(e) => e.stopPropagation()}>
         <div className="palette-input-wrap">
           <span className="palette-icon">⌘K</span>
-          <input
-            ref={inputRef}
-            placeholder="Search definitions by id or value…"
+          <SearchBox
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={setQ}
+            placeholder="Search definitions by id or value…"
+            autoFocus
             onKeyDown={onKey}
           />
         </div>

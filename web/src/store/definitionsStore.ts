@@ -1591,7 +1591,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   renameAsset: (k, newBareName) => {
-    const stem = newBareName.trim();
+    // Asset ids never carry whitespace — the user types the
+    // humanized form ("Baked Potato") in either the asset title or
+    // the Definitions-tab name input; we strip every whitespace run
+    // here so callers don't have to.
+    const stem = newBareName.replace(/\s+/g, '');
     if (!stem) return null;
     const cur = get();
     const rec = cur.definitions.get(k);

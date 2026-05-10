@@ -7,6 +7,7 @@ import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRank } from '../search/fuzzy';
 import { inferAcceptedFolders } from '../inferFolders';
+import { SearchBox } from './SearchBox';
 
 const LSP_FOLDER = 'loot_spawn_point_definitions';
 
@@ -87,12 +88,7 @@ export function BiomeSubTab() {
       <aside className="rail">
         <div className="rail-header">
           <h3>Biomes</h3>
-          <input
-            type="text"
-            value={filter}
-            placeholder="search…"
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
           <div className="rail-add-row">
             <button className="add-row" onClick={() => {
               let n = 1;

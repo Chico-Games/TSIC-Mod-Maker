@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
-import { humanizeAssetId } from './definitionsNaming';
+import { humanizeAssetId, unhumanizeAssetId } from './definitionsNaming';
 
 interface Props {
   /** Storage key (folder/id) of the record to rename. */
@@ -14,32 +14,33 @@ interface Props {
 
 /** Editable asset title.
  *
- *  In display mode the title shows the asset's `display_name` property
- *  if set, falling back to the humanized id stem (e.g. "BenchTier2").
- *  Click the title to switch to edit mode — the input pre-fills with
- *  the BARE id stem, and on commit `renameAsset` is called. The store
- *  rebuilds the full prefix_stem_suffix form using the per-class id
- *  template; the underlying file is renamed on the next Save.
+ *  Display: humanizeAssetId(rec.id) — the under-the-hood id is
+ *  prefix_CamelCase_suffix; the visible label strips the prefix /
+ *  suffix and inserts spaces at camelCase / digit boundaries.
  *
- *  Editing the display_name uses the standard typed editor in the
- *  Definitions tab — this title only handles the id-stem rename so
- *  the user can change the on-disk filename without leaving the
- *  Stations / Furniture / Enemies / Loot pane. */
+ *  Edit: click → text input pre-filled with the same humanized
+ *  display. The user can type with or without spaces; on commit the
+ *  whitespace is stripped (`"Bench Tier 2"` → `"BenchTier2"`) and
+ *  passed to `renameAsset`, which rebuilds the full
+ *  `<prefix><stem><suffix>` form using the per-class id template.
+ *
+ *  Always reads from the asset's id, NOT its `display_name` property —
+ *  so renames update the title on the next render. The `display_name`
+ *  is a separate, localizable field edited in the typed editor. */
 export function AssetTitle({ assetKey, onRenamed }: Props) {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const renameAsset = useDefinitionsStore((s) => s.renameAsset);
 
   const rec = definitions.get(assetKey);
-  const stem = rec ? humanizeAssetId(rec.id) : '';
-  const displayName = rec ? readDisplayName(rec.json, stem) : '';
+  const displayLabel = rec ? humanizeAssetId(rec.id) : '';
 
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(stem);
+  const [draft, setDraft] = useState(displayLabel);
 
   useEffect(() => {
-    setDraft(stem);
+    setDraft(displayLabel);
     setEditing(false);
-  }, [stem, assetKey]);
+  }, [displayLabel, assetKey]);
 
   if (!rec) return null;
 
@@ -50,19 +51,25 @@ export function AssetTitle({ assetKey, onRenamed }: Props) {
         onClick={() => setEditing(true)}
         title={`Click to rename — current id: ${rec.id}`}
       >
-        {displayName}
+        {displayLabel}
       </h2>
     );
   }
 
   const commit = () => {
-    const trimmed = draft.trim();
+    const stem = unhumanizeAssetId(draft).trim();
     setEditing(false);
-    if (!trimmed || trimmed === stem) {
-      setDraft(stem);
+    if (!stem) {
+      setDraft(displayLabel);
       return;
     }
-    const newKey = renameAsset(assetKey, trimmed);
+    // No-op when the typed stem matches what's already on disk.
+    const currentStem = unhumanizeAssetId(displayLabel);
+    if (stem === currentStem) {
+      setDraft(displayLabel);
+      return;
+    }
+    const newKey = renameAsset(assetKey, stem);
     if (newKey && newKey !== assetKey) onRenamed?.(newKey);
   };
 
@@ -76,17 +83,11 @@ export function AssetTitle({ assetKey, onRenamed }: Props) {
       onKeyDown={(e) => {
         if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
         else if (e.key === 'Escape') {
-          setDraft(stem);
+          setDraft(displayLabel);
           setEditing(false);
         }
       }}
-      title={`Rename — full id rebuilt as <prefix>${draft}<suffix> on save`}
+      title={`Spaces are visual only — saved as "${unhumanizeAssetId(draft)}" with the class prefix/suffix re-applied.`}
     />
   );
-}
-
-function readDisplayName(json: any, fallback: string): string {
-  const dn = json?.properties?.display_name;
-  if (dn && typeof dn === 'object' && typeof dn.value === 'string' && dn.value) return dn.value;
-  return fallback;
 }

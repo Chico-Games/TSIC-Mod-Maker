@@ -43,7 +43,22 @@ export function Header() {
         💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}
       </button>
       <button onClick={() => void saveAs()} disabled={!fsa || definitions.size === 0}>Save as…</button>
-      <button onClick={() => void loadBundledDefaults()}>↺ Bundled defaults</button>
+      <button
+        onClick={async () => {
+          // 1. Pull the bundled tree into memory.
+          await loadBundledDefaults();
+          // 2. Immediately prompt for a folder so the user lands on
+          //    a real Save target — the bundled records are copied
+          //    out (saveAs writes everything regardless of dirty
+          //    state) and we now have a directory handle for
+          //    incremental saves. If the user cancels the picker
+          //    we just keep the in-memory bundled state.
+          if (typeof (window as any).showDirectoryPicker === 'function') {
+            await saveAs();
+          }
+        }}
+        title="Load the bundled sample data into a fresh save folder"
+      >📂 Load test project</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
       <div className="tabs">
         {tabs.map((t) => (

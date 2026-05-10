@@ -10,6 +10,7 @@ import { useJumpToDefinition } from './useJumpToDefinition';
 import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
 import { AssetTitle } from './AssetTitle';
+import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
@@ -176,12 +177,7 @@ export function FurnitureSubTab() {
       <aside className="rail">
         <div className="rail-header">
           <h3>Furniture</h3>
-          <input
-            type="text"
-            value={filter}
-            placeholder="search…"
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
           <div className="rail-add-row">
             <button className="add-row" onClick={() => {
               let n = 1;

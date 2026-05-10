@@ -9,6 +9,7 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
+import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
 
 const ENEMY_FOLDER = 'enemy_definitions';
@@ -74,12 +75,7 @@ export function EnemiesSubTab() {
       <aside className="rail">
         <div className="rail-header">
           <h3>Enemies</h3>
-          <input
-            type="text"
-            value={filter}
-            placeholder="search…"
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
           <div className="rail-add-row">
             <button className="add-row" onClick={() => {
               let n = 1;

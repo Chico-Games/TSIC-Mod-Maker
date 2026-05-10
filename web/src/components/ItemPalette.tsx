@@ -9,6 +9,7 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AddPicker } from './AddPicker';
+import { SearchBox } from './SearchBox';
 
 const RECIPE_FOLDERS = new Set([
   'craft_recipe_definitions',
@@ -348,12 +349,7 @@ export function ItemPalette({ folders, title, autoFolders }: Props) {
     <div className="item-palette">
       <div className="palette-header">
         <h3>{title ?? 'Items'}</h3>
-        <input
-          type="text"
-          placeholder="filter…"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
+        <SearchBox value={filter} onChange={setFilter} placeholder="filter…" />
       </div>
       <div className="palette-folders-bar">
         <button

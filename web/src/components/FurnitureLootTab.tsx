@@ -11,6 +11,7 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AssetTitle } from './AssetTitle';
+import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
 
 const LOOT_FOLDER = 'loot_definitions';
@@ -71,12 +72,7 @@ export function FurnitureLootTab() {
       <aside className="rail">
         <div className="rail-header">
           <h3>Loot tables</h3>
-          <input
-            type="text"
-            value={filter}
-            placeholder="search…"
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
           <div className="rail-add-row">
             <button className="add-row" onClick={() => {
               let n = 1;

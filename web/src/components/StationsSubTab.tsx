@@ -14,6 +14,7 @@ import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
 import { AssetTitle } from './AssetTitle';
 import { AddPicker } from './AddPicker';
+import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
@@ -392,12 +393,7 @@ export function StationsSubTab() {
       <aside className="rail">
         <div className="rail-header">
           <h3>Stations</h3>
-          <input
-            type="text"
-            value={filter}
-            placeholder="search…"
-            onChange={(e) => setFilter(e.target.value)}
-          />
+          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
           <div className="rail-add-row">
             <AddPicker
               label="＋ New station…"

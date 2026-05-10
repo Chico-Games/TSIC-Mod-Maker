@@ -454,16 +454,18 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await page.locator('.def-folders .def-pane-head input').fill('');
     await page.waitForTimeout(100);
 
-    // Open Consumable folder + BakedPotato.
+    // Open Consumable folder + BakedPotato. humanizeAssetId now
+    // inserts spaces at camelCase boundaries, so the visible label
+    // is "Baked Potato".
     await consumableFolder.click();
     const fileNameText = await page.locator('.def-files .def-file-name').first().textContent();
-    if (fileNameText !== 'BakedPotato') {
-      throw new Error(`expected stripped filename "BakedPotato", got "${fileNameText}"`);
+    if (fileNameText !== 'Baked Potato') {
+      throw new Error(`expected humanized filename "Baked Potato", got "${fileNameText}"`);
     }
-    await page.locator('.def-files li', { hasText: 'BakedPotato' }).click();
+    await page.locator('.def-files li', { hasText: 'Baked Potato' }).click();
     await page.waitForSelector('.def-editor-head .def-name-input');
     const title = await page.locator('.def-name-input').inputValue();
-    if (title !== 'BakedPotato') throw new Error(`expected stripped editor title; got "${title}"`);
+    if (title !== 'Baked Potato') throw new Error(`expected humanized editor title; got "${title}"`);
     console.log(`OK: editor title = ${title}`);
 
     // Class field hover-title must contain the parent chain.
@@ -612,7 +614,9 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await page.waitForSelector('.ss-popover');
     // Should have ItemDefinition subclasses (Pencil, BakedPotato, WoodenDowel, Bread) at minimum.
     const wlOptions = await page.locator('.ss-popover .ss-item').allTextContents();
-    const wantBare = ['Pencil', 'BakedPotato', 'WoodenDowel', 'Bread'];
+    // humanizeAssetId now spaces camelCase ids — "WoodenDowel" reads
+    // "Wooden Dowel"; the matcher just checks substrings of either form.
+    const wantBare = ['Pencil', 'Baked Potato', 'Wooden Dowel', 'Bread'];
     for (const w of wantBare) {
       if (!wlOptions.some((t) => t.includes(w))) {
         throw new Error(`whitelisted-items dropdown missing ${w}; got ${JSON.stringify(wlOptions)}`);
@@ -695,7 +699,9 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await page.locator('.ss-create button.primary').click();
     await page.waitForTimeout(300);
     const newKeyLabel = await newKeySs.locator('.ss-trigger-label').textContent();
-    if (!newKeyLabel?.includes('NewMaterial')) {
+    // The dropdown label runs through humanizeAssetId so the new
+    // "ID_NewMaterial_CM" id reads as "New Material".
+    if (!newKeyLabel?.includes('New Material')) {
       throw new Error(`+ New flow did not select new asset; trigger label = "${newKeyLabel}"`);
     }
     console.log(`OK: SearchableSelect + New flow created and selected new asset (label "${newKeyLabel}")`);
@@ -723,7 +729,7 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     // verify that "starting_health" appears under the "Pinned" group head.
     const stationFolder = page.locator('.def-folders li', { hasText: 'Crafting Station Definitions' });
     await stationFolder.click();
-    await page.locator('.def-files li', { hasText: 'BenchTier1' }).click();
+    await page.locator('.def-files li', { hasText: 'Bench Tier 1' }).click();
     await page.waitForSelector('.def-editor-head .def-name-input');
     const startingHealthRow = page.locator('.def-properties .def-field-row', { hasText: 'Starting Health' }).first();
     const pinBtn = startingHealthRow.locator('.def-pin-btn').first();
@@ -739,7 +745,8 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     // Cage should also surface starting_health under Pinned now.
     const cageFolder = page.locator('.def-folders li', { hasText: 'Containment Cage Definitions' });
     await cageFolder.click();
-    await page.locator('.def-files li', { hasText: 'Cage_Basic' }).click();
+    // Underscores in stems become spaces too — "Cage_Basic" → "Cage Basic".
+    await page.locator('.def-files li', { hasText: 'Cage Basic' }).click();
     await page.waitForSelector('.def-editor-head .def-name-input');
     const cagePinnedHead = await page.locator('.def-group-pinned .def-group-head').count();
     if (cagePinnedHead === 0) throw new Error('Pinned group missing on cage — pin should be global');
@@ -876,10 +883,11 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     // remove the old file from disk.
     const nameInput = page.locator('.def-name-input');
     const initialName = await nameInput.inputValue();
-    if (initialName !== 'BakedPotato') {
-      throw new Error(`name input should show stripped form; got "${initialName}"`);
+    // The bare-name input shows the humanized stem now ("Baked Potato").
+    if (initialName !== 'Baked Potato') {
+      throw new Error(`name input should show humanized stem; got "${initialName}"`);
     }
-    await nameInput.fill('BakedSpud');
+    await nameInput.fill('Baked Spud');
     await nameInput.blur();
     await page.waitForTimeout(150);
     // Save and verify the file landed at ID_BakedSpud_CN.json (prefix

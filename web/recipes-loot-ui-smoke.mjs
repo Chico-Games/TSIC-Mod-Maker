@@ -681,11 +681,15 @@ async function waitForServer(url, timeoutMs = 15000) {
     const titleEl = page.locator('.station-title .asset-title').first();
     await titleEl.click();
     const renameInput = page.locator('.asset-title-input').first();
-    await renameInput.fill('RenamedBench');
+    // humanizeAssetId now inserts spaces between camelCase words —
+    // typing "Renamed Bench" with a space writes the disk id
+    // "RenamedBench" via unhumanizeAssetId; the title re-reads back
+    // as "Renamed Bench".
+    await renameInput.fill('Renamed Bench');
     await renameInput.press('Enter');
     await page.waitForTimeout(150);
     const renamedTitle = await page.locator('.station-title .asset-title').first().textContent();
-    if (!renamedTitle?.includes('RenamedBench')) {
+    if (!renamedTitle?.includes('Renamed Bench')) {
       throw new Error(`expected title to update after rename; got "${renamedTitle}"`);
     }
     console.log('OK: rename via middle-pane title commits via renameAsset');

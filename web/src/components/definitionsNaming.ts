@@ -49,12 +49,37 @@ export function humanizeProperty(name: string): string {
 const PREFIX_RE = /^[A-Z]{2,4}_/;
 const SUFFIX_RE = /_[A-Z]{2,3}$/;
 
+/** Strip the family prefix (`ID_`, `RD_`, `FD_`, …) and the leaf-class
+ *  suffix (`_CR`, `_CM`, …) from an asset id, then insert spaces at
+ *  camelCase / digit boundaries so `BenchTier1` reads `Bench Tier 1`.
+ *  Underscores left over from rare multi-word stems become spaces too.
+ *  The under-the-hood id never carries spaces — this is purely a
+ *  visual transform; the `unhumanizeAssetId` inverse strips spaces
+ *  back to camelCase before the rename pipeline writes the new id. */
 export function humanizeAssetId(id: string): string {
   if (!id) return id;
   let s = id;
   if (PREFIX_RE.test(s)) s = s.replace(PREFIX_RE, '');
   if (SUFFIX_RE.test(s)) s = s.replace(SUFFIX_RE, '');
-  return s || id;
+  if (!s) return id;
+  // Underscores → spaces (rare in stems but data has e.g. "Cage_Basic").
+  s = s.replace(/_/g, ' ');
+  // Insert a space before each uppercase letter that follows a
+  // lowercase letter, and around digit runs. The lookbehinds keep the
+  // operation idempotent on already-spaced strings.
+  s = s
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/([A-Za-z])(\d)/g, '$1 $2')
+    .replace(/(\d)([A-Z])/g, '$1 $2');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+/** Inverse of `humanizeAssetId` for the rename input — strip every
+ *  whitespace run so a typed `"Bench Tier 2"` writes the disk id
+ *  `BenchTier2`. The `renameAsset` pipeline then re-applies the
+ *  per-class prefix/suffix to land on the full `FD_BenchTier2_CS`. */
+export function unhumanizeAssetId(s: string): string {
+  return s.replace(/\s+/g, '');
 }
 
 /** Property names that aren't meaningful for crafting/balance design. The
