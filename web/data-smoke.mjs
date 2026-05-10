@@ -94,6 +94,23 @@ async function main() {
   }
   console.log(`[data-smoke] furniture: ${furnCount}; upgrade refs resolved: ${upgradeResolved}`);
 
+  // Items + Furniture configs cover their folders.
+  const HAS_PARTNER = new Set([
+    'crafting_material_definitions', 'consumable_definitions', 'constructable_item_definitions',
+    'equippable_definitions', 'glove_definitions', 'ammo_definitions',
+    'seed_item_definitions', 'trap_item_definitions',
+  ]);
+  let partnerSlots = 0, partnerMissing = 0;
+  for (const rec of byId.values()) {
+    if (!HAS_PARTNER.has(rec.folder)) continue;
+    const slot = rec.json?.properties?.static_item_definition;
+    if (!slot || slot.type !== 'definition_ref') continue;
+    partnerSlots++;
+    const v = slot.value;
+    if (typeof v !== 'string' || !v || !byId.has(v)) partnerMissing++;
+  }
+  console.log(`[data-smoke] partner-resolvable: ${partnerSlots - partnerMissing}/${partnerSlots} (missing ${partnerMissing} — auto-create will mint these)`);
+
   if (failures.length > 0) {
     console.error('\n[data-smoke] FAILURES:');
     for (const f of failures.slice(0, 50)) console.error('  -', f);
