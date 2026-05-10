@@ -73,6 +73,13 @@ export function ClassBrowserTab({ folder, config }: Props) {
 
   const [filter, setFilter] = useState('');
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
+  const [selectedKeys, setSelectedKeys] = useState<Set<DefinitionsKey>>(() => new Set());
+  const [lastClickedKey, setLastClickedKey] = useState<DefinitionsKey | null>(null);
+  const [mode, setMode] = useState<'detail' | 'spreadsheet' | 'compare'>('detail');
+  const [bulkOpen, setBulkOpen] = useState(false);
+
+  // Stub — real impl in Task 17.
+  const duplicateSelected = () => { /* placeholder */ };
 
   type Row = { key: DefinitionsKey; id: string };
   const rows = useMemo<Row[]>(() => {
@@ -86,13 +93,43 @@ export function ClassBrowserTab({ folder, config }: Props) {
   }, [definitions, folder]);
 
   // Reset selection when folder changes (sub-tab switch).
-  useEffect(() => { setSelectedKey(null); }, [folder]);
+  useEffect(() => {
+    setSelectedKey(null);
+    setSelectedKeys(new Set());
+    setLastClickedKey(null);
+    setMode('detail');
+  }, [folder]);
 
   const filtered = useHybridSearch(
     rows, filter,
     (r) => [humanizeAssetId(r.id), r.id],
     { semanticKey: (r) => r.key },
   ) as RankedHit<Row>[];
+
+  const handleRailClick = (e: React.MouseEvent, key: DefinitionsKey) => {
+    if (e.shiftKey && lastClickedKey) {
+      const ids = filtered.map((h) => h.item.key);
+      const a = ids.indexOf(lastClickedKey);
+      const b = ids.indexOf(key);
+      if (a >= 0 && b >= 0) {
+        const [lo, hi] = a < b ? [a, b] : [b, a];
+        const next = new Set(selectedKeys);
+        for (let i = lo; i <= hi; i++) next.add(ids[i]);
+        setSelectedKeys(next);
+        return;
+      }
+    }
+    if (e.ctrlKey || e.metaKey) {
+      const next = new Set(selectedKeys);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      setSelectedKeys(next);
+      setLastClickedKey(key);
+      return;
+    }
+    setSelectedKeys(new Set([key]));
+    setLastClickedKey(key);
+    setSelectedKey(key);
+  };
 
   if (selectedKey == null && rows.length > 0) setSelectedKey(rows[0].key);
 
@@ -112,6 +149,13 @@ export function ClassBrowserTab({ folder, config }: Props) {
           filtered={filtered}
           selectedKey={selectedKey}
           setSelectedKey={setSelectedKey}
+          selectedKeys={selectedKeys}
+          handleRailClick={handleRailClick}
+          setSelectedKeys={setSelectedKeys}
+          setLastClickedKey={setLastClickedKey}
+          setMode={setMode}
+          setBulkOpen={setBulkOpen}
+          duplicateSelected={duplicateSelected}
           theme={theme}
           config={config}
           findKeyById={findKeyById}
@@ -124,7 +168,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
         />
 
         <EchoPublishingPane>
-          {selected && selectedKey ? (
+          {mode === 'detail' && (selected && selectedKey ? (
             <>
               <header className="station-header">
                 <div className="station-title">
@@ -147,9 +191,9 @@ export function ClassBrowserTab({ folder, config }: Props) {
               />
               {selected && <WhereUsedPanel assetId={selected.id} />}
             </>
-          ) : (
-            <div className="empty-state-mini">Pick a record from the rail.</div>
-          )}
+          ) : <div className="empty-state-mini">Pick a record from the rail.</div>)}
+          {mode === 'spreadsheet' && <div className="empty-state-mini">Spreadsheet view (coming next).</div>}
+          {mode === 'compare' && <div className="empty-state-mini">Compare view (coming next).</div>}
         </EchoPublishingPane>
 
         <ItemPalette
@@ -165,6 +209,13 @@ function RailColumn(props: {
   filtered: any[];
   selectedKey: DefinitionsKey | null;
   setSelectedKey: (k: DefinitionsKey) => void;
+  selectedKeys: Set<DefinitionsKey>;
+  handleRailClick: (e: React.MouseEvent, k: DefinitionsKey) => void;
+  setSelectedKeys: (s: Set<DefinitionsKey>) => void;
+  setLastClickedKey: (k: DefinitionsKey | null) => void;
+  setMode: (m: 'detail' | 'spreadsheet' | 'compare') => void;
+  setBulkOpen: (b: boolean) => void;
+  duplicateSelected: () => void;
   theme: { color: string; emoji: string };
   config: ClassBrowserConfig;
   findKeyById: (id: string) => DefinitionsKey | null;
@@ -176,7 +227,9 @@ function RailColumn(props: {
   definitions: Map<DefinitionsKey, any>;
 }) {
   const {
-    filtered, selectedKey, setSelectedKey, theme, config, findKeyById,
+    filtered, selectedKey, setSelectedKey, selectedKeys, handleRailClick,
+    setSelectedKeys, setLastClickedKey, setMode, setBulkOpen, duplicateSelected,
+    theme, config, findKeyById,
     createDefinitionForClass, filter, setFilter, jumpToDef, warningsForRow, definitions,
   } = props;
   const { echo, setEcho } = usePropertyEcho();
@@ -231,8 +284,8 @@ function RailColumn(props: {
             const top = ws.length ? ws.sort((a, b) => severityOrder(b.rule.severity) - severityOrder(a.rule.severity))[0] : null;
             return (
               <button
-                className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''}`}
-                onClick={() => setSelectedKey(h.item.key)}
+                className={`rail-row ${selectedKey === h.item.key ? 'selected' : ''} ${selectedKeys.has(h.item.key) ? 'selected-multi' : ''}`}
+                onClick={(e) => handleRailClick(e, h.item.key)}
                 style={{ borderLeft: `3px solid ${theme.color}` }}
                 title={`${h.item.id}\nMiddle-click to open in Definitions`}
                 onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(h.item.id); } }}
@@ -258,6 +311,15 @@ function RailColumn(props: {
             );
           }}
         />
+      )}
+      {selectedKeys.size >= 2 && (
+        <div className="action-bar">
+          <span>{selectedKeys.size} selected</span>
+          <button disabled={selectedKeys.size > 3} title={selectedKeys.size > 3 ? 'Compare supports max 3' : 'Compare'} onClick={() => setMode('compare')}>Compare</button>
+          <button onClick={() => setBulkOpen(true)}>Bulk edit…</button>
+          <button onClick={() => duplicateSelected()}>Duplicate × {selectedKeys.size}</button>
+          <button onClick={() => { setSelectedKeys(new Set()); setLastClickedKey(null); }}>Clear</button>
+        </div>
       )}
     </aside>
   );
