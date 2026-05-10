@@ -429,14 +429,15 @@ async function waitForServer(url, timeoutMs = 15000) {
     //    renders with 3 tier pills. T1 has 2 recipes, T2 has 1, T3 has 0.
     const benchFamily = page.locator('.rail-family', { hasText: 'Crafting Bench' });
     if ((await benchFamily.count()) < 1) throw new Error('expected Bench family row');
-    // The "+ Tier" affordance is its own pill (.tier-pill-add); count
-    // only the real tier pills.
-    const tierPills = benchFamily.locator('.tier-pill:not(.tier-pill-add)');
+    // The +Add affordance now lives as an inline button in the row
+    // headline (rail-inline-add); the tier strip below holds only the
+    // real member pills.
+    const tierPills = benchFamily.locator('.tier-pill');
     const pillCount = await tierPills.count();
     if (pillCount !== 3) throw new Error(`expected 3 tier pills; got ${pillCount}`);
-    const addTierCount = await benchFamily.locator('.tier-pill-add').count();
-    if (addTierCount !== 1) throw new Error(`expected 1 + tier add pill; got ${addTierCount}`);
-    console.log(`OK: Bench family rendered with ${pillCount} tier pills + 1 add affordance`);
+    const inlineAdd = await benchFamily.locator('.rail-inline-add').count();
+    if (inlineAdd !== 1) throw new Error(`expected 1 inline + button on the family head; got ${inlineAdd}`);
+    console.log(`OK: Bench family rendered with ${pillCount} tier pills + inline + button`);
 
     // Total count badge on the family head should be 3 (2+1+0).
     const familyCount = await benchFamily.locator('.rail-family-head .rail-count').textContent();
@@ -457,7 +458,7 @@ async function waitForServer(url, timeoutMs = 15000) {
     console.log('OK: tier pill swap → Tier 2 station with 1 recipe');
 
     // Switch back to Tier 1 to do recipe-level work.
-    await benchFamily.locator('.tier-pill', { hasText: 'T1' }).click();
+    await benchFamily.locator('.tier-pill', { hasText: /^T1/ }).first().click();
     await page.waitForTimeout(150);
     const t1Recipes = await page.locator('.recipe-card').count();
     if (t1Recipes !== 2) throw new Error(`expected 2 recipes for Tier 1; got ${t1Recipes}`);
@@ -591,7 +592,7 @@ async function waitForServer(url, timeoutMs = 15000) {
     //    UFurnitureUpgradeRecipe and links it via the host's
     //    upgrade_recipe property — the badged card now renders.
     await page.locator('.rail-family', { hasText: 'Crafting Bench' })
-      .locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
+      .locator('.tier-pill', { hasText: 'T1' }).click();
     await page.waitForSelector('.upgrade-recipe-section');
     const upgradeAddBtn = page.locator('.upgrade-recipe-section button', { hasText: 'Add upgrade recipe' });
     if ((await upgradeAddBtn.count()) < 1) {
@@ -614,7 +615,10 @@ async function waitForServer(url, timeoutMs = 15000) {
     //    section now renders via UpgradeRecipeSection and is badged.
     await page.locator('.subtab', { hasText: 'Furniture' }).click();
     await page.waitForSelector('.furniture-layout');
-    await page.locator('.rail-row', { hasText: 'Aircon' }).first().click();
+    // Furniture rail now renders every entry as a .rail-family
+    // (singletons + chains share the same shape) — click the head
+    // of the Aircon entry.
+    await page.locator('.rail-family-head', { hasText: 'Aircon' }).first().click();
     await page.waitForTimeout(150);
     const lootEntries = await page.locator('.loot-entry').count();
     if (lootEntries < 1) throw new Error('expected ≥1 loot entry for Aircon');
@@ -686,12 +690,14 @@ async function waitForServer(url, timeoutMs = 15000) {
     }
     console.log('OK: rename via middle-pane title commits via renameAsset');
 
-    // ── + Tier on the Bench family creates the next tier.
+    // ── + Tier on the Bench family creates the next tier. With the
+    // unified rail entry, every row exposes a single inline + button
+    // (.rail-inline-add) — there's no longer a separate +Tier pill.
     const benchFam = page.locator('.rail-family', { hasText: 'Crafting Bench' });
-    const tiersBefore = await benchFam.locator('.tier-pill:not(.tier-pill-add)').count();
-    await benchFam.locator('.tier-pill-add').click();
+    const tiersBefore = await benchFam.locator('.tier-pill').count();
+    await benchFam.locator('.rail-inline-add').first().click();
     await page.waitForTimeout(150);
-    const tiersAfter = await benchFam.locator('.tier-pill:not(.tier-pill-add)').count();
+    const tiersAfter = await benchFam.locator('.tier-pill').count();
     if (tiersAfter !== tiersBefore + 1) {
       throw new Error(`expected ${tiersBefore + 1} tier pills after + Tier; got ${tiersAfter}`);
     }
@@ -713,7 +719,7 @@ async function waitForServer(url, timeoutMs = 15000) {
     await page.getByRole('button', { name: 'Recipes & Loot', exact: true }).click();
     await page.waitForSelector('.subtab-strip');
     await page.locator('.subtab', { hasText: 'Stations' }).click();
-    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
+    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill', { hasText: 'T1' }).click();
     await page.waitForSelector('.recipe-card');
     const swordPreClickRecipeCountForGate = await page.locator('.recipe-card', { hasText: 'RD_Sword_CR' }).count();
     await page.locator('.subtab', { hasText: 'Furniture' }).click();
@@ -741,7 +747,7 @@ async function waitForServer(url, timeoutMs = 15000) {
     // Force-pick Bench Tier 1 so we know there are recipes to work
     // with (the previous test step left selection on a +Tier-minted
     // empty station).
-    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
+    await page.locator('.rail-family', { hasText: 'Crafting Bench' }).locator('.tier-pill', { hasText: 'T1' }).click();
     await page.waitForSelector('.recipe-card');
     await page.waitForTimeout(120);
 

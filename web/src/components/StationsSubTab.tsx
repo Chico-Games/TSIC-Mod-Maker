@@ -400,26 +400,16 @@ export function StationsSubTab() {
                 <div className="rail-group-header">
                   <span aria-hidden>{GROUP_EMOJI[g]}</span> {GROUP_LABEL[g]} <span className="muted">({total})</span>
                 </div>
-                {fams.map((fam) =>
-                  fam.members.length === 1 ? (
-                    <StationRailRow
-                      key={fam.members[0].row.key}
-                      row={fam.members[0].row}
-                      ranges={fam.members[0].ranges}
-                      selected={selectedKey === fam.members[0].row.key}
-                      onSelect={() => setSelectedKey(fam.members[0].row.key)}
-                    />
-                  ) : (
-                    <StationFamilyRow
-                      key={fam.familyKey}
-                      members={fam.members}
-                      selectedKey={selectedKey}
-                      onSelect={(k) => setSelectedKey(k)}
-                      onAddTier={() => onNewTier(fam)}
-                      onDeleteTier={(k) => void deleteDefinition(k)}
-                    />
-                  ),
-                )}
+                {fams.map((fam) => (
+                  <StationFamilyEntry
+                    key={fam.familyKey}
+                    members={fam.members}
+                    selectedKey={selectedKey}
+                    onSelect={(k) => setSelectedKey(k)}
+                    onAddTier={() => onNewTier(fam)}
+                    onDeleteTier={(k) => void deleteDefinition(k)}
+                  />
+                ))}
               </div>
             );
           })}
@@ -496,43 +486,12 @@ export function StationsSubTab() {
   );
 }
 
-function StationRailRow({ row, selected, onSelect, ranges }: { row: StationRow; selected: boolean; onSelect: () => void; ranges: ReadonlyArray<readonly [number, number]> }) {
-  const dndCtx = useDndContext();
-  const activeType = (dndCtx.active?.data?.current as any)?.type;
-  // Only recipe cards can drop on a station row — block other drags from
-  // accidentally landing here.
-  const { setNodeRef, isOver } = useDroppable({
-    id: `station-row:${row.key}`,
-    data: { type: 'station-row', stationKey: row.key } as any,
-    disabled: activeType !== 'recipe-card',
-  });
-  const theme = getFolderTheme(row.folder);
-  const jumpToDef = useJumpToDefinition();
-  return (
-    <button
-      ref={setNodeRef}
-      className={`rail-row ${selected ? 'selected' : ''} ${isOver ? 'over' : ''}`}
-      onClick={onSelect}
-      style={{ borderLeft: `3px solid ${theme.color}` }}
-      title={`${row.displayName} (${row.id})\nMiddle-click to open in Definitions`}
-      onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(row.id); } }}
-      onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
-    >
-      <span className="emoji" aria-hidden>{theme.emoji}</span>
-      <span className="label"><HighlightedText text={row.displayName} ranges={ranges} /></span>
-      {row.recipeCount > 0 && (
-        <span className="rail-count" title={`${row.recipeCount} recipe${row.recipeCount === 1 ? '' : 's'}`}>{row.recipeCount}</span>
-      )}
-    </button>
-  );
-}
-
-/** Quick-swap row: stations sharing a family key (e.g. tier variants
- *  of the same bench) collapse into one entry with tier pills. The
- *  member whose row is currently selected highlights, and clicking a
- *  different pill swaps the selection without changing the rail's
- *  scroll position. */
-function StationFamilyRow({
+/** Unified station rail entry. Top row is always the family/asset
+ *  header with a folder emoji + label + an inline + button.
+ *  Multi-member chains add a second-line tier-pill strip. The
+ *  station-row drop target lives on the top row so recipe cards can
+ *  still be dragged into any station (including singletons). */
+function StationFamilyEntry({
   members,
   selectedKey,
   onSelect,
@@ -542,52 +501,78 @@ function StationFamilyRow({
   members: Array<{ row: StationRow; ranges: ReadonlyArray<readonly [number, number]> }>;
   selectedKey: DefinitionsKey | null;
   onSelect: (k: DefinitionsKey) => void;
-  onAddTier?: () => void;
-  onDeleteTier?: (memberKey: DefinitionsKey) => void;
+  onAddTier: () => void;
+  onDeleteTier: (memberKey: DefinitionsKey) => void;
 }) {
-  const theme = getFolderTheme(members[0].row.folder);
-  const familyName = familyDisplayName(members.map((m) => m.row));
+  const dndCtx = useDndContext();
+  const activeType = (dndCtx.active?.data?.current as any)?.type;
+  const isChain = members.length > 1;
   const selectedMember = members.find((m) => m.row.key === selectedKey);
   const familySelected = !!selectedMember;
+  const headEntry = selectedMember ?? members[0];
+  // The station-row drop target points at whichever station the head
+  // row currently represents (selected member when one is set, else
+  // first member). This keeps recipe-card drags pointing at the
+  // correct ARR.
+  const dropStationKey = headEntry.row.key;
+  const { setNodeRef, isOver } = useDroppable({
+    id: `station-row:${dropStationKey}`,
+    data: { type: 'station-row', stationKey: dropStationKey } as any,
+    disabled: activeType !== 'recipe-card',
+  });
+  const theme = getFolderTheme(members[0].row.folder);
   const totalRecipes = members.reduce((n, m) => n + m.row.recipeCount, 0);
+  const familyName = isChain
+    ? familyDisplayName(members.map((m) => m.row))
+    : headEntry.row.displayName;
   const jumpToDef = useJumpToDefinition();
   return (
     <div
-      className={`rail-family ${familySelected ? 'selected' : ''}`}
+      ref={setNodeRef}
+      className={`rail-family ${familySelected ? 'selected' : ''} ${isChain ? 'is-chain' : 'is-singleton'} ${isOver ? 'over' : ''}`}
       style={{ borderLeft: `3px solid ${theme.color}` }}
     >
-      <button
-        className="rail-family-head"
-        onClick={() => onSelect(selectedMember?.row.key ?? members[0].row.key)}
-        title={members.map((m) => m.row.displayName).join(' · ')}
-      >
-        <span className="emoji" aria-hidden>{theme.emoji}</span>
-        <span className="label">
-          <HighlightedText text={familyName} ranges={selectedMember?.ranges ?? members[0].ranges} />
-        </span>
-        {totalRecipes > 0 && <span className="rail-count">{totalRecipes}</span>}
-      </button>
-      <div className="rail-family-tiers">
-        {members.map((m) => {
-          const tier = m.row.tier;
-          const label = tier > 0 ? `T${tier}` : 'base';
-          const isSel = selectedKey === m.row.key;
-          return (
-            <span
-              key={m.row.key}
-              className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}
-            >
-              <button
-                className={`tier-pill ${isSel ? 'selected' : ''}`}
-                onClick={() => onSelect(m.row.key)}
-                title={`${m.row.displayName} · ${m.row.recipeCount} recipe${m.row.recipeCount === 1 ? '' : 's'}\nMiddle-click to open in Definitions`}
-                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.row.id); } }}
-                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+      <div className="rail-family-headline">
+        <button
+          className={`rail-family-head ${familySelected ? 'selected' : ''}`}
+          onClick={() => onSelect(headEntry.row.key)}
+          title={`${headEntry.row.displayName} (${headEntry.row.id})\nMiddle-click to open in Definitions`}
+          onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(headEntry.row.id); } }}
+          onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+        >
+          <span className="emoji" aria-hidden>{theme.emoji}</span>
+          <span className="label">
+            <HighlightedText text={familyName} ranges={headEntry.ranges} />
+          </span>
+          {totalRecipes > 0 && <span className="rail-count">{totalRecipes}</span>}
+        </button>
+        <button
+          className="rail-inline-add"
+          onClick={(e) => { e.stopPropagation(); onAddTier(); }}
+          title="Add an upgraded tier (mints next station + linking recipe)"
+        >＋</button>
+      </div>
+      {isChain && (
+        <div className="rail-family-tiers">
+          {members.map((m) => {
+            const tier = m.row.tier;
+            const label = tier > 0 ? `T${tier}` : 'base';
+            const isSel = selectedKey === m.row.key;
+            return (
+              <span
+                key={m.row.key}
+                className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}
               >
-                {label}
-                {m.row.recipeCount > 0 && <span className="tier-pill-count">{m.row.recipeCount}</span>}
-              </button>
-              {onDeleteTier && (
+                <button
+                  className={`tier-pill ${isSel ? 'selected' : ''}`}
+                  onClick={() => onSelect(m.row.key)}
+                  title={`${m.row.displayName} · ${m.row.recipeCount} recipe${m.row.recipeCount === 1 ? '' : 's'}\nMiddle-click to open in Definitions`}
+                  onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.row.id); } }}
+                  onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+                >
+                  {label}
+                  {m.row.recipeCount > 0 && <span className="tier-pill-count">{m.row.recipeCount}</span>}
+                </button>
                 <button
                   className="tier-pill-x"
                   title={`Delete ${m.row.displayName}`}
@@ -597,14 +582,11 @@ function StationFamilyRow({
                     onDeleteTier(m.row.key);
                   }}
                 >×</button>
-              )}
-            </span>
-          );
-        })}
-        {onAddTier && (
-          <button className="tier-pill tier-pill-add" onClick={onAddTier} title="Mint the next tier">＋</button>
-        )}
-      </div>
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

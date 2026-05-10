@@ -681,9 +681,18 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 4px;
+  padding: 2px;
 }
 .rail-family.selected { border-color: var(--accent); }
+.rail-family.over { background: rgba(54, 198, 155, 0.12); border-color: var(--accent-2); }
+/* Singletons get a tighter padding so they look like a single row,
+   not a compact card. */
+.rail-family.is-singleton { padding: 0; }
+.rail-family-headline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
 .rail-family-head {
   background: transparent;
   border: none;
@@ -691,20 +700,35 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 2px 6px;
+  padding: 6px 10px;
   text-align: left;
   cursor: pointer;
   font-size: 13px;
   border-radius: 4px;
+  flex: 1;
+  min-width: 0;
 }
 .rail-family-head:hover { background: #283040; }
+.rail-family-head.selected { background: #2a3a55; }
 .rail-family-head .emoji { width: 18px; flex-shrink: 0; }
 .rail-family-head .label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rail-inline-add {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+.rail-inline-add:hover { color: var(--accent); background: rgba(95, 179, 255, 0.08); }
 .rail-family-tiers {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 0 6px 2px 6px;
+  padding: 0 6px 4px 6px;
 }
 .tier-pill {
   background: var(--panel);

@@ -195,25 +195,16 @@ export function FurnitureSubTab() {
           <div className="empty-state-mini">No furniture loaded.</div>
         ) : (
           <div className="rail-body">
-            {families.map((fam) =>
-              fam.members.length === 1 ? (
-                <FurnitureRailRow
-                  key={fam.members[0].item.key}
-                  hit={fam.members[0]}
-                  selected={selectedKey === fam.members[0].item.key}
-                  onSelect={() => setSelectedKey(fam.members[0].item.key)}
-                />
-              ) : (
-                <FurnitureFamilyRow
-                  key={fam.familyKey}
-                  members={fam.members}
-                  selectedKey={selectedKey}
-                  onSelect={(k) => setSelectedKey(k)}
-                  onAddTier={() => onNewFurnitureTier(fam.members[fam.members.length - 1].item)}
-                  onDeleteTier={(k) => void deleteDefinition(k)}
-                />
-              ),
-            )}
+            {families.map((fam) => (
+              <FurnitureFamilyEntry
+                key={fam.familyKey}
+                members={fam.members}
+                selectedKey={selectedKey}
+                onSelect={(k) => setSelectedKey(k)}
+                onAddTier={() => onNewFurnitureTier(fam.members[fam.members.length - 1].item)}
+                onDeleteTier={(k) => void deleteDefinition(k)}
+              />
+            ))}
           </div>
         )}
       </aside>
@@ -283,32 +274,11 @@ export function FurnitureSubTab() {
   );
 }
 
-function FurnitureRailRow({
-  hit,
-  selected,
-  onSelect,
-}: {
-  hit: RankedHit<FurnitureRow>;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const jumpToDef = useJumpToDefinition();
-  return (
-    <button
-      className={`rail-row ${selected ? 'selected' : ''}`}
-      onClick={onSelect}
-      style={{ borderLeft: `3px solid ${getFolderTheme(FURNITURE_FOLDER).color}` }}
-      title={`${hit.item.displayName} (${hit.item.id})\nMiddle-click to open in Definitions`}
-      onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(hit.item.id); } }}
-      onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
-    >
-      <span className="emoji" aria-hidden>🪑</span>
-      <span className="label"><HighlightedText text={hit.item.displayName} ranges={hit.ranges} /></span>
-    </button>
-  );
-}
-
-function FurnitureFamilyRow({
+/** Unified rail entry: every chain (single or multi-member) renders
+ *  this. Top row has the emoji + label + an always-visible inline +
+ *  button. The second-line tier pill strip appears only when the
+ *  chain has > 1 member. */
+function FurnitureFamilyEntry({
   members,
   selectedKey,
   onSelect,
@@ -324,53 +294,68 @@ function FurnitureFamilyRow({
   const theme = getFolderTheme(FURNITURE_FOLDER);
   const selectedMember = members.find((m) => m.item.key === selectedKey);
   const familySelected = !!selectedMember;
-  const familyName = familyDisplayName(members.map((m) => m.item));
+  const isChain = members.length > 1;
+  const familyName = isChain
+    ? familyDisplayName(members.map((m) => m.item))
+    : members[0].item.displayName;
+  const headLabelHit = selectedMember ?? members[0];
+  const headTargetKey = selectedMember?.item.key ?? members[0].item.key;
   const jumpToDef = useJumpToDefinition();
   return (
     <div
-      className={`rail-family ${familySelected ? 'selected' : ''}`}
+      className={`rail-family ${familySelected ? 'selected' : ''} ${isChain ? 'is-chain' : 'is-singleton'}`}
       style={{ borderLeft: `3px solid ${theme.color}` }}
     >
-      <button
-        className="rail-family-head"
-        onClick={() => onSelect(selectedMember?.item.key ?? members[0].item.key)}
-        title={members.map((m) => m.item.displayName).join(' · ')}
-      >
-        <span className="emoji" aria-hidden>🪑</span>
-        <span className="label">
-          <HighlightedText text={familyName} ranges={selectedMember?.ranges ?? members[0].ranges} />
-        </span>
-      </button>
-      <div className="rail-family-tiers">
-        {members.map((m) => {
-          const tier = m.item.tier;
-          const label = tier > 0 ? `T${tier}` : 'base';
-          const isSel = selectedKey === m.item.key;
-          return (
-            <span key={m.item.key} className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}>
-              <button
-                className={`tier-pill ${isSel ? 'selected' : ''}`}
-                onClick={() => onSelect(m.item.key)}
-                title={`${m.item.displayName}\nMiddle-click to open in Definitions`}
-                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.item.id); } }}
-                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
-              >
-                {label}
-              </button>
-              <button
-                className="tier-pill-x"
-                title={`Delete ${m.item.displayName}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!confirm(`Delete ${m.item.displayName} (${m.item.id})?`)) return;
-                  onDeleteTier(m.item.key);
-                }}
-              >×</button>
-            </span>
-          );
-        })}
-        <button className="tier-pill tier-pill-add" onClick={onAddTier} title="Mint the next tier">＋</button>
+      <div className="rail-family-headline">
+        <button
+          className={`rail-family-head ${!isChain && familySelected ? 'selected' : ''}`}
+          onClick={() => onSelect(headTargetKey)}
+          title={`${headLabelHit.item.displayName} (${headLabelHit.item.id})\nMiddle-click to open in Definitions`}
+          onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(headLabelHit.item.id); } }}
+          onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+        >
+          <span className="emoji" aria-hidden>🪑</span>
+          <span className="label">
+            <HighlightedText text={familyName} ranges={headLabelHit.ranges} />
+          </span>
+        </button>
+        <button
+          className="rail-inline-add"
+          onClick={(e) => { e.stopPropagation(); onAddTier(); }}
+          title="Add an upgraded tier (mints next furniture + linking recipe)"
+        >＋</button>
       </div>
+      {isChain && (
+        <div className="rail-family-tiers">
+          {members.map((m) => {
+            const tier = m.item.tier;
+            const label = tier > 0 ? `T${tier}` : 'base';
+            const isSel = selectedKey === m.item.key;
+            return (
+              <span key={m.item.key} className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}>
+                <button
+                  className={`tier-pill ${isSel ? 'selected' : ''}`}
+                  onClick={() => onSelect(m.item.key)}
+                  title={`${m.item.displayName}\nMiddle-click to open in Definitions`}
+                  onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.item.id); } }}
+                  onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+                >
+                  {label}
+                </button>
+                <button
+                  className="tier-pill-x"
+                  title={`Delete ${m.item.displayName}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!confirm(`Delete ${m.item.displayName} (${m.item.id})?`)) return;
+                    onDeleteTier(m.item.key);
+                  }}
+                >×</button>
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
