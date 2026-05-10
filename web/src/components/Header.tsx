@@ -22,6 +22,8 @@ export function Header() {
 
   const tabs: Array<{ id: AppTab; label: string; badge?: number }> = [
     { id: 'recipes-loot', label: 'Recipes & Loot' },
+    { id: 'items', label: 'Items' },
+    { id: 'furniture', label: 'Furniture' },
     { id: 'definitions', label: 'Definitions' },
     { id: 'validations', label: 'Validations' },
   ];

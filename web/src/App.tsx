@@ -19,6 +19,8 @@ import { CommandPalette } from './components/CommandPalette';
 import { DefinitionsTab } from './components/DefinitionsTab';
 import { RecipesAndLootTab } from './components/RecipesAndLootTab';
 import { ValidationsTab } from './components/ValidationsTab';
+import { ItemsTab } from './components/ItemsTab';
+import { FurnitureTab } from './components/FurnitureTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
 import { dispatchDnD, type DragSource, type DropTarget } from './dnd/dispatch';
@@ -160,6 +162,8 @@ export function App() {
   const renderTab = (t: AppTab) => {
     switch (t) {
       case 'recipes-loot': return <RecipesAndLootTab />;
+      case 'items': return <ItemsTab />;
+      case 'furniture': return <FurnitureTab />;
       case 'definitions': return <DefinitionsTab />;
       case 'validations': return <ValidationsTab />;
     }
