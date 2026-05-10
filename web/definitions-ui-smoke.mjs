@@ -478,13 +478,24 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     }
     console.log(`OK: class chain on hover = "${classChain}"`);
 
-    // Property tooltip — Duration should show the .h doc comment on hover.
+    // Property tooltip — hovering the Duration label should pop the
+    // PropertyTooltip popover with the .h doc-comment prose and cpp_type.
     const durationLabel = page.locator('.def-properties .def-field-label', { hasText: 'Duration' }).first();
-    const durationTooltip = await durationLabel.getAttribute('title');
-    if (!durationTooltip || !durationTooltip.includes('Duration in seconds')) {
-      throw new Error(`duration tooltip missing; got "${durationTooltip}"`);
+    await durationLabel.hover();
+    await page.waitForSelector('.def-property-tooltip', { state: 'visible', timeout: 1000 });
+    const tooltipText = await page.locator('.def-property-tooltip').first().innerText();
+    if (!tooltipText.includes('Duration in seconds')) {
+      throw new Error(`duration tooltip prose missing; got "${tooltipText}"`);
     }
-    console.log(`OK: property tooltip from .property-meta sidecar`);
+    if (!tooltipText.toLowerCase().includes('float')) {
+      throw new Error(`duration tooltip cpp_type missing; got "${tooltipText}"`);
+    }
+    console.log(`OK: property tooltip popover from .property-meta sidecar`);
+    // Move pointer somewhere neutral so the popover unmounts before the
+    // next assertion. The .def-prop-search input is a safe target that
+    // exists at this point in the test.
+    await page.locator('.def-prop-search').hover();
+    await page.waitForSelector('.def-property-tooltip', { state: 'detached', timeout: 1000 });
 
     // Type-color stripes — each rendered field should carry the matching
     // def-type-color-* class.
