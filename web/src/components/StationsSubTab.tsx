@@ -11,6 +11,9 @@ import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { UpgradeRecipeSection } from './UpgradeRecipeSection';
+import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
+import { AssetTitle } from './AssetTitle';
+import { AddPicker } from './AddPicker';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -59,20 +62,6 @@ function readArrRef(json: any): string {
   return r && typeof r === 'object' ? String(r.value ?? '') : '';
 }
 
-/** Strip the trailing `_XX` exporter tag and any inline `Tier\d+`
- *  segment so two stations that only differ by tier hash to the same
- *  key. The result is purely advisory — used to group rail entries. */
-function familyKey(id: string): string {
-  const noTag = id.replace(/_[A-Z]{2,3}$/, '');
-  const noTier = noTag.replace(/Tier\d+/g, '');
-  return noTier;
-}
-
-function tierFromId(id: string): number {
-  const m = id.match(/Tier(\d+)/);
-  return m ? Number(m[1]) : 0;
-}
-
 function familyDisplayName(rows: StationRow[]): string {
   // Use the lowest-tier station's display name with the "Tier N" trail
   // stripped. Falls back to humanizing the family key.
@@ -86,6 +75,7 @@ export function StationsSubTab() {
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
+  const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
 
   const [filter, setFilter] = useState('');
   const selectedKey = useAppStore((s) => s.selectedStationKey);
@@ -93,13 +83,32 @@ export function StationsSubTab() {
   const selectedRecipeKey = useAppStore((s) => s.selectedRecipeKey);
   const selectRecipe = useAppStore((s) => s.selectRecipe);
 
+  // Phase 1: classify every loaded record as crafting / production /
+  // plantable; Phase 2 below joins these with the upgrade-chain index
+  // so tier numbers come from the chain rather than name regexes.
+  const stationGroupOf = useMemo(() => {
+    const m = new Map<string, StationGroup>();
+    for (const [k, rec] of definitions) {
+      for (const [g, folders] of Object.entries(STATION_FOLDERS) as [StationGroup, string[]][]) {
+        if (folders.includes(rec.folder)) { m.set(k, g); break; }
+      }
+    }
+    return m;
+  }, [definitions]);
+
+  const chainIndex = useMemo(() => {
+    return buildUpgradeChains(definitions, (rec) => {
+      for (const folders of Object.values(STATION_FOLDERS)) {
+        if (folders.includes(rec.folder)) return true;
+      }
+      return false;
+    });
+  }, [definitions]);
+
   const stations = useMemo<StationRow[]>(() => {
     const out: StationRow[] = [];
     for (const [k, rec] of definitions) {
-      let group: StationGroup | null = null;
-      for (const [g, folders] of Object.entries(STATION_FOLDERS) as [StationGroup, string[]][]) {
-        if (folders.includes(rec.folder)) { group = g; break; }
-      }
+      const group = stationGroupOf.get(k);
       if (!group) continue;
       const arrValue = readArrRef(rec.json);
       let recipeCount = 0;
@@ -111,6 +120,13 @@ export function StationsSubTab() {
           if (arr?.type === 'array' && Array.isArray(arr.value)) recipeCount = arr.value.length;
         }
       }
+      // Pull the family key + tier from the chain index when the
+      // station is part of one. Falls back to a name-only key for
+      // singletons (the chain index returns a single-member chain
+      // for those, so this branch is mostly a safety net).
+      const chainId = chainIndex.byId.get(rec.id);
+      const chain = chainId ? chainIndex.chains.get(chainId) ?? [] : [];
+      const tier = chain.find((m) => m.id === rec.id)?.tier ?? 0;
       out.push({
         key: k,
         id: rec.id,
@@ -119,13 +135,13 @@ export function StationsSubTab() {
         displayName: readDisplayName(rec.json),
         arrValue,
         recipeCount,
-        familyKey: familyKey(rec.id),
-        tier: tierFromId(rec.id),
+        familyKey: chainId ?? nameFamilyKey(rec.id),
+        tier,
       });
     }
     out.sort((a, b) => a.displayName.localeCompare(b.displayName));
     return out;
-  }, [definitions, findKeyById]);
+  }, [definitions, findKeyById, stationGroupOf, chainIndex]);
 
   type RankedRow = { row: StationRow; ranges: ReadonlyArray<readonly [number, number]> };
   const filtered = useMemo<RankedRow[]>(() => {
@@ -275,15 +291,17 @@ export function StationsSubTab() {
     setSelectedKey(stationKey);
   };
 
-  /** + Tier — mint the next tier of an existing family by cloning the
-   *  highest-tier station's id and bumping the number. Always creates
-   *  a fresh ARR linked to it. */
+  /** + Tier — mint the next tier of an existing family. Builds the
+   *  asset id by bumping `Tier\d+` or appending it; mints an empty
+   *  ARR linked to it; AND wires the chain by creating a fresh
+   *  UFurnitureUpgradeRecipe whose upgraded_furniture_definition
+   *  points at the new station and writing the back-reference on
+   *  the previous tier. The chain index picks up the link on the
+   *  next render. */
   const onNewTier = (family: typeof families.crafting[number]) => {
     if (family.members.length === 0) return;
     const top = family.members[family.members.length - 1].row;
     const nextTier = (top.tier || 0) + 1;
-    // Build new id: replace TierN with Tier(N+1) or append TierN
-    // when the source had no tier marker.
     let newId = top.id;
     if (/Tier\d+/.test(newId)) {
       newId = newId.replace(/Tier\d+/, `Tier${nextTier}`);
@@ -295,6 +313,7 @@ export function StationsSubTab() {
     const cls = String(definitions.get(top.key)?.json?.class ?? '').replace(/^U/, '');
     const stationKey = createDefinitionForClass(cls, newId);
     if (!stationKey) return;
+    // ARR for the new tier.
     const arrId = `ARR_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}`;
     const arrKey = createDefinitionForClass('AvailableRecipeRulesDefinition', arrId);
     if (arrKey) {
@@ -312,6 +331,28 @@ export function StationsSubTab() {
       class: 'AvailableRecipeRulesDefinition',
       value: arrId,
     });
+    // Wire the upgrade chain: mint an upgrade recipe that links the
+    // previous tier to the new one. The station's class field on the
+    // ref doesn't have to literally match its parent chain — the
+    // editor preserves the property regardless.
+    const upgradeRecipeId = `RD_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}_CN`;
+    const upgradeKey = createDefinitionForClass('FurnitureUpgradeRecipe', upgradeRecipeId);
+    if (upgradeKey) {
+      updateValueAtPath(upgradeKey, ['properties', 'upgraded_furniture_definition'], {
+        type: 'definition_ref',
+        class: cls,
+        value: newId,
+      });
+      updateValueAtPath(upgradeKey, ['properties', 'upgrade_tier'], {
+        type: 'int',
+        value: nextTier,
+      });
+    }
+    updateValueAtPath(top.key, ['properties', 'upgrade_recipe'], {
+      type: 'definition_ref',
+      class: 'FurnitureUpgradeRecipe',
+      value: upgradeRecipeId,
+    });
     setSelectedKey(stationKey);
   };
 
@@ -327,9 +368,16 @@ export function StationsSubTab() {
             onChange={(e) => setFilter(e.target.value)}
           />
           <div className="rail-add-row">
-            <button className="add-row" onClick={() => onNewStation('crafting')} title="New crafting station">＋ Crafting</button>
-            <button className="add-row" onClick={() => onNewStation('production')} title="New production station">＋ Production</button>
-            <button className="add-row" onClick={() => onNewStation('plantable')} title="New plantable station">＋ Plantable</button>
+            <AddPicker
+              label="＋ New station…"
+              title="Mint a new station of any kind"
+              options={[
+                { value: 'crafting', label: 'Crafting station', emoji: GROUP_EMOJI.crafting, color: '#ff9b54', hint: 'UCraftingStationDefinition' },
+                { value: 'production', label: 'Production station', emoji: GROUP_EMOJI.production, color: '#a78fff', hint: 'UProductionStationDefinition' },
+                { value: 'plantable', label: 'Plantable station', emoji: GROUP_EMOJI.plantable, color: '#9adc7e', hint: 'UPlantableDefinition' },
+              ]}
+              onPick={(v) => onNewStation(v as StationGroup)}
+            />
           </div>
         </div>
         <div className="rail-body">
@@ -358,6 +406,7 @@ export function StationsSubTab() {
                       selectedKey={selectedKey}
                       onSelect={(k) => setSelectedKey(k)}
                       onAddTier={() => onNewTier(fam)}
+                      onDeleteTier={(k) => void deleteDefinition(k)}
                     />
                   ),
                 )}
@@ -376,7 +425,10 @@ export function StationsSubTab() {
             <header className="station-header">
               <div className="station-title">
                 <span aria-hidden>{GROUP_EMOJI[selectedRow.group]}</span>
-                <h2>{selectedRow.displayName}</h2>
+                <AssetTitle
+                  assetKey={selectedRow.key}
+                  onRenamed={(newKey) => setSelectedKey(newKey)}
+                />
                 <span className="cls">{String(selectedStation.json?.class ?? '').replace(/^U/, '')}</span>
               </div>
               <div className="station-sub">
@@ -464,17 +516,20 @@ function StationFamilyRow({
   selectedKey,
   onSelect,
   onAddTier,
+  onDeleteTier,
 }: {
   members: Array<{ row: StationRow; ranges: ReadonlyArray<readonly [number, number]> }>;
   selectedKey: DefinitionsKey | null;
   onSelect: (k: DefinitionsKey) => void;
   onAddTier?: () => void;
+  onDeleteTier?: (memberKey: DefinitionsKey) => void;
 }) {
   const theme = getFolderTheme(members[0].row.folder);
   const familyName = familyDisplayName(members.map((m) => m.row));
   const selectedMember = members.find((m) => m.row.key === selectedKey);
   const familySelected = !!selectedMember;
   const totalRecipes = members.reduce((n, m) => n + m.row.recipeCount, 0);
+  const jumpToDef = useJumpToDefinition();
   return (
     <div
       className={`rail-family ${familySelected ? 'selected' : ''}`}
@@ -497,15 +552,32 @@ function StationFamilyRow({
           const label = tier > 0 ? `T${tier}` : 'base';
           const isSel = selectedKey === m.row.key;
           return (
-            <button
+            <span
               key={m.row.key}
-              className={`tier-pill ${isSel ? 'selected' : ''}`}
-              onClick={() => onSelect(m.row.key)}
-              title={`${m.row.displayName} · ${m.row.recipeCount} recipe${m.row.recipeCount === 1 ? '' : 's'}`}
+              className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}
             >
-              {label}
-              {m.row.recipeCount > 0 && <span className="tier-pill-count">{m.row.recipeCount}</span>}
-            </button>
+              <button
+                className={`tier-pill ${isSel ? 'selected' : ''}`}
+                onClick={() => onSelect(m.row.key)}
+                title={`${m.row.displayName} · ${m.row.recipeCount} recipe${m.row.recipeCount === 1 ? '' : 's'}\nMiddle-click to open in Definitions`}
+                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.row.id); } }}
+                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+              >
+                {label}
+                {m.row.recipeCount > 0 && <span className="tier-pill-count">{m.row.recipeCount}</span>}
+              </button>
+              {onDeleteTier && (
+                <button
+                  className="tier-pill-x"
+                  title={`Delete ${m.row.displayName}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!confirm(`Delete ${m.row.displayName} (${m.row.id})?\nThe upgrade chain links pointing at it will be cleared on save.`)) return;
+                    onDeleteTier(m.row.key);
+                  }}
+                >×</button>
+              )}
+            </span>
           );
         })}
         {onAddTier && (

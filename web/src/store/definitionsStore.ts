@@ -212,8 +212,10 @@ export interface DefinitionsStore {
 
   /** Rename an asset to a new bare stem. The store reconstructs the
    *  full `prefix_stem_suffix` id by consulting idTemplates, updates
-   *  json.id and json.asset_path, and queues a file rename on save. */
-  renameAsset: (key: DefinitionsKey, newBareName: string) => void;
+   *  json.id and json.asset_path, and queues a file rename on save.
+   *  Returns the new storage key, or null if the rename was rejected
+   *  (empty stem, no change, or id collision). */
+  renameAsset: (key: DefinitionsKey, newBareName: string) => DefinitionsKey | null;
 
   /** Return all asset ids whose leaf class is exactly `bareClassName`, or any
    *  class that has it in its parent chain. The result is sorted by id. */
@@ -494,6 +496,56 @@ function scrubRefsToId(
   }
   const next = walk(root);
   return { next, changed, removedCount };
+}
+
+/** Walk a record's JSON, rewriting every `definition_ref` whose
+ *  `value` equals `oldId` to point at `newId`. Returns the updated
+ *  JSON (structure-shared on untouched branches) plus stats. Used by
+ *  `renameAsset` to keep references consistent without forcing the
+ *  user to find every consumer manually. */
+function retargetRefs(
+  root: any,
+  oldId: string,
+  newId: string,
+): { next: any; changed: boolean; touchedCount: number } {
+  let touchedCount = 0;
+  let changed = false;
+  function walk(node: any): any {
+    if (node == null) return node;
+    if (Array.isArray(node)) {
+      let arrChanged = false;
+      const out: any[] = [];
+      for (const item of node) {
+        const w = walk(item);
+        if (w !== item) arrChanged = true;
+        out.push(w);
+      }
+      return arrChanged ? out : node;
+    }
+    if (typeof node === 'object') {
+      if (
+        node.type === 'definition_ref' &&
+        String(node.value ?? '') === oldId
+      ) {
+        changed = true;
+        touchedCount++;
+        return { ...node, value: newId };
+      }
+      let objChanged = false;
+      const out: any = { ...node };
+      for (const k of Object.keys(node)) {
+        const w = walk(node[k]);
+        if (w !== node[k]) {
+          out[k] = w;
+          objChanged = true;
+        }
+      }
+      return objChanged ? out : node;
+    }
+    return node;
+  }
+  const next = walk(root);
+  return { next, changed, touchedCount };
 }
 
 function setIn(target: any, path: (string | number)[], value: any): any {
@@ -1540,10 +1592,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   renameAsset: (k, newBareName) => {
     const stem = newBareName.trim();
-    if (!stem) return;
+    if (!stem) return null;
     const cur = get();
     const rec = cur.definitions.get(k);
-    if (!rec) return;
+    if (!rec) return null;
     const cls = String(rec.json?.class ?? '');
     const bareCls = cls.replace(/^U/, '');
     // Use the per-class template when available; otherwise preserve the
@@ -1554,11 +1606,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const prefix = tmpl?.prefix ?? existing.prefix;
     const suffix = tmpl?.suffix ?? existing.suffix;
     const fullId = `${prefix}${stem}${suffix}`;
-    if (fullId === rec.id) return;
+    if (fullId === rec.id) return k;
     const newKey = key(rec.folder, fullId);
     if (cur.definitions.has(newKey)) {
       set({ toast: { kind: 'error', text: `${fullId}.json already exists.` } });
-      return;
+      return null;
     }
     const nextJson = { ...rec.json, id: fullId };
     if (typeof rec.json?.asset_path === 'string') {
@@ -1579,12 +1631,33 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     if (JSON.stringify(nextJson, null, 2) + '\n' !== rec.originalText) {
       nextDirty.add(newKey);
     }
+    // Cascade: any other asset with a definition_ref pointing at the
+    // OLD id is rewritten to point at the new id, so the rename is
+    // self-consistent across the project (no dangling refs).
+    let cascadedAssets = 0;
+    let cascadedRefs = 0;
+    for (const [refKey, refRec] of nextDefs) {
+      if (refKey === newKey) continue;
+      const out = retargetRefs(refRec.json, rec.id, fullId);
+      if (out.changed) {
+        nextDefs.set(refKey, { ...refRec, json: out.next });
+        nextDirty.add(refKey);
+        cascadedAssets++;
+        cascadedRefs += out.touchedCount;
+      }
+    }
     set({
       definitions: nextDefs,
       dirty: nextDirty,
       selectedKey: cur.selectedKey === k ? newKey : cur.selectedKey,
-      toast: { kind: 'info', text: `Renamed to ${fullId} — old file removed on save.` },
+      toast: {
+        kind: 'info',
+        text: cascadedAssets > 0
+          ? `Renamed to ${fullId} — retargeted ${cascadedRefs} ref${cascadedRefs === 1 ? '' : 's'} across ${cascadedAssets} asset${cascadedAssets === 1 ? '' : 's'}.`
+          : `Renamed to ${fullId} — old file removed on save.`,
+      },
     });
+    return newKey;
   },
 
   togglePinnedProperty: (name) => {

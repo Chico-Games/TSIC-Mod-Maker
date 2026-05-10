@@ -10,6 +10,7 @@ import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { AssetTitle } from './AssetTitle';
 
 const LOOT_FOLDER = 'loot_definitions';
 
@@ -112,7 +113,10 @@ export function FurnitureLootTab() {
             <header className="station-header">
               <div className="station-title">
                 <span aria-hidden>{theme.emoji}</span>
-                <h2>{humanizeAssetId(selected.id)}</h2>
+                <AssetTitle
+                  assetKey={selectedKey}
+                  onRenamed={(newKey) => setSelectedKey(newKey)}
+                />
                 <span className="cls">{String(selected.json?.class ?? '').replace(/^U/, '')}</span>
               </div>
               <div className="station-sub">

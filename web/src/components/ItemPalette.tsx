@@ -8,6 +8,7 @@ import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { AddPicker } from './AddPicker';
 
 const RECIPE_FOLDERS = new Set([
   'craft_recipe_definitions',
@@ -312,34 +313,34 @@ export function ItemPalette({ folders, title }: Props) {
         })}
       </div>
       <div className="palette-folders palette-add-row">
-        <span className="palette-add-label">＋ Add</span>
-        {(folders ?? DEFAULT_ITEM_FOLDERS).filter((f) => allFolders.includes(f)).map((f) => {
-          const t = getFolderTheme(f);
-          // Derive the bare class name from the folder. e.g.
-          // "consumable_definitions" → "ConsumableDefinition".
-          const cls = folderToClassName(f);
-          return (
-            <button
-              key={f}
-              className="folder-chip"
-              title={`Mint a new ${cls}`}
-              style={{ color: t.color, borderColor: t.color }}
-              onClick={() => {
-                let n = 1;
-                const tag = inferIdSuffix(f);
-                let id = `ID_New${n}${tag}`;
-                while (findKeyById(id)) {
-                  n++;
-                  id = `ID_New${n}${tag}`;
-                }
-                createDefinitionForClass(cls, id);
-              }}
-            >
-              <span aria-hidden>{t.emoji}</span>
-              {f.replace(/_definitions?$/, '')}
-            </button>
-          );
-        })}
+        <AddPicker
+          label="＋ New item…"
+          title="Mint a new item of any class"
+          options={(folders ?? DEFAULT_ITEM_FOLDERS)
+            .filter((f) => allFolders.includes(f))
+            .map((f) => {
+              const t = getFolderTheme(f);
+              const cls = folderToClassName(f);
+              return {
+                value: f,
+                label: f.replace(/_definitions?$/, '').replace(/_/g, ' '),
+                hint: cls,
+                emoji: t.emoji,
+                color: t.color,
+              };
+            })}
+          onPick={(folder) => {
+            const cls = folderToClassName(folder);
+            const tag = inferIdSuffix(folder);
+            let n = 1;
+            let id = `ID_New${n}${tag}`;
+            while (findKeyById(id)) {
+              n++;
+              id = `ID_New${n}${tag}`;
+            }
+            createDefinitionForClass(cls, id);
+          }}
+        />
       </div>
       <div className="palette-list">
         <VirtualList

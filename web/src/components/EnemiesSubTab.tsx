@@ -8,6 +8,7 @@ import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { AssetTitle } from './AssetTitle';
 
 const ENEMY_FOLDER = 'enemy_definitions';
 
@@ -106,7 +107,10 @@ export function EnemiesSubTab() {
             <header className="station-header">
               <div className="station-title">
                 <span aria-hidden>👹</span>
-                <h2>{readDisplayName(selected.json)}</h2>
+                <AssetTitle
+                  assetKey={selectedKey}
+                  onRenamed={(newKey) => setSelectedKey(newKey)}
+                />
                 <span className="cls">{String(selected.json?.class ?? '').replace(/^U/, '')}</span>
               </div>
               <div className="station-sub">

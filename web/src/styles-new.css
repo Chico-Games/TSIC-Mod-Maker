@@ -164,6 +164,26 @@
 }
 .station-title { display: flex; align-items: center; gap: 8px; }
 .station-title h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.asset-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: text;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.asset-title:hover { background: rgba(95, 179, 255, 0.08); }
+.asset-title-input {
+  font-size: 18px;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: 3px;
+  padding: 0 4px;
+  min-width: 200px;
+}
 .station-title .cls { color: var(--muted); font-size: 12px; }
 .station-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
 
@@ -648,6 +668,60 @@ mark.search-mark { background: rgba(240, 215, 122, 0.35); color: inherit; paddin
 .tier-pill.selected { background: var(--accent); color: #0a0d12; border-color: var(--accent); font-weight: 600; }
 .tier-pill-count { opacity: 0.75; font-size: 10px; }
 .tier-pill-add { background: rgba(95, 179, 255, 0.1); color: var(--accent); border-color: var(--accent); }
+.tier-pill-wrap { display: inline-flex; align-items: stretch; gap: 0; }
+.tier-pill-wrap .tier-pill { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
+.tier-pill-x {
+  background: var(--panel);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+  padding: 0 6px;
+  font-size: 11px;
+  cursor: pointer;
+  line-height: 1;
+}
+.tier-pill-x:hover { color: var(--error); border-color: var(--error); }
+.tier-pill-wrap.selected .tier-pill-x { border-color: var(--accent); }
+
+/* +Add class-picker popover. The trigger uses the existing .add-row
+   styling; the popover floats above the rail with a list of class
+   options. Click an option → onPick fires; outside click / Escape
+   closes. */
+.add-picker { position: relative; display: inline-block; }
+.add-picker-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.add-picker-option {
+  background: transparent;
+  border: 1px solid transparent;
+  border-left-width: 3px;
+  color: var(--text);
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.add-picker-option:hover { background: var(--panel-2); }
+.add-picker-option .label { font-weight: 500; }
+.add-picker-option .hint { grid-column: 2; color: var(--muted); font-size: 11px; }
 .rail-add-row { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 6px; }
 .palette-add-row { background: rgba(95, 179, 255, 0.05); }
 .palette-add-label { font-size: 11px; color: var(--accent); padding: 2px 6px; }

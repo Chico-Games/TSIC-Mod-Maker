@@ -448,7 +448,9 @@ async function waitForServer(url, timeoutMs = 15000) {
     // Click T2 pill — should select the Tier 2 station and show its 1 recipe.
     await benchFamily.locator('.tier-pill', { hasText: 'T2' }).click();
     await page.waitForTimeout(150);
-    const t2Title = await page.locator('.station-title h2').first().textContent();
+    // AssetTitle replaces the static h2 with a click-to-edit element —
+    // the visible label still includes "Tier 2" via humanizeAssetId.
+    const t2Title = await page.locator('.station-title .asset-title').first().textContent();
     if (!t2Title?.includes('Tier 2')) throw new Error(`expected Tier 2 selected; got "${t2Title}"`);
     const t2Recipes = await page.locator('.recipe-card').count();
     if (t2Recipes !== 1) throw new Error(`expected 1 recipe for Tier 2; got ${t2Recipes}`);
@@ -615,18 +617,40 @@ async function waitForServer(url, timeoutMs = 15000) {
     await page.locator('.subtab', { hasText: 'Stations' }).click();
     await page.waitForSelector('.recipe-card');
     const stationCountBefore = await page.locator('.rail-row, .rail-family').count();
-    await page.getByRole('button', { name: '＋ Crafting' }).click();
+    // The +Add affordance is now a class-picker dropdown — open it,
+    // pick "Crafting station".
+    await page.getByRole('button', { name: /＋ New station/ }).click();
+    await page.waitForSelector('.add-picker-popover');
+    await page.locator('.add-picker-option', { hasText: 'Crafting station' }).click();
     await page.waitForTimeout(150);
     const stationCountAfter = await page.locator('.rail-row, .rail-family').count();
     if (stationCountAfter <= stationCountBefore) {
       throw new Error(`expected new station rail entry; before=${stationCountBefore} after=${stationCountAfter}`);
     }
-    // Newly created station should be selected and have its ARR set.
-    const newStationTitle = await page.locator('.station-title h2').first().textContent();
+    // Newly created station should be selected — its title appears in
+    // the AssetTitle h2 (humanized id). The default id is
+    // "FD_NewCraftingStation_CS" → title "New Crafting Station".
+    const newStationTitle = await page.locator('.asset-title').first().textContent();
     if (!newStationTitle?.toLowerCase().includes('new')) {
       throw new Error(`expected new station to be selected; got "${newStationTitle}"`);
     }
-    console.log('OK: + Crafting created a new station + ARR, auto-selected');
+    console.log('OK: + New station… → Crafting created a new station + ARR, auto-selected');
+
+    // ── Rename via the asset title in the middle pane: click the
+    //    title → input appears → type new stem → Enter commits via
+    //    renameAsset. The new id should be findable by the chosen
+    //    stem (FOO → FD_FOO_CS).
+    const titleEl = page.locator('.station-title .asset-title').first();
+    await titleEl.click();
+    const renameInput = page.locator('.asset-title-input').first();
+    await renameInput.fill('RenamedBench');
+    await renameInput.press('Enter');
+    await page.waitForTimeout(150);
+    const renamedTitle = await page.locator('.station-title .asset-title').first().textContent();
+    if (!renamedTitle?.includes('RenamedBench')) {
+      throw new Error(`expected title to update after rename; got "${renamedTitle}"`);
+    }
+    console.log('OK: rename via middle-pane title commits via renameAsset');
 
     // ── + Tier on the Bench family creates the next tier.
     const benchFam = page.locator('.rail-family', { hasText: 'Crafting Bench' });
