@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
 import { humanizeAssetId } from './definitionsNaming';
 import { getFolderTheme } from './folderTheme';
@@ -13,6 +13,9 @@ import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains
 import { AssetTitle } from './AssetTitle';
 import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
+import { TypedPropertiesEditor } from './TypedValueEditor';
+import { useRefAdapter } from './useRefAdapter';
+import { useAppStore } from '../store/appStore';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -48,10 +51,32 @@ export function FurnitureSubTab() {
   const classNodes = useDefinitionsStore((s) => s.classNodes);
   const jumpToDef = useJumpToDefinition();
 
+  const selectFolder = useDefinitionsStore((s) => s.selectFolder);
+  const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
+  const setTab = useAppStore((s) => s.setTab);
+
+  const refAdapter = useRefAdapter((id) => {
+    const k = findKeyById(id);
+    if (!k) return;
+    const rec = definitions.get(k);
+    if (!rec) return;
+    selectFolder(rec.folder);
+    selectDefinition(k);
+    setTab('definitions');
+  });
+
   const chainIndex = useMemo(() => buildUpgradeChains(definitions, (rec) => rec.folder === FURNITURE_FOLDER), [definitions]);
 
   const [filter, setFilter] = useState('');
   const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
+
+  /** Indices of death-loot entries whose inline LootDefinition editor
+   *  is currently open. Ephemeral — resets when the user picks a
+   *  different furniture, and not persisted across reloads. */
+  const [expandedLoot, setExpandedLoot] = useState<Set<number>>(() => new Set());
+  useEffect(() => {
+    setExpandedLoot(new Set());
+  }, [selectedKey]);
 
   const rows = useMemo<FurnitureRow[]>(() => {
     const out: FurnitureRow[] = [];
@@ -234,17 +259,54 @@ export function FurnitureSubTab() {
                 <button onClick={addLoot}>＋ loot table</button>
               </div>
               {lootEntries.length === 0 && <div className="muted">No loot tables.</div>}
-              {lootEntries.map((_e, i) => (
-                <div key={i} className="loot-entry">
-                  <DefRefSlot
-                    ownerKey={selectedKey}
-                    path={['properties', 'loot_dropped_on_death', 'value', i]}
-                    accept="loot-entry"
-                    defaultClass="LootDefinition"
-                    onRemove={() => removeLoot(i)}
-                  />
-                </div>
-              ))}
+              {lootEntries.map((entry, i) => {
+                const refValue = entry?.type === 'definition_ref' && typeof entry.value === 'string' ? entry.value : '';
+                const lootKey = refValue ? findKeyById(refValue) : null;
+                const lootRec = lootKey ? definitions.get(lootKey) : null;
+                const canExpand = !!lootRec;
+                const isExpanded = canExpand && expandedLoot.has(i);
+                const toggleExpand = () => {
+                  setExpandedLoot((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(i)) next.delete(i); else next.add(i);
+                    return next;
+                  });
+                };
+                return (
+                  <div key={i} className={`loot-entry death-loot-row ${isExpanded ? 'expanded' : ''}`}>
+                    <div className="death-loot-row-head">
+                      <button
+                        className="death-loot-caret"
+                        onClick={toggleExpand}
+                        disabled={!canExpand}
+                        title={canExpand ? (isExpanded ? 'Collapse loot table' : 'Expand loot table') : 'Empty slot — drop a LootDefinition here to edit it'}
+                        aria-expanded={isExpanded}
+                      >
+                        {isExpanded ? '▾' : '▸'}
+                      </button>
+                      <DefRefSlot
+                        ownerKey={selectedKey}
+                        path={['properties', 'loot_dropped_on_death', 'value', i]}
+                        accept="loot-entry"
+                        defaultClass="LootDefinition"
+                        onRemove={() => removeLoot(i)}
+                      />
+                    </div>
+                    {isExpanded && lootKey && lootRec && (
+                      <div className="death-loot-row-body">
+                        <TypedPropertiesEditor
+                          parentTypeName={String(lootRec.json?.class ?? '').replace(/^U/, '')}
+                          properties={lootRec.json?.properties ?? {}}
+                          showAllFields={false}
+                          onChange={(next) => updateValueAtPath(lootKey, ['properties'], next)}
+                          refAdapter={refAdapter}
+                          ownerKey={lootKey}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </section>
 
             <UpgradeRecipeSection

@@ -304,6 +304,13 @@ async function waitForServer(url, timeoutMs = 15000) {
               upgrade_recipe: ref('FurnitureUpgradeRecipe', 'RD_Aircon_CN'),
             },
           }, null, 2) + '\n',
+          'FD_Barrel_DF.json': JSON.stringify({
+            id: 'FD_Barrel_DF', asset_path: '/Game/Furniture/Barrel/FD_Barrel_DF',
+            class: 'UDamageableFurnitureDefinition', parent_classes: ['UFurnitureDefinition', 'UDataAsset', 'UObject'],
+            properties: {
+              display_name: txt('Barrel'), starting_health: flt(20.0),
+            },
+          }, null, 2) + '\n',
         },
 
         furniture_upgrade_recipe: {
