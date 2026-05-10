@@ -1,0 +1,85 @@
+{
+  "id": "RD_SwedishPancakes_CR",
+  "asset_path": "/Game/Items/Consumables/CookedFood/SwedishPancakes/Recipes/RD_SwedishPancakes_CR",
+  "class": "UCraftRecipeDefinition",
+  "parent_classes": [
+    "URecipeDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "duration": {
+      "type": "float",
+      "value": 6.0
+    },
+    "input": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_SwedishPancakeMix_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        },
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_Milk_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "output": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_SwedishPancakes_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "recipe_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

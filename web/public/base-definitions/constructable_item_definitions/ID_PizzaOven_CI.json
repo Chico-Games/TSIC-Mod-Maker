@@ -1,0 +1,38 @@
+{
+  "id": "ID_PizzaOven_CI",
+  "asset_path": "/Game/Furniture/Processing/PizzaOven/Item/ID_PizzaOven_CI",
+  "class": "UConstructableItemDefinition",
+  "parent_classes": [
+    "UItemDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "description": {
+      "type": "text",
+      "value": "A large pizza oven that also works great for drying and treating wood. Converts scrap wood into processed lumber."
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Pizza Oven"
+    },
+    "furniture_to_construct": {
+      "type": "definition_ref",
+      "class": "ProductionStationDefinition",
+      "value": "FD_PizzaOven_PS"
+    },
+    "stackable": {
+      "type": "bool",
+      "value": true
+    },
+    "static_item_definition": {
+      "type": "definition_ref",
+      "class": "StaticItemDefinition",
+      "value": "FD_PizzaOven_SI"
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
+    }
+  }
+}
