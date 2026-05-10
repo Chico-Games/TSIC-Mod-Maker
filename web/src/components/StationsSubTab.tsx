@@ -10,6 +10,7 @@ import { ItemPalette } from './ItemPalette';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 
 type StationGroup = 'crafting' | 'production' | 'plantable';
 
@@ -384,6 +385,10 @@ export function StationsSubTab() {
                 <span className="muted">ARR:</span> {selectedRow.arrValue ? <code>{selectedRow.arrValue}</code> : <em>none</em>}
               </div>
             </header>
+            <UpgradeRecipeSection
+              hostKey={selectedRow.key}
+              upgradedTargetClass={String(selectedStation.json?.class ?? '').replace(/^U/, '')}
+            />
             {selectedArr ? (
               <div className="recipe-stack">
                 {recipeKeys.map((r) => (

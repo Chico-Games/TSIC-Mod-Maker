@@ -4,11 +4,11 @@ import { humanizeAssetId } from './definitionsNaming';
 import { getFolderTheme } from './folderTheme';
 import { DefRefSlot } from './DefRefSlot';
 import { ItemPalette } from './ItemPalette';
-import { RecipeCard } from './RecipeCard';
 import { VirtualList } from './VirtualList';
 import { HighlightedText } from './HighlightedText';
 import { fuzzyRankMulti, type RankedHit } from '../search/fuzzy';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -55,9 +55,6 @@ export function FurnitureSubTab() {
   const lootArrayEnvelope: any = props.loot_dropped_on_death;
   const lootEntries: any[] = lootArrayEnvelope?.type === 'array' && Array.isArray(lootArrayEnvelope.value)
     ? lootArrayEnvelope.value : [];
-  const upgradeRef: any = props.upgrade_recipe;
-  const upgradeRefValue = upgradeRef && typeof upgradeRef === 'object' ? String(upgradeRef.value ?? '') : '';
-  const upgradeKey = upgradeRefValue ? findKeyById(upgradeRefValue) : null;
 
   const addLoot = () => {
     if (!selectedKey) return;
@@ -74,19 +71,6 @@ export function FurnitureSubTab() {
     if (!selectedKey || lootArrayEnvelope?.type !== 'array') return;
     const list = (lootArrayEnvelope.value as any[]).filter((_, idx) => idx !== i);
     updateValueAtPath(selectedKey, ['properties', 'loot_dropped_on_death'], { ...lootArrayEnvelope, value: list });
-  };
-
-  const onAddUpgrade = () => {
-    if (!selectedKey || !selected) return;
-    const stem = humanizeAssetId(selected.id).replace(/\s+/g, '');
-    const newId = `RD_${stem}_CN`;
-    if (findKeyById(newId)) return;
-    createDefinitionForClass('FurnitureUpgradeRecipe', newId);
-    updateValueAtPath(selectedKey, ['properties', 'upgrade_recipe'], {
-      type: 'definition_ref',
-      class: 'FurnitureUpgradeRecipe',
-      value: newId,
-    });
   };
 
   return (
@@ -169,23 +153,10 @@ export function FurnitureSubTab() {
               ))}
             </section>
 
-            <section className="furniture-section">
-              <div className="section-head">
-                <h3>Upgrade</h3>
-                {!upgradeRefValue && (
-                  <button onClick={onAddUpgrade}>＋ create upgrade recipe</button>
-                )}
-              </div>
-              {upgradeRefValue ? (
-                upgradeKey ? (
-                  <RecipeCard recipeKey={upgradeKey} arrKey={selectedKey /* not really an ARR, but unused for upgrades */} />
-                ) : (
-                  <div className="muted">Recipe ref <code>{upgradeRefValue}</code> does not resolve.</div>
-                )
-              ) : (
-                <div className="muted">No upgrade recipe.</div>
-              )}
-            </section>
+            <UpgradeRecipeSection
+              hostKey={selectedKey}
+              upgradedTargetClass={String(selected.json?.class ?? '').replace(/^U/, '')}
+            />
           </>
         ) : (
           <div className="empty-state-mini">Pick a furniture from the rail.</div>

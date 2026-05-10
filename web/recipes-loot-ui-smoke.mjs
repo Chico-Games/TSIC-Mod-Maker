@@ -549,17 +549,44 @@ async function waitForServer(url, timeoutMs = 15000) {
     }
     console.log('OK: class-incompatible drag rejected (no .over, .rejects class, no mutation)');
 
+    // ── Stations sub-tab: every station shows an UpgradeRecipeSection.
+    //    For Tier 1 (which has no upgrade_recipe set in the fixture), the
+    //    "+ Add upgrade recipe" button appears; clicking it mints a new
+    //    UFurnitureUpgradeRecipe and links it via the host's
+    //    upgrade_recipe property — the badged card now renders.
+    await page.locator('.rail-family', { hasText: 'Crafting Bench' })
+      .locator('.tier-pill:not(.tier-pill-add)', { hasText: 'T1' }).click();
+    await page.waitForSelector('.upgrade-recipe-section');
+    const upgradeAddBtn = page.locator('.upgrade-recipe-section button', { hasText: 'Add upgrade recipe' });
+    if ((await upgradeAddBtn.count()) < 1) {
+      throw new Error('expected "+ Add upgrade recipe" on Tier 1 (no upgrade ref yet)');
+    }
+    await upgradeAddBtn.click();
+    await page.waitForTimeout(200);
+    const stationUpgradeBadge = await page.locator('.upgrade-recipe-section .upgrade-recipe-badge').count();
+    if (stationUpgradeBadge < 1) {
+      throw new Error('upgrade badge missing on station after adding upgrade recipe');
+    }
+    const stationUpgradeCard = await page.locator('.upgrade-recipe-section .recipe-card').count();
+    if (stationUpgradeCard < 1) {
+      throw new Error('upgrade recipe card missing on station after adding upgrade');
+    }
+    console.log('OK: Stations sub-tab "+ Add upgrade recipe" mints the upgrade and renders it');
+
     // ── Furniture sub-tab: select FD_Aircon_DF and confirm the death
-    //    loot list + upgrade recipe inline section render.
+    //    loot list + upgrade recipe inline section render — the upgrade
+    //    section now renders via UpgradeRecipeSection and is badged.
     await page.locator('.subtab', { hasText: 'Furniture' }).click();
     await page.waitForSelector('.furniture-layout');
     await page.locator('.rail-row', { hasText: 'Aircon' }).first().click();
     await page.waitForTimeout(150);
     const lootEntries = await page.locator('.loot-entry').count();
     if (lootEntries < 1) throw new Error('expected ≥1 loot entry for Aircon');
-    const upgradeCard = await page.locator('.recipe-card').count();
-    if (upgradeCard < 1) throw new Error('expected the Aircon upgrade recipe to render');
-    console.log('OK: Furniture sub-tab shows loot + inline upgrade recipe');
+    const upgradeBadge = await page.locator('.upgrade-recipe-badge', { hasText: 'Upgrade' }).count();
+    if (upgradeBadge < 1) throw new Error('expected the Upgrade badge to render on Aircon');
+    const upgradeCard = await page.locator('.upgrade-recipe-section .recipe-card').count();
+    if (upgradeCard < 1) throw new Error('expected the Aircon upgrade recipe card to render');
+    console.log('OK: Furniture sub-tab renders loot + badged upgrade recipe card');
 
     // ── Furniture Loot top-level tab: open LD_Aircon and check the
     //    items_to_drop count badge in the rail.
