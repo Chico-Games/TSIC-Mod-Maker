@@ -9,10 +9,12 @@
     "build": "node scripts/sync-base-definitions.mjs && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs",
+    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs && node savedload-ui-smoke.mjs",
     "smoke:def": "node definitions-ui-smoke.mjs",
     "smoke:loot": "node recipes-loot-ui-smoke.mjs",
     "smoke:itemsfurn": "node items-furniture-ui-smoke.mjs",
+    "smoke:savedload": "node savedload-ui-smoke.mjs",
+    "test": "node scripts/run-tests.mjs",
     "data-smoke": "node data-smoke.mjs"
   },
   "dependencies": {
@@ -34,6 +36,8 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "fake-indexeddb": "^6.2.5",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
   }

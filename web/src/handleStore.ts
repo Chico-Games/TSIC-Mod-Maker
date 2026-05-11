@@ -2,19 +2,8 @@
 // Handles can be cloned into IndexedDB; on the next visit we re-acquire
 // permission via queryPermission/requestPermission.
 
-const DB_NAME = 'tsic-handles';
-const STORE = 'kv';
-
-function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = () => {
-      req.result.createObjectStore(STORE);
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
+import { openDb, KV_STORE } from './persistence/db';
+const STORE = KV_STORE;
 
 export async function putHandle(key: string, handle: any): Promise<void> {
   const db = await openDb();
