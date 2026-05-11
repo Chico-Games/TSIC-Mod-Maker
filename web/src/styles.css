@@ -2706,3 +2706,40 @@ body.resizing-col * { cursor: col-resize !important; }
 .rb-add-row:hover, .rb-seed:hover { color: var(--accent); border-color: var(--accent); }
 .rb-empty { color: var(--muted); font-style: italic; padding: 4px 0; font-size: 12px; }
 
+/* Path editor overlay for the Sync-to-Unreal absolute path */
+.path-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.path-editor {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  max-width: 90vw;
+}
+.path-editor label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.path-editor input {
+  padding: 0.35rem 0.5rem;
+  background: #111;
+  border: 1px solid #555;
+  color: #eee;
+  font-family: monospace;
+}
+
+/* Sync response toasts can be many lines; let them grow. */
+.toast.sync-report {
+  max-height: 60vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.85em;
+}

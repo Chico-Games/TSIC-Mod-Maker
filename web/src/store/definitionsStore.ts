@@ -164,6 +164,16 @@ export interface DefinitionsStore {
   /** Discard unsaved changes for one record. */
   revertOne: (key: DefinitionsKey) => void;
 
+  /** Save all dirty, then POST to the TSICEditorSync endpoint to apply
+   *  changes to UE. Returns the plain-text report. */
+  syncToUnreal: () => Promise<{ ok: boolean; report: string }>;
+  /** Absolute path to the on-disk Definitions folder, mirrored from a
+   *  user-supplied setting. The File System Access API doesn't expose
+   *  paths, so sync requires the user to enter it once. Persisted to
+   *  localStorage. */
+  unrealSyncPath: string;
+  setUnrealSyncPath: (path: string) => void;
+
   /** Export the whole working set as a downloadable ZIP. */
   exportZip: () => Promise<Blob>;
 
@@ -1552,6 +1562,44 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     } catch (e) {
       set({ toast: { kind: 'error', text: `Revert failed: ${String(e)}` } });
     }
+  },
+
+  syncToUnreal: async () => {
+    const { saveAllDirty: doSave } = get();
+    await doSave();
+    const path = get().unrealSyncPath?.trim();
+    if (!path) {
+      const report = "Set the Unreal Definitions folder path first (Settings → Sync path).";
+      set({ toast: { kind: 'error', text: report } });
+      return { ok: false, report };
+    }
+    try {
+      const resp = await fetch('http://localhost:13378/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ definitions_dir: path, force: false }),
+      });
+      const report = await resp.text();
+      const ok = resp.ok && !report.includes('FAILED') && !report.includes('ERROR:');
+      set({ toast: { kind: ok ? 'info' : 'error', text: report } });
+      return { ok, report };
+    } catch (e) {
+      const report = `Could not reach Unreal Editor sync server at http://localhost:13378.\n` +
+        `Is the editor running with the TSICEditorSync module loaded?\n\n` +
+        `Network error: ${String(e)}`;
+      set({ toast: { kind: 'error', text: report } });
+      return { ok: false, report };
+    }
+  },
+
+  unrealSyncPath: (() => {
+    try { return localStorage.getItem('tsic.def.syncpath.v1') ?? ''; }
+    catch { return ''; }
+  })(),
+
+  setUnrealSyncPath: (p: string) => {
+    try { localStorage.setItem('tsic.def.syncpath.v1', p); } catch { /* noop */ }
+    set({ unrealSyncPath: p });
   },
 
   findKeyById: (assetId) => {
