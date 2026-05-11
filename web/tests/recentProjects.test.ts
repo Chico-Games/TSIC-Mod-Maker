@@ -52,3 +52,46 @@ test('removeRecent drops the entry', async () => {
   const list = await listRecents();
   assert.equal(list.find((r) => r.handleName === 'rm'), undefined);
 });
+
+test('removeRecent is idempotent for missing keys', async () => {
+  await removeRecent('never-added');
+  await removeRecent('never-added');
+  // Should not throw; nothing to assert beyond completion.
+  assert.ok(true);
+});
+
+test('renaming a project (same handleName, new name) updates the entry', async () => {
+  await addRecent({ name: 'Old Name', handleName: 'h-rename', handle: fakeHandle('h-rename') });
+  await addRecent({ name: 'New Name', handleName: 'h-rename', handle: fakeHandle('h-rename') });
+  const list = await listRecents();
+  const entry = list.find((r) => r.handleName === 'h-rename');
+  assert.ok(entry);
+  assert.equal(entry!.name, 'New Name');
+});
+
+test('cap eviction drops oldest, keeps newest', async () => {
+  // Seed 10 entries with deterministic ordering.
+  for (let i = 0; i < 10; i++) {
+    await addRecent({ name: `Old${i}`, handleName: `cap${i}`, handle: fakeHandle(`cap${i}`) });
+    await new Promise((r) => setTimeout(r, 2));
+  }
+  const list = await listRecents();
+  assert.equal(list.length, 8);
+  // The two oldest (cap0, cap1) should be gone.
+  assert.equal(list.find((r) => r.handleName === 'cap0'), undefined);
+  assert.equal(list.find((r) => r.handleName === 'cap1'), undefined);
+  // The newest (cap9) should be at the front.
+  assert.equal(list[0].handleName, 'cap9');
+});
+
+test('DataCloneError fallback stores entry without handle', async () => {
+  // We can't reliably trigger structured-clone errors in fake-indexeddb
+  // (it doesn't enforce cloneability), so this test documents the contract
+  // rather than exercising it. In real browsers, addRecent catches
+  // DataCloneError and re-puts a serializable-only record so the entry
+  // still appears in the dropdown — see recentProjects.ts:addRecent.
+  await addRecent({ name: 'P', handleName: 'fb', handle: fakeHandle('fb') });
+  const list = await listRecents();
+  const entry = list.find((r) => r.handleName === 'fb');
+  assert.ok(entry, 'addRecent should always result in a listable entry');
+});

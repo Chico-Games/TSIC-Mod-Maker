@@ -40,3 +40,38 @@ test('parseMeta rejects non-object', () => {
   assert.equal(parseMeta('hi').ok, false);
   assert.equal(parseMeta([]).ok, false);
 });
+
+test('parseMeta classifies non-numeric schema_version as no-version', () => {
+  const r = parseMeta({ schema_version: '1', name: 'P' });
+  assert.equal(r.ok, false);
+  if (!r.ok) assert.equal(r.reason, 'no-version');
+});
+
+test('isSupported / isFuture reject non-integer floats', () => {
+  assert.equal(isSupported(1.5), false);
+  assert.equal(isFuture(1.5), false);
+  assert.equal(isSupported(-1), false);
+});
+
+test('isFuture is true exactly for v > SUPPORTED_VERSION', () => {
+  for (let v = -2; v <= SUPPORTED_VERSION + 3; v++) {
+    assert.equal(isFuture(v), v > SUPPORTED_VERSION && Number.isInteger(v));
+  }
+});
+
+test('parseMeta preserves optional fields verbatim', () => {
+  const raw = {
+    schema_version: 1,
+    name: 'P',
+    ue_sync_path: 'D:/X',
+    description: 'hello',
+    created_at: '2026-01-01T00:00:00Z',
+  };
+  const r = parseMeta(raw);
+  assert.equal(r.ok, true);
+  if (r.ok) {
+    assert.equal(r.meta.ue_sync_path, 'D:/X');
+    assert.equal(r.meta.description, 'hello');
+    assert.equal(r.meta.created_at, '2026-01-01T00:00:00Z');
+  }
+});

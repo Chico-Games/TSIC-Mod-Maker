@@ -1147,8 +1147,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   declineDraftRestore: async () => {
     const prompt = get().restoreDraftPrompt;
     if (!prompt) return;
-    set({ restoreDraftPrompt: null });
+    // Clear the IDB record BEFORE dismissing the modal so a hasty tab
+    // close after clicking Discard can't leave the draft alive.
     await clearDraft(prompt.key);
+    set({ restoreDraftPrompt: null });
   },
   refreshRecents: async () => {
     try {

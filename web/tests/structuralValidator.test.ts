@@ -55,3 +55,62 @@ test('only flags problematic files', () => {
   assert.equal(issues.length, 1);
   assert.equal(issues[0].file, 'x.json');
 });
+
+test('empty array yields no issues', () => {
+  assert.deepEqual(validateBatch([]), []);
+});
+
+test('top-level array is treated as invalid-json', () => {
+  const issues = validateBatch([{ folder: 'a', name: 'x.json', text: '[]' }]);
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'invalid-json');
+});
+
+test('top-level number is treated as invalid-json', () => {
+  const issues = validateBatch([{ folder: 'a', name: 'x.json', text: '42' }]);
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'invalid-json');
+});
+
+test('object with no fields yields three missing-field issues', () => {
+  const issues = validateBatch([
+    { folder: 'a', name: 'empty.json', text: '{}' },
+  ]);
+  // No id-mismatch since json.id is absent.
+  assert.equal(issues.length, 3);
+  for (const i of issues) assert.equal(i.kind, 'missing-field');
+});
+
+test('empty-string fields fail missing-field (not allowed)', () => {
+  const issues = validateBatch([
+    { folder: 'a', name: 'x.json', text: JSON.stringify({ id: '', asset_path: '', class: '' }) },
+  ]);
+  assert.equal(issues.length, 3);
+  for (const i of issues) assert.equal(i.kind, 'missing-field');
+});
+
+test('case-insensitive .json suffix stripping for id-mismatch', () => {
+  const issues = validateBatch([
+    {
+      folder: 'a',
+      name: 'ID_Foo_CI.JSON',
+      text: JSON.stringify({ id: 'ID_Foo_CI', asset_path: '/Game/X', class: 'C' }),
+    },
+  ]);
+  assert.deepEqual(issues, []);
+});
+
+test('blockingKeys excludes id-mismatch (non-blocking)', async () => {
+  const { blockingKeys } = await import('../src/persistence/structuralValidator');
+  const issues = validateBatch([
+    {
+      folder: 'a',
+      name: 'ID_Foo_CI.json',
+      text: JSON.stringify({ id: 'ID_Other_CI', asset_path: '/Game/X', class: 'C' }),
+    },
+    { folder: 'a', name: 'bad.json', text: '{' },
+  ]);
+  const blockers = blockingKeys(issues);
+  assert.equal(blockers.size, 1);
+  assert.ok(blockers.has('a/bad.json'));
+});

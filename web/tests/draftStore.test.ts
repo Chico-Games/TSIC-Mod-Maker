@@ -59,3 +59,46 @@ test('save with empty records is a valid roundtrip', async () => {
   assert.equal(r!.records.length, 0);
   await clearDraft(key);
 });
+
+test('different projects isolate their drafts', async () => {
+  const keyA = projectKey({ schema_version: 1, name: 'ProjectA' }, 'handleA');
+  const keyB = projectKey({ schema_version: 1, name: 'ProjectB' }, 'handleB');
+  const recA: DefinitionRecord = { ...rec, id: 'A' };
+  const recB: DefinitionRecord = { ...rec, id: 'B' };
+  await saveDraft(keyA, [['f/A', recA]]);
+  await saveDraft(keyB, [['f/B', recB]]);
+  const draftA = await loadDraft(keyA);
+  const draftB = await loadDraft(keyB);
+  assert.ok(draftA && draftB);
+  assert.equal((draftA!.records[0][1] as DefinitionRecord).id, 'A');
+  assert.equal((draftB!.records[0][1] as DefinitionRecord).id, 'B');
+  await clearDraft(keyA);
+  await clearDraft(keyB);
+});
+
+test('saveDraft overwrites prior payload for same key', async () => {
+  const key = 'k-overwrite';
+  await saveDraft(key, [['f/X', { ...rec, id: 'X' }]]);
+  await saveDraft(key, [['f/Y', { ...rec, id: 'Y' }]]);
+  const r = await loadDraft(key);
+  assert.equal(r!.records.length, 1);
+  assert.equal((r!.records[0][1] as DefinitionRecord).id, 'Y');
+  await clearDraft(key);
+});
+
+test('clearDraft is idempotent', async () => {
+  await clearDraft('never-existed');
+  await clearDraft('never-existed');
+  assert.equal(await loadDraft('never-existed'), null);
+});
+
+test('savedAt is monotonically non-decreasing across re-saves', async () => {
+  const key = 'k-monotonic';
+  await saveDraft(key, []);
+  const t1 = (await loadDraft(key))!.savedAt;
+  await new Promise((r) => setTimeout(r, 5));
+  await saveDraft(key, []);
+  const t2 = (await loadDraft(key))!.savedAt;
+  assert.ok(t2 >= t1);
+  await clearDraft(key);
+});

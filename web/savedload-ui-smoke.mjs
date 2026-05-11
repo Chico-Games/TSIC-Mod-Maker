@@ -247,6 +247,200 @@ function buildMockPicker(initialContents) {
     }
 
     // ====================================================================
+    // Test 3b: legacy folder (no project.json) loads with v1 default
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      const tree = {
+        // No project.json — legacy folder. The store should fall back to
+        // handle.name as the project name and treat the version as 1.
+        'constructable_item_definitions': {
+          'ID_Legacy_CI.json': JSON.stringify(
+            { id: 'ID_Legacy_CI', asset_path: '/Game/L', class: 'BP_C' },
+            null,
+            2,
+          ),
+        },
+      };
+      await page.addInitScript({ content: buildMockPicker(tree) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.locator('button:has-text("Open project")').click();
+      // No LoadGate should appear; the project name falls back to "MockRoot".
+      await page.waitForSelector('.file-info:has-text("Project: MockRoot")');
+      assert(true, 'Legacy: folder without project.json still loads (name = folder name)');
+      const futureModal = await page.locator('.loadgate-modal').count();
+      assert(futureModal === 0, 'Legacy: no LoadGate appears for valid records without project.json');
+      await ctx.close();
+    }
+
+    // ====================================================================
+    // Test 3c: structural gate flags missing-field issues
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'MF' }, null, 2),
+        'constructable_item_definitions': {
+          // Missing required `class` field.
+          'ID_NoClass_CI.json': JSON.stringify({ id: 'ID_NoClass_CI', asset_path: '/Game/X' }),
+        },
+      };
+      await page.addInitScript({ content: buildMockPicker(tree) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.locator('button:has-text("Open project")').click();
+      await page.waitForSelector('.loadgate-modal:has-text("problem")');
+      const text = await page.locator('.loadgate-issues').textContent();
+      assert(text && text.includes('missing required field'), 'Structural: missing-field rendered in LoadGate');
+      assert(text && text.includes('class'), 'Structural: the missing field name is shown');
+      // Cancel so the next test starts clean.
+      await page.locator('.loadgate-modal button:has-text("Cancel")').click();
+      await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      await ctx.close();
+    }
+
+    // ====================================================================
+    // Test 3d: draft Discard clears the cache and doesn't restore
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'DiscardP' }, null, 2),
+        'constructable_item_definitions': {
+          'ID_DiscardFoo_CI.json': JSON.stringify(
+            { id: 'ID_DiscardFoo_CI', asset_path: '/Game/X', class: 'BP_C' },
+            null,
+            2,
+          ),
+        },
+      };
+      const initScript = buildMockPicker(tree);
+
+      // Visit 1: edit + flush + close
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: DiscardP")');
+        await page.evaluate(async () => {
+          window.__forceDirty();
+          await window.__flushDraftsNow();
+        });
+        await page.close();
+      }
+      // Visit 2: prompt appears → Discard → no unsaved badge
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.loadgate-modal h2:has-text("Restore unsaved")');
+        await page.locator('.loadgate-modal button:has-text("Discard")').click();
+        await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+        // file-info should show the project but NO "unsaved" badge.
+        await page.waitForSelector('.file-info:has-text("Project: DiscardP")');
+        const unsaved = await page.locator('.file-info:has-text("unsaved")').count();
+        assert(unsaved === 0, 'Draft Discard: no unsaved badge after declining');
+        await page.close();
+      }
+      // Visit 3: re-open same project — the prompt should NOT appear again
+      // because Discard cleared the IndexedDB record.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: DiscardP")');
+        const promptCount = await page.locator('.loadgate-modal h2:has-text("Restore unsaved")').count();
+        assert(promptCount === 0, 'Draft Discard: prompt is gone on the next open (cleared)');
+        await page.close();
+      }
+      await ctx.close();
+    }
+
+    // ====================================================================
+    // Test 3e: drafts are isolated per project (no cross-contamination)
+    // ====================================================================
+    {
+      // Project A has a draft; opening project B (different name) must
+      // NOT show a restore prompt.
+      const ctx = await browser.newContext();
+      const treeA = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'IsoA' }, null, 2),
+        'constructable_item_definitions': {
+          'ID_IsoA_CI.json': JSON.stringify(
+            { id: 'ID_IsoA_CI', asset_path: '/Game/X', class: 'BP_C' },
+            null,
+            2,
+          ),
+        },
+      };
+      const treeB = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'IsoB' }, null, 2),
+        'constructable_item_definitions': {
+          'ID_IsoB_CI.json': JSON.stringify(
+            { id: 'ID_IsoB_CI', asset_path: '/Game/X', class: 'BP_C' },
+            null,
+            2,
+          ),
+        },
+      };
+
+      // Visit 1: open A, mark dirty, flush, close.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: buildMockPicker(treeA) });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: IsoA")');
+        await page.evaluate(async () => {
+          window.__forceDirty();
+          await window.__flushDraftsNow();
+        });
+        await page.close();
+      }
+      // Visit 2: open B (different project) — NO prompt should appear.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: buildMockPicker(treeB) });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: IsoB")');
+        const promptCount = await page.locator('.loadgate-modal h2:has-text("Restore unsaved")').count();
+        assert(promptCount === 0, 'Draft isolation: opening project B does NOT restore project A drafts');
+        await page.close();
+      }
+      // Cleanup: open A again and discard so later tests start clean.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: buildMockPicker(treeA) });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        const hasPrompt = await page
+          .locator('.loadgate-modal h2:has-text("Restore unsaved")')
+          .waitFor({ timeout: 3000 })
+          .then(() => true)
+          .catch(() => false);
+        if (hasPrompt) {
+          await page.locator('.loadgate-modal button:has-text("Discard")').click();
+          await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+        }
+        await page.close();
+      }
+      await ctx.close();
+    }
+
+    // ====================================================================
     // Test 4: recent projects dropdown
     // ====================================================================
     {
@@ -288,6 +482,23 @@ function buildMockPicker(initialContents) {
         assert(true, 'Recents: clicking the entry reopens the project');
         await page.close();
       }
+      await ctx.close();
+    }
+
+    // ====================================================================
+    // Test 5: recents dropdown shows empty state on first run
+    // ====================================================================
+    {
+      // A brand-new browser context starts with zero recents.
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      await page.addInitScript({ content: buildMockPicker({}) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.locator('.open-project-chevron').click();
+      await page.waitForSelector('.recents-dropdown');
+      const empty = await page.locator('.recents-empty').count();
+      assert(empty === 1, 'Recents: empty state shown when no projects have been opened');
       await ctx.close();
     }
 
