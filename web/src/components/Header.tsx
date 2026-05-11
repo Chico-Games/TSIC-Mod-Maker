@@ -1,7 +1,7 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore, type AppTab } from '../store/appStore';
 import { SemanticChip } from './SemanticChip';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const SYNC_ENDPOINT = 'http://localhost:13378/sync';
 
@@ -41,11 +41,14 @@ function useEditorReachable(): 'yes' | 'no' | 'checking' {
 
 export function Header() {
   const directoryHandle = useDefinitionsStore((s) => s.directoryHandle);
+  const projectMeta = useDefinitionsStore((s) => s.projectMeta);
   const definitions = useDefinitionsStore((s) => s.definitions);
   const dirty = useDefinitionsStore((s) => s.dirty);
   const folders = useDefinitionsStore((s) => s.folders);
   const loading = useDefinitionsStore((s) => s.loading);
+  const openProject = useDefinitionsStore((s) => s.openProject);
   const pickDirectory = useDefinitionsStore((s) => s.pickDirectory);
+  const createProject = useDefinitionsStore((s) => s.createProject);
   const saveAllDirty = useDefinitionsStore((s) => s.saveAllDirty);
   const saveAs = useDefinitionsStore((s) => s.saveAs);
   const loadBundledDefaults = useDefinitionsStore((s) => s.loadBundledDefaults);
@@ -58,6 +61,7 @@ export function Header() {
   const setUnrealSyncPath = useDefinitionsStore((s) => s.setUnrealSyncPath);
   const [syncing, setSyncing] = useState(false);
   const [pathEditing, setPathEditing] = useState(false);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
 
   const editorReachable = useEditorReachable();
 
@@ -72,11 +76,11 @@ export function Header() {
   } else if (editorReachable === 'no') {
     syncBlocker = 'Unreal Editor is not reachable at localhost:13378. Launch it (with the TSICEditorSync plugin) and try again.';
   } else if (!directoryHandle) {
-    syncBlocker = 'No folder picked. Open the Definitions folder first.';
+    syncBlocker = "No project open. Click 'Open project' or 'New project' to get started.";
   } else if (dirtyCount > 0) {
     syncBlocker = `Save the ${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'} before syncing.`;
   } else if (!unrealSyncPath) {
-    syncBlocker = 'Set the absolute path to the Definitions folder (⚙ button) first.';
+    syncBlocker = 'Set the absolute path to the Unreal Definitions folder (⚙ button) first.';
   }
 
   const syncTitle = syncBlocker ?? 'Reconcile this JSON tree into Unreal (UE assets are mutated in place).';
@@ -88,6 +92,9 @@ export function Header() {
     { id: 'definitions', label: 'Definitions' },
     { id: 'validations', label: 'Validations' },
   ];
+
+  // Derive the display name for file-info line.
+  const projectDisplayName = projectMeta?.name ?? directoryHandle?.name ?? null;
 
   return (
     <div className="header">
@@ -104,7 +111,9 @@ export function Header() {
         ))}
       </div>
       <span className="file-info">
-        {directoryHandle ? (directoryHandle.name ?? 'folder') : 'bundled defaults'}
+        {directoryHandle
+          ? (projectDisplayName ? `Project: ${projectDisplayName}` : 'folder')
+          : 'bundled defaults'}
         {' · '}
         {definitions.size} defs · {folders.length} folders
         {dirtyCount > 0 && <span className="dirty"> · {dirtyCount} unsaved</span>}
@@ -133,7 +142,8 @@ export function Header() {
       <SemanticChip />
       <div className="spacer" />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
-      <button onClick={pickDirectory} disabled={!fsa}>📂 Open folder</button>
+      <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
+      <button onClick={() => setNewProjectOpen(true)} disabled={!fsa} title="Create a new project folder">✨ New project</button>
       <button onClick={() => void saveAllDirty()} disabled={dirtyCount === 0 || !directoryHandle}>
         💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}
       </button>
@@ -153,7 +163,7 @@ export function Header() {
       </button>
       <button
         onClick={() => setPathEditing(true)}
-        title="Set the absolute path to the Definitions folder (used by Sync to Unreal)"
+        title="Set the absolute path to the Unreal Definitions folder for this project (used by Sync to Unreal)"
       >⚙</button>
       <button onClick={() => void saveAs()} disabled={!fsa || definitions.size === 0}>Save as…</button>
       <button
@@ -171,20 +181,20 @@ export function Header() {
       {pathEditing && (
         <div className="path-editor-overlay" onClick={() => setPathEditing(false)}>
           <div className="path-editor" onClick={(e) => e.stopPropagation()}>
-            <label>Absolute path to Definitions folder (for Sync to Unreal):</label>
+            <label>Absolute path to Unreal Definitions folder for this project (for Sync to Unreal):</label>
             <input
               autoFocus
               defaultValue={unrealSyncPath}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  setUnrealSyncPath((e.target as HTMLInputElement).value.trim());
+                  void setUnrealSyncPath((e.target as HTMLInputElement).value.trim());
                   setPathEditing(false);
                 } else if (e.key === 'Escape') {
                   setPathEditing(false);
                 }
               }}
               onBlur={(e) => {
-                setUnrealSyncPath(e.target.value.trim());
+                void setUnrealSyncPath(e.target.value.trim());
                 setPathEditing(false);
               }}
               style={{ width: '40rem' }}
@@ -195,6 +205,135 @@ export function Header() {
           </div>
         </div>
       )}
+
+      {newProjectOpen && (
+        <NewProjectModal
+          onClose={() => setNewProjectOpen(false)}
+          onCreate={async (opts) => {
+            setNewProjectOpen(false);
+            await createProject(opts);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+interface NewProjectOpts {
+  handle: FileSystemDirectoryHandle;
+  name: string;
+  ueSyncPath?: string;
+  seedFromBundled?: boolean;
+}
+
+function NewProjectModal({
+  onClose,
+  onCreate,
+}: {
+  onClose: () => void;
+  onCreate: (opts: NewProjectOpts) => Promise<void>;
+}) {
+  const [handle, setHandle] = useState<FileSystemDirectoryHandle | null>(null);
+  const [name, setName] = useState('');
+  const [ueSyncPath, setUeSyncPath] = useState('');
+  const [seed, setSeed] = useState(true);
+  const [picking, setPicking] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+
+  const pickFolder = async () => {
+    const w = window as any;
+    if (!w.showDirectoryPicker) return;
+    setPicking(true);
+    try {
+      const h: FileSystemDirectoryHandle = await w.showDirectoryPicker({ mode: 'readwrite' });
+      setHandle(h);
+      // Pre-fill name from folder name if blank.
+      if (!name) setName(h.name);
+    } catch (e) {
+      if ((e as Error)?.name !== 'AbortError') setError(String(e));
+    } finally {
+      setPicking(false);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!handle) { setError('Pick a folder first.'); return; }
+    if (!name.trim()) { setError('Project name is required.'); return; }
+    setCreating(true);
+    setError(null);
+    try {
+      await onCreate({
+        handle,
+        name: name.trim(),
+        ueSyncPath: ueSyncPath.trim() || undefined,
+        seedFromBundled: seed,
+      });
+    } catch (e) {
+      setError(String(e));
+      setCreating(false);
+    }
+  };
+
+  return (
+    <div className="new-project-overlay" onClick={onClose}>
+      <div className="new-project-form" onClick={(e) => e.stopPropagation()}>
+        <h2 style={{ margin: '0 0 1rem' }}>✨ New project</h2>
+
+        <div className="np-form-row">
+          <label>Folder</label>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <span style={{ fontFamily: 'monospace', fontSize: '0.9em', color: '#ccc' }}>
+              {handle ? handle.name : '—'}
+            </span>
+            <button onClick={() => void pickFolder()} disabled={picking}>
+              {picking ? 'Picking…' : '📂 Choose folder'}
+            </button>
+          </div>
+        </div>
+
+        <div className="np-form-row">
+          <label>Project name</label>
+          <input
+            ref={nameRef}
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="My TSIC Project"
+            style={{ width: '20rem' }}
+          />
+        </div>
+
+        <div className="np-form-row">
+          <label>Unreal sync path <span style={{ opacity: 0.6 }}>(optional)</span></label>
+          <input
+            value={ueSyncPath}
+            onChange={(e) => setUeSyncPath(e.target.value)}
+            placeholder="C:\...\Tools\Export\test-output\Definitions"
+            style={{ width: '30rem', fontFamily: 'monospace' }}
+          />
+        </div>
+
+        <div className="np-form-row">
+          <label>Seed from bundled defaults?</label>
+          <input
+            type="checkbox"
+            checked={seed}
+            onChange={(e) => setSeed(e.target.checked)}
+            style={{ width: 'auto', accentColor: 'var(--accent)' }}
+          />
+        </div>
+
+        {error && <p style={{ color: '#f88', margin: '0.5rem 0' }}>{error}</p>}
+
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
+          <button onClick={onClose} disabled={creating}>Cancel</button>
+          <button onClick={() => void handleCreate()} disabled={creating || !handle}>
+            {creating ? 'Creating…' : 'Create project'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

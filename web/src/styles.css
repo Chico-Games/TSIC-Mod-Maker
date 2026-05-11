@@ -2735,6 +2735,47 @@ body.resizing-col * { cursor: col-resize !important; }
   font-family: monospace;
 }
 
+/* New Project modal overlay */
+.new-project-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.new-project-form {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  padding: 1.5rem 1.75rem;
+  border-radius: 6px;
+  max-width: 90vw;
+  min-width: 34rem;
+}
+.np-form-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.np-form-row label {
+  width: 11rem;
+  flex-shrink: 0;
+  font-size: 0.9em;
+  color: #bbb;
+}
+.np-form-row input[type="text"],
+.np-form-row input:not([type]),
+.np-form-row input[type="checkbox"] {
+  padding: 0.35rem 0.5rem;
+  background: #111;
+  border: 1px solid #555;
+  color: #eee;
+  font-family: monospace;
+  border-radius: 3px;
+}
+
 /* Sync response toasts can be many lines; let them grow. */
 .toast.sync-report {
   max-height: 60vh;

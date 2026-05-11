@@ -61,9 +61,20 @@ export interface PropertyMeta {
   categories: string | null;
 }
 
+export interface ProjectMeta {
+  schema_version: number;
+  name: string;
+  description?: string;
+  ue_sync_path?: string;
+  created_at?: string;
+}
+
 export interface DefinitionsStore {
   // Persistence
   directoryHandle: FileSystemDirectoryHandle | null;
+  /** Metadata loaded from project.json at the folder root. Null when no
+   *  project.json was found (legacy folder) or when using bundled defaults. */
+  projectMeta: ProjectMeta | null;
   /** True once we've attempted to auto-load on app start (whether it
    *  succeeded or not). Used to avoid double-loads. */
   bootstrapped: boolean;
@@ -131,7 +142,16 @@ export interface DefinitionsStore {
   selectDefinition: (k: DefinitionsKey | null) => void;
   setFilter: (q: string) => void;
 
+  openProject: () => Promise<void>;
   pickDirectory: () => Promise<void>;
+  /** Create a new project in an existing (possibly empty) directory. Optionally
+   *  seeds the folder with the bundled default tree. */
+  createProject: (options: {
+    handle: FileSystemDirectoryHandle;
+    name: string;
+    ueSyncPath?: string;
+    seedFromBundled?: boolean;
+  }) => Promise<void>;
   forgetDirectory: () => Promise<void>;
   /** Try to restore last picked directory + auto-load if enabled.
    *  If no saved handle exists, fall back to loading bundled defaults
@@ -167,12 +187,11 @@ export interface DefinitionsStore {
   /** Save all dirty, then POST to the TSICEditorSync endpoint to apply
    *  changes to UE. Returns the plain-text report. */
   syncToUnreal: () => Promise<{ ok: boolean; report: string }>;
-  /** Absolute path to the on-disk Definitions folder, mirrored from a
-   *  user-supplied setting. The File System Access API doesn't expose
-   *  paths, so sync requires the user to enter it once. Persisted to
-   *  localStorage. */
+  /** Absolute path to the on-disk Definitions folder. Stored in projectMeta
+   *  when a project is open; falls back to localStorage for legacy folders. */
   unrealSyncPath: string;
-  setUnrealSyncPath: (path: string) => void;
+  /** Update the sync path. When a project is open, also persists to project.json. */
+  setUnrealSyncPath: (path: string) => Promise<void>;
 
   /** Export the whole working set as a downloadable ZIP. */
   exportZip: () => Promise<Blob>;
@@ -1004,8 +1023,34 @@ function serializeDefinition(rec: DefinitionRecord): string {
   return JSON.stringify(rec.json, null, 2) + '\n';
 }
 
+/** Read project.json from a directory handle, returns null when absent. */
+async function readProjectMeta(
+  handle: FileSystemDirectoryHandle,
+): Promise<ProjectMeta | null> {
+  try {
+    const fileHandle = await handle.getFileHandle('project.json');
+    const file = await fileHandle.getFile();
+    const text = await file.text();
+    return JSON.parse(text) as ProjectMeta;
+  } catch {
+    return null;
+  }
+}
+
+/** Write project.json into a directory handle. */
+async function writeProjectMeta(
+  handle: FileSystemDirectoryHandle,
+  meta: ProjectMeta,
+): Promise<void> {
+  const fileHandle = await handle.getFileHandle('project.json', { create: true });
+  const writable = await (fileHandle as any).createWritable();
+  await writable.write(JSON.stringify(meta, null, 2) + '\n');
+  await writable.close();
+}
+
 export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   directoryHandle: null,
+  projectMeta: null,
   bootstrapped: false,
   autoLoadEnabled: loadAutoLoadFlag(),
 
@@ -1039,7 +1084,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   selectDefinition: (k) => set({ selectedKey: k }),
   setFilter: (q) => set({ filter: q }),
 
-  pickDirectory: async () => {
+  openProject: async () => {
     const w = window as any;
     if (!w.showDirectoryPicker) {
       set({
@@ -1067,7 +1112,27 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       } catch (e) {
         console.warn('[definitions] could not persist directory handle', e);
       }
-      set({ directoryHandle: handle, errorText: null });
+      // Read project.json if present; fall back to folder name as name.
+      let projectMeta = await readProjectMeta(handle);
+      if (!projectMeta) {
+        // Legacy folder without project.json — migrate localStorage sync path
+        // into a transient in-memory meta (not persisted until user saves settings).
+        const lsSyncPath = (() => {
+          try { return localStorage.getItem('tsic.def.syncpath.v1') ?? undefined; }
+          catch { return undefined; }
+        })();
+        projectMeta = {
+          schema_version: 1,
+          name: handle.name,
+          ...(lsSyncPath ? { ue_sync_path: lsSyncPath } : {}),
+        };
+      }
+      set({
+        directoryHandle: handle,
+        projectMeta,
+        unrealSyncPath: projectMeta.ue_sync_path ?? '',
+        errorText: null,
+      });
       await get().reload();
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') {
@@ -1076,10 +1141,117 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
   },
 
+  // Alias for one release — calls openProject.
+  pickDirectory: async () => {
+    await get().openProject();
+  },
+
+  createProject: async ({ handle, name, ueSyncPath, seedFromBundled = true }) => {
+    const ok = await ensurePermission(handle, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
+      return;
+    }
+
+    const meta: ProjectMeta = {
+      schema_version: 1,
+      name,
+      ...(ueSyncPath ? { ue_sync_path: ueSyncPath } : {}),
+      created_at: new Date().toISOString(),
+    };
+
+    // Write project.json first.
+    await writeProjectMeta(handle, meta);
+
+    if (seedFromBundled) {
+      // Mirror web/public/base-definitions/ into the handle.
+      const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
+      const manifestUrl = `${baseUrl}base-definitions/manifest.json`;
+      const manifestResp = await fetch(manifestUrl);
+      if (!manifestResp.ok) {
+        set({ toast: { kind: 'error', text: `Failed to fetch bundled manifest: ${manifestResp.status}` } });
+        return;
+      }
+      const manifest = await manifestResp.json() as {
+        folders: string[];
+        files: { folder: string; ids: string[] }[];
+        sidecars: { hierarchy: boolean; propertyMeta: boolean };
+      };
+
+      // Write sidecars.
+      if (manifest.sidecars?.hierarchy) {
+        try {
+          const r = await fetch(`${baseUrl}base-definitions/.class-hierarchy.json`);
+          if (r.ok) {
+            const text = await r.text();
+            const fh = await handle.getFileHandle('.class-hierarchy.json', { create: true });
+            const wr = await (fh as any).createWritable();
+            await wr.write(text);
+            await wr.close();
+          }
+        } catch (e) { console.warn('[definitions] failed to seed .class-hierarchy.json', e); }
+      }
+      if (manifest.sidecars?.propertyMeta) {
+        try {
+          const r = await fetch(`${baseUrl}base-definitions/.property-meta.json`);
+          if (r.ok) {
+            const text = await r.text();
+            const fh = await handle.getFileHandle('.property-meta.json', { create: true });
+            const wr = await (fh as any).createWritable();
+            await wr.write(text);
+            await wr.close();
+          }
+        } catch (e) { console.warn('[definitions] failed to seed .property-meta.json', e); }
+      }
+
+      // Write every definition file, concurrency-capped.
+      const allFiles: { folder: string; id: string }[] = [];
+      for (const f of manifest.files || []) {
+        if (isLayoutFolder(f.folder)) continue;
+        for (const id of f.ids) allFiles.push({ folder: f.folder, id });
+      }
+      const concurrency = 8;
+      let nextIdx = 0;
+      const workers = Array.from({ length: concurrency }, async () => {
+        for (;;) {
+          const i = nextIdx++;
+          if (i >= allFiles.length) return;
+          const { folder, id } = allFiles[i];
+          try {
+            const url = `${baseUrl}base-definitions/${folder}/${id}.json`;
+            const r = await fetch(url);
+            if (!r.ok) { console.warn(`seed fetch ${folder}/${id} → ${r.status}`); continue; }
+            const text = await r.text();
+            const folderHandle = await handle.getDirectoryHandle(folder, { create: true });
+            const fh = await folderHandle.getFileHandle(`${id}.json`, { create: true });
+            const wr = await (fh as any).createWritable();
+            await wr.write(text);
+            await wr.close();
+          } catch (e) { console.warn(`seed write ${folder}/${id} failed`, e); }
+        }
+      });
+      await Promise.all(workers);
+    }
+
+    try { await putHandle(HANDLE_KEY, handle); } catch (e) {
+      console.warn('[definitions] could not persist directory handle', e);
+    }
+
+    set({
+      directoryHandle: handle,
+      projectMeta: meta,
+      unrealSyncPath: meta.ue_sync_path ?? '',
+      errorText: null,
+    });
+    await get().reload();
+  },
+
   forgetDirectory: async () => {
     await deleteHandle(HANDLE_KEY);
     set({
       directoryHandle: null,
+      projectMeta: null,
+      unrealSyncPath: '',
       definitions: new Map(),
       classNodes: new Map(),
       hierarchySidecar: null,
@@ -1092,7 +1264,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       selectedFolder: null,
       selectedKey: null,
       loadedAt: null,
-      toast: { kind: 'info', text: 'Forgot the saved Definitions path.' },
+      toast: { kind: 'info', text: 'Forgot the saved project.' },
     });
   },
 
@@ -1113,7 +1285,19 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         const status = typeof anyH.queryPermission === 'function'
           ? await anyH.queryPermission({ mode: 'readwrite' })
           : 'granted';
-        set({ directoryHandle: handle });
+        // Load project.json so projectMeta is available even before reload().
+        const projectMeta = status === 'granted'
+          ? await readProjectMeta(handle)
+          : null;
+        const resolvedMeta = projectMeta ?? { schema_version: 1, name: handle.name };
+        set({
+          directoryHandle: handle,
+          projectMeta: resolvedMeta,
+          unrealSyncPath: resolvedMeta.ue_sync_path ?? (() => {
+            try { return localStorage.getItem('tsic.def.syncpath.v1') ?? ''; }
+            catch { return ''; }
+          })(),
+        });
         if (status === 'granted' && get().autoLoadEnabled && !skipAuto) {
           await get().reload();
           return;
@@ -1203,6 +1387,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       try { await deleteHandle(HANDLE_KEY); } catch { /* noop */ }
       set({
         directoryHandle: null,
+        projectMeta: null,
         folders,
         definitions: defs,
         classNodes,
@@ -1597,9 +1782,23 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     catch { return ''; }
   })(),
 
-  setUnrealSyncPath: (p: string) => {
-    try { localStorage.setItem('tsic.def.syncpath.v1', p); } catch { /* noop */ }
-    set({ unrealSyncPath: p });
+  setUnrealSyncPath: async (p: string) => {
+    const { directoryHandle, projectMeta } = get();
+    const nextMeta: ProjectMeta | null = projectMeta
+      ? { ...projectMeta, ue_sync_path: p }
+      : null;
+    set({ unrealSyncPath: p, projectMeta: nextMeta });
+    // Persist to project.json when a project is open.
+    if (directoryHandle && nextMeta) {
+      try {
+        await writeProjectMeta(directoryHandle, nextMeta);
+      } catch (e) {
+        console.warn('[definitions] could not write project.json', e);
+      }
+    } else {
+      // Fall back to localStorage for legacy/no-project-json folders.
+      try { localStorage.setItem('tsic.def.syncpath.v1', p); } catch { /* noop */ }
+    }
   },
 
   findKeyById: (assetId) => {
