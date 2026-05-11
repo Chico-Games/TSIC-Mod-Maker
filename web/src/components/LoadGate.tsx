@@ -3,6 +3,8 @@ import { useDefinitionsStore } from '../store/definitionsStore';
 export function LoadGate() {
   const futureBlock = useDefinitionsStore((s) => s.futureVersionBlock);
   const dismissFuture = useDefinitionsStore((s) => s.dismissFutureVersionBlock);
+  const gate = useDefinitionsStore((s) => s.loadGate);
+  const dismissGate = useDefinitionsStore((s) => s.dismissLoadGate);
 
   if (futureBlock) {
     return (
@@ -17,6 +19,46 @@ export function LoadGate() {
           <p>Update the editor before opening this project to avoid data loss.</p>
           <div className="loadgate-actions">
             <button autoFocus onClick={dismissFuture}>Got it</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gate) {
+    const shown = gate.issues.slice(0, 50);
+    const more = gate.issues.length - shown.length;
+    return (
+      <div className="loadgate-overlay" onClick={() => dismissGate('cancel')}>
+        <div className="loadgate-modal" onClick={(e) => e.stopPropagation()}>
+          <h2>
+            {gate.issues.length} problem{gate.issues.length === 1 ? '' : 's'} loading this project
+          </h2>
+          <p>The following files are structurally invalid and will be skipped if you continue.</p>
+          <ul className="loadgate-issues">
+            {shown.map((i, idx) => (
+              <li key={idx}>
+                <code>{i.folder}/{i.file}</code> —{' '}
+                {i.kind === 'invalid-json' && <>invalid JSON: {i.error}</>}
+                {i.kind === 'missing-field' && (
+                  <>missing required field <code>{i.field}</code></>
+                )}
+                {i.kind === 'id-mismatch' && (
+                  <>id <code>{i.json_id}</code> ≠ filename <code>{i.file_id}</code></>
+                )}
+              </li>
+            ))}
+            {more > 0 && (
+              <li>
+                <em>…and {more} more.</em>
+              </li>
+            )}
+          </ul>
+          <div className="loadgate-actions">
+            <button onClick={() => dismissGate('cancel')}>Cancel</button>
+            <button autoFocus onClick={() => dismissGate('continue')}>
+              Continue anyway
+            </button>
           </div>
         </div>
       </div>

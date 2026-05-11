@@ -3,6 +3,7 @@ import { deleteHandle, ensurePermission, getHandle, putHandle } from '../handleS
 import { fuzzyMatch } from '../search/fuzzy';
 import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
 import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
+import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -139,10 +140,18 @@ export interface DefinitionsStore {
   /** When non-null, the user opened a project.json with a too-new
    *  schema_version and we refuse to load it. UI mounts <LoadGate>. */
   futureVersionBlock: { foundVersion: number; supportedVersion: number } | null;
+  /** When non-null, the load preflight found structural issues. UI mounts
+   *  <LoadGate> in issues mode; the user picks Continue or Cancel. */
+  loadGate: {
+    issues: StructuralIssue[];
+    onContinue: () => void;
+    onCancel: () => void;
+  } | null;
 
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
   dismissFutureVersionBlock: () => void;
+  dismissLoadGate: (action: 'continue' | 'cancel') => void;
   setAutoLoad: (enabled: boolean) => void;
   selectFolder: (f: string | null) => void;
   selectDefinition: (k: DefinitionsKey | null) => void;
@@ -659,11 +668,13 @@ async function readAllJson(
 ): Promise<{
   folders: string[];
   defs: Map<DefinitionsKey, DefinitionRecord>;
+  rawFiles: Array<{ folder: string; name: string; text: string }>;
   hierarchySidecar: any | null;
   propertyMetaSidecar: any | null;
 }> {
   const folders: string[] = [];
   const defs = new Map<DefinitionsKey, DefinitionRecord>();
+  const rawFiles: Array<{ folder: string; name: string; text: string }> = [];
   let hierarchySidecar: any | null = null;
   let propertyMetaSidecar: any | null = null;
   // @ts-ignore - .entries() is part of the File System Access API but TS lib
@@ -696,9 +707,16 @@ async function readAllJson(
     for await (const [fileName, fileEntry] of folderHandle.entries()) {
       if ((fileEntry as any).kind !== 'file') continue;
       if (!fileName.toLowerCase().endsWith('.json')) continue;
+      let text: string;
       try {
         const file = await (fileEntry as FileSystemFileHandle).getFile();
-        const text = await file.text();
+        text = await file.text();
+      } catch (e) {
+        console.warn(`[definitions] failed to read ${name}/${fileName}`, e);
+        continue;
+      }
+      rawFiles.push({ folder: name, name: fileName, text });
+      try {
         const json = JSON.parse(text);
         const id = fileName.replace(/\.json$/i, '');
         defs.set(key(name, id), {
@@ -709,13 +727,14 @@ async function readAllJson(
           diskId: id,
           diskFolder: name,
         });
-      } catch (e) {
-        console.warn(`[definitions] failed to read ${name}/${fileName}`, e);
+      } catch {
+        // Parse error: file is collected in rawFiles for the validator to
+        // surface; we just don't add it to defs.
       }
     }
   }
   folders.sort();
-  return { folders, defs, hierarchySidecar, propertyMetaSidecar };
+  return { folders, defs, rawFiles, hierarchySidecar, propertyMetaSidecar };
 }
 
 /** Build the propertyMeta map from the `.property-meta.json` sidecar.
@@ -1081,9 +1100,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   toast: null,
   futureVersionBlock: null,
+  loadGate: null,
 
   setToast: (t) => set({ toast: t }),
   dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
+  dismissLoadGate: (action) => {
+    const g = get().loadGate;
+    if (!g) return;
+    set({ loadGate: null });
+    if (action === 'continue') g.onContinue();
+    else g.onCancel();
+  },
   setAutoLoad: (enabled) => {
     saveAutoLoadFlag(enabled);
     set({ autoLoadEnabled: enabled });
@@ -1507,8 +1534,40 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     try {
       const ok = await ensurePermission(directoryHandle, 'readwrite');
       if (!ok) throw new Error('Permission denied');
-      const { folders, defs, hierarchySidecar, propertyMetaSidecar } =
+      const { folders, defs, rawFiles, hierarchySidecar, propertyMetaSidecar } =
         await readAllJson(directoryHandle);
+      // Pre-commit structural check. If anything is malformed, hand
+      // control to the LoadGate; only proceed if the user clicks Continue.
+      const issues = validateBatch(rawFiles);
+      if (issues.length > 0) {
+        const proceed = await new Promise<boolean>((resolve) => {
+          set({
+            loadGate: {
+              issues,
+              onContinue: () => resolve(true),
+              onCancel: () => resolve(false),
+            },
+          });
+        });
+        if (!proceed) {
+          // User cancelled the load. Back out of the project entirely so
+          // the header doesn't show a half-loaded state.
+          set({
+            loading: false,
+            directoryHandle: null,
+            projectMeta: null,
+            unrealSyncPath: '',
+            toast: { kind: 'info', text: 'Load cancelled.' },
+          });
+          return;
+        }
+        // Surface what got skipped so the user sees a paper trail in the
+        // toast log even after dismissing the modal.
+        const skipped = issues.filter((i) => i.kind === 'invalid-json' || i.kind === 'missing-field').length;
+        if (skipped > 0) {
+          set({ toast: { kind: 'info', text: `Skipped ${skipped} malformed file${skipped === 1 ? '' : 's'}.` } });
+        }
+      }
       const classNodes = buildClassNodes(defs, hierarchySidecar);
       const propertySchema = buildPropertySchema(defs);
       const propertyMeta = buildPropertyMeta(propertyMetaSidecar);

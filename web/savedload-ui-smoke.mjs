@@ -132,6 +132,67 @@ function buildMockPicker(initialContents) {
       await ctx.close();
     }
 
+    // ====================================================================
+    // Test 2: structural validator gate — Continue path
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'P' }, null, 2),
+        'constructable_item_definitions': {
+          'ID_OK_CI.json': JSON.stringify({
+            id: 'ID_OK_CI',
+            asset_path: '/Game/X',
+            class: 'BP_C',
+          }),
+          'broken.json': '{ not valid json',
+        },
+      };
+      await page.addInitScript({ content: buildMockPicker(tree) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.locator('button:has-text("Open project")').click();
+      await page.waitForSelector('.loadgate-modal:has-text("problem")');
+      assert(true, 'Structural: LoadGate appears with issues');
+      const issuesText = await page.locator('.loadgate-issues').textContent();
+      assert(
+        issuesText && issuesText.includes('broken.json'),
+        'Structural: broken file is listed in the modal',
+      );
+      await page.locator('.loadgate-modal button:has-text("Continue anyway")').click();
+      await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      await page.waitForSelector('.file-info:has-text("Project: P")');
+      assert(true, 'Structural: project loads after Continue (good record committed)');
+      await ctx.close();
+    }
+
+    // ====================================================================
+    // Test 3: structural validator gate — Cancel path
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'P2' }, null, 2),
+        'constructable_item_definitions': {
+          'broken.json': '{ also bad',
+        },
+      };
+      await page.addInitScript({ content: buildMockPicker(tree) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.locator('button:has-text("Open project")').click();
+      await page.waitForSelector('.loadgate-modal:has-text("problem")');
+      await page.locator('.loadgate-modal button:has-text("Cancel")').click();
+      await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      // Cancel keeps the existing file-info ("bundled defaults") since no
+      // records were committed.
+      const projectShown = await page.locator('.file-info:has-text("Project: P2")').count();
+      assert(projectShown === 0, 'Structural: Cancel does NOT commit any records');
+      await ctx.close();
+    }
+
     console.log('\n=== ALL SAVE/LOAD SMOKE TESTS PASSED ===\n');
   } catch (err) {
     console.error('Test failed:', err);
