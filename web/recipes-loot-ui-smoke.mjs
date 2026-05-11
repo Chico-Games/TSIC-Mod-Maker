@@ -424,13 +424,13 @@ async function waitForServer(url, timeoutMs = 15000) {
     });
 
     await page.goto(`http://localhost:${PORT}/`);
-    await page.waitForSelector('h1:has-text("TSIC Crafting Tool")');
+    await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
 
     // Open the mock directory.
-    await page.getByRole('button', { name: /Open folder/ }).click();
+    await page.getByRole('button', { name: /Open project/ }).click();
     await page.waitForSelector('.stations-layout');
     await page.waitForTimeout(200);
-    console.log('OK: stations layout rendered after Open folder');
+    console.log('OK: stations layout rendered after Open project');
 
     // ── Family grouping: Bench has 3 tiers — confirm the family row
     //    renders with 3 tier pills. T1 has 2 recipes, T2 has 1, T3 has 0.
