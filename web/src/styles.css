@@ -2784,3 +2784,37 @@ body.resizing-col * { cursor: col-resize !important; }
   font-family: monospace;
   font-size: 0.85em;
 }
+
+.loadgate-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.loadgate-modal {
+  background: #1c1c1c;
+  color: #eee;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  max-width: 36rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.loadgate-modal h2 { margin: 0 0 0.5rem; }
+.loadgate-modal code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.loadgate-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
+.loadgate-issues {
+  max-height: 24rem;
+  overflow-y: auto;
+  margin: 1rem 0;
+  font-size: 0.85em;
+  padding-left: 1.2rem;
+}
+.loadgate-issues li { margin-bottom: 0.25rem; }

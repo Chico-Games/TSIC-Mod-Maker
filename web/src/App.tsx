@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { followCursor } from './dragModifiers';
 import { DragGhost } from './components/DragGhost';
 import { Header } from './components/Header';
+import { LoadGate } from './components/LoadGate';
 import { CommandPalette } from './components/CommandPalette';
 import { DefinitionsTab } from './components/DefinitionsTab';
 import { RecipesAndLootTab } from './components/RecipesAndLootTab';
@@ -181,6 +182,7 @@ export function App() {
         <Header />
         <div className="main">{renderTab(tab)}</div>
         <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(t) => { setTab(t); setSearchOpen(false); }} />
+        <LoadGate />
         {toastText && <div className={`toast ${toastText.kind}`}>{toastText.text}</div>}
       </div>
       <DragOverlay

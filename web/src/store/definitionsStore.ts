@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { deleteHandle, ensurePermission, getHandle, putHandle } from '../handleStore';
 import { fuzzyMatch } from '../search/fuzzy';
 import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
+import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -135,8 +136,13 @@ export interface DefinitionsStore {
   // Toast
   toast: { kind: 'info' | 'error'; text: string } | null;
 
+  /** When non-null, the user opened a project.json with a too-new
+   *  schema_version and we refuse to load it. UI mounts <LoadGate>. */
+  futureVersionBlock: { foundVersion: number; supportedVersion: number } | null;
+
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
+  dismissFutureVersionBlock: () => void;
   setAutoLoad: (enabled: boolean) => void;
   selectFolder: (f: string | null) => void;
   selectDefinition: (k: DefinitionsKey | null) => void;
@@ -1074,8 +1080,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   filter: '',
 
   toast: null,
+  futureVersionBlock: null,
 
   setToast: (t) => set({ toast: t }),
+  dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
   setAutoLoad: (enabled) => {
     saveAutoLoadFlag(enabled);
     set({ autoLoadEnabled: enabled });
@@ -1113,8 +1121,16 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         console.warn('[definitions] could not persist directory handle', e);
       }
       // Read project.json if present; fall back to folder name as name.
-      let projectMeta = await readProjectMeta(handle);
-      if (!projectMeta) {
+      const rawMeta = await readProjectMeta(handle);
+      let projectMeta: ProjectMeta;
+      if (rawMeta) {
+        const v = (rawMeta as { schema_version?: number }).schema_version;
+        if (typeof v === 'number' && isFuture(v)) {
+          set({ futureVersionBlock: { foundVersion: v, supportedVersion: SUPPORTED_VERSION } });
+          return;
+        }
+        projectMeta = rawMeta;
+      } else {
         // Legacy folder without project.json — migrate localStorage sync path
         // into a transient in-memory meta (not persisted until user saves settings).
         const lsSyncPath = (() => {
