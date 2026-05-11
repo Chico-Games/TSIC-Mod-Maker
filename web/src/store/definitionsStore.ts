@@ -4,6 +4,7 @@ import { fuzzyMatch } from '../search/fuzzy';
 import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
 import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
+import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -147,11 +148,16 @@ export interface DefinitionsStore {
     onContinue: () => void;
     onCancel: () => void;
   } | null;
+  /** When non-null, a draft was found in IndexedDB for the just-opened
+   *  project. The user is asked to Restore or Discard. */
+  restoreDraftPrompt: { key: string; savedAt: number; recordCount: number } | null;
 
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
   dismissFutureVersionBlock: () => void;
   dismissLoadGate: (action: 'continue' | 'cancel') => void;
+  acceptDraftRestore: () => Promise<void>;
+  declineDraftRestore: () => Promise<void>;
   setAutoLoad: (enabled: boolean) => void;
   selectFolder: (f: string | null) => void;
   selectDefinition: (k: DefinitionsKey | null) => void;
@@ -1101,6 +1107,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   toast: null,
   futureVersionBlock: null,
   loadGate: null,
+  restoreDraftPrompt: null,
 
   setToast: (t) => set({ toast: t }),
   dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
@@ -1110,6 +1117,31 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     set({ loadGate: null });
     if (action === 'continue') g.onContinue();
     else g.onCancel();
+  },
+  acceptDraftRestore: async () => {
+    const prompt = get().restoreDraftPrompt;
+    if (!prompt) return;
+    const draft = await loadDraft(prompt.key);
+    set({ restoreDraftPrompt: null });
+    if (!draft) return;
+    set((s) => {
+      const defs = new Map(s.definitions);
+      const dirty = new Set(s.dirty);
+      for (const [k, rec] of draft.records) {
+        defs.set(k, rec);
+        dirty.add(k);
+      }
+      return { definitions: defs, dirty };
+    });
+    // The draft now lives in-memory as the active dirty set. Don't clear
+    // it from IndexedDB until the user successfully saves — that way a
+    // second crash before save still has a draft to restore from.
+  },
+  declineDraftRestore: async () => {
+    const prompt = get().restoreDraftPrompt;
+    if (!prompt) return;
+    set({ restoreDraftPrompt: null });
+    await clearDraft(prompt.key);
   },
   setAutoLoad: (enabled) => {
     saveAutoLoadFlag(enabled);
@@ -1605,6 +1637,29 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       // class is known. Toast inside autoCreateMissingRefs replaces
       // the "Loaded N definitions" toast on success.
       get().autoCreateMissingRefs();
+      // Surface any IndexedDB draft for this project so the user can
+      // recover from a previous tab crash. Skipped when no project meta
+      // (bundled defaults loads call loadBundledDefaults, not reload).
+      {
+        const meta = get().projectMeta;
+        const handle = get().directoryHandle;
+        if (meta && handle) {
+          try {
+            const draft = await loadDraft(projectKey(meta, handle.name));
+            if (draft && draft.records.length > 0) {
+              set({
+                restoreDraftPrompt: {
+                  key: projectKey(meta, handle.name),
+                  savedAt: draft.savedAt,
+                  recordCount: draft.records.length,
+                },
+              });
+            }
+          } catch (e) {
+            console.warn('[drafts] failed to read draft', e);
+          }
+        }
+      }
     } catch (e) {
       set({
         loading: false,
@@ -2752,4 +2807,79 @@ function makeZip(files: { path: string; data: Uint8Array; crc: number }[]): Blob
   for (const c of centralChunks) { out.set(c, off); off += c.length; }
   out.set(eocd, off);
   return new Blob([out as BlobPart], { type: 'application/zip' });
+}
+
+// ---------------------------------------------------------------------------
+// Draft autosave: debounce flushes of the dirty set into IndexedDB so a tab
+// crash doesn't lose unsaved work. Subscribes to the store's dirty slice
+// rather than threading scheduleDraftFlush() through every mutation path.
+// ---------------------------------------------------------------------------
+let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
+const DRAFT_DEBOUNCE_MS = 1000;
+
+function scheduleDraftFlush() {
+  if (typeof window === 'undefined') return;
+  if (draftFlushTimer) clearTimeout(draftFlushTimer);
+  draftFlushTimer = setTimeout(async () => {
+    draftFlushTimer = null;
+    const s = useDefinitionsStore.getState();
+    const meta = s.projectMeta;
+    const handle = s.directoryHandle;
+    if (!meta || !handle) return;
+    const k = projectKey(meta, handle.name);
+    if (s.dirty.size === 0) {
+      try { await clearDraft(k); } catch { /* noop */ }
+      return;
+    }
+    const recs: Array<[DefinitionsKey, DefinitionRecord]> = [];
+    for (const dk of s.dirty) {
+      const rec = s.definitions.get(dk);
+      if (rec) recs.push([dk, rec]);
+    }
+    try { await saveDraft(k, recs); } catch { /* noop */ }
+  }, DRAFT_DEBOUNCE_MS);
+}
+
+if (typeof window !== 'undefined') {
+  let lastDirty: Set<DefinitionsKey> = useDefinitionsStore.getState().dirty;
+  useDefinitionsStore.subscribe((state) => {
+    if (state.dirty !== lastDirty) {
+      lastDirty = state.dirty;
+      scheduleDraftFlush();
+    }
+  });
+}
+
+// Test hooks used by the savedload smoke to mark a record dirty + flush
+// the draft cache synchronously, bypassing the 1-second debounce. Tiny
+// enough that we don't gate them on env — they only run when called.
+if (typeof window !== 'undefined') {
+  (window as any).__forceDirty = () => {
+    const s = useDefinitionsStore.getState();
+    const firstKey = s.definitions.keys().next().value;
+    if (!firstKey) return;
+    const rec = s.definitions.get(firstKey)!;
+    useDefinitionsStore.setState((cur) => {
+      const nextDefs = new Map(cur.definitions);
+      nextDefs.set(firstKey, { ...rec, json: { ...rec.json, __testDirty: Date.now() } });
+      const nextDirty = new Set(cur.dirty);
+      nextDirty.add(firstKey);
+      return { definitions: nextDefs, dirty: nextDirty };
+    });
+  };
+  (window as any).__flushDraftsNow = async () => {
+    if (draftFlushTimer) { clearTimeout(draftFlushTimer); draftFlushTimer = null; }
+    const s = useDefinitionsStore.getState();
+    const meta = s.projectMeta;
+    const handle = s.directoryHandle;
+    if (!meta || !handle) return;
+    const k = projectKey(meta, handle.name);
+    const recs: Array<[DefinitionsKey, DefinitionRecord]> = [];
+    for (const dk of s.dirty) {
+      const rec = s.definitions.get(dk);
+      if (rec) recs.push([dk, rec]);
+    }
+    if (recs.length === 0) await clearDraft(k);
+    else await saveDraft(k, recs);
+  };
 }

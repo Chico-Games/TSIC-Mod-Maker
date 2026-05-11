@@ -16,6 +16,7 @@ import { followCursor } from './dragModifiers';
 import { DragGhost } from './components/DragGhost';
 import { Header } from './components/Header';
 import { LoadGate } from './components/LoadGate';
+import { RestoreDraftPrompt } from './components/RestoreDraftPrompt';
 import { CommandPalette } from './components/CommandPalette';
 import { DefinitionsTab } from './components/DefinitionsTab';
 import { RecipesAndLootTab } from './components/RecipesAndLootTab';
@@ -183,6 +184,7 @@ export function App() {
         <div className="main">{renderTab(tab)}</div>
         <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(t) => { setTab(t); setSearchOpen(false); }} />
         <LoadGate />
+        <RestoreDraftPrompt />
         {toastText && <div className={`toast ${toastText.kind}`}>{toastText.text}</div>}
       </div>
       <DragOverlay

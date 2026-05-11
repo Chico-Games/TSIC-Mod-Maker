@@ -168,6 +168,59 @@ function buildMockPicker(initialContents) {
     }
 
     // ====================================================================
+    // Test 2b: draft autosave + restore prompt
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'DraftP' }, null, 2),
+        'constructable_item_definitions': {
+          'ID_DraftFoo_CI.json': JSON.stringify(
+            { id: 'ID_DraftFoo_CI', asset_path: '/Game/X', class: 'BP_C' },
+            null,
+            2,
+          ),
+        },
+      };
+      const initScript = buildMockPicker(tree);
+
+      // Visit 1: open + mutate + flush + close
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: DraftP")');
+        // Force a dirty record + flush drafts synchronously (bypasses the
+        // 1-second debounce so the test doesn't have to wait).
+        await page.evaluate(async () => {
+          const w = window;
+          w.__forceDirty();
+          await w.__flushDraftsNow();
+        });
+        await page.close();
+      }
+
+      // Visit 2: re-open same project, expect RestoreDraftPrompt.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.loadgate-modal h2:has-text("Restore unsaved")');
+        assert(true, 'Draft: RestoreDraftPrompt appears on second open');
+        await page.locator('.loadgate-modal button:has-text("Restore")').click();
+        await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+        await page.waitForSelector('.file-info:has-text("unsaved")');
+        assert(true, 'Draft: after Restore, header shows unsaved badge');
+        await page.close();
+      }
+      await ctx.close();
+    }
+
+    // ====================================================================
     // Test 3: structural validator gate — Cancel path
     // ====================================================================
     {
