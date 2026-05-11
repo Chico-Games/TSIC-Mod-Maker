@@ -5,6 +5,7 @@ import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
 import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
+import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persistence/recentProjects';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -151,6 +152,9 @@ export interface DefinitionsStore {
   /** When non-null, a draft was found in IndexedDB for the just-opened
    *  project. The user is asked to Restore or Discard. */
   restoreDraftPrompt: { key: string; savedAt: number; recordCount: number } | null;
+  /** Recently-opened projects (desc by lastOpened), capped at 8. Refreshed
+   *  by refreshRecents() and after every openProject / createProject. */
+  recents: RecentEntry[];
 
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
@@ -158,6 +162,8 @@ export interface DefinitionsStore {
   dismissLoadGate: (action: 'continue' | 'cancel') => void;
   acceptDraftRestore: () => Promise<void>;
   declineDraftRestore: () => Promise<void>;
+  refreshRecents: () => Promise<void>;
+  openRecent: (handleName: string) => Promise<void>;
   setAutoLoad: (enabled: boolean) => void;
   selectFolder: (f: string | null) => void;
   selectDefinition: (k: DefinitionsKey | null) => void;
@@ -1108,6 +1114,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   futureVersionBlock: null,
   loadGate: null,
   restoreDraftPrompt: null,
+  recents: [],
 
   setToast: (t) => set({ toast: t }),
   dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
@@ -1142,6 +1149,60 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     if (!prompt) return;
     set({ restoreDraftPrompt: null });
     await clearDraft(prompt.key);
+  },
+  refreshRecents: async () => {
+    try {
+      set({ recents: await listRecents() });
+    } catch (e) {
+      console.warn('[recents] refresh failed', e);
+    }
+  },
+  openRecent: async (handleName) => {
+    const all = await listRecents();
+    const entry = all.find((r) => r.handleName === handleName);
+    if (!entry) {
+      set({ toast: { kind: 'error', text: 'That recent project is no longer available.' } });
+      return;
+    }
+    if (!entry.handle || typeof (entry.handle as any).queryPermission !== 'function') {
+      // Handle was lost (e.g., structured-clone fallback or non-FSA env).
+      // Fall back to the regular picker.
+      await get().openProject();
+      return;
+    }
+    const ok = await ensurePermission(entry.handle, 'readwrite');
+    if (!ok) {
+      await removeRecent(handleName);
+      await get().refreshRecents();
+      set({ toast: { kind: 'error', text: "Couldn't reopen — pick the folder again." } });
+      return;
+    }
+    try {
+      const rawMeta = await readProjectMeta(entry.handle);
+      let projectMeta: ProjectMeta;
+      if (rawMeta) {
+        const v = (rawMeta as { schema_version?: number }).schema_version;
+        if (typeof v === 'number' && isFuture(v)) {
+          set({ futureVersionBlock: { foundVersion: v, supportedVersion: SUPPORTED_VERSION } });
+          return;
+        }
+        projectMeta = rawMeta;
+      } else {
+        projectMeta = { schema_version: 1, name: entry.handle.name };
+      }
+      try { await putHandle(HANDLE_KEY, entry.handle); } catch { /* noop */ }
+      set({
+        directoryHandle: entry.handle,
+        projectMeta,
+        unrealSyncPath: projectMeta.ue_sync_path ?? '',
+        errorText: null,
+      });
+      await get().reload();
+      await addRecent({ name: projectMeta.name, handleName: entry.handleName, handle: entry.handle });
+      await get().refreshRecents();
+    } catch (e) {
+      set({ toast: { kind: 'error', text: `Failed to open: ${String(e)}` } });
+    }
   },
   setAutoLoad: (enabled) => {
     saveAutoLoadFlag(enabled);
@@ -1209,6 +1270,13 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         errorText: null,
       });
       await get().reload();
+      // Record this open in the recents list after a successful load.
+      try {
+        await addRecent({ name: projectMeta.name, handleName: handle.name, handle });
+        await get().refreshRecents();
+      } catch (e) {
+        console.warn('[recents] could not record openProject', e);
+      }
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') {
         set({ toast: { kind: 'error', text: String(e) } });
@@ -1319,6 +1387,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       errorText: null,
     });
     await get().reload();
+    try {
+      await addRecent({ name: meta.name, handleName: handle.name, handle });
+      await get().refreshRecents();
+    } catch (e) {
+      console.warn('[recents] could not record createProject', e);
+    }
   },
 
   forgetDirectory: async () => {
@@ -1387,6 +1461,9 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     } catch (e) {
       console.warn('[definitions] bootstrap failed', e);
     }
+    // Populate the recents dropdown on every bootstrap so the header
+    // doesn't have to wait for the user to open the menu.
+    try { await get().refreshRecents(); } catch { /* noop */ }
   },
 
   loadBundledDefaults: async () => {

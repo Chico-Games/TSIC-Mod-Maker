@@ -3,6 +3,14 @@ import { useAppStore, type AppTab } from '../store/appStore';
 import { SemanticChip } from './SemanticChip';
 import { useEffect, useRef, useState } from 'react';
 
+function relativeTime(ms: number): string {
+  const d = Date.now() - ms;
+  if (d < 60_000) return 'just now';
+  if (d < 3_600_000) return `${Math.floor(d / 60_000)}m ago`;
+  if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}h ago`;
+  return `${Math.floor(d / 86_400_000)}d ago`;
+}
+
 const SYNC_ENDPOINT = 'http://localhost:13378/sync';
 
 /** Polls the sync endpoint for reachability. Returns "yes" / "no" / "checking"
@@ -62,6 +70,11 @@ export function Header() {
   const [syncing, setSyncing] = useState(false);
   const [pathEditing, setPathEditing] = useState(false);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [recentsOpen, setRecentsOpen] = useState(false);
+  const recents = useDefinitionsStore((s) => s.recents);
+  const openRecent = useDefinitionsStore((s) => s.openRecent);
+  const refreshRecents = useDefinitionsStore((s) => s.refreshRecents);
+  useEffect(() => { void refreshRecents(); }, [refreshRecents]);
 
   const editorReachable = useEditorReachable();
 
@@ -142,7 +155,33 @@ export function Header() {
       <SemanticChip />
       <div className="spacer" />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
-      <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
+      <div className="open-project-split">
+        <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
+        <button
+          className="open-project-chevron"
+          disabled={!fsa}
+          onClick={() => setRecentsOpen((v) => !v)}
+          title="Recent projects"
+        >▾</button>
+        {recentsOpen && (
+          <div className="recents-dropdown" onMouseLeave={() => setRecentsOpen(false)}>
+            {recents.length === 0 ? (
+              <div className="recents-empty">No recent projects yet.</div>
+            ) : (
+              recents.map((r) => (
+                <button
+                  key={r.handleName}
+                  className="recents-item"
+                  onClick={async () => { setRecentsOpen(false); await openRecent(r.handleName); }}
+                >
+                  <span className="recents-name">{r.name}</span>
+                  <span className="recents-time">{relativeTime(r.lastOpened)}</span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
       <button onClick={() => setNewProjectOpen(true)} disabled={!fsa} title="Create a new project folder">✨ New project</button>
       <button onClick={() => void saveAllDirty()} disabled={dirtyCount === 0 || !directoryHandle}>
         💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}

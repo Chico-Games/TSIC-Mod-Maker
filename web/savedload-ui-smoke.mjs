@@ -246,6 +246,51 @@ function buildMockPicker(initialContents) {
       await ctx.close();
     }
 
+    // ====================================================================
+    // Test 4: recent projects dropdown
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'RecentP' }, null, 2),
+      };
+      const initScript = buildMockPicker(tree);
+
+      // Visit 1: open the project. The recents-DB should record it.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('button:has-text("Open project")').click();
+        await page.waitForSelector('.file-info:has-text("Project: RecentP")');
+        await page.close();
+      }
+
+      // Visit 2: a fresh page; the chevron dropdown should list RecentP.
+      // We don't assert a click-to-reopen because the mock handle does NOT
+      // survive structured-clone (real Chromium FSA handles do); in that
+      // fallback path openRecent routes to the picker, which we verify
+      // separately by clicking the entry and seeing the project reopen
+      // through the picker mock.
+      {
+        const page = await ctx.newPage();
+        await page.addInitScript({ content: initScript });
+        await page.goto(`http://localhost:${PORT}/`);
+        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.locator('.open-project-chevron').click();
+        await page.waitForSelector('.recents-dropdown .recents-name:has-text("RecentP")');
+        assert(true, 'Recents: dropdown lists RecentP after first open');
+        await page.locator('.recents-item:has(.recents-name:has-text("RecentP"))').click();
+        // In the smoke this falls back to the picker; either way the
+        // project reopens to the same MockRoot tree.
+        await page.waitForSelector('.file-info:has-text("Project: RecentP")');
+        assert(true, 'Recents: clicking the entry reopens the project');
+        await page.close();
+      }
+      await ctx.close();
+    }
+
     console.log('\n=== ALL SAVE/LOAD SMOKE TESTS PASSED ===\n');
   } catch (err) {
     console.error('Test failed:', err);
