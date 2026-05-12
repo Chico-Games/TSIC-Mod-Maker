@@ -11,6 +11,7 @@ import { PropertyTooltip } from './PropertyTooltip';
 import { SmartEffectsView } from './classBrowser/SmartEffectsView';
 import { StructRows } from './StructRows';
 import { TagPicker } from './pickers/TagPicker';
+import { AssetRefPicker } from './pickers/AssetRefPicker';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -1165,6 +1166,28 @@ export function TypedField(props: FieldProps) {
             onChange={(v) => props.onChange({ ...typed, value: v })}
           />
         </div>
+      );
+    }
+    case 'soft_asset_ref': {
+      const meta = props.propertyName
+        ? props.refAdapter.getPropertyMeta(props.parentTypeName, props.propertyName)
+        : null;
+      return (
+        <PrimitiveRow
+          label={props.label}
+          type="soft_asset_ref"
+          onDelete={props.onDelete}
+          meta={meta}
+          className="def-type-color-ref"
+          propertyName={props.propertyName}
+          pinAdapter={props.pinAdapter}
+        >
+          <AssetRefPicker
+            className={(typed as any).class ?? 'Object'}
+            value={typed.value ?? null}
+            onChange={(v) => props.onChange({ ...typed, value: v })}
+          />
+        </PrimitiveRow>
       );
     }
     case 'definition_ref':
