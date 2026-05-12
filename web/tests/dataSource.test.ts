@@ -154,3 +154,115 @@ test('FsaDataSource: readProjectMeta returns null when absent', async () => {
   const meta = await ds.readProjectMeta();
   assert.equal(meta, null);
 });
+
+test('FsaDataSource: deleteFile removes the file from the folder', async () => {
+  const removed: string[] = [];
+  const items: any = {
+    kind: 'directory',
+    async *entries() { /* empty */ },
+    async getFileHandle() { throw new Error('not used'); },
+    async getDirectoryHandle() { throw new Error('not used'); },
+    async removeEntry(name: string) { removed.push(name); },
+  };
+  const root = mockDir({ items });
+  const ds = new FsaDataSource(root);
+  await ds.deleteFile!('items', 'A');
+  assert.deepEqual(removed, ['A.json']);
+});
+
+test('FsaDataSource: renameFile copies then deletes the source', async () => {
+  const stored: Record<string, string> = { 'A.json': 'original-text' };
+  const removed: string[] = [];
+  const items: any = {
+    kind: 'directory',
+    async *entries() {},
+    async getFileHandle(name: string, opts: any) {
+      if (stored[name] != null) {
+        return {
+          kind: 'file',
+          async getFile() { return { text: async () => stored[name] } as any; },
+          async createWritable() {
+            return { async write(s: string) { stored[name] = s; }, async close() {} } as any;
+          },
+        } as any;
+      }
+      if (opts?.create) {
+        return {
+          kind: 'file',
+          async createWritable() {
+            return { async write(s: string) { stored[name] = s; }, async close() {} } as any;
+          },
+        } as any;
+      }
+      throw Object.assign(new Error('not found'), { name: 'NotFoundError' });
+    },
+    async getDirectoryHandle() { throw new Error('not used'); },
+    async removeEntry(name: string) { removed.push(name); delete stored[name]; },
+  };
+  const root = mockDir({ items });
+  const ds = new FsaDataSource(root);
+  await ds.renameFile!('items', 'A', 'items', 'B');
+  assert.equal(stored['B.json'], 'original-text');
+  assert.deepEqual(removed, ['A.json']);
+  assert.equal(stored['A.json'], undefined);
+});
+
+test('FsaDataSource: renameFile is a no-op delete when src equals dst', async () => {
+  const stored: Record<string, string> = { 'A.json': 'text' };
+  const removed: string[] = [];
+  const items: any = {
+    kind: 'directory',
+    async *entries() {},
+    async getFileHandle(name: string, opts: any) {
+      if (stored[name] != null) {
+        return {
+          kind: 'file',
+          async getFile() { return { text: async () => stored[name] } as any; },
+          async createWritable() {
+            return { async write(s: string) { stored[name] = s; }, async close() {} } as any;
+          },
+        } as any;
+      }
+      if (opts?.create) {
+        return {
+          kind: 'file',
+          async createWritable() {
+            return { async write(s: string) { stored[name] = s; }, async close() {} } as any;
+          },
+        } as any;
+      }
+      throw Object.assign(new Error('not found'), { name: 'NotFoundError' });
+    },
+    async getDirectoryHandle() { throw new Error('not used'); },
+    async removeEntry(name: string) { removed.push(name); delete stored[name]; },
+  };
+  const root = mockDir({ items });
+  const ds = new FsaDataSource(root);
+  await ds.renameFile!('items', 'A', 'items', 'A');
+  assert.equal(stored['A.json'], 'text');
+  assert.deepEqual(removed, []);
+});
+
+test('FsaDataSource: writeProjectMeta writes project.json at root', async () => {
+  const stored: Record<string, string> = {};
+  const root: any = {
+    kind: 'directory',
+    async *entries() {},
+    async getFileHandle(name: string, opts: any) {
+      if (!opts?.create) throw new Error('expected create');
+      return {
+        kind: 'file',
+        async createWritable() {
+          return { async write(s: string) { stored[name] = s; }, async close() {} } as any;
+        },
+      } as any;
+    },
+    async getDirectoryHandle() { throw new Error('not used'); },
+    async removeEntry() {},
+  };
+  const ds = new FsaDataSource(root);
+  await ds.writeProjectMeta!({ schema_version: 1, name: 'My Project' });
+  const parsed = JSON.parse(stored['project.json']);
+  assert.equal(parsed.schema_version, 1);
+  assert.equal(parsed.name, 'My Project');
+});
