@@ -129,9 +129,30 @@ The two new branches:
 ### Task 1.1: Round-trip tests for soft_asset_ref + struct (TDD)
 
 **Files:**
+- Modify: `Tools/Export/run_export.py` (remove bare `main()` call at bottom)
 - Create: `Tools/Export/tests/test_run_export.py`
 
 `run_export.py` currently has no dedicated test file because the legacy plan was to test via the offline pipeline. We're adding one that tests `_normalize_value`'s output shape directly using small UE mocks.
+
+#### Prerequisite — remove the import-time `main()` call
+
+The bottom of `run_export.py` currently has:
+
+```python
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+# Allow running via ``execute_python(<this script>, mode='file')`` — the trailing
+# call below executes when imported via exec/script invocation, not when imported
+# as a module from the orchestrator.
+main()
+```
+
+The trailing bare `main()` (line 574) fires on every `import run_export`, triggering the entire AssetRegistry walk. The comment above it is wrong — Python doesn't distinguish "exec/script invocation" from "module import"; both execute top-level statements. When the Lua MCP runs the file via `execute_python(code, mode='file')`, Python compiles it with `__name__ == "__main__"`, so the existing `if` block handles that case. The bare `main()` is vestigial and harmful for unit tests.
+
+**Delete lines 571–574** (the comment block + the bare `main()` line). Keep the `if __name__ == "__main__":` guard.
+
+Verify by running an export afterward (Task 1.3 covers this) — it should still produce identical output.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -222,7 +243,7 @@ def test_struct_engine_type_no_longer_dropped(fake_unreal):
     assert out["value"] == {}
 
 
-def test_strip_value_passes_soft_asset_ref_metadata():
+def test_strip_value_passes_soft_asset_ref_metadata(fake_unreal):
     """_strip_value should preserve `class` on a soft_asset_ref skeleton."""
     sys.modules.pop("run_export", None)
     import run_export
