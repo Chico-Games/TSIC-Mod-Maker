@@ -14,6 +14,10 @@
         "type": "struct",
         "struct_name": "DeathDropEntry",
         "fields": {
+          "world_item": {
+            "type": "soft_asset_ref",
+            "class": "Package"
+          },
           "count": {
             "type": "int"
           },
@@ -27,6 +31,11 @@
           "type": "struct",
           "struct_name": "DeathDropEntry",
           "value": {
+            "world_item": {
+              "type": "soft_asset_ref",
+              "class": "Package",
+              "value": "/Game/Items/CraftingMaterials/EnemyDrops/LivingMannequin/MannequinArm/Static/FD_MannequinArm_SI"
+            },
             "count": {
               "type": "int",
               "value": 1
@@ -42,6 +51,11 @@
     "display_name": {
       "type": "text",
       "value": "Living Mannequin"
+    },
+    "enemy_class": {
+      "type": "soft_asset_ref",
+      "class": "BlueprintGeneratedClass",
+      "value": "/Game/Characters/Enemies/LivingMannequin/Blueprints/CH_LivingMannequin.CH_LivingMannequin_C"
     },
     "gameplay_tags": {
       "type": "gameplay_tag_container",

@@ -13,6 +13,16 @@
       "type": "bool",
       "value": true
     },
+    "collision_profile_name": {
+      "type": "struct",
+      "struct_name": "CollisionProfileName",
+      "value": {
+        "name": {
+          "type": "name",
+          "value": "Furniture"
+        }
+      }
+    },
     "constructable_item_to_grant": {
       "type": "definition_ref",
       "class": "ConstructableItemDefinition",
@@ -121,6 +131,11 @@
     "starting_health": {
       "type": "float",
       "value": 30.0
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/StorePosters/Meshes/SM_Hungry_Poster.SM_Hungry_Poster"
     },
     "upgrade_recipe": {
       "type": "definition_ref",

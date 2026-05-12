@@ -13,6 +13,16 @@
       "type": "bool",
       "value": true
     },
+    "collision_profile_name": {
+      "type": "struct",
+      "struct_name": "CollisionProfileName",
+      "value": {
+        "name": {
+          "type": "name",
+          "value": "Furniture"
+        }
+      }
+    },
     "constructable_item_to_grant": {
       "type": "definition_ref",
       "class": "ConstructableItemDefinition",
@@ -125,6 +135,11 @@
     "starting_health": {
       "type": "float",
       "value": 60.0
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Signs/Meshes/SM_FloorSign_11.SM_FloorSign_11"
     },
     "upgrade_recipe": {
       "type": "definition_ref",

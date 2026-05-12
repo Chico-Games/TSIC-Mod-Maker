@@ -28,6 +28,10 @@
               "type": "struct",
               "struct_name": "EnemyWeighted",
               "fields": {
+                "enemy_spawn_parameter": {
+                  "type": "soft_asset_ref",
+                  "class": "EnemySpawnParameters"
+                },
                 "weight": {
                   "type": "int"
                 }
@@ -53,6 +57,10 @@
                   "type": "struct",
                   "struct_name": "EnemyWeighted",
                   "fields": {
+                    "enemy_spawn_parameter": {
+                      "type": "soft_asset_ref",
+                      "class": "EnemySpawnParameters"
+                    },
                     "weight": {
                       "type": "int"
                     }
@@ -63,6 +71,11 @@
                     "type": "struct",
                     "struct_name": "EnemyWeighted",
                     "value": {
+                      "enemy_spawn_parameter": {
+                        "type": "soft_asset_ref",
+                        "class": "EnemySpawnParameters",
+                        "value": "/Game/Characters/Enemies/MaleStaff/DataAssets/MaleStaffSpawnParameters.MaleStaffSpawnParameters"
+                      },
                       "weight": {
                         "type": "int",
                         "value": 1000

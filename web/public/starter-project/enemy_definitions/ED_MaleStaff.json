@@ -14,6 +14,10 @@
         "type": "struct",
         "struct_name": "DeathDropEntry",
         "fields": {
+          "world_item": {
+            "type": "soft_asset_ref",
+            "class": "Package"
+          },
           "count": {
             "type": "int"
           },
@@ -27,6 +31,11 @@
           "type": "struct",
           "struct_name": "DeathDropEntry",
           "value": {
+            "world_item": {
+              "type": "soft_asset_ref",
+              "class": "Package",
+              "value": "/Game/Items/CraftingMaterials/EnemyDrops/MaleStaff/StaffFlesh/Static/FD_StaffFlesh_SI"
+            },
             "count": {
               "type": "int",
               "value": 1
@@ -41,6 +50,11 @@
           "type": "struct",
           "struct_name": "DeathDropEntry",
           "value": {
+            "world_item": {
+              "type": "soft_asset_ref",
+              "class": "Package",
+              "value": "/Game/Items/CraftingMaterials/EnemyDrops/MaleStaff/StaffShirtFragment/Static/FD_StaffShirtFragment_SI"
+            },
             "count": {
               "type": "int",
               "value": 1
@@ -56,6 +70,11 @@
     "display_name": {
       "type": "text",
       "value": "Male Staff"
+    },
+    "enemy_class": {
+      "type": "soft_asset_ref",
+      "class": "BlueprintGeneratedClass",
+      "value": "/Game/Characters/Enemies/MaleStaff/Blueprints/CH_MaleStaff.CH_MaleStaff_C"
     },
     "gameplay_tags": {
       "type": "gameplay_tag_container",
