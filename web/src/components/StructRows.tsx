@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TypedField, type FieldProps } from './TypedValueEditor';
+import { TypedField, FieldHead, orderByPin, type FieldProps } from './TypedValueEditor';
 import { humanizeProperty } from './definitionsNaming';
 
 // Recursive struct expander. Replaces the original `StructEditor` for the
@@ -23,6 +23,7 @@ export function StructRows(props: Props) {
     onDelete,
     refAdapter,
     path,
+    propertyName,
     parentTypeName,
     pinAdapter,
     ownerKey,
@@ -40,47 +41,53 @@ export function StructRows(props: Props) {
   // FTransform.translation), not the outer record's class.
   const innerParent = typed?.struct_name || parentTypeName;
 
+  // Resolve the property-meta entry for this struct's own slot on its parent
+  // (e.g. RecipeRow.inputs → inputs' UPROPERTY meta). Drives the tooltip
+  // and the per-property pin button rendered inside FieldHead.
+  const meta = propertyName ? refAdapter.getPropertyMeta(parentTypeName, propertyName) : null;
+
   const setField = (key: string, next: any) => {
     onChange({ ...typed, value: { ...fields, [key]: next } });
   };
 
-  // Keys are presented in their natural (insertion) order to keep XYZ
-  // axes / translation/rotation/scale clusters together. The outer
-  // TypedPropertiesEditor handles pin-sorting; inside a struct, ordering
-  // by the exporter's emit order reads better than alphabetical.
-  const keys = Object.keys(fields);
+  // Pin-aware ordering: pinned child fields float to the top while keeping
+  // their original insertion order, with the unpinned remainder following
+  // (also in insertion order). Matches the legacy `StructEditor` behaviour
+  // and the top-level `TypedPropertiesEditor` pin handling.
+  const sortedKeys = orderByPin(Object.keys(fields), pinAdapter);
 
   return (
     <div className="def-field def-type-color-struct">
       <div
-        className="def-field-head"
         onClick={() => setOpen(!open)}
         style={{ cursor: 'pointer' }}
       >
-        <span className="def-chevron">{open ? '▾' : '▸'}</span>
-        <span className="def-field-label">
-          {label !== undefined && <>{label} </>}
-          <span className="def-type">struct · {structName} · {keys.length} fields</span>
-        </span>
-        {onDelete && (
-          <div className="def-field-controls">
-            <button
-              type="button"
-              className="danger"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete();
-              }}
-              title="Remove"
-            >
-              ×
-            </button>
-          </div>
-        )}
+        <FieldHead
+          label={`${open ? '▾' : '▸'} ${label ?? ''}`.trim()}
+          type={`struct · ${structName} · ${sortedKeys.length} fields`}
+          meta={meta}
+          propertyName={propertyName}
+          pinAdapter={pinAdapter}
+          controls={
+            onDelete ? (
+              <button
+                type="button"
+                className="danger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                title="Remove"
+              >
+                ×
+              </button>
+            ) : null
+          }
+        />
       </div>
-      {open && keys.length > 0 && (
+      {open && sortedKeys.length > 0 && (
         <div className="def-struct-body">
-          {keys.map((k) => (
+          {sortedKeys.map((k) => (
             <TypedField
               key={k}
               label={humanizeProperty(k)}
@@ -97,7 +104,7 @@ export function StructRows(props: Props) {
           ))}
         </div>
       )}
-      {open && keys.length === 0 && (
+      {open && sortedKeys.length === 0 && (
         <div className="def-struct-empty">(empty struct)</div>
       )}
     </div>

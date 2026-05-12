@@ -222,7 +222,7 @@ function PinToggle({
   );
 }
 
-function FieldHead({
+export function FieldHead({
   label,
   type,
   controls,
@@ -808,7 +808,7 @@ function StructEditor({
 
 /** Sort property names so pinned ones come first (in original order),
  *  followed by the rest (in original order). Stable sort by category. */
-function orderByPin(keys: string[], pinAdapter?: PinAdapter): string[] {
+export function orderByPin(keys: string[], pinAdapter?: PinAdapter): string[] {
   if (!pinAdapter) return keys;
   const pinned = keys.filter((k) => pinAdapter.isPinned(k));
   const rest = keys.filter((k) => !pinAdapter.isPinned(k));
