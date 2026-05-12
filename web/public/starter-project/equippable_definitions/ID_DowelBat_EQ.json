@@ -8,6 +8,162 @@
     "UObject"
   ],
   "properties": {
+    "equipment_actors_and_meshes": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "EquipmentActorsMeshes",
+        "fields": {
+          "mesh": {
+            "type": "soft_asset_ref",
+            "class": "StaticMesh"
+          },
+          "attach_socket": {
+            "type": "name"
+          },
+          "attach_transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "EquipmentActorsMeshes",
+          "value": {
+            "mesh": {
+              "type": "soft_asset_ref",
+              "class": "StaticMesh",
+              "value": "/Game/Items/Equipment/Weapons/DowelBat/Meshes/bat_updated.bat_updated"
+            },
+            "attach_socket": {
+              "type": "name",
+              "value": "hand_r"
+            },
+            "attach_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "equipped_layer_class": {
+      "type": "soft_asset_ref",
+      "class": "AnimBlueprintGeneratedClass",
+      "value": "/Game/Items/Equipment/Weapons/SledgeHammer/Blueprints/ABP_SledgeHammer.ABP_SledgeHammer_C"
+    },
     "ability_sets_to_grant": {
       "type": "array",
       "element_type": {
@@ -21,14 +177,6 @@
           "value": "AS_DowelBat"
         }
       ]
-    },
-    "description": {
-      "type": "text",
-      "value": "A makeshift wooden bat. Light and fast but lower damage. Good starter weapon for melee combat."
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Dowel Bat"
     },
     "effects_to_apply": {
       "type": "struct",
@@ -222,194 +370,46 @@
         }
       }
     },
-    "equipment_actors_and_meshes": {
-      "type": "array",
-      "element_type": {
-        "type": "struct",
-        "struct_name": "EquipmentActorsMeshes",
-        "fields": {
-          "mesh": {
-            "type": "soft_asset_ref",
-            "class": "StaticMesh"
-          },
-          "attach_socket": {
-            "type": "name"
-          },
-          "attach_transform": {
-            "type": "struct",
-            "struct_name": "Transform",
-            "fields": {
-              "rotation": {
-                "type": "struct",
-                "struct_name": "Quat",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  },
-                  "w": {
-                    "type": "float"
-                  }
-                }
-              },
-              "translation": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              },
-              "scale3_d": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "value": [
-        {
-          "type": "struct",
-          "struct_name": "EquipmentActorsMeshes",
-          "value": {
-            "mesh": {
-              "type": "soft_asset_ref",
-              "class": "StaticMesh",
-              "value": "/Game/Items/Equipment/Weapons/DowelBat/Meshes/bat_updated.bat_updated"
-            },
-            "attach_socket": {
-              "type": "name",
-              "value": "hand_r"
-            },
-            "attach_transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1.0
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1.0
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "equipment_slot": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
-    },
-    "equipped_layer_class": {
-      "type": "soft_asset_ref",
-      "class": "AnimBlueprintGeneratedClass",
-      "value": "/Game/Items/Equipment/Weapons/SledgeHammer/Blueprints/ABP_SledgeHammer.ABP_SledgeHammer_C"
+    "has_durability": {
+      "type": "bool",
+      "value": true
     },
     "has_ammo": {
       "type": "bool",
       "value": false
     },
-    "has_durability": {
-      "type": "bool",
-      "value": true
-    },
-    "item_category_tag": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Category.Weapon"
-    },
     "max_ammo": {
       "type": "int",
       "value": 0
     },
+    "display_name": {
+      "type": "text",
+      "value": "Dowel Bat"
+    },
+    "description": {
+      "type": "text",
+      "value": "A makeshift wooden bat. Light and fast but lower damage. Good starter weapon for melee combat."
+    },
     "stackable": {
       "type": "bool",
       "value": false
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
     },
     "static_item_definition": {
       "type": "definition_ref",
       "class": "StaticItemDefinition",
       "value": "FD_DowelBat_SI"
     },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
+    "equipment_slot": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
+    },
+    "item_category_tag": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Category.Weapon"
     }
   }
 }

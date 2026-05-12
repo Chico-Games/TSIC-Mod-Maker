@@ -9,6 +9,27 @@
     "UObject"
   ],
   "properties": {
+    "loot_mesh_size": {
+      "type": "enum",
+      "enum_name": "LootMeshSize",
+      "value": "<LootMeshSize.SMALL: 0>"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
     "casts_shadow": {
       "type": "bool",
       "value": false
@@ -23,29 +44,15 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_mesh_size": {
-      "type": "enum",
-      "enum_name": "LootMeshSize",
-      "value": "<LootMeshSize.SMALL: 0>"
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
       "value": []
     },
     "weighted_chance": {
@@ -55,6 +62,10 @@
     "world_gen_priority": {
       "type": "int",
       "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

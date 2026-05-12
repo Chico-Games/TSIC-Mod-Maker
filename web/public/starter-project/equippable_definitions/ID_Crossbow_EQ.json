@@ -8,18 +8,15 @@
     "UObject"
   ],
   "properties": {
-    "ability_sets_to_grant": {
+    "equipment_actors_and_meshes": {
       "type": "array",
       "element_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "A silent ranged weapon perfect for stealth takedowns. Fires bolts with high accuracy. Max ammo: 20 bolts."
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Crossbow"
+    "ability_sets_to_grant": {
+      "type": "array",
+      "element_type": null,
+      "value": []
     },
     "effects_to_apply": {
       "type": "struct",
@@ -213,43 +210,46 @@
         }
       }
     },
-    "equipment_actors_and_meshes": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "equipment_slot": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
+    "has_durability": {
+      "type": "bool",
+      "value": true
     },
     "has_ammo": {
       "type": "bool",
       "value": true
     },
-    "has_durability": {
-      "type": "bool",
-      "value": true
-    },
-    "item_category_tag": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Category.Weapon"
-    },
     "max_ammo": {
       "type": "int",
       "value": 77
     },
+    "display_name": {
+      "type": "text",
+      "value": "Crossbow"
+    },
+    "description": {
+      "type": "text",
+      "value": "A silent ranged weapon perfect for stealth takedowns. Fires bolts with high accuracy. Max ammo: 20 bolts."
+    },
     "stackable": {
       "type": "bool",
       "value": false
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
     },
     "static_item_definition": {
       "type": "definition_ref",
       "class": "StaticItemDefinition",
       "value": "FD_Crossbow_SI"
     },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
+    "equipment_slot": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
+    },
+    "item_category_tag": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Category.Weapon"
     }
   }
 }

@@ -12,6 +12,183 @@
     "UObject"
   ],
   "properties": {
+    "inventory_rules_definition": {
+      "type": "definition_ref",
+      "class": "InventoryRulesDefinition",
+      "value": "IRD_ShelfStorage_115"
+    },
+    "gameplay_event_tag": {
+      "type": "gameplay_tag",
+      "value": "UI.GameScreen.Storage"
+    },
+    "layer_name": {
+      "type": "gameplay_tag",
+      "value": "UI.Layer.GameMenu"
+    },
+    "interaction_hold_time": {
+      "type": "float",
+      "value": 0.0
+    },
+    "interaction_prompt_text": {
+      "type": "text",
+      "value": "Open"
+    },
+    "has_static_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "starting_health": {
+      "type": "float",
+      "value": 100.0
+    },
+    "destructible_collection": {
+      "type": "soft_asset_ref",
+      "class": "GeometryCollection",
+      "value": "/Game/Furniture/Shelves/GeometryCollections/GC_SM_Bookcase01_Vol1.GC_SM_Bookcase01_Vol1"
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "collision_box_data": {
+      "type": "soft_asset_ref",
+      "class": "CollisionBoxData",
+      "value": "/Game/Furniture/Shelves/Furniture/CB_FD_Shelf_Double_ST.CB_FD_Shelf_Double_ST"
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            },
+            "w": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": true
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Industrial Double Shelf"
+    },
+    "description": {
+      "type": "text",
+      "value": "An extra-wide industrial shelving unit. Stores up to 115 items."
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Fab/Industrial_shelves_3/SM_DoubleShelf.SM_DoubleShelf"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -26,25 +203,979 @@
         }
       }
     },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "An extra-wide industrial shelving unit. Stores up to 115 items."
+    "loot_positions": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "FurnitureLootPosition",
+        "fields": {
+          "local_transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          },
+          "weight": {
+            "type": "int"
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.17364817633547436
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9848077532469797
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 18.039569032141607
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 2.8255815440692444
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 14.220706058648236
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.1736481763354744
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9848077532469797
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -25.125767713478083
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.4828627017391742
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 14.022760027860253
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0871557420742326
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9961946981506625
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -68.17092557875976
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.482863
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 14.02275975712823
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.1736481763354744
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9848077532469797
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 60.614073709576004
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.4828629999999006
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 14.022760079198514
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.9999999999999999
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.2167962920754048e-08
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -74.95518253181174
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.4828630000000569
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 59.704008159393965
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.04517930462277
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.004032176709016081
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.9970005014835979
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.06271022266141957
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 21.39899355124298
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.482863
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 59.70400879802681
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.9396926217107282
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.3420201407847474
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 61.28213335006306
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.4828629999999006
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 59.70400941186563
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -25.125768
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.482863
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 59.704009
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -2.479817036672246e-06
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0007115279061206526
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.9999936736083634
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.003485177920706865
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -25.12576824917591
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.4828630000000285
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 105.70583534311027
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -1.999999347791364e-06
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0007119997678137093
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.999993673897616
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.003484998863526438
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -65.24984835428364
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.482863
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 105.7058352087258
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -1.999999347791364e-06
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0007119997678137093
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.999993673897616
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.003484998863526438
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 69.7413376356246
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.8782152351579384
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 105.7058351994166
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -1.999999347791364e-06
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0007119997678137093
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.999993673897616
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.003484998863526438
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 25.28055336957113
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.482863
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 105.70583478995997
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 6000
     },
     "destruction_impulse_strength": {
       "type": "float",
       "value": 0.0
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Industrial Double Shelf"
     },
     "drag_angular_damping": {
       "type": "float",
@@ -74,89 +1205,11 @@
       "type": "int",
       "value": 2
     },
-    "gameplay_event_tag": {
-      "type": "gameplay_tag",
-      "value": "UI.GameScreen.Storage"
-    },
     "gameplay_tags": {
       "type": "gameplay_tag_container",
       "value": [
         "Tile.Biome.LostAndFound"
       ]
-    },
-    "has_static_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "interaction_hold_time": {
-      "type": "float",
-      "value": 0.0
-    },
-    "interaction_prompt_text": {
-      "type": "text",
-      "value": "Open"
-    },
-    "inventory_rules_definition": {
-      "type": "definition_ref",
-      "class": "InventoryRulesDefinition",
-      "value": "IRD_ShelfStorage_115"
-    },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "layer_name": {
-      "type": "gameplay_tag",
-      "value": "UI.Layer.GameMenu"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
     },
     "release_angular_damping": {
       "type": "float",
@@ -169,23 +1222,6 @@
     "restitution": {
       "type": "float",
       "value": 0.30000001192092896
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 100.0
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Fab/Industrial_shelves_3/SM_DoubleShelf.SM_DoubleShelf"
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 6000
     }
   }
 }

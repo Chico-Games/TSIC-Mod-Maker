@@ -9,6 +9,135 @@
     "UObject"
   ],
   "properties": {
+    "starting_health": {
+      "type": "float",
+      "value": 90.0
+    },
+    "destructible_collection": {
+      "type": "soft_asset_ref",
+      "class": "GeometryCollection",
+      "value": "/Game/Furniture/StorePosters/GeometryCollections/GCS_Top_Down_Poster.GCS_Top_Down_Poster"
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": {
+        "type": "definition_ref",
+        "class": "LootDefinition"
+      },
+      "value": [
+        {
+          "type": "definition_ref",
+          "class": "LootDefinition",
+          "value": "LD_PosterLoot"
+        }
+      ]
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "collision_box_data": {
+      "type": "soft_asset_ref",
+      "class": "CollisionBoxData",
+      "value": "/Game/Furniture/StorePosters/Construction/CBD_StorePoster_9_Constructed.CBD_StorePoster_9_Constructed"
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            },
+            "w": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": true
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Store Poster"
+    },
+    "description": {
+      "type": "text",
+      "value": "Store furniture."
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/StorePosters/Meshes/SM_Top_Down_Poster.SM_Top_Down_Poster"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -23,25 +152,28 @@
         }
       }
     },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
     },
     "destruction_impulse_strength": {
       "type": "float",
       "value": 0.0
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Store Poster"
     },
     "drag_angular_damping": {
       "type": "float",
@@ -80,36 +212,6 @@
         "Entity.RandomGeneration.FurnitureType.Storeposter.Wall"
       ]
     },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": {
-        "type": "definition_ref",
-        "class": "LootDefinition"
-      },
-      "value": [
-        {
-          "type": "definition_ref",
-          "class": "LootDefinition",
-          "value": "LD_PosterLoot"
-        }
-      ]
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
     "release_angular_damping": {
       "type": "float",
       "value": 0.05000000074505806
@@ -121,23 +223,6 @@
     "restitution": {
       "type": "float",
       "value": 0.30000001192092896
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 90.0
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/StorePosters/Meshes/SM_Top_Down_Poster.SM_Top_Down_Poster"
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
     }
   }
 }

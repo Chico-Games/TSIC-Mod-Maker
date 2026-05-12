@@ -12,6 +12,179 @@
     "UObject"
   ],
   "properties": {
+    "starts_toggled_on": {
+      "type": "bool",
+      "value": true
+    },
+    "interaction_hold_time": {
+      "type": "float",
+      "value": 0.0
+    },
+    "has_static_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "starting_health": {
+      "type": "float",
+      "value": 180.0
+    },
+    "destructible_collection": {
+      "type": "soft_asset_ref",
+      "class": "GeometryCollection",
+      "value": "/Game/Furniture/Lights/GeometryCollections/GCS_FloorLight_016.GCS_FloorLight_016"
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": {
+        "type": "definition_ref",
+        "class": "LootDefinition"
+      },
+      "value": [
+        {
+          "type": "definition_ref",
+          "class": "LootDefinition",
+          "value": "LD_MetalLampLoot"
+        }
+      ]
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "collision_box_data": {
+      "type": "soft_asset_ref",
+      "class": "CollisionBoxData",
+      "value": "/Game/Furniture/Lights/Construction/CBD_FloorLight_3_Constructed.CBD_FloorLight_3_Constructed"
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            },
+            "w": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": true
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Floor Light"
+    },
+    "description": {
+      "type": "text",
+      "value": "Store furniture."
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Lights/Meshes/SM_FloorLight_016.SM_FloorLight_016"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -26,25 +199,28 @@
         }
       }
     },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
     },
     "destruction_impulse_strength": {
       "type": "float",
       "value": 0.0
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Floor Light"
     },
     "drag_angular_damping": {
       "type": "float",
@@ -89,76 +265,6 @@
         "Entity.RandomGeneration.FurnitureType.Light.Floor"
       ]
     },
-    "has_static_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "interaction_hold_time": {
-      "type": "float",
-      "value": 0.0
-    },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": {
-        "type": "definition_ref",
-        "class": "LootDefinition"
-      },
-      "value": [
-        {
-          "type": "definition_ref",
-          "class": "LootDefinition",
-          "value": "LD_MetalLampLoot"
-        }
-      ]
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
     "release_angular_damping": {
       "type": "float",
       "value": 0.05000000074505806
@@ -170,27 +276,6 @@
     "restitution": {
       "type": "float",
       "value": 0.30000001192092896
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 180.0
-    },
-    "starts_toggled_on": {
-      "type": "bool",
-      "value": true
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Lights/Meshes/SM_FloorLight_016.SM_FloorLight_016"
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
     }
   }
 }

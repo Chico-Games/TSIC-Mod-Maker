@@ -8,6 +8,29 @@
     "UObject"
   ],
   "properties": {
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": [
+        "Entity.Construction.Grounded"
+      ]
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Floors/Meshes/SM_FloorLong.SM_FloorLong"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -22,32 +45,16 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
       "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Entity.Construction.Grounded"
-      ]
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Floors/Meshes/SM_FloorLong.SM_FloorLong"
     },
     "weighted_chance": {
       "type": "int",
@@ -56,6 +63,10 @@
     "world_gen_priority": {
       "type": "int",
       "value": 10000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

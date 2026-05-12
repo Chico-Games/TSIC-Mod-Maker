@@ -8,6 +8,31 @@
     "UObject"
   ],
   "properties": {
+    "display_name": {
+      "type": "text",
+      "value": "InformationSign"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Help/Meshes/SM_InformationSign2.SM_InformationSign2"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -22,34 +47,16 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "display_name": {
-      "type": "text",
-      "value": "InformationSign"
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
       "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Help/Meshes/SM_InformationSign2.SM_InformationSign2"
     },
     "weighted_chance": {
       "type": "int",
@@ -58,6 +65,10 @@
     "world_gen_priority": {
       "type": "int",
       "value": 3000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

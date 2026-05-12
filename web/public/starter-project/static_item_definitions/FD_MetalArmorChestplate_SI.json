@@ -9,6 +9,41 @@
     "UObject"
   ],
   "properties": {
+    "item_definition": {
+      "type": "definition_ref",
+      "class": "EquippableDefinition",
+      "value": "ID_MetalArmorChestplate_EQ"
+    },
+    "loot_mesh_size": {
+      "type": "enum",
+      "enum_name": "LootMeshSize",
+      "value": "<LootMeshSize.MEDIUM: 1>"
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Metal Armor Chestplate"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Items/Equipment/Armor/MetalArmor/Chestplate/Meshes/SM_MetalArmor_Chestplate.SM_MetalArmor_Chestplate"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": false
@@ -23,44 +58,16 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "display_name": {
-      "type": "text",
-      "value": "Metal Armor Chestplate"
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
       "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "item_definition": {
-      "type": "definition_ref",
-      "class": "EquippableDefinition",
-      "value": "ID_MetalArmorChestplate_EQ"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_mesh_size": {
-      "type": "enum",
-      "enum_name": "LootMeshSize",
-      "value": "<LootMeshSize.MEDIUM: 1>"
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Items/Equipment/Armor/MetalArmor/Chestplate/Meshes/SM_MetalArmor_Chestplate.SM_MetalArmor_Chestplate"
     },
     "weighted_chance": {
       "type": "int",
@@ -69,6 +76,10 @@
     "world_gen_priority": {
       "type": "int",
       "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

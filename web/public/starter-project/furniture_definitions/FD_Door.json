@@ -8,6 +8,26 @@
     "UObject"
   ],
   "properties": {
+    "display_name": {
+      "type": "text",
+      "value": "Bunker Door"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -22,33 +42,15 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "display_name": {
-      "type": "text",
-      "value": "Bunker Door"
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Biome.SCPBaseEntrance",
-        "Entity.RandomGeneration.Size.Medium",
-        "Entity.RandomGeneration.FurnitureType.Door",
-        "Entity.RandomGeneration.Materials.Metal"
-      ]
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
       "value": []
     },
     "weighted_chance": {
@@ -58,6 +60,15 @@
     "world_gen_priority": {
       "type": "int",
       "value": 9000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": [
+        "Tile.Biome.SCPBaseEntrance",
+        "Entity.RandomGeneration.Size.Medium",
+        "Entity.RandomGeneration.FurnitureType.Door",
+        "Entity.RandomGeneration.Materials.Metal"
+      ]
     }
   }
 }

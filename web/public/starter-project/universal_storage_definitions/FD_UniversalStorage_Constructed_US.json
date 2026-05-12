@@ -13,6 +13,169 @@
     "UObject"
   ],
   "properties": {
+    "setup_widget_class": {
+      "type": "soft_asset_ref",
+      "class": "WidgetBlueprintGeneratedClass",
+      "value": "/Game/UI/Widgets/UniversalStorage/W_UniversalStorageSetupScreen.W_UniversalStorageSetupScreen_C"
+    },
+    "setup_gameplay_event_tag": {
+      "type": "gameplay_tag",
+      "value": "UI.GameScreen.UniversalStorageSetup"
+    },
+    "inventory_rules_definition": {
+      "type": "definition_ref",
+      "class": "InventoryRulesDefinition",
+      "value": "IRD_BookcaseStorage_200"
+    },
+    "gameplay_event_tag": {
+      "type": "gameplay_tag",
+      "value": "UI.GameScreen.Storage"
+    },
+    "layer_name": {
+      "type": "gameplay_tag",
+      "value": "UI.Layer.GameMenu"
+    },
+    "interaction_hold_time": {
+      "type": "float",
+      "value": 0.0
+    },
+    "interaction_prompt_text": {
+      "type": "text",
+      "value": "Open"
+    },
+    "has_static_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "starting_health": {
+      "type": "float",
+      "value": 100.0
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            },
+            "w": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": false
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
     "casts_shadow": {
       "type": "bool",
       "value": false
@@ -27,13 +190,24 @@
         }
       }
     },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
+    },
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
     },
     "destruction_impulse_strength": {
       "type": "float",
@@ -67,85 +241,7 @@
       "type": "int",
       "value": 2
     },
-    "gameplay_event_tag": {
-      "type": "gameplay_tag",
-      "value": "UI.GameScreen.Storage"
-    },
     "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "has_static_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "interaction_hold_time": {
-      "type": "float",
-      "value": 0.0
-    },
-    "interaction_prompt_text": {
-      "type": "text",
-      "value": "Open"
-    },
-    "inventory_rules_definition": {
-      "type": "definition_ref",
-      "class": "InventoryRulesDefinition",
-      "value": "IRD_BookcaseStorage_200"
-    },
-    "is_draggable": {
-      "type": "bool",
-      "value": false
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "layer_name": {
-      "type": "gameplay_tag",
-      "value": "UI.Layer.GameMenu"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "meta_tags": {
       "type": "gameplay_tag_container",
       "value": []
     },
@@ -160,22 +256,6 @@
     "restitution": {
       "type": "float",
       "value": 0.30000001192092896
-    },
-    "setup_gameplay_event_tag": {
-      "type": "gameplay_tag",
-      "value": "UI.GameScreen.UniversalStorageSetup"
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 100.0
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
     }
   }
 }

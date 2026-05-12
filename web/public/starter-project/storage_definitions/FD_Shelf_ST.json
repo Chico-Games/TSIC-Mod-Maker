@@ -12,6 +12,178 @@
     "UObject"
   ],
   "properties": {
+    "inventory_rules_definition": {
+      "type": "definition_ref",
+      "class": "InventoryRulesDefinition",
+      "value": "IRD_ShelfStorage_75"
+    },
+    "gameplay_event_tag": {
+      "type": "gameplay_tag",
+      "value": "UI.GameScreen.Storage"
+    },
+    "layer_name": {
+      "type": "gameplay_tag",
+      "value": "UI.Layer.GameMenu"
+    },
+    "interaction_hold_time": {
+      "type": "float",
+      "value": 0.0
+    },
+    "interaction_prompt_text": {
+      "type": "text",
+      "value": "Open"
+    },
+    "has_static_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "starting_health": {
+      "type": "float",
+      "value": 100.0
+    },
+    "destructible_collection": {
+      "type": "soft_asset_ref",
+      "class": "GeometryCollection",
+      "value": "/Game/Furniture/Shelves/GeometryCollections/GC_SM_Bookcase01_Vol1.GC_SM_Bookcase01_Vol1"
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            },
+            "w": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.0
+            },
+            "y": {
+              "type": "float",
+              "value": 0.0
+            },
+            "z": {
+              "type": "float",
+              "value": 0.0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": true
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Industrial Shelf"
+    },
+    "description": {
+      "type": "text",
+      "value": "A heavy-duty industrial shelving unit. Stores up to 75 items."
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Fab/Industrial_shelves_3/SM_Shelf.SM_Shelf"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -26,25 +198,461 @@
         }
       }
     },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "A heavy-duty industrial shelving unit. Stores up to 75 items."
+    "loot_positions": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "FurnitureLootPosition",
+        "fields": {
+          "local_transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          },
+          "weight": {
+            "type": "int"
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0871557420742326
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9961946981506625
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -44.221787503129
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -1.1368683772161603e-13
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 38.45383845291843
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.42261825867738867
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9063077884650951
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 28.619748428348426
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.9999025235540149
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 77.05511165784219
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.9961946970901547
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.08715575419589267
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 31.83641125074746
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.9499720572825907
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 114.95699873666203
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.1736481763354744
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.9848077532469797
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -44.22178612530997
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -1.8474111129762605e-13
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 115.08902105554274
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "FurnitureLootPosition",
+          "value": {
+            "local_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -0.49999999648741184
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.8660254058124321
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -44.22178708250023
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 76.7044835164195
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            },
+            "weight": {
+              "type": "int",
+              "value": 1000
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 6000
     },
     "destruction_impulse_strength": {
       "type": "float",
       "value": 0.0
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Industrial Shelf"
     },
     "drag_angular_damping": {
       "type": "float",
@@ -74,89 +682,11 @@
       "type": "int",
       "value": 2
     },
-    "gameplay_event_tag": {
-      "type": "gameplay_tag",
-      "value": "UI.GameScreen.Storage"
-    },
     "gameplay_tags": {
       "type": "gameplay_tag_container",
       "value": [
         "Tile.Biome.LostAndFound"
       ]
-    },
-    "has_static_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "interaction_hold_time": {
-      "type": "float",
-      "value": 0.0
-    },
-    "interaction_prompt_text": {
-      "type": "text",
-      "value": "Open"
-    },
-    "inventory_rules_definition": {
-      "type": "definition_ref",
-      "class": "InventoryRulesDefinition",
-      "value": "IRD_ShelfStorage_75"
-    },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "layer_name": {
-      "type": "gameplay_tag",
-      "value": "UI.Layer.GameMenu"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
     },
     "release_angular_damping": {
       "type": "float",
@@ -169,23 +699,6 @@
     "restitution": {
       "type": "float",
       "value": 0.30000001192092896
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 100.0
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Fab/Industrial_shelves_3/SM_Shelf.SM_Shelf"
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 6000
     }
   }
 }

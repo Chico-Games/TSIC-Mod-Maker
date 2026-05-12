@@ -9,22 +9,23 @@
     "UObject"
   ],
   "properties": {
-    "ability_sets_to_grant": {
+    "duration": {
+      "type": "float",
+      "value": 12.5
+    },
+    "requires_consumption_slot": {
+      "type": "bool",
+      "value": true
+    },
+    "equipment_actors_and_meshes": {
       "type": "array",
       "element_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "A scientifically-modified potato."
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Test Potato"
-    },
-    "duration": {
-      "type": "float",
-      "value": 12.5
+    "ability_sets_to_grant": {
+      "type": "array",
+      "element_type": null,
+      "value": []
     },
     "effects_to_apply": {
       "type": "struct",
@@ -218,47 +219,46 @@
         }
       }
     },
-    "equipment_actors_and_meshes": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "equipment_slot": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Equipment.Slot.Body"
+    "has_durability": {
+      "type": "bool",
+      "value": false
     },
     "has_ammo": {
       "type": "bool",
       "value": false
     },
-    "has_durability": {
-      "type": "bool",
-      "value": false
-    },
-    "item_category_tag": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Category.Consumable"
-    },
     "max_ammo": {
       "type": "int",
       "value": 13
     },
-    "requires_consumption_slot": {
-      "type": "bool",
-      "value": true
+    "display_name": {
+      "type": "text",
+      "value": "Test Potato"
+    },
+    "description": {
+      "type": "text",
+      "value": "A scientifically-modified potato."
     },
     "stackable": {
       "type": "bool",
       "value": false
+    },
+    "weight": {
+      "type": "float",
+      "value": 1.25
     },
     "static_item_definition": {
       "type": "definition_ref",
       "class": "StaticItemDefinition",
       "value": "FD_Banana_SI"
     },
-    "weight": {
-      "type": "float",
-      "value": 1.25
+    "equipment_slot": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Equipment.Slot.Body"
+    },
+    "item_category_tag": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Category.Consumable"
     }
   }
 }

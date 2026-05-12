@@ -8,6 +8,31 @@
     "UObject"
   ],
   "properties": {
+    "display_name": {
+      "type": "text",
+      "value": "Sign"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Signs/Meshes/SM_HangingSignKitchen.SM_HangingSignKitchen"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
@@ -22,13 +47,24 @@
         }
       }
     },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
       "value": []
     },
-    "display_name": {
-      "type": "text",
-      "value": "Sign"
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 3000
     },
     "gameplay_tags": {
       "type": "gameplay_tag_container",
@@ -43,31 +79,6 @@
         "Entity.RandomGeneration.Size.Large",
         "Entity.RandomGeneration.FurnitureType.Sign.Ceiling"
       ]
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Signs/Meshes/SM_HangingSignKitchen.SM_HangingSignKitchen"
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 3000
     }
   }
 }

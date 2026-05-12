@@ -9,6 +9,39 @@
     "UObject"
   ],
   "properties": {
+    "projectile_class": {
+      "type": "soft_asset_ref",
+      "class": "BlueprintGeneratedClass",
+      "value": "/Game/Items/Equipment/Traps/BasicTrap/BP_TrapProjectile.BP_TrapProjectile_C"
+    },
+    "initial_velocity": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": 800.0
+        },
+        "y": {
+          "type": "float",
+          "value": 0.0
+        },
+        "z": {
+          "type": "float",
+          "value": 200.0
+        }
+      }
+    },
+    "capturable_enemy_classes": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "equipment_actors_and_meshes": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
     "ability_sets_to_grant": {
       "type": "array",
       "element_type": {
@@ -22,19 +55,6 @@
           "value": "AS_ThrowTrap"
         }
       ]
-    },
-    "capturable_enemy_classes": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "capture_radius": {
-      "type": "float",
-      "value": 300.0
-    },
-    "deployed_lifetime_seconds": {
-      "type": "float",
-      "value": 60.0
     },
     "effects_to_apply": {
       "type": "struct",
@@ -228,45 +248,17 @@
         }
       }
     },
-    "equipment_actors_and_meshes": {
-      "type": "array",
-      "element_type": null,
-      "value": []
+    "has_durability": {
+      "type": "bool",
+      "value": false
     },
     "has_ammo": {
       "type": "bool",
       "value": false
     },
-    "has_durability": {
-      "type": "bool",
-      "value": false
-    },
-    "initial_velocity": {
-      "type": "struct",
-      "struct_name": "Vector",
-      "value": {
-        "x": {
-          "type": "float",
-          "value": 800.0
-        },
-        "y": {
-          "type": "float",
-          "value": 0.0
-        },
-        "z": {
-          "type": "float",
-          "value": 200.0
-        }
-      }
-    },
     "max_ammo": {
       "type": "int",
       "value": 0
-    },
-    "projectile_class": {
-      "type": "soft_asset_ref",
-      "class": "BlueprintGeneratedClass",
-      "value": "/Game/Items/Equipment/Traps/BasicTrap/BP_TrapProjectile.BP_TrapProjectile_C"
     },
     "stackable": {
       "type": "bool",
@@ -275,6 +267,14 @@
     "weight": {
       "type": "float",
       "value": 0.10000000149011612
+    },
+    "capture_radius": {
+      "type": "float",
+      "value": 300.0
+    },
+    "deployed_lifetime_seconds": {
+      "type": "float",
+      "value": 60.0
     }
   }
 }

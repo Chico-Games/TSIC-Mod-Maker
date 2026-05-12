@@ -9,22 +9,23 @@
     "UObject"
   ],
   "properties": {
-    "ability_sets_to_grant": {
+    "duration": {
+      "type": "float",
+      "value": 30.0
+    },
+    "requires_consumption_slot": {
+      "type": "bool",
+      "value": true
+    },
+    "equipment_actors_and_meshes": {
       "type": "array",
       "element_type": null,
       "value": []
     },
-    "description": {
-      "type": "text",
-      "value": "Unassembled meal components in flat packaging. Requires assembly and cooking."
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Flatpack Meal Components"
-    },
-    "duration": {
-      "type": "float",
-      "value": 30.0
+    "ability_sets_to_grant": {
+      "type": "array",
+      "element_type": null,
+      "value": []
     },
     "effects_to_apply": {
       "type": "struct",
@@ -218,47 +219,46 @@
         }
       }
     },
-    "equipment_actors_and_meshes": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "equipment_slot": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
+    "has_durability": {
+      "type": "bool",
+      "value": false
     },
     "has_ammo": {
       "type": "bool",
       "value": false
     },
-    "has_durability": {
-      "type": "bool",
-      "value": false
-    },
-    "item_category_tag": {
-      "type": "gameplay_tag",
-      "value": "Entity.Inventory.Item.Category.Consumable"
-    },
     "max_ammo": {
       "type": "int",
       "value": 0
     },
-    "requires_consumption_slot": {
-      "type": "bool",
-      "value": true
+    "display_name": {
+      "type": "text",
+      "value": "Flatpack Meal Components"
+    },
+    "description": {
+      "type": "text",
+      "value": "Unassembled meal components in flat packaging. Requires assembly and cooking."
     },
     "stackable": {
       "type": "bool",
       "value": true
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
     },
     "static_item_definition": {
       "type": "definition_ref",
       "class": "StaticItemDefinition",
       "value": "FD_FlatpackMealComponents_SI"
     },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
+    "equipment_slot": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Equipment.Slot.Weapon"
+    },
+    "item_category_tag": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Category.Consumable"
     }
   }
 }
