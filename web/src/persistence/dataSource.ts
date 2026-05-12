@@ -5,6 +5,20 @@ export interface DataSourceManifest {
   files: Array<{ folder: string; ids: string[] }>;
 }
 
+export type AssetCatalogEntry = {
+  path: string;
+  name: string;
+  folder: string;
+  package_guid: string;
+  bounds?: { min: [number, number, number]; max: [number, number, number] };
+  thumbnail?: string;
+};
+export type AssetCatalog = {
+  schema_version: number;
+  class: string;
+  entries: AssetCatalogEntry[];
+};
+
 export interface DataSource {
   readonly kind: 'http' | 'fsa';
   readonly readOnly: boolean;
@@ -16,6 +30,12 @@ export interface DataSource {
   renameFile?(fromFolder: string, fromId: string, toFolder: string, toId: string): Promise<void>;
   readProjectMeta(): Promise<ProjectMeta | null>;
   writeProjectMeta?(meta: ProjectMeta): Promise<void>;
+  /** Lazy per-class catalog read. Returns null when the class file is missing. */
+  readCatalog(className: string): Promise<AssetCatalog | null>;
+  /** Flat sorted tag list. Returns [] when the sidecar is missing. */
+  readTags(): Promise<string[]>;
+  /** path → expected package_guid (may be ""). Returns {} when sidecar missing. */
+  readAssetRefs(): Promise<Record<string, string>>;
 }
 
 function isLayoutFolder(name: string): boolean {
@@ -62,6 +82,27 @@ export class HttpDataSource implements DataSource {
 
   async readProjectMeta(): Promise<ProjectMeta> {
     return { schema_version: 1, name: 'Starter project' };
+  }
+
+  async readCatalog(className: string): Promise<AssetCatalog | null> {
+    const url = `${this.baseUrl}/.assets/${className}.json`;
+    const r = await this.fetcher(url);
+    if (!r.ok) return null;
+    return JSON.parse(await r.text());
+  }
+
+  async readTags(): Promise<string[]> {
+    const url = `${this.baseUrl}/.gameplay-tags.json`;
+    const r = await this.fetcher(url);
+    if (!r.ok) return [];
+    return JSON.parse(await r.text()).tags ?? [];
+  }
+
+  async readAssetRefs(): Promise<Record<string, string>> {
+    const url = `${this.baseUrl}/.asset-refs.json`;
+    const r = await this.fetcher(url);
+    if (!r.ok) return {};
+    return JSON.parse(await r.text()).expected_guids ?? {};
   }
 
   // writeFile / deleteFile / renameFile / writeProjectMeta intentionally undefined.
@@ -148,5 +189,39 @@ export class FsaDataSource implements DataSource {
     const w = await (fh as any).createWritable();
     await w.write(JSON.stringify(meta, null, 2));
     await w.close();
+  }
+
+  async readCatalog(className: string): Promise<AssetCatalog | null> {
+    try {
+      const assets = await this.rootHandle.getDirectoryHandle('.assets');
+      const fh = await assets.getFileHandle(`${className}.json`);
+      const file = await fh.getFile();
+      return JSON.parse(await file.text());
+    } catch (e: any) {
+      if (e?.name === 'NotFoundError') return null;
+      throw e;
+    }
+  }
+
+  async readTags(): Promise<string[]> {
+    try {
+      const fh = await this.rootHandle.getFileHandle('.gameplay-tags.json');
+      const file = await fh.getFile();
+      return JSON.parse(await file.text()).tags ?? [];
+    } catch (e: any) {
+      if (e?.name === 'NotFoundError') return [];
+      throw e;
+    }
+  }
+
+  async readAssetRefs(): Promise<Record<string, string>> {
+    try {
+      const fh = await this.rootHandle.getFileHandle('.asset-refs.json');
+      const file = await fh.getFile();
+      return JSON.parse(await file.text()).expected_guids ?? {};
+    } catch (e: any) {
+      if (e?.name === 'NotFoundError') return {};
+      throw e;
+    }
   }
 }

@@ -266,3 +266,58 @@ test('FsaDataSource: writeProjectMeta writes project.json at root', async () => 
   assert.equal(parsed.schema_version, 1);
   assert.equal(parsed.name, 'My Project');
 });
+
+test('HttpDataSource: readCatalog fetches per-class file', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({
+    '/starter-project/.assets/StaticMesh.json': {
+      status: 200,
+      body: JSON.stringify({
+        schema_version: 1, class: 'StaticMesh', entries: [
+          { path: '/Game/Foo.SM_Foo', name: 'SM_Foo', folder: '/Game', package_guid: 'ABCD' }
+        ]
+      }),
+    },
+  }));
+  const cat = await ds.readCatalog('StaticMesh');
+  assert.equal(cat?.entries.length, 1);
+  assert.equal(cat?.entries[0].package_guid, 'ABCD');
+});
+
+test('HttpDataSource: readCatalog returns null on 404', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({}));
+  const cat = await ds.readCatalog('NotARealClass');
+  assert.equal(cat, null);
+});
+
+test('HttpDataSource: readTags returns the list (order preserved from server)', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({
+    '/starter-project/.gameplay-tags.json': {
+      status: 200,
+      body: JSON.stringify({ schema_version: 1, tags: ['A.Z', 'Z.A'] }),
+    },
+  }));
+  assert.deepEqual(await ds.readTags(), ['A.Z', 'Z.A']);
+});
+
+test('HttpDataSource: readTags returns [] when sidecar missing', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({}));
+  assert.deepEqual(await ds.readTags(), []);
+});
+
+test('HttpDataSource: readAssetRefs returns the expected_guids map', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({
+    '/starter-project/.asset-refs.json': {
+      status: 200,
+      body: JSON.stringify({
+        schema_version: 1,
+        expected_guids: { '/Game/Foo.SM_Foo': 'ABCD' },
+      }),
+    },
+  }));
+  assert.deepEqual(await ds.readAssetRefs(), { '/Game/Foo.SM_Foo': 'ABCD' });
+});
+
+test('HttpDataSource: readAssetRefs returns {} when sidecar missing', async () => {
+  const ds = new HttpDataSource('/starter-project', mockFetch({}));
+  assert.deepEqual(await ds.readAssetRefs(), {});
+});
