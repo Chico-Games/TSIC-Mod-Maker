@@ -1,0 +1,38 @@
+{
+  "id": "ID_ExteriorWallLight_CI",
+  "asset_path": "/Game/Furniture/CarPark/Item/ID_ExteriorWallLight_CI",
+  "class": "UConstructableItemDefinition",
+  "parent_classes": [
+    "UItemDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "description": {
+      "type": "text",
+      "value": "Store furniture."
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Fluorescent Light"
+    },
+    "furniture_to_construct": {
+      "type": "definition_ref",
+      "class": "ToggleableFurnitureDefinition",
+      "value": "FD_ExteriorWallLight_TO"
+    },
+    "stackable": {
+      "type": "bool",
+      "value": true
+    },
+    "static_item_definition": {
+      "type": "definition_ref",
+      "class": "StaticItemDefinition",
+      "value": "FD_ExteriorWallLight_SI"
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
+    }
+  }
+}

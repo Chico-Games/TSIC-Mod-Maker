@@ -1,0 +1,85 @@
+{
+  "id": "RD_Salmon_CR",
+  "asset_path": "/Game/Items/Consumables/CookedFood/Salmon/Recipes/RD_Salmon_CR",
+  "class": "UCraftRecipeDefinition",
+  "parent_classes": [
+    "URecipeDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "duration": {
+      "type": "float",
+      "value": 10.0
+    },
+    "input": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_CookingOil_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        },
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_Rice_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "output": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_Salmon_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "recipe_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}
