@@ -92,6 +92,45 @@ async function main() {
     JSON.stringify(starterManifest, null, 2),
   );
 
+  // Copy populated .gameplay-tags.json (mirror raw — editor reads this directly).
+  const tagsSrc = join(SRC, '.gameplay-tags.json');
+  if (existsSync(tagsSrc)) {
+    await copyFile(tagsSrc, join(STARTER_DIR, '.gameplay-tags.json'));
+  }
+
+  // Copy .asset-refs.json (new drift sidecar).
+  const refsSrc = join(SRC, '.asset-refs.json');
+  if (existsSync(refsSrc)) {
+    await copyFile(refsSrc, join(STARTER_DIR, '.asset-refs.json'));
+  }
+
+  // Recursive copy of .assets/ (per-class catalogs).
+  const assetsSrc = join(SRC, '.assets');
+  if (existsSync(assetsSrc)) {
+    const assetsDst = join(STARTER_DIR, '.assets');
+    await ensureDir(assetsDst);
+    for (const file of await readdir(assetsSrc)) {
+      if (!file.endsWith('.json')) continue;
+      await copyFile(join(assetsSrc, file), join(assetsDst, file));
+    }
+  }
+
+  // Recursive copy of .thumbnails/ (mesh / material PNGs from Phase 8;
+  // no-op when the dir doesn't exist yet).
+  const thumbsSrc = join(SRC, '.thumbnails');
+  if (existsSync(thumbsSrc)) {
+    const thumbsDst = join(STARTER_DIR, '.thumbnails');
+    await ensureDir(thumbsDst);
+    for (const cls of await readdir(thumbsSrc)) {
+      const classSrc = join(thumbsSrc, cls);
+      const classDst = join(thumbsDst, cls);
+      await ensureDir(classDst);
+      for (const file of await readdir(classSrc)) {
+        await copyFile(join(classSrc, file), join(classDst, file));
+      }
+    }
+  }
+
   const totalFiles = files.reduce((n, f) => n + f.ids.length, 0);
   console.log(`[sync-defaults] wrote ${totalFiles} files to schema/ and starter-project/`);
 }
