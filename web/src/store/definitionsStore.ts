@@ -7,6 +7,9 @@ import { validateBatch, type StructuralIssue } from '../persistence/structuralVa
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
 import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persistence/recentProjects';
 import type { DataSource } from '../persistence/dataSource';
+import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
+import { useAppSchemaStore } from './appSchemaStore';
+import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -1087,6 +1090,166 @@ async function writeProjectMeta(
   await writable.close();
 }
 
+async function loadFromDataSource(
+  set: (state: Partial<DefinitionsStore>) => void,
+  get: () => DefinitionsStore,
+  ds: DataSource,
+): Promise<void> {
+  set({ loading: true, errorText: null });
+  try {
+    const manifest = await ds.readManifest();
+    const folders = manifest.folders.slice().sort();
+
+    const defs = new Map<DefinitionsKey, DefinitionRecord>();
+    const rawFiles: Array<{ folder: string; name: string; text: string }> = [];
+    const concurrency = 32;
+    const allFiles: { folder: string; id: string }[] = [];
+    for (const f of manifest.files) {
+      for (const id of f.ids) allFiles.push({ folder: f.folder, id });
+    }
+    let nextIdx = 0;
+    const workers = Array.from({ length: concurrency }, async () => {
+      for (;;) {
+        const i = nextIdx++;
+        if (i >= allFiles.length) return;
+        const { folder, id } = allFiles[i];
+        try {
+          const text = await ds.readFile(folder, id);
+          const json = JSON.parse(text);
+          defs.set(key(folder, id), {
+            folder, id, json, originalText: text, diskId: id, diskFolder: folder,
+          });
+          rawFiles.push({ folder, name: `${id}.json`, text });
+        } catch (e) {
+          console.warn(`[definitions] failed to read ${folder}/${id}`, e);
+        }
+      }
+    });
+    await Promise.all(workers);
+
+    const rawMeta = await ds.readProjectMeta();
+    const projectMeta: ProjectMeta = rawMeta ?? { schema_version: 1, name: ds.displayName };
+
+    // Existing structural validator gate.
+    const structuralIssues = validateBatch(rawFiles);
+    if (structuralIssues.length > 0) {
+      const proceed = await new Promise<boolean>((resolve) => {
+        set({
+          loadGate: {
+            issues: structuralIssues,
+            onContinue: () => resolve(true),
+            onCancel: () => resolve(false),
+          },
+        });
+      });
+      if (!proceed) {
+        set({
+          loading: false,
+          loadGate: null,
+          toast: { kind: 'info', text: 'Load cancelled.' },
+        });
+        return;
+      }
+      set({ loadGate: null });
+      const skipped = structuralIssues.filter((i) => i.kind === 'invalid-json' || i.kind === 'missing-field').length;
+      if (skipped > 0) {
+        set({ toast: { kind: 'info', text: `Skipped ${skipped} malformed file${skipped === 1 ? '' : 's'}.` } });
+      }
+    }
+
+    // New drift validator gate.
+    const schema = useAppSchemaStore.getState();
+    const driftIssues = validateSchemaDrift(defs, schema.classNodes, schema.propertyMeta);
+    if (driftIssues.length > 0) {
+      const proceed = await new Promise<boolean>((resolve) => {
+        set({
+          // The shape extension to discriminate structural vs drift happens
+          // in Task 13. For now, store the drift array under the same shape;
+          // the LoadGate component still has only one rendering mode.
+          loadGate: {
+            issues: driftIssues as any,
+            onContinue: () => resolve(true),
+            onCancel: () => resolve(false),
+          },
+        });
+      });
+      if (!proceed) {
+        set({ loading: false, loadGate: null, toast: { kind: 'info', text: 'Load cancelled.' } });
+        return;
+      }
+      set({ loadGate: null });
+    }
+
+    // Build derived state. Keep populating both definitionsStore's schema
+    // fields AND appSchemaStore (read-only here) until Task 15 removes the
+    // former.
+    const classNodes = buildClassNodes(defs, schema.hierarchySidecar);
+    const propertySchema = buildPropertySchema(defs);
+    const idTemplates = buildIdTemplates(defs);
+
+    // Preserve current selection if still valid.
+    const cur = get();
+    const selectedFolder = cur.selectedFolder && folders.includes(cur.selectedFolder)
+      ? cur.selectedFolder
+      : folders[0] ?? null;
+    const selectedKey = cur.selectedKey && defs.has(cur.selectedKey)
+      ? cur.selectedKey
+      : null;
+
+    set({
+      dataSource: ds,
+      directoryHandle: ds.kind === 'fsa' ? (ds as FsaDataSource).rootHandle : null,
+      projectMeta,
+      definitions: defs,
+      dirty: new Set(),
+      folders,
+      classNodes,
+      hierarchySidecar: schema.hierarchySidecar,
+      propertySchema,
+      propertyMeta: schema.propertyMeta,
+      enumMeta: schema.enumMeta,
+      idTemplates,
+      selectedFolder,
+      selectedKey,
+      loadedAt: Date.now(),
+      loading: false,
+      unrealSyncPath: projectMeta.ue_sync_path ?? '',
+      toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
+    });
+
+    // Reverse-ref index.
+    const idx = buildReferencedByIndex(get().definitions);
+    set({ referencedByIndex: idx });
+
+    // Self-heal dangling refs (existing behavior).
+    get().autoCreateMissingRefs();
+
+    // Draft restore prompt (only for sources with a persistable identity).
+    {
+      const handleName = ds.kind === 'fsa'
+        ? (ds as FsaDataSource).rootHandle.name
+        : 'starter-project';
+      try {
+        const draft = await loadDraft(projectKey(projectMeta, handleName));
+        if (draft) {
+          set({
+            restoreDraftPrompt: {
+              key: projectKey(projectMeta, handleName),
+              savedAt: draft.savedAt,
+              recordCount: draft.records.length,
+            },
+          });
+        }
+      } catch (e) {
+        console.warn('[definitions] draft load failed', e);
+      }
+    }
+  } catch (e: any) {
+    console.error('[definitions] load failed', e);
+    set({ errorText: String(e?.message ?? e), loading: false });
+  }
+}
+
 export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   directoryHandle: null,
   dataSource: null,
@@ -1472,106 +1635,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   loadBundledDefaults: async () => {
-    set({ loading: true, errorText: null });
-    try {
-      const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
-      const manifestUrl = `${baseUrl}base-definitions/manifest.json`;
-      const manifestResp = await fetch(manifestUrl);
-      if (!manifestResp.ok) {
-        throw new Error(`manifest ${manifestResp.status}`);
-      }
-      const manifest = await manifestResp.json() as {
-        folders: string[];
-        files: { folder: string; ids: string[] }[];
-        sidecars: { hierarchy: boolean; propertyMeta: boolean };
-      };
-      const folders = (manifest.folders || []).filter((f) => !isLayoutFolder(f)).sort();
-      const defs = new Map<DefinitionsKey, DefinitionRecord>();
-      // Pull every file in parallel, but cap concurrency so we don't open
-      // ~2200 sockets at once.
-      const concurrency = 32;
-      const allFiles: { folder: string; id: string }[] = [];
-      for (const f of manifest.files || []) {
-        if (isLayoutFolder(f.folder)) continue;
-        for (const id of f.ids) allFiles.push({ folder: f.folder, id });
-      }
-      let nextIdx = 0;
-      const workers = Array.from({ length: concurrency }, async () => {
-        for (;;) {
-          const i = nextIdx++;
-          if (i >= allFiles.length) return;
-          const { folder, id } = allFiles[i];
-          try {
-            const url = `${baseUrl}base-definitions/${folder}/${id}.json`;
-            const r = await fetch(url);
-            if (!r.ok) {
-              console.warn(`[definitions] bundled fetch ${folder}/${id} → ${r.status}`);
-              continue;
-            }
-            const text = await r.text();
-            const json = JSON.parse(text);
-            defs.set(key(folder, id), {
-              folder, id, json, originalText: text, diskId: id, diskFolder: folder,
-            });
-          } catch (e) {
-            console.warn(`[definitions] bundled load ${folder}/${id} failed`, e);
-          }
-        }
-      });
-      await Promise.all(workers);
-      // Sidecars (optional).
-      let hierarchySidecar: any | null = null;
-      let propertyMetaSidecar: any | null = null;
-      if (manifest.sidecars?.hierarchy) {
-        try {
-          const r = await fetch(`${baseUrl}base-definitions/.class-hierarchy.json`);
-          if (r.ok) hierarchySidecar = await r.json();
-        } catch (e) { console.warn('[definitions] bundled hierarchy load failed', e); }
-      }
-      if (manifest.sidecars?.propertyMeta) {
-        try {
-          const r = await fetch(`${baseUrl}base-definitions/.property-meta.json`);
-          if (r.ok) propertyMetaSidecar = await r.json();
-        } catch (e) { console.warn('[definitions] bundled property-meta load failed', e); }
-      }
-      const classNodes = buildClassNodes(defs, hierarchySidecar);
-      const propertySchema = buildPropertySchema(defs);
-      const propertyMeta = buildPropertyMeta(propertyMetaSidecar);
-      const enumMeta = buildEnumMeta(propertyMetaSidecar);
-      const idTemplates = buildIdTemplates(defs);
-      // Forget any saved handle — the user is now editing the bundled tree
-      // and must Save As to commit edits to a real folder.
-      try { await deleteHandle(HANDLE_KEY); } catch { /* noop */ }
-      set({
-        directoryHandle: null,
-        projectMeta: null,
-        folders,
-        definitions: defs,
-        classNodes,
-        propertySchema,
-        propertyMeta,
-        enumMeta,
-        idTemplates,
-        hierarchySidecar,
-        dirty: new Set(),
-        selectedFolder: folders[0] ?? null,
-        selectedKey: null,
-        loadedAt: Date.now(),
-        loading: false,
-        toast: { kind: 'info', text: `Loaded ${defs.size} bundled definitions across ${folders.length} folders. Save As… to write changes to disk.` },
-      });
-      {
-        const idx = buildReferencedByIndex(get().definitions);
-        set({ referencedByIndex: idx });
-      }
-      get().autoCreateMissingRefs();
-    } catch (e) {
-      set({
-        loading: false,
-        errorText: String(e),
-        toast: { kind: 'error', text: `Bundled load failed: ${String(e)}` },
-      });
-    }
+    const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
+    const trimmed = baseUrl.replace(/\/$/, '');
+    const ds = new HttpDataSource(`${trimmed}/starter-project`);
+    await loadFromDataSource(set, get, ds);
   },
 
   saveAs: async () => {
@@ -1642,113 +1709,31 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   reload: async () => {
-    const { directoryHandle } = get();
-    if (!directoryHandle) return;
-    set({ loading: true, errorText: null });
-    try {
+    const { directoryHandle, dataSource } = get();
+    let ds: DataSource | null = dataSource;
+    if (!ds && directoryHandle) {
+      // First reload after a legacy boot path: wrap the existing handle.
       const ok = await ensurePermission(directoryHandle, 'readwrite');
-      if (!ok) throw new Error('Permission denied');
-      const { folders, defs, rawFiles, hierarchySidecar, propertyMetaSidecar } =
-        await readAllJson(directoryHandle);
-      // Pre-commit structural check. If anything is malformed, hand
-      // control to the LoadGate; only proceed if the user clicks Continue.
-      const issues = validateBatch(rawFiles);
-      if (issues.length > 0) {
-        const proceed = await new Promise<boolean>((resolve) => {
-          set({
-            loadGate: {
-              issues,
-              onContinue: () => resolve(true),
-              onCancel: () => resolve(false),
-            },
-          });
-        });
-        if (!proceed) {
-          // User cancelled the load. Back out of the project entirely so
-          // the header doesn't show a half-loaded state.
-          set({
-            loading: false,
-            directoryHandle: null,
-            projectMeta: null,
-            unrealSyncPath: '',
-            toast: { kind: 'info', text: 'Load cancelled.' },
-          });
-          return;
-        }
-        // Surface what got skipped so the user sees a paper trail in the
-        // toast log even after dismissing the modal.
-        const skipped = issues.filter((i) => i.kind === 'invalid-json' || i.kind === 'missing-field').length;
-        if (skipped > 0) {
-          set({ toast: { kind: 'info', text: `Skipped ${skipped} malformed file${skipped === 1 ? '' : 's'}.` } });
-        }
+      if (!ok) {
+        set({ toast: { kind: 'error', text: 'Permission denied' } });
+        return;
       }
-      const classNodes = buildClassNodes(defs, hierarchySidecar);
-      const propertySchema = buildPropertySchema(defs);
-      const propertyMeta = buildPropertyMeta(propertyMetaSidecar);
-      const enumMeta = buildEnumMeta(propertyMetaSidecar);
-      const idTemplates = buildIdTemplates(defs);
-      // Preserve current selection if still valid.
-      const cur = get();
-      const selectedFolder = cur.selectedFolder && folders.includes(cur.selectedFolder)
-        ? cur.selectedFolder
-        : folders[0] ?? null;
-      const selectedKey = cur.selectedKey && defs.has(cur.selectedKey)
-        ? cur.selectedKey
-        : null;
-      set({
-        folders,
-        definitions: defs,
-        classNodes,
-        propertySchema,
-        propertyMeta,
-        enumMeta,
-        idTemplates,
-        hierarchySidecar,
-        dirty: new Set(),
-        selectedFolder,
-        selectedKey,
-        loadedAt: Date.now(),
-        loading: false,
-        toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
-      });
-      {
-        const idx = buildReferencedByIndex(get().definitions);
-        set({ referencedByIndex: idx });
-      }
-      // Self-heal dangling refs by minting blank assets where the
-      // class is known. Toast inside autoCreateMissingRefs replaces
-      // the "Loaded N definitions" toast on success.
-      get().autoCreateMissingRefs();
-      // Surface any IndexedDB draft for this project so the user can
-      // recover from a previous tab crash. Skipped when no project meta
-      // (bundled defaults loads call loadBundledDefaults, not reload).
-      {
-        const meta = get().projectMeta;
-        const handle = get().directoryHandle;
-        if (meta && handle) {
-          try {
-            const draft = await loadDraft(projectKey(meta, handle.name));
-            if (draft && draft.records.length > 0) {
-              set({
-                restoreDraftPrompt: {
-                  key: projectKey(meta, handle.name),
-                  savedAt: draft.savedAt,
-                  recordCount: draft.records.length,
-                },
-              });
-            }
-          } catch (e) {
-            console.warn('[drafts] failed to read draft', e);
-          }
-        }
-      }
-    } catch (e) {
-      set({
-        loading: false,
-        errorText: String(e),
-        toast: { kind: 'error', text: `Load failed: ${String(e)}` },
-      });
+      ds = new FsaDataSource(directoryHandle);
     }
+    if (!ds) {
+      // No source — fall back to Starter.
+      await get().loadBundledDefaults();
+      return;
+    }
+    // For FSA sources, refresh permission before reading.
+    if (ds.kind === 'fsa') {
+      const ok = await ensurePermission((ds as FsaDataSource).rootHandle, 'readwrite');
+      if (!ok) {
+        set({ toast: { kind: 'error', text: 'Permission denied' } });
+        return;
+      }
+    }
+    await loadFromDataSource(set, get, ds);
   },
 
   updateValueAtPath: (k, path, value) => {
