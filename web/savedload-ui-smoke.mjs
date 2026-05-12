@@ -537,6 +537,81 @@ function buildMockPicker(initialContents) {
       await ctx.close();
     }
 
+    // ====================================================================
+    // Test 6: AssetRefPicker renders soft_asset_ref envelope (read-side)
+    // ====================================================================
+    // FD_Floor_Gardening in the bundled starter-project has a non-null
+    // `static_mesh` soft_asset_ref envelope. Opening that asset in the
+    // Definitions tab should render an AssetRefPicker showing the
+    // [StaticMesh] class label and the existing path / catalog name.
+    // We don't round-trip a value change — Playwright click sequences
+    // for in-page popovers are brittle. The unit tests already cover
+    // the read↔write round-trip; this scenario only asserts the
+    // picker mounts with the existing value.
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      // No mock picker — let the app auto-load the bundled starter
+      // project over HTTP (HttpDataSource). The bootstrap path runs
+      // `loadBundledDefaults()` when no FSA handle is saved.
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('.header .file-info');
+
+      // The starter project trips the schema-drift gate on load (the
+      // bundled defs reference some classes that aren't in the bundled
+      // schema yet). Dismiss with "Continue anyway" so the records still
+      // commit and we can navigate the Definitions tab.
+      const driftHeading = page.locator('.loadgate-modal h2:has-text("Schema drift detected")');
+      const sawDrift = await driftHeading
+        .waitFor({ state: 'visible', timeout: 15000 })
+        .then(() => true)
+        .catch(() => false);
+      if (sawDrift) {
+        await page.locator('.loadgate-modal button:has-text("Continue anyway")').click();
+        await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      }
+
+      await page.waitForSelector('.file-info:has-text("Project: Starter project")');
+      assert(true, 'AssetRefPicker: starter project loaded');
+
+      // Switch to the Definitions tab.
+      await page.locator('.tabs button.tab:has-text("Definitions")').click();
+      await page.waitForSelector('.def-grid');
+
+      // Open furniture_definitions (exact match — there are siblings
+      // like "Furniture Upgrade Recipe" and "Furniture With Components
+      // Definitions") and pick FD_Floor_Gardening.
+      await page
+        .locator('.def-folders li .def-folder-name', { hasText: /^Furniture Definitions$/ })
+        .click();
+      await page.locator('.def-files li[title="FD_Floor_Gardening"]').click();
+      await page.waitForSelector('.def-editor-inner');
+
+      // The AssetRefPicker should render for the `static_mesh` row.
+      const trigger = page.locator('.assetrefpicker-trigger').first();
+      await trigger.waitFor({ state: 'visible', timeout: 5000 });
+
+      const classLabel = await trigger.locator('.assetrefpicker-class').textContent();
+      assert(
+        !!classLabel && classLabel.includes('StaticMesh'),
+        `AssetRefPicker: class label shows [StaticMesh] (got "${classLabel}")`,
+      );
+
+      const valueLabel = await trigger.locator('.assetrefpicker-label').textContent();
+      assert(
+        !!valueLabel && !valueLabel.includes('(none)'),
+        `AssetRefPicker: value label is not "(none)" (got "${valueLabel}")`,
+      );
+      // The label is either the catalog "name" (if the catalog has it)
+      // or the raw soft path. FD_Floor_Gardening's mesh is
+      // SM_Floor_Gardening — assert the name appears somewhere.
+      assert(
+        !!valueLabel && valueLabel.includes('SM_Floor_Gardening'),
+        `AssetRefPicker: value label references SM_Floor_Gardening (got "${valueLabel}")`,
+      );
+      await ctx.close();
+    }
+
     console.log('\n=== ALL SAVE/LOAD SMOKE TESTS PASSED ===\n');
   } catch (err) {
     console.error('Test failed:', err);
