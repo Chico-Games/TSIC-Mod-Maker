@@ -195,8 +195,10 @@ test('validateAssetRefs: missing-asset-ref when path not in catalog', () => {
       static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/Missing.SM_Missing' }
     })],
   ]);
-  // Catalog exists for the class but does not contain the referenced path.
-  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh', []]]);
+  // Catalog exists for the class with at least one entry, but does not
+  // contain the referenced path — real "path missing" evidence.
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh',
+    [{ path: '/Game/Other.Other', name: 'Other', folder: '/Game', package_guid: '' }]]]);
   const issues = validateAssetRefs(defs, catalogs, {});
   assert.equal(issues.length, 1);
   assert.equal(issues[0].kind, 'missing-asset-ref');
@@ -270,8 +272,10 @@ test('validateAssetRefs: recurses into struct and array shapes', () => {
       }
     })],
   ]);
-  // Catalog exists for SoundCue but does not contain the referenced path.
-  const catalogs = new Map<string, AssetCatalogEntry[]>([['SoundCue', []]]);
+  // Catalog exists for SoundCue with at least one entry, but does not
+  // contain the referenced path — real "path missing" evidence.
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['SoundCue',
+    [{ path: '/Game/Audio/Other.SC_Other', name: 'SC_Other', folder: '/Game/Audio', package_guid: '' }]]]);
   const issues = validateAssetRefs(defs, catalogs, {});
   assert.equal(issues.length, 1);
   assert.equal(issues[0].kind, 'missing-asset-ref');
@@ -291,5 +295,17 @@ test('validateAssetRefs: no issue when catalog for the class is absent entirely'
   ]);
   // No SoundCue catalog in the map.
   const issues = validateAssetRefs(defs, new Map(), {});
+  assert.deepEqual(issues, []);
+});
+
+test('validateAssetRefs: no issue when catalog is empty (attempted but no entries)', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['ED_X', mkAssetRec('ED_X' as DefinitionsKey, {
+      drop: { type: 'soft_asset_ref', class: 'Package', value: '/Game/Foo/X' }
+    })],
+  ]);
+  // Catalog for Package exists but is empty — UE registry didn't find any.
+  const catalogs = new Map([['Package', []]]);
+  const issues = validateAssetRefs(defs, catalogs, {});
   assert.deepEqual(issues, []);
 });

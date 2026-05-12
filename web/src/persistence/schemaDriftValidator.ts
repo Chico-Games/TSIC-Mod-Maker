@@ -107,10 +107,11 @@ export function validateAssetRefs(
       const cls = env.class as string;
       const entries = catalogs.get(cls);
 
-      // No catalog for this class → no info to drift-check against. Skip.
-      // (Real-world example: Material / SoundCue refs surfacing before the
-      // exporter walks every referenced asset class.)
-      if (!entries) continue;
+      // No catalog or empty catalog → no information to drift-check against.
+      // Real-world reason for empty: the asset registry walk for this class
+      // returned 0 (Package / BlueprintGeneratedClass / etc. — UE's registry
+      // stores blueprint assets under derived class names, not their base).
+      if (!entries || entries.length === 0) continue;
 
       const entry = entries.find((e) => e.path === path);
       if (!entry) {
