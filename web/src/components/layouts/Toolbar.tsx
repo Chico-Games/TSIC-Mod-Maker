@@ -3,6 +3,35 @@ import { useLayoutEditorStore } from '../../store/layoutEditorStore';
 import { useDefinitionsStore } from '../../store/definitionsStore';
 import { TagPicker } from '../pickers/TagPicker';
 
+function defaultLayoutObject(actorType: string) {
+  return {
+    type: 'struct',
+    struct_name: 'LayoutObject',
+    value: {
+      layout_actor_type: { type: 'enum', enum_name: 'ELayoutActorType', value: actorType },
+      b_visual_helper: { type: 'bool', value: false },
+      definition_filter: {
+        type: 'struct', struct_name: 'DefinitionFilter',
+        value: {
+          seed_offset: { type: 'int', value: -1 },
+          search_queries: { type: 'array', element_type: null, value: [] },
+          tile_requirements: { type: 'array', element_type: null, value: [] },
+          spawn_chance_over: { type: 'float', value: 0 },
+          spawn_chance_under: { type: 'float', value: 1 },
+        },
+      },
+      transform: {
+        type: 'struct', struct_name: 'Transform',
+        value: {
+          translation: { type: 'struct', struct_name: 'Vector', value: { x: { type: 'float', value: 0 }, y: { type: 'float', value: 0 }, z: { type: 'float', value: 0 } } },
+          rotation: { type: 'struct', struct_name: 'Rotator', value: { pitch: { type: 'float', value: 0 }, yaw: { type: 'float', value: 0 }, roll: { type: 'float', value: 0 } } },
+          scale_3d: { type: 'struct', struct_name: 'Vector', value: { x: { type: 'float', value: 1 }, y: { type: 'float', value: 1 }, z: { type: 'float', value: 1 } } },
+        },
+      },
+    },
+  };
+}
+
 export function Toolbar() {
   const selectedLayoutKey = useLayoutEditorStore((s) => s.selectedLayoutKey);
   const setLayout = useLayoutEditorStore((s) => s.setLayout);
@@ -12,7 +41,16 @@ export function Toolbar() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const dirty = useDefinitionsStore((s) => s.dirty);
   const saveOne = useDefinitionsStore((s) => s.saveOne);
+  const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const isDirty = selectedLayoutKey ? dirty.has(selectedLayoutKey) : false;
+
+  const onAdd = (actorType: string) => {
+    if (!selectedLayoutKey) return;
+    const rec = definitions.get(selectedLayoutKey);
+    const cur = (rec?.json?.properties?.layout_objects?.value as any[] | undefined) ?? [];
+    const next = [...cur, defaultLayoutObject(actorType)];
+    updateValueAtPath(selectedLayoutKey, ['properties', 'layout_objects', 'value'], next);
+  };
   const gizmoMode = useLayoutEditorStore((s) => s.gizmoMode);
   const setGizmoMode = useLayoutEditorStore((s) => s.setGizmoMode);
   const tileTagsOverride = useLayoutEditorStore((s) => s.tileTagsOverride);
@@ -50,6 +88,23 @@ export function Toolbar() {
       >
         Save{isDirty ? ' ●' : ''}
       </button>
+      <select
+        className="layouts-add"
+        onChange={(e) => {
+          if (e.target.value) {
+            onAdd(e.target.value);
+            e.target.value = '';
+          }
+        }}
+        value=""
+      >
+        <option value="">+ Add…</option>
+        <option value="ProxyActor">Proxy</option>
+        <option value="Layout">Layout</option>
+        <option value="EnemySpawnPoint">EnemySpawn</option>
+        <option value="LootSpawnPoint">LootSpawn</option>
+        <option value="VisualHelper">VisualHelper</option>
+      </select>
       <label className="layouts-toolbar-seed">
         Seed
         <input
