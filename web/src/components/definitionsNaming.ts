@@ -97,7 +97,7 @@ const HIDDEN_EXACT = new Set([
   'has_progress_bar_widget',
 ]);
 const HIDDEN_PREFIXES = ['interaction_', 'drag_', 'release_'];
-const HIDDEN_SUBSTRINGS = ['audio', 'vfx', 'sound', 'mesh', 'widget'];
+const HIDDEN_SUBSTRINGS = ['widget'];
 
 export function isNoisyProperty(name: string): boolean {
   if (HIDDEN_EXACT.has(name)) return true;
