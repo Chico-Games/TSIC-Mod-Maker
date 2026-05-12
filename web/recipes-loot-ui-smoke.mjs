@@ -424,7 +424,7 @@ async function waitForServer(url, timeoutMs = 15000) {
     });
 
     await page.goto(`http://localhost:${PORT}/`);
-    await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+    await page.waitForSelector('.header .file-info');
 
     // Open the mock directory.
     await page.getByRole('button', { name: /Open project/ }).click();

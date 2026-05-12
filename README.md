@@ -1,4 +1,4 @@
-# TSIC Crafting Tool
+# TSIC Definition Editor
 
 A drag-and-drop authoring tool for the TSIC `Definitions/` data tree. Static web app — TypeScript + React, no Rust core. Reads and writes the same folder of typed-envelope JSON exports that the game ships with.
 

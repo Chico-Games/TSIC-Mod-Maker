@@ -130,7 +130,7 @@ function buildMockPicker(initialContents) {
       // Empty folder — no project.json.
       await page.addInitScript({ content: buildMockPicker({}) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
 
       // Verify Sync button is disabled with the right tooltip BEFORE opening anything.
       const syncBtn = page.locator('button:has-text("Sync to Unreal")');
@@ -223,7 +223,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(existingProject) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
 
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.file-info:has-text("Project: Existing Project")');
@@ -256,7 +256,7 @@ function buildMockPicker(initialContents) {
 
       await page.addInitScript({ content: buildMockPicker({}) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
 
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.file-info:has-text("Project: MockRoot")');

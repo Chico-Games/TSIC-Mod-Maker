@@ -215,7 +215,6 @@ export function Header() {
         title="Load the bundled sample data into a fresh save folder"
       >📂 Load test project</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
-      <h1>TSIC Definition Editor</h1>
 
       {pathEditing && (
         <div className="path-editor-overlay" onClick={() => setPathEditing(false)}>

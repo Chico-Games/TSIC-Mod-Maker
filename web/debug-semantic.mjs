@@ -15,7 +15,7 @@ import { chromium } from 'playwright';
   page.on('requestfailed', (r) => consoleMsgs.push(`[reqfail] ${r.url()} ${r.failure()?.errorText}`));
 
   await page.goto('http://localhost:5173/');
-  await page.waitForSelector('h1:has-text("TSIC Crafting Tool")');
+  await page.waitForSelector('.header .file-info');
 
   const start = Date.now();
   let lastChipText = '';

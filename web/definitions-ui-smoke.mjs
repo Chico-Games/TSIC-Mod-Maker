@@ -412,7 +412,7 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     });
 
     await page.goto(`http://localhost:${PORT}/`);
-    await page.waitForSelector('h1:has-text("TSIC Crafting Tool")');
+    await page.waitForSelector('.header .file-info');
     await page.getByRole('button', { name: 'Definitions' }).click();
     await page.waitForSelector('.def-empty-state h2:has-text("Pick a Definitions root")');
     console.log('OK: Definitions tab empty state visible');

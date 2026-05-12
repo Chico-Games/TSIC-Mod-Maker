@@ -121,7 +121,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(tree) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.loadgate-modal h2:has-text("newer editor")');
       assert(true, 'Future-version: LoadGate refusal modal appears');
@@ -151,7 +151,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(tree) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.loadgate-modal:has-text("problem")');
       assert(true, 'Structural: LoadGate appears with issues');
@@ -189,7 +189,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: DraftP")');
         // Force a dirty record + flush drafts synchronously (bypasses the
@@ -207,7 +207,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.loadgate-modal h2:has-text("Restore unsaved")');
         assert(true, 'Draft: RestoreDraftPrompt appears on second open');
@@ -234,7 +234,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(tree) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.loadgate-modal:has-text("problem")');
       await page.locator('.loadgate-modal button:has-text("Cancel")').click();
@@ -265,7 +265,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(tree) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('button:has-text("Open project")').click();
       // No LoadGate should appear; the project name falls back to "MockRoot".
       await page.waitForSelector('.file-info:has-text("Project: MockRoot")');
@@ -290,7 +290,7 @@ function buildMockPicker(initialContents) {
       };
       await page.addInitScript({ content: buildMockPicker(tree) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.loadgate-modal:has-text("problem")');
       const text = await page.locator('.loadgate-issues').textContent();
@@ -324,7 +324,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: DiscardP")');
         await page.evaluate(async () => {
@@ -338,7 +338,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.loadgate-modal h2:has-text("Restore unsaved")');
         await page.locator('.loadgate-modal button:has-text("Discard")').click();
@@ -355,7 +355,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: DiscardP")');
         const promptCount = await page.locator('.loadgate-modal h2:has-text("Restore unsaved")').count();
@@ -398,7 +398,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: buildMockPicker(treeA) });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: IsoA")');
         await page.evaluate(async () => {
@@ -412,7 +412,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: buildMockPicker(treeB) });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: IsoB")');
         const promptCount = await page.locator('.loadgate-modal h2:has-text("Restore unsaved")').count();
@@ -424,7 +424,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: buildMockPicker(treeA) });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         const hasPrompt = await page
           .locator('.loadgate-modal h2:has-text("Restore unsaved")')
@@ -455,7 +455,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('button:has-text("Open project")').click();
         await page.waitForSelector('.file-info:has-text("Project: RecentP")');
         await page.close();
@@ -471,7 +471,7 @@ function buildMockPicker(initialContents) {
         const page = await ctx.newPage();
         await page.addInitScript({ content: initScript });
         await page.goto(`http://localhost:${PORT}/`);
-        await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+        await page.waitForSelector('.header .file-info');
         await page.locator('.open-project-chevron').click();
         await page.waitForSelector('.recents-dropdown .recents-name:has-text("RecentP")');
         assert(true, 'Recents: dropdown lists RecentP after first open');
@@ -494,7 +494,7 @@ function buildMockPicker(initialContents) {
       const page = await ctx.newPage();
       await page.addInitScript({ content: buildMockPicker({}) });
       await page.goto(`http://localhost:${PORT}/`);
-      await page.waitForSelector('h1:has-text("TSIC Definition Editor")');
+      await page.waitForSelector('.header .file-info');
       await page.locator('.open-project-chevron').click();
       await page.waitForSelector('.recents-dropdown');
       const empty = await page.locator('.recents-empty').count();
