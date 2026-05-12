@@ -3012,3 +3012,10 @@ body.resizing-col * { cursor: col-resize !important; }
 .layouts-outliner { border-right: 1px solid var(--border, #444); overflow-y: auto; }
 .layouts-viewport { background: #111; min-height: 0; }
 .layouts-details { border-left: 1px solid var(--border, #444); overflow-y: auto; }
+
+.outliner-empty { padding: 0.5em; opacity: 0.6; font-style: italic; }
+.outliner-row { display: flex; align-items: center; gap: 0.4em; padding: 0.25em 0.5em; cursor: pointer; user-select: none; }
+.outliner-row:hover { background: var(--def-bg-hover, #222); }
+.outliner-row.selected { background: var(--accent, #2a4a6a); }
+.outliner-row-name { flex: 1; font-size: 0.9em; }
+.outliner-row-error { width: 0.5em; height: 0.5em; background: #f44; border-radius: 50%; }
