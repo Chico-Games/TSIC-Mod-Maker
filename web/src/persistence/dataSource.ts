@@ -58,7 +58,6 @@ export class HttpDataSource implements DataSource {
   // writeFile / deleteFile / renameFile / writeProjectMeta intentionally undefined.
 }
 
-const SCHEMA_FILES = new Set(['.class-hierarchy.json', '.property-meta.json']);
 const PROJECT_META_FILE = 'project.json';
 
 /** FSA-backed read/write DataSource. Wraps a FileSystemDirectoryHandle. */
