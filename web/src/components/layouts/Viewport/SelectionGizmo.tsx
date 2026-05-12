@@ -28,7 +28,7 @@ export function SelectionGizmo() {
       (t.rotation.value.roll?.value ?? 0) * Math.PI / 180,
     );
     targetRef.current.scale.set(
-      t.scale_3d.value.x.value, t.scale_3d.value.y.value, t.scale_3d.value.z.value);
+      t.scale3_d.value.x.value, t.scale3_d.value.y.value, t.scale3_d.value.z.value);
   }, [layoutKey, selected, definitions]);
 
   if (!layoutKey || selected.length !== 1) return null;
@@ -49,9 +49,9 @@ export function SelectionGizmo() {
     next.value.rotation.value.pitch.value = o.rotation.x * 180 / Math.PI;
     next.value.rotation.value.yaw.value = o.rotation.y * 180 / Math.PI;
     next.value.rotation.value.roll.value = o.rotation.z * 180 / Math.PI;
-    next.value.scale_3d.value.x.value = o.scale.x;
-    next.value.scale_3d.value.y.value = o.scale.y;
-    next.value.scale_3d.value.z.value = o.scale.z;
+    next.value.scale3_d.value.x.value = o.scale.x;
+    next.value.scale3_d.value.y.value = o.scale.y;
+    next.value.scale3_d.value.z.value = o.scale.z;
 
     updateValueAtPath(layoutKey, ['properties', 'layout_objects', 'value', idx, 'value', 'transform'], next);
   };

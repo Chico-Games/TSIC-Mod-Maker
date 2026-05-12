@@ -33,7 +33,7 @@ export function LayoutObjectMesh({ resolved, index }: { resolved: ResolvedActor;
   const t = resolved.transform.value;
   const translation = readVector(t.translation);
   const rotation = readRotator(t.rotation);
-  const scale = readVector(t.scale_3d);
+  const scale = readVector(t.scale3_d);
 
   const isOk = resolved.status.kind === 'ok';
   const tint = isOk ? (TINT_BY_TYPE[resolved.actorType] ?? '#aaa') : ERROR_TINT;

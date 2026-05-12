@@ -25,7 +25,7 @@ export type TypedTransform = {
   value: {
     translation: TypedVector;
     rotation: TypedRotator;
-    scale_3d: TypedVector;
+    scale3_d: TypedVector;
   };
 };
 

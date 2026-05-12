@@ -25,7 +25,7 @@ function defaultLayoutObject(actorType: string) {
         value: {
           translation: { type: 'struct', struct_name: 'Vector', value: { x: { type: 'float', value: 0 }, y: { type: 'float', value: 0 }, z: { type: 'float', value: 0 } } },
           rotation: { type: 'struct', struct_name: 'Rotator', value: { pitch: { type: 'float', value: 0 }, yaw: { type: 'float', value: 0 }, roll: { type: 'float', value: 0 } } },
-          scale_3d: { type: 'struct', struct_name: 'Vector', value: { x: { type: 'float', value: 1 }, y: { type: 'float', value: 1 }, z: { type: 'float', value: 1 } } },
+          scale3_d: { type: 'struct', struct_name: 'Vector', value: { x: { type: 'float', value: 1 }, y: { type: 'float', value: 1 }, z: { type: 'float', value: 1 } } },
         },
       },
     },
