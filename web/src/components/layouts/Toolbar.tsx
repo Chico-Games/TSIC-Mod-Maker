@@ -69,8 +69,8 @@ export function Toolbar() {
 
   const layouts = [...definitions.values()]
     .filter((d) => d.json?.class === 'ULayoutDefinition' || d.json?.class === 'LayoutDefinition')
-    .map((d) => d.id)
-    .sort();
+    .map((d) => ({ key: `${d.folder}/${d.id}`, label: d.id }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div className="layouts-toolbar">
@@ -79,7 +79,7 @@ export function Toolbar() {
         onChange={(e) => setLayout(e.target.value || null)}
       >
         <option value="">— pick a layout —</option>
-        {layouts.map((id) => <option key={id} value={id}>{id}</option>)}
+        {layouts.map((opt) => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
       </select>
       <button
         disabled={!isDirty || !selectedLayoutKey}
