@@ -1231,7 +1231,7 @@ async function loadFromDataSource(
         : 'starter-project';
       try {
         const draft = await loadDraft(projectKey(projectMeta, handleName));
-        if (draft) {
+        if (draft && draft.records.length > 0) {
           set({
             restoreDraftPrompt: {
               key: projectKey(projectMeta, handleName),
@@ -1635,6 +1635,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   loadBundledDefaults: async () => {
+    try { await deleteHandle(HANDLE_KEY); } catch { /* ignore */ }
     const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
     const trimmed = baseUrl.replace(/\/$/, '');
     const ds = new HttpDataSource(`${trimmed}/starter-project`);
