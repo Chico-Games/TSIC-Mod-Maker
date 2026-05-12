@@ -10,6 +10,7 @@ import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
 import { PropertyTooltip } from './PropertyTooltip';
 import { SmartEffectsView } from './classBrowser/SmartEffectsView';
 import { StructRows } from './StructRows';
+import { TagPicker } from './pickers/TagPicker';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -1115,10 +1116,57 @@ export function TypedField(props: FieldProps) {
       return <StringLikeEditor {...props} />;
     case 'enum':
       return <EnumEditor {...props} />;
-    case 'gameplay_tag':
-      return <GameplayTagEditor {...props} />;
-    case 'gameplay_tag_container':
-      return <GameplayTagContainerEditor {...props} />;
+    case 'gameplay_tag': {
+      const meta = props.propertyName
+        ? props.refAdapter.getPropertyMeta(props.parentTypeName, props.propertyName)
+        : null;
+      return (
+        <PrimitiveRow
+          label={props.label}
+          type="gameplay_tag"
+          onDelete={props.onDelete}
+          meta={meta}
+          className="def-type-color-tag"
+          propertyName={props.propertyName}
+          pinAdapter={props.pinAdapter}
+        >
+          <TagPicker
+            multi={false}
+            value={typed.value ?? ''}
+            onChange={(v) => props.onChange({ ...typed, value: v })}
+          />
+        </PrimitiveRow>
+      );
+    }
+    case 'gameplay_tag_container': {
+      const meta = props.propertyName
+        ? props.refAdapter.getPropertyMeta(props.parentTypeName, props.propertyName)
+        : null;
+      const tags: string[] = Array.isArray(typed.value) ? typed.value : [];
+      return (
+        <div className="def-field def-type-color-tag">
+          <FieldHead
+            label={props.label}
+            type={`gameplay_tag_container · ${tags.length}`}
+            meta={meta}
+            propertyName={props.propertyName}
+            pinAdapter={props.pinAdapter}
+            controls={
+              props.onDelete ? (
+                <button type="button" className="danger" onClick={props.onDelete} title="Remove">
+                  ×
+                </button>
+              ) : null
+            }
+          />
+          <TagPicker
+            multi={true}
+            value={tags}
+            onChange={(v) => props.onChange({ ...typed, value: v })}
+          />
+        </div>
+      );
+    }
     case 'definition_ref':
       return <DefinitionRefEditor {...props} />;
     case 'struct':
