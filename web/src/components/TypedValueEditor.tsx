@@ -177,6 +177,7 @@ function blankFromSkeleton(skel: any): any {
   if (t === 'gameplay_tag') return { type: 'gameplay_tag', value: '' };
   if (t === 'gameplay_tag_container') return { type: 'gameplay_tag_container', value: [] };
   if (t === 'definition_ref') return { type: 'definition_ref', class: skel.class ?? '', value: '' };
+  if (t === 'soft_asset_ref') return { type: 'soft_asset_ref', class: skel.class ?? 'Object', value: null };
   if (t === 'enum') return { type: 'enum', enum_name: skel.enum_name ?? '', value: '' };
   if (t === 'array' || t === 'set') return { type: t, element_type: skel.element_type ?? null, value: [] };
   if (t === 'map') {
