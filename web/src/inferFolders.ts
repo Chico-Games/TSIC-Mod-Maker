@@ -4,7 +4,8 @@
 // follow the upgrade_recipe so the palette suggests the recipe's
 // input classes without the user clicking the recipe card first.
 
-import type { ClassNode, DefinitionRecord, DefinitionsKey } from './store/definitionsStore';
+import type { ClassNode } from './store/appSchemaStore';
+import type { DefinitionRecord, DefinitionsKey } from './store/definitionsStore';
 
 interface Lookups {
   records: Map<DefinitionsKey, DefinitionRecord>;

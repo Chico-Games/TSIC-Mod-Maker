@@ -52,10 +52,6 @@ interface AppSchemaStore {
 
   loadSchema: (fetcher?: typeof fetch) => Promise<void>;
 
-  setPerLoadDerived: (d: {
-    propertySchema: Map<string, { element_type?: any; key_type?: any; value_type?: any }>;
-    idTemplates: Map<string, { prefix: string; suffix: string }>;
-  }) => void;
   getPropertyMeta: (parentTypeName: string | null | undefined, propertyName: string) => PropertyMeta | null;
   lookupContainerType: (
     path: (string | number)[],
@@ -155,9 +151,6 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
       throw e;
     }
   },
-
-  setPerLoadDerived: ({ propertySchema, idTemplates }) =>
-    set({ propertySchema, idTemplates }),
 
   lookupContainerType: (path, slot) => {
     // Walk the path key by key (strings only — numeric indices in arrays

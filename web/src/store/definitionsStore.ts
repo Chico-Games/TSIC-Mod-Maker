@@ -9,6 +9,7 @@ import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persi
 import type { DataSource } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
+import type { ClassNode } from './appSchemaStore';
 import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
@@ -31,16 +32,8 @@ export interface DefinitionRecord {
 
 export type DefinitionsKey = string; // `${folder}/${id}`
 
-// Class-hierarchy entry. Loaded from the .class-hierarchy.json sidecar when
-// present, otherwise derived from the union of every record's class+parent_classes.
-export interface ClassNode {
-  /** U-prefixed class name (e.g. "UConsumableDefinition"). */
-  name: string;
-  /** U-prefixed parent chain leaf-first. */
-  parents: string[];
-  /** Folder this class lives in, or null if no instances exist on disk. */
-  folder: string | null;
-}
+// ClassNode lives in appSchemaStore; re-exported here for backward-compat.
+export type { ClassNode } from './appSchemaStore';
 
 /** One enum member from the `.property-meta.json` sidecar's `enums`
  *  section. The bare name comes straight from the .h; `display_name` is
@@ -603,63 +596,6 @@ function computeTargetFolder(
   return rec.folder;
 }
 
-async function readAllJson(
-  rootHandle: FileSystemDirectoryHandle,
-): Promise<{
-  folders: string[];
-  defs: Map<DefinitionsKey, DefinitionRecord>;
-  rawFiles: Array<{ folder: string; name: string; text: string }>;
-}> {
-  const folders: string[] = [];
-  const defs = new Map<DefinitionsKey, DefinitionRecord>();
-  const rawFiles: Array<{ folder: string; name: string; text: string }> = [];
-  // @ts-ignore - .entries() is part of the File System Access API but TS lib
-  // typings sometimes lag.
-  for await (const [name, entry] of rootHandle.entries()) {
-    if ((entry as any).kind === 'file') {
-      // Sidecar files (.class-hierarchy.json, .property-meta.json) are no
-      // longer read from the project folder — schema comes from appSchemaStore.
-      continue;
-    }
-    if ((entry as any).kind !== 'directory') continue;
-    if (name.startsWith('.')) continue;
-    if (isLayoutFolder(name)) continue;
-    folders.push(name);
-    const folderHandle = entry as FileSystemDirectoryHandle;
-    // @ts-ignore
-    for await (const [fileName, fileEntry] of folderHandle.entries()) {
-      if ((fileEntry as any).kind !== 'file') continue;
-      if (!fileName.toLowerCase().endsWith('.json')) continue;
-      let text: string;
-      try {
-        const file = await (fileEntry as FileSystemFileHandle).getFile();
-        text = await file.text();
-      } catch (e) {
-        console.warn(`[definitions] failed to read ${name}/${fileName}`, e);
-        continue;
-      }
-      rawFiles.push({ folder: name, name: fileName, text });
-      try {
-        const json = JSON.parse(text);
-        const id = fileName.replace(/\.json$/i, '');
-        defs.set(key(name, id), {
-          folder: name,
-          id,
-          json,
-          originalText: text,
-          diskId: id,
-          diskFolder: name,
-        });
-      } catch {
-        // Parse error: file is collected in rawFiles for the validator to
-        // surface; we just don't add it to defs.
-      }
-    }
-  }
-  folders.sort();
-  return { folders, defs, rawFiles };
-}
-
 /** Inspect every loaded record to extract its (prefix, stem, suffix)
  *  triple, then derive a per-class `{prefix, suffix}` template by
  *  majority vote. Lets the editor expose only the bare stem of the id
@@ -1061,8 +997,7 @@ async function loadFromDataSource(
     const propertySchema = buildPropertySchema(defs);
     const idTemplates = buildIdTemplates(defs);
 
-    useAppSchemaStore.setState({ classNodes });
-    useAppSchemaStore.getState().setPerLoadDerived({ propertySchema, idTemplates });
+    useAppSchemaStore.setState({ classNodes, propertySchema, idTemplates });
 
     // Preserve current selection if still valid.
     const cur = get();
