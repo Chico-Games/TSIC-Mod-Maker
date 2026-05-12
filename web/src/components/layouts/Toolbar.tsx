@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLayoutEditorStore } from '../../store/layoutEditorStore';
 import { useDefinitionsStore } from '../../store/definitionsStore';
+import { TagPicker } from '../pickers/TagPicker';
 
 export function Toolbar() {
   const selectedLayoutKey = useLayoutEditorStore((s) => s.selectedLayoutKey);
@@ -11,6 +12,8 @@ export function Toolbar() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const gizmoMode = useLayoutEditorStore((s) => s.gizmoMode);
   const setGizmoMode = useLayoutEditorStore((s) => s.setGizmoMode);
+  const tileTagsOverride = useLayoutEditorStore((s) => s.tileTagsOverride);
+  const setTileTagsOverride = useLayoutEditorStore((s) => s.setTileTagsOverride);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -50,6 +53,14 @@ export function Toolbar() {
         <button className={gizmoMode === 'translate' ? 'active' : ''} onClick={() => setGizmoMode('translate')}>Move (W)</button>
         <button className={gizmoMode === 'rotate' ? 'active' : ''} onClick={() => setGizmoMode('rotate')}>Rotate (E)</button>
         <button className={gizmoMode === 'scale' ? 'active' : ''} onClick={() => setGizmoMode('scale')}>Scale (R)</button>
+      </div>
+      <div className="tile-tag-override">
+        <span className="label">Tile tags override:</span>
+        <TagPicker
+          multi
+          value={tileTagsOverride}
+          onChange={(v) => setTileTagsOverride(v as string[])}
+        />
       </div>
     </div>
   );

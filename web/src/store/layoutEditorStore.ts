@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useLayoutResolverStore } from './layoutResolverStore';
 
 export type GizmoMode = 'translate' | 'rotate' | 'scale';
 
@@ -44,7 +45,16 @@ export const useLayoutEditorStore = create<State>((set, get) => ({
   },
   clearSelection: () => set({ selectedIndices: [] }),
   setGizmoMode: (m) => set({ gizmoMode: m }),
-  setSeed: (n) => set({ seed: n | 0 }),
-  rerollSeed: () => set((s) => ({ seed: (s.seed === -1 ? 0 : s.seed) + 1 })),
-  setTileTagsOverride: (t) => set({ tileTagsOverride: t }),
+  setSeed: (n) => {
+    set({ seed: n | 0 });
+    useLayoutResolverStore.getState().invalidate();
+  },
+  rerollSeed: () => {
+    set((s) => ({ seed: (s.seed === -1 ? 0 : s.seed) + 1 }));
+    useLayoutResolverStore.getState().invalidate();
+  },
+  setTileTagsOverride: (t) => {
+    set({ tileTagsOverride: t });
+    useLayoutResolverStore.getState().invalidate();
+  },
 }));
