@@ -1,6 +1,6 @@
 {
   "id": "FD_CraftingTableTierOne_CS",
-  "asset_path": "/Game/Furniture/CraftingBenches/Furniture/FD_CraftingTableTierOne_CS",
+  "asset_path": "/Game/Furniture/CraftingBenches/Construction/FD_CraftingTableTierOne_CS",
   "class": "UCraftingStationDefinition",
   "parent_classes": [
     "UInteractableFurnitureDefinition",
@@ -12,14 +12,14 @@
     "UObject"
   ],
   "properties": {
+    "available_recipe_rules_definition": {
+      "type": "definition_ref",
+      "class": "AvailableRecipeRulesDefinition",
+      "value": "ARR_CraftingBenchTierOne"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
-    },
-    "constructable_item_to_grant": {
-      "type": "definition_ref",
-      "class": "ConstructableItemDefinition",
-      "value": "ID_CraftingTableTierOne_CI"
     },
     "deconstruction_tier": {
       "type": "int",
@@ -63,7 +63,7 @@
     },
     "furniture_armour": {
       "type": "int",
-      "value": 1
+      "value": 2
     },
     "gameplay_event_tag": {
       "type": "gameplay_tag",
@@ -119,7 +119,7 @@
     },
     "is_draggable": {
       "type": "bool",
-      "value": true
+      "value": false
     },
     "is_pingable": {
       "type": "bool",
@@ -161,12 +161,7 @@
     },
     "starting_health": {
       "type": "float",
-      "value": 200.0
-    },
-    "upgrade_recipe": {
-      "type": "definition_ref",
-      "class": "FurnitureUpgradeRecipe",
-      "value": "RD_TierOneCraftingTable_CN"
+      "value": 600.0
     },
     "weighted_chance": {
       "type": "int",

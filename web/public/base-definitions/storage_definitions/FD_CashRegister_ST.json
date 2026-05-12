@@ -1,6 +1,6 @@
 {
   "id": "FD_CashRegister_ST",
-  "asset_path": "/Game/Furniture/Checkout/Construction/FD_CashRegister_ST",
+  "asset_path": "/Game/Furniture/Checkout/Furniture/FD_CashRegister_ST",
   "class": "UStorageDefinition",
   "parent_classes": [
     "UInteractableFurnitureDefinition",
@@ -15,6 +15,11 @@
     "casts_shadow": {
       "type": "bool",
       "value": true
+    },
+    "constructable_item_to_grant": {
+      "type": "definition_ref",
+      "class": "ConstructableItemDefinition",
+      "value": "ID_CashRegister_CI"
     },
     "deconstruction_tier": {
       "type": "int",
@@ -62,7 +67,7 @@
     },
     "furniture_armour": {
       "type": "int",
-      "value": 3
+      "value": 2
     },
     "gameplay_event_tag": {
       "type": "gameplay_tag",
@@ -122,14 +127,9 @@
       "type": "text",
       "value": "Open"
     },
-    "inventory_rules_definition": {
-      "type": "definition_ref",
-      "class": "InventoryRulesDefinition",
-      "value": "IRD_Tier1Storage"
-    },
     "is_draggable": {
       "type": "bool",
-      "value": false
+      "value": true
     },
     "is_pingable": {
       "type": "bool",
@@ -171,7 +171,12 @@
     },
     "starting_health": {
       "type": "float",
-      "value": 180.0
+      "value": 60.0
+    },
+    "upgrade_recipe": {
+      "type": "definition_ref",
+      "class": "FurnitureUpgradeRecipe",
+      "value": "RD_Checkout_CN"
     },
     "weighted_chance": {
       "type": "int",

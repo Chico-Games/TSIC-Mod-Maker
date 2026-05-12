@@ -1,6 +1,6 @@
 {
   "id": "FD_CheckoutCounter_CS",
-  "asset_path": "/Game/Furniture/Checkout/Furniture/FD_CheckoutCounter_CS",
+  "asset_path": "/Game/Furniture/Checkout/Construction/FD_CheckoutCounter_CS",
   "class": "UCraftingStationDefinition",
   "parent_classes": [
     "UInteractableFurnitureDefinition",
@@ -12,14 +12,14 @@
     "UObject"
   ],
   "properties": {
+    "available_recipe_rules_definition": {
+      "type": "definition_ref",
+      "class": "AvailableRecipeRulesDefinition",
+      "value": "ARR_CraftingBenchTierOne"
+    },
     "casts_shadow": {
       "type": "bool",
       "value": true
-    },
-    "constructable_item_to_grant": {
-      "type": "definition_ref",
-      "class": "ConstructableItemDefinition",
-      "value": "ID_CheckoutCounter_CI"
     },
     "deconstruction_tier": {
       "type": "int",
@@ -67,7 +67,7 @@
     },
     "furniture_armour": {
       "type": "int",
-      "value": 2
+      "value": 3
     },
     "gameplay_event_tag": {
       "type": "gameplay_tag",
@@ -80,7 +80,6 @@
         "Entity.RandomGeneration.FurnitureCategory.Checkout",
         "Entity.RandomGeneration.Materials.Electronic",
         "Entity.RandomGeneration.Materials.Metal",
-        "Entity.RandomGeneration.CanBeRandom",
         "Entity.RandomGeneration.FurnitureType.Counter",
         "Entity.RandomGeneration.Size.Medium"
       ]
@@ -131,7 +130,7 @@
     },
     "is_draggable": {
       "type": "bool",
-      "value": true
+      "value": false
     },
     "is_pingable": {
       "type": "bool",
@@ -173,12 +172,7 @@
     },
     "starting_health": {
       "type": "float",
-      "value": 67.0
-    },
-    "upgrade_recipe": {
-      "type": "definition_ref",
-      "class": "FurnitureUpgradeRecipe",
-      "value": "RD_Checkout_CN"
+      "value": 200.0
     },
     "weighted_chance": {
       "type": "int",
