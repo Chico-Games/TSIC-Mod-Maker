@@ -17,6 +17,7 @@ import { DragGhost } from './components/DragGhost';
 import { Header } from './components/Header';
 import { LoadGate } from './components/LoadGate';
 import { RestoreDraftPrompt } from './components/RestoreDraftPrompt';
+import { SchemaGate } from './components/SchemaGate';
 import { CommandPalette } from './components/CommandPalette';
 import { DefinitionsTab } from './components/DefinitionsTab';
 import { RecipesAndLootTab } from './components/RecipesAndLootTab';
@@ -172,28 +173,30 @@ export function App() {
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={collisionDetection}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragCancel={() => setActiveDrag(null)}
-    >
-      <div className="app">
-        <Header />
-        <div className="main">{renderTab(tab)}</div>
-        <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(t) => { setTab(t); setSearchOpen(false); }} />
-        <LoadGate />
-        <RestoreDraftPrompt />
-        {toastText && <div className={`toast ${toastText.kind}`}>{toastText.text}</div>}
-      </div>
-      <DragOverlay
-        dropAnimation={null}
-        modifiers={[followCursor]}
-        style={{ width: 'auto', height: 'auto', pointerEvents: 'none' }}
+    <SchemaGate>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={collisionDetection}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragCancel={() => setActiveDrag(null)}
       >
-        {activeDrag ? <DragGhost source={activeDrag} /> : null}
-      </DragOverlay>
-    </DndContext>
+        <div className="app">
+          <Header />
+          <div className="main">{renderTab(tab)}</div>
+          <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(t) => { setTab(t); setSearchOpen(false); }} />
+          <LoadGate />
+          <RestoreDraftPrompt />
+          {toastText && <div className={`toast ${toastText.kind}`}>{toastText.text}</div>}
+        </div>
+        <DragOverlay
+          dropAnimation={null}
+          modifiers={[followCursor]}
+          style={{ width: 'auto', height: 'auto', pointerEvents: 'none' }}
+        >
+          {activeDrag ? <DragGhost source={activeDrag} /> : null}
+        </DragOverlay>
+      </DndContext>
+    </SchemaGate>
   );
 }
