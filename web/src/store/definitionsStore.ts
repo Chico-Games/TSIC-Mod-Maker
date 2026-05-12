@@ -10,6 +10,7 @@ import type { DataSource } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
 import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
+import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -147,13 +148,22 @@ export interface DefinitionsStore {
   /** When non-null, the user opened a project.json with a too-new
    *  schema_version and we refuse to load it. UI mounts <LoadGate>. */
   futureVersionBlock: { foundVersion: number; supportedVersion: number } | null;
-  /** When non-null, the load preflight found structural issues. UI mounts
-   *  <LoadGate> in issues mode; the user picks Continue or Cancel. */
-  loadGate: {
-    issues: StructuralIssue[];
-    onContinue: () => void;
-    onCancel: () => void;
-  } | null;
+  /** When non-null, the load preflight found structural or drift issues. UI
+   *  mounts <LoadGate>; the user picks Continue or Cancel. */
+  loadGate: (
+    | {
+        mode: 'structural';
+        issues: StructuralIssue[];
+        onContinue: () => void;
+        onCancel: () => void;
+      }
+    | {
+        mode: 'drift';
+        issues: DriftIssue[];
+        onContinue: () => void;
+        onCancel: () => void;
+      }
+  ) | null;
   /** When non-null, a draft was found in IndexedDB for the just-opened
    *  project. The user is asked to Restore or Discard. */
   restoreDraftPrompt: { key: string; savedAt: number; recordCount: number } | null;
@@ -1136,6 +1146,7 @@ async function loadFromDataSource(
       const proceed = await new Promise<boolean>((resolve) => {
         set({
           loadGate: {
+            mode: 'structural',
             issues: structuralIssues,
             onContinue: () => resolve(true),
             onCancel: () => resolve(false),
@@ -1163,11 +1174,9 @@ async function loadFromDataSource(
     if (driftIssues.length > 0) {
       const proceed = await new Promise<boolean>((resolve) => {
         set({
-          // The shape extension to discriminate structural vs drift happens
-          // in Task 13. For now, store the drift array under the same shape;
-          // the LoadGate component still has only one rendering mode.
           loadGate: {
-            issues: driftIssues as any,
+            mode: 'drift',
+            issues: driftIssues,
             onContinue: () => resolve(true),
             onCancel: () => resolve(false),
           },

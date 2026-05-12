@@ -1,4 +1,5 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
+import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
 export function LoadGate() {
   const futureBlock = useDefinitionsStore((s) => s.futureVersionBlock);
@@ -25,7 +26,49 @@ export function LoadGate() {
     );
   }
 
-  if (gate) {
+  if (gate && gate.mode === 'drift') {
+    const shown = (gate.issues as DriftIssue[]).filter((i) => i.recordKey !== '__and_more__').slice(0, 50);
+    const sentinel = (gate.issues as DriftIssue[]).find((i) => i.recordKey === '__and_more__');
+    const more = (gate.issues.length - shown.length) - (sentinel ? 1 : 0);
+    return (
+      <div className="loadgate-overlay" onClick={() => dismissGate('cancel')}>
+        <div className="loadgate-modal" onClick={(e) => e.stopPropagation()}>
+          <h2>Schema drift detected</h2>
+          <p>
+            The following records use classes or properties that don't appear in the current app schema.
+            Continue anyway to load them; they'll show up in the Validations tab.
+          </p>
+          <ul className="loadgate-issues">
+            {shown.map((i, idx) => (
+              <li key={idx}>
+                {i.kind === 'unknown-class' && (
+                  <>Unknown class <code>{i.className}</code> in <code>{i.recordKey}</code></>
+                )}
+                {i.kind === 'unknown-property' && (
+                  <>
+                    Unknown property <code>{i.parentType}.{i.propertyName}</code> in <code>{i.recordKey}</code>
+                  </>
+                )}
+              </li>
+            ))}
+            {(more > 0 || sentinel) && (
+              <li>
+                <em>…and {more > 0 ? more : 'many'} more.</em>
+              </li>
+            )}
+          </ul>
+          <div className="loadgate-actions">
+            <button onClick={() => dismissGate('cancel')}>Cancel</button>
+            <button autoFocus onClick={() => dismissGate('continue')}>
+              Continue anyway
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gate && gate.mode === 'structural') {
     const shown = gate.issues.slice(0, 50);
     const more = gate.issues.length - shown.length;
     return (
