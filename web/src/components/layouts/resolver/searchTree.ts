@@ -19,7 +19,7 @@ export type SearchTree = {
 /** Build a search tree of every definition whose `class` matches `klass`
  *  (or its bareName equivalent). Pulls `gameplay_tags` off each. */
 export function buildSearchTree(
-  defs: Map<string, { id: string; json: any; dirty: boolean }>,
+  defs: Map<string, { id: string; json: any }>,
   klass: string,
 ): SearchTree {
   const bareKlass = klass.startsWith('U') ? klass.slice(1) : klass;

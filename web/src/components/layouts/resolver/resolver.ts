@@ -17,7 +17,7 @@ export type ResolveContext = {
   ownerIndex: number;
   tileTags: string[];
   seed: number;
-  definitions: Map<string, { id: string; json: any; dirty: boolean }>;
+  definitions: Map<string, { id: string; json: any }>;
   catalogLookup: (cls: string, path: string) => AssetCatalogEntry | null;
   visitedLayouts?: Set<string>;
 };

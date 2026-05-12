@@ -24,7 +24,7 @@ export const useLayoutResolverStore = create<State>((set, get) => ({
     const cached = get().cache.get(key);
     if (cached) return cached;
 
-    const definitions = useDefinitionsStore.getState().definitions as unknown as ResolveContext['definitions'];
+    const definitions = useDefinitionsStore.getState().definitions;
     const layoutRec = definitions.get(layoutKey);
     if (!layoutRec) return [];
 
