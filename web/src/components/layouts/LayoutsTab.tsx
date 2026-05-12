@@ -1,5 +1,6 @@
 import { Toolbar } from './Toolbar';
 import { Outliner } from './Outliner/Outliner';
+import { DetailsPanel } from './Details/DetailsPanel';
 
 export function LayoutsTab() {
   return (
@@ -8,7 +9,7 @@ export function LayoutsTab() {
       <div className="layouts-panes">
         <div className="layouts-outliner"><Outliner /></div>
         <div className="layouts-viewport">{/* Viewport placeholder */}</div>
-        <div className="layouts-details">{/* Details placeholder */}</div>
+        <div className="layouts-details"><DetailsPanel /></div>
       </div>
     </div>
   );
