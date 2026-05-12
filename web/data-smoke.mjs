@@ -22,7 +22,7 @@ function fail(msg) { failures.push(msg); }
 
 async function loadAll() {
   const folders = (await readdir(ROOT, { withFileTypes: true }))
-    .filter((e) => e.isDirectory() && !e.name.startsWith('.') && !/^layout/.test(e.name))
+    .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
     .map((e) => e.name);
   const byId = new Map();
   for (const folder of folders) {
@@ -173,6 +173,83 @@ async function main() {
     }
   }
   console.log(`[data-smoke] cross-check: ${unresolvedRefs} unresolved soft asset refs, ${unknownTags} unknown tags, ${skippedNoCatalog} refs with no catalog (class not exported)`);
+
+  // Layout resolver pass — load every LYD_*, run the resolver gates, report
+  // per-status counts. Cycles are real authoring bugs; other statuses are
+  // informational.
+  const layouts = [];
+  for (const { folder, id, json } of byId.values()) {
+    if (folder === 'layout_definitions') layouts.push({ id, json });
+  }
+  console.log(`[data-smoke] resolving ${layouts.length} layouts...`);
+
+  function queryMatches(q, tags) {
+    const mode = q?.value?.search_query?.value;
+    const qt = q?.value?.tags?.value ?? [];
+    const bNot = !!q?.value?.b_not?.value;
+    const incl = (cand, p) => cand === p || cand.startsWith(p + '.');
+    const has = (qt0, includeParents) => includeParents
+      ? tags.some((t) => incl(t, qt0))
+      : tags.includes(qt0);
+    let raw;
+    if (mode === 'None') raw = true;
+    else if (mode === 'HasAnyExact') raw = qt.some((x) => has(x, false));
+    else if (mode === 'HasAnyInclParents') raw = qt.some((x) => has(x, true));
+    else if (mode === 'HasAllExact') raw = qt.every((x) => has(x, false));
+    else if (mode === 'HasAllInclParents') raw = qt.every((x) => has(x, true));
+    else raw = false;
+    return bNot ? !raw : raw;
+  }
+
+  const counts = {
+    ok: 0,
+    'not-configured': 0,
+    'no-matches': 0,
+    'missing-mesh': 0,
+    cycle: 0,
+    'spawn-chance-skipped': 0,
+    'filtered-by-tile-requirements': 0,
+  };
+  let cycleErrors = 0;
+  for (const { id, json } of layouts) {
+    const tileTags = json.properties?.gameplay_tags?.value ?? [];
+    const objects = json.properties?.layout_objects?.value ?? [];
+    function resolveOne(lo, visited) {
+      const filter = lo.value.definition_filter.value;
+      const queries = filter.search_queries.value ?? [];
+      const tileReqs = filter.tile_requirements.value ?? [];
+      const actorType = String(lo.value.layout_actor_type.value ?? '');
+      const refKey = actorType.includes('LAYOUT') ? 'layout_definition' :
+                     actorType.includes('PROXY') ? 'furniture_definition' :
+                     actorType.includes('ENEMY') ? 'enemy_spawn_point_definition' :
+                     actorType.includes('LOOT') ? 'loot_spawn_point_definition' : null;
+      const directRef = refKey ? lo.value[refKey]?.value : null;
+      if (!directRef && queries.length === 0) return 'not-configured';
+      if (tileReqs.length > 0 && !tileReqs.every((q) => queryMatches(q, tileTags))) return 'filtered-by-tile-requirements';
+      if (directRef && actorType.includes('LAYOUT')) {
+        if (visited.has(directRef)) return 'cycle';
+        const inner = byId.get(directRef);
+        if (inner) {
+          const innerVisited = new Set(visited);
+          innerVisited.add(directRef);
+          for (const child of inner.json.properties?.layout_objects?.value ?? []) {
+            resolveOne(child, innerVisited);
+          }
+        }
+      }
+      return 'ok';
+    }
+    for (const lo of objects) {
+      const r = resolveOne(lo, new Set([id]));
+      counts[r] = (counts[r] ?? 0) + 1;
+      if (r === 'cycle') {
+        cycleErrors++;
+        fail(`layout cycle in ${id}`);
+      }
+    }
+  }
+  console.log(`[data-smoke] layout resolver counts: ${JSON.stringify(counts)}`);
+  if (cycleErrors > 0) console.log(`[data-smoke] ${cycleErrors} layout cycles detected (real bug)`);
 
   if (failures.length > 0) {
     console.error('\n[data-smoke] FAILURES:');
