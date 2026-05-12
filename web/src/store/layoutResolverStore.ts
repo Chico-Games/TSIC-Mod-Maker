@@ -28,6 +28,13 @@ export const useLayoutResolverStore = create<State>((set, get) => ({
     const layoutRec = definitions.get(layoutKey);
     if (!layoutRec) return [];
 
+    // Build a bare-id-keyed index for in-resolver lookups (refs inside layouts
+    // use bare IDs like `FD_Door` / `LYD_TileBase`, not full `folder/id` keys).
+    const definitionsById = new Map<string, { id: string; json: any }>();
+    for (const rec of definitions.values()) {
+      definitionsById.set(rec.id, { id: rec.id, json: rec.json });
+    }
+
     const objects = (layoutRec.json?.properties?.layout_objects?.value as LayoutObject[] | undefined) ?? [];
 
     const catalogStore = useAssetCatalogStore.getState();
@@ -40,9 +47,9 @@ export const useLayoutResolverStore = create<State>((set, get) => ({
         ownerIndex: i,
         tileTags,
         seed,
-        definitions,
+        definitions: definitionsById,
         catalogLookup,
-        visitedLayouts: new Set([layoutKey]),
+        visitedLayouts: new Set([layoutRec.id]),
       };
       return resolve(ctx);
     });
