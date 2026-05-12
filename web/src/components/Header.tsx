@@ -128,9 +128,9 @@ export function Header() {
         ))}
       </div>
       <span className="file-info">
-        {directoryHandle
-          ? (projectDisplayName ? `Project: ${projectDisplayName}` : 'folder')
-          : 'bundled defaults'}
+        {dataSource
+          ? (projectDisplayName ? `Project: ${projectDisplayName}` : `Project: ${dataSource.displayName}`)
+          : 'no project'}
         {' · '}
         {definitions.size} defs · {folders.length} folders
         {dirtyCount > 0 && <span className="dirty"> · {dirtyCount} unsaved</span>}

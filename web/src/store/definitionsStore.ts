@@ -1491,6 +1491,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       }
       set({
         directoryHandle: handle,
+        dataSource: new FsaDataSource(handle),
+        projectMeta: get().projectMeta ?? { schema_version: 1, name: handle.name },
         definitions: newDefs,
         dirty: new Set(),
         toast: {
@@ -1503,6 +1505,23 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       {
         const idx = buildReferencedByIndex(get().definitions);
         set({ referencedByIndex: idx });
+      }
+      // Write project.json so the new folder is a real project, not a legacy folder.
+      try {
+        const ds = new FsaDataSource(handle);
+        if (ds.writeProjectMeta) {
+          await ds.writeProjectMeta(get().projectMeta!);
+        }
+      } catch (e) {
+        console.warn('[definitions] could not write project.json after save-as', e);
+      }
+      // Add to recents so the user can return to it.
+      try {
+        const meta = get().projectMeta!;
+        await addRecent({ name: meta.name, handleName: handle.name, handle });
+        await get().refreshRecents();
+      } catch (e) {
+        console.warn('[definitions] could not add recent after save-as', e);
       }
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') {
