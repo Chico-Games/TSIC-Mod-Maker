@@ -141,6 +141,7 @@ export interface DefinitionsStore {
   declineDraftRestore: () => Promise<void>;
   refreshRecents: () => Promise<void>;
   openRecent: (handleName: string) => Promise<void>;
+  openStarterProject: () => Promise<void>;
   setAutoLoad: (enabled: boolean) => void;
   selectFolder: (f: string | null) => void;
   selectDefinition: (k: DefinitionsKey | null) => void;
@@ -1124,6 +1125,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
   },
   openRecent: async (handleName) => {
+    if (handleName === 'starter-project') {
+      await get().openStarterProject();
+      return;
+    }
     const all = await listRecents();
     const entry = all.find((r) => r.handleName === handleName);
     if (!entry) {
@@ -1405,6 +1410,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     // Populate the recents dropdown on every bootstrap so the header
     // doesn't have to wait for the user to open the menu.
     try { await get().refreshRecents(); } catch { /* noop */ }
+  },
+
+  openStarterProject: async () => {
+    await get().loadBundledDefaults();
   },
 
   loadBundledDefaults: async () => {

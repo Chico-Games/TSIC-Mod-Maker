@@ -74,6 +74,8 @@ export function Header() {
   const recents = useDefinitionsStore((s) => s.recents);
   const openRecent = useDefinitionsStore((s) => s.openRecent);
   const refreshRecents = useDefinitionsStore((s) => s.refreshRecents);
+  const dataSource = useDefinitionsStore((s) => s.dataSource);
+  const readOnly = dataSource?.readOnly ?? true;
   useEffect(() => { void refreshRecents(); }, [refreshRecents]);
 
   const editorReachable = useEditorReachable();
@@ -90,6 +92,8 @@ export function Header() {
     syncBlocker = 'Unreal Editor is not reachable at localhost:13378. Launch it (with the TSICEditorSync plugin) and try again.';
   } else if (!directoryHandle) {
     syncBlocker = "No project open. Click 'Open project' or 'New project' to get started.";
+  } else if (readOnly) {
+    syncBlocker = 'Starter project is read-only. Save As to make this project editable.';
   } else if (dirtyCount > 0) {
     syncBlocker = `Save the ${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'} before syncing.`;
   } else if (!unrealSyncPath) {
@@ -183,7 +187,11 @@ export function Header() {
         )}
       </div>
       <button onClick={() => setNewProjectOpen(true)} disabled={!fsa} title="Create a new project folder">✨ New project</button>
-      <button onClick={() => void saveAllDirty()} disabled={dirtyCount === 0 || !directoryHandle}>
+      <button
+        onClick={() => void saveAllDirty()}
+        disabled={dirtyCount === 0 || !directoryHandle || readOnly}
+        title={readOnly ? 'This source is read-only — use Save As to write changes.' : undefined}
+      >
         💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}
       </button>
       <button

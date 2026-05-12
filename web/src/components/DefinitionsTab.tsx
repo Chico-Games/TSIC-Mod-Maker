@@ -57,6 +57,7 @@ export function DefinitionsTab() {
     outgoingReferences,
     incomingReferences,
   } = useDefinitionsStore();
+  const dataSource = useDefinitionsStore((s) => s.dataSource);
 
   const classNodes = useAppSchemaStore((s) => s.classNodes);
   const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
@@ -135,9 +136,7 @@ export function DefinitionsTab() {
     }
   };
 
-  const headerLabel = directoryHandle
-    ? `Target: ${directoryHandle.name}`
-    : 'No directory selected';
+  const headerLabel = dataSource ? `Target: ${dataSource.displayName}` : 'No directory selected';
 
   return (
     <div className="def-layout">
@@ -174,14 +173,16 @@ export function DefinitionsTab() {
         </span>
         <button
           onClick={() => selectedKey && saveOne(selectedKey)}
-          disabled={!selectedDirty}
+          disabled={!selectedDirty || (dataSource?.readOnly ?? true)}
+          title={dataSource?.readOnly ? 'Read-only source — use Save As' : undefined}
         >
           Save current
         </button>
         <button
           onClick={() => saveAllDirty()}
-          disabled={totalDirty === 0}
-          className={totalDirty > 0 ? 'primary' : ''}
+          disabled={totalDirty === 0 || (dataSource?.readOnly ?? true)}
+          className={totalDirty > 0 && !dataSource?.readOnly ? 'primary' : ''}
+          title={dataSource?.readOnly ? 'Read-only source — use Save As' : undefined}
         >
           Save all ({totalDirty})
         </button>
