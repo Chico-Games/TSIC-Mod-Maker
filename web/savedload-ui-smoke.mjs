@@ -612,6 +612,56 @@ function buildMockPicker(initialContents) {
       await ctx.close();
     }
 
+    // ====================================================================
+    // Test 7: Layouts tab loads LYD_Bathroom_All with outliner + details
+    // ====================================================================
+    // Mirrors the AssetRefPicker scenario's setup: load the bundled starter
+    // project over HTTP (HttpDataSource path, no folder picker) and dismiss
+    // the schema-drift LoadGate. Then switch to the Layouts tab, pick
+    // LYD_Bathroom_All, assert the outliner populates, click the first row
+    // and assert the Details panel renders a property field.
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('.header .file-info');
+
+      // Dismiss schema-drift gate if it appears (same as Test 6).
+      const driftHeading = page.locator('.loadgate-modal h2:has-text("Schema drift detected")');
+      const sawDrift = await driftHeading
+        .waitFor({ state: 'visible', timeout: 15000 })
+        .then(() => true)
+        .catch(() => false);
+      if (sawDrift) {
+        await page.locator('.loadgate-modal button:has-text("Continue anyway")').click();
+        await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      }
+      await page.waitForSelector('.file-info:has-text("Project: Starter project")');
+
+      // Switch to the Layouts tab.
+      await page.locator('.tabs button.tab:has-text("Layouts")').click();
+      await page.waitForSelector('.layouts-tab', { timeout: 5000 });
+
+      // Pick LYD_Bathroom_All in the toolbar select.
+      await page.selectOption('.layouts-toolbar select', 'LYD_Bathroom_All');
+
+      // Outliner should populate. LYD_Bathroom_All has ~38 rows; tolerate drift.
+      await page.waitForSelector('.outliner-row', { timeout: 10000 });
+      const rowCount = await page.locator('.outliner-row').count();
+      assert(
+        rowCount >= 10 && rowCount <= 50,
+        `Layouts: expected 10-50 outliner rows for LYD_Bathroom_All, got ${rowCount}`,
+      );
+
+      // Click the first row.
+      await page.locator('.outliner-row').first().click();
+
+      // Details panel should render TypedPropertiesEditor output (.def-field).
+      await page.waitForSelector('.layouts-details .def-field', { timeout: 5000 });
+      assert(true, 'Layouts: details panel renders TypedPropertiesEditor for first row');
+      await ctx.close();
+    }
+
     console.log('\n=== ALL SAVE/LOAD SMOKE TESTS PASSED ===\n');
   } catch (err) {
     console.error('Test failed:', err);
