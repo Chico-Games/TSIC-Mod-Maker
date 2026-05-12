@@ -6,6 +6,7 @@ import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
 import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persistence/recentProjects';
+import type { DataSource } from '../persistence/dataSource';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -76,6 +77,7 @@ export interface ProjectMeta {
 export interface DefinitionsStore {
   // Persistence
   directoryHandle: FileSystemDirectoryHandle | null;
+  dataSource: DataSource | null;
   /** Metadata loaded from project.json at the folder root. Null when no
    *  project.json was found (legacy folder) or when using bundled defaults. */
   projectMeta: ProjectMeta | null;
@@ -1087,6 +1089,7 @@ async function writeProjectMeta(
 
 export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   directoryHandle: null,
+  dataSource: null,
   projectMeta: null,
   bootstrapped: false,
   autoLoadEnabled: loadAutoLoadFlag(),
