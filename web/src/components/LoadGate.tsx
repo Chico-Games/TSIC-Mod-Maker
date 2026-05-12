@@ -48,6 +48,18 @@ export function LoadGate() {
                     Unknown property <code>{i.parentType}.{i.propertyName}</code> in <code>{i.recordKey}</code>
                   </>
                 )}
+                {i.kind === 'missing-asset-ref' && (
+                  <>
+                    Missing <code>{i.assetClass}</code> at <code>{i.path}</code> referenced by <code>{i.recordKey}</code>
+                  </>
+                )}
+                {i.kind === 'asset-ref-guid-mismatch' && (
+                  <>
+                    <code>{i.path}</code> resolves to a different asset than recorded
+                    (expected <code>{i.expectedGuid.slice(0, 8)}</code>, found <code>{i.currentGuid.slice(0, 8)}</code>)
+                    {' '}— referenced by <code>{i.recordKey}</code>
+                  </>
+                )}
               </li>
             ))}
             {(more > 0 || sentinel) && (

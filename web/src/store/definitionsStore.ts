@@ -6,13 +6,13 @@ import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
 import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persistence/recentProjects';
-import type { DataSource } from '../persistence/dataSource';
+import type { DataSource, AssetCatalogEntry } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
 import type { ClassNode } from './appSchemaStore';
 import { useGameplayTagStore } from './gameplayTagStore';
 import { useAssetCatalogStore } from './assetCatalogStore';
-import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
+import { iterEnvelopes, validateAssetRefs, validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
@@ -991,12 +991,37 @@ async function loadFromDataSource(
     // New drift validator gate.
     const schema = useAppSchemaStore.getState();
     const driftIssues = validateSchemaDrift(defs, schema.classNodes, schema.propertyMeta);
-    if (driftIssues.length > 0) {
+
+    // Asset-ref drift pass — additive. Collect every soft_asset_ref class
+    // referenced by the freshly-loaded defs, eagerly load just those catalogs,
+    // then ask validateAssetRefs to flag missing paths and guid mismatches.
+    const refClasses = new Set<string>();
+    for (const [, rec] of defs) {
+      for (const env of iterEnvelopes(rec.json?.properties)) {
+        if (env?.type === 'soft_asset_ref' && typeof env.class === 'string') {
+          refClasses.add(env.class);
+        }
+      }
+    }
+    const catalogStore = useAssetCatalogStore.getState();
+    catalogStore.setDataSource(ds);
+    await Promise.all([...refClasses].map((c) => catalogStore.loadCatalog(c)));
+    const catalogsMap = new Map<string, AssetCatalogEntry[]>(
+      [...refClasses].map((c) => {
+        const v = useAssetCatalogStore.getState().catalogs[c];
+        return [c, Array.isArray(v) ? v : []];
+      }),
+    );
+    const expectedGuids = await ds.readAssetRefs();
+    const refIssues = validateAssetRefs(defs, catalogsMap, expectedGuids);
+
+    const allDriftIssues = [...driftIssues, ...refIssues];
+    if (allDriftIssues.length > 0) {
       const proceed = await new Promise<boolean>((resolve) => {
         set({
           loadGate: {
             mode: 'drift',
-            issues: driftIssues,
+            issues: allDriftIssues,
             onContinue: () => resolve(true),
             onCancel: () => resolve(false),
           },
@@ -1024,9 +1049,8 @@ async function loadFromDataSource(
 
     useAppSchemaStore.setState({ classNodes, propertySchema, idTemplates });
 
-    // Point the asset-catalog store at this dataSource. Catalogs load lazily
-    // on first picker open; we just hand it the source here.
-    useAssetCatalogStore.getState().setDataSource(ds);
+    // (Asset-catalog store was pointed at this dataSource earlier so the
+    // drift pass could load referenced catalogs eagerly.)
 
     // Eager-load gameplay tags for this dataSource. Missing sidecar yields [].
     try {
