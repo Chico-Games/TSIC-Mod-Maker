@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'validations';
+export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'layouts' | 'validations';
 export type RecipesSubTab = 'stations' | 'furniture' | 'tech-tree' | 'enemies' | 'biome';
 
 export type ItemsSubTab =
@@ -106,6 +106,7 @@ function loadTab(): AppTab {
       v === 'items' ||
       v === 'furniture' ||
       v === 'definitions' ||
+      v === 'layouts' ||
       v === 'validations'
     ) return v;
     // Legacy: a previous build had a 'furniture-loot' top-level tab.

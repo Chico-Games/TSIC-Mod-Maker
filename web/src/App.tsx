@@ -168,6 +168,7 @@ export function App() {
       case 'items': return <ItemsTab />;
       case 'furniture': return <FurnitureTab />;
       case 'definitions': return <DefinitionsTab />;
+      case 'layouts': return null;
       case 'validations': return <ValidationsTab />;
     }
   };

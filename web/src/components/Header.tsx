@@ -107,6 +107,7 @@ export function Header() {
     { id: 'items', label: 'Items' },
     { id: 'furniture', label: 'Furniture' },
     { id: 'definitions', label: 'Definitions' },
+    { id: 'layouts', label: 'Layouts' },
     { id: 'validations', label: 'Validations' },
   ];
 
