@@ -565,13 +565,6 @@ function saveAutoLoadFlag(v: boolean) {
   } catch { /* noop */ }
 }
 
-/** Folders that match `^layout` (layout_definitions, layout_object_definitions)
- *  are skipped on load and on save. They're authored in UE; the editor has
- *  no useful way to manipulate them. */
-function isLayoutFolder(name: string): boolean {
-  return /^layout/.test(name);
-}
-
 /** Derive the folder name a class would live in when classNodes has no entry
  *  for it (mirrors `Tools/Export/lib/naming.py:class_to_folder`). */
 function folderForBareClass(bareClassName: string): string {
@@ -1356,7 +1349,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       // seeded into new projects — schema comes from appSchemaStore instead.
       const allFiles: { folder: string; id: string }[] = [];
       for (const f of manifest.files || []) {
-        if (isLayoutFolder(f.folder)) continue;
         for (const id of f.ids) allFiles.push({ folder: f.folder, id });
       }
       const concurrency = 8;
@@ -1504,10 +1496,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       let failed = 0;
       const newDefs = new Map<DefinitionsKey, DefinitionRecord>();
       for (const [k, rec] of definitions) {
-        if (isLayoutFolder(rec.folder)) {
-          newDefs.set(k, rec);
-          continue;
-        }
         const text = serializeDefinition(rec);
         try {
           const targetFolder = computeTargetFolder(rec, classNodes);
@@ -1664,10 +1652,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
     const rec = definitions.get(k);
     if (!rec) return;
-    if (isLayoutFolder(rec.folder)) {
-      set({ toast: { kind: 'info', text: `Skipped ${rec.folder}/ (layout folders are read-only).` } });
-      return;
-    }
     const text = serializeDefinition(rec);
     try {
       const targetFolder = computeTargetFolder(rec, useAppSchemaStore.getState().classNodes);
@@ -1734,10 +1718,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     for (const k of dirty) {
       const rec = definitions.get(k);
       if (!rec) continue;
-      if (isLayoutFolder(rec.folder)) {
-        nextDirty.delete(k);
-        continue;
-      }
       const text = serializeDefinition(rec);
       try {
         const targetFolder = computeTargetFolder(rec, classNodes);
