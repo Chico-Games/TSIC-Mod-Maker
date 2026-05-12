@@ -4,6 +4,7 @@ import { useLayoutEditorStore } from '../../../store/layoutEditorStore';
 import { useLayoutResolverStore } from '../../../store/layoutResolverStore';
 import { useDefinitionsStore } from '../../../store/definitionsStore';
 import { LayoutObjectMesh } from './LayoutObjectMesh';
+import { SelectionGizmo } from './SelectionGizmo';
 
 export function Viewport() {
   const layoutKey = useLayoutEditorStore((s) => s.selectedLayoutKey);
@@ -28,6 +29,7 @@ export function Viewport() {
       <directionalLight position={[400, 600, 200]} intensity={0.6} />
       <Grid args={[2000, 2000]} cellColor="#333" sectionColor="#555" infiniteGrid />
       {resolved.map((r, i) => <LayoutObjectMesh key={i} resolved={r} index={i} />)}
+      <SelectionGizmo />
       <OrbitControls makeDefault />
     </Canvas>
   );

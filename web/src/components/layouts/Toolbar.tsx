@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLayoutEditorStore } from '../../store/layoutEditorStore';
 import { useDefinitionsStore } from '../../store/definitionsStore';
 
@@ -8,6 +9,19 @@ export function Toolbar() {
   const setSeed = useLayoutEditorStore((s) => s.setSeed);
   const rerollSeed = useLayoutEditorStore((s) => s.rerollSeed);
   const definitions = useDefinitionsStore((s) => s.definitions);
+  const gizmoMode = useLayoutEditorStore((s) => s.gizmoMode);
+  const setGizmoMode = useLayoutEditorStore((s) => s.setGizmoMode);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+      if (e.key === 'w' || e.key === 'W') setGizmoMode('translate');
+      else if (e.key === 'e' || e.key === 'E') setGizmoMode('rotate');
+      else if (e.key === 'r' || e.key === 'R') setGizmoMode('scale');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setGizmoMode]);
 
   const layouts = [...definitions.values()]
     .filter((d) => d.json?.class === 'ULayoutDefinition' || d.json?.class === 'LayoutDefinition')
@@ -32,6 +46,11 @@ export function Toolbar() {
         />
       </label>
       <button onClick={rerollSeed}>Reroll</button>
+      <div className="gizmo-buttons">
+        <button className={gizmoMode === 'translate' ? 'active' : ''} onClick={() => setGizmoMode('translate')}>Move (W)</button>
+        <button className={gizmoMode === 'rotate' ? 'active' : ''} onClick={() => setGizmoMode('rotate')}>Rotate (E)</button>
+        <button className={gizmoMode === 'scale' ? 'active' : ''} onClick={() => setGizmoMode('scale')}>Scale (R)</button>
+      </div>
     </div>
   );
 }
