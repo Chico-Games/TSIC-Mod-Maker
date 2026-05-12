@@ -11,6 +11,7 @@ import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
 import type { ClassNode } from './appSchemaStore';
 import { useGameplayTagStore } from './gameplayTagStore';
+import { useAssetCatalogStore } from './assetCatalogStore';
 import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
@@ -969,6 +970,7 @@ async function loadFromDataSource(
       if (!proceed) {
         // Revert any handle/meta that openProject set optimistically before
         // calling reload(), so the header doesn't show a half-loaded project.
+        useAssetCatalogStore.getState().setDataSource(null);
         set({
           loading: false,
           loadGate: null,
@@ -1001,6 +1003,7 @@ async function loadFromDataSource(
         });
       });
       if (!proceed) {
+        useAssetCatalogStore.getState().setDataSource(null);
         set({
           loading: false,
           loadGate: null,
@@ -1020,6 +1023,10 @@ async function loadFromDataSource(
     const idTemplates = buildIdTemplates(defs);
 
     useAppSchemaStore.setState({ classNodes, propertySchema, idTemplates });
+
+    // Point the asset-catalog store at this dataSource. Catalogs load lazily
+    // on first picker open; we just hand it the source here.
+    useAssetCatalogStore.getState().setDataSource(ds);
 
     // Eager-load gameplay tags for this dataSource. Missing sidecar yields [].
     try {
@@ -1512,6 +1519,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
             : `Save As: wrote ${saved}, failed ${failed}. See console.`,
         },
       });
+      // Point the asset-catalog store at the new dataSource.
+      useAssetCatalogStore.getState().setDataSource(saveAsDs);
       // Refresh gameplay tags from the new dataSource (missing sidecar yields []).
       try {
         const tags = await saveAsDs.readTags();
