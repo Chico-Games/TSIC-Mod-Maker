@@ -1783,9 +1783,13 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   saveOne: async (k) => {
-    const { directoryHandle, definitions } = get();
-    if (!directoryHandle) {
+    const { dataSource, definitions } = get();
+    if (!dataSource) {
       set({ toast: { kind: 'error', text: 'No target directory selected.' } });
+      return;
+    }
+    if (dataSource.readOnly || !dataSource.writeFile) {
+      set({ toast: { kind: 'error', text: 'This source is read-only. Use Save As to write changes.' } });
       return;
     }
     const rec = definitions.get(k);
@@ -1794,23 +1798,15 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       set({ toast: { kind: 'info', text: `Skipped ${rec.folder}/ (layout folders are read-only).` } });
       return;
     }
-    const ok = await ensurePermission(directoryHandle, 'readwrite');
-    if (!ok) {
-      set({ toast: { kind: 'error', text: 'Write permission denied.' } });
-      return;
-    }
     const text = serializeDefinition(rec);
     try {
       const targetFolder = computeTargetFolder(rec, get().classNodes);
-      await writeFile(directoryHandle, targetFolder, `${rec.id}.json`, text);
-      // Clean up the old on-disk file if EITHER the folder OR the
-      // filename changed (class swap, asset rename, or both).
+      await dataSource.writeFile(targetFolder, rec.id, text);
       const folderChanged = targetFolder !== rec.diskFolder;
       const idChanged = rec.id !== rec.diskId;
-      if ((folderChanged || idChanged) && rec.originalText) {
+      if ((folderChanged || idChanged) && rec.originalText && dataSource.deleteFile) {
         try {
-          const oldHandle = await directoryHandle.getDirectoryHandle(rec.diskFolder);
-          await oldHandle.removeEntry(`${rec.diskId}.json`);
+          await dataSource.deleteFile(rec.diskFolder, rec.diskId);
         } catch (e) {
           console.warn('[definitions] could not remove old file after rename/relocate', e);
         }
@@ -1851,11 +1847,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   saveAllDirty: async () => {
-    const { directoryHandle, definitions, dirty, classNodes, folders } = get();
-    if (!directoryHandle) return { saved: 0, failed: 0 };
-    const ok = await ensurePermission(directoryHandle, 'readwrite');
-    if (!ok) {
-      set({ toast: { kind: 'error', text: 'Write permission denied.' } });
+    const { dataSource, definitions, dirty, classNodes, folders } = get();
+    if (!dataSource) return { saved: 0, failed: 0 };
+    if (dataSource.readOnly || !dataSource.writeFile) {
+      set({ toast: { kind: 'error', text: 'This source is read-only. Use Save As to write changes.' } });
       return { saved: 0, failed: 0 };
     }
     let saved = 0;
@@ -1875,13 +1870,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       const text = serializeDefinition(rec);
       try {
         const targetFolder = computeTargetFolder(rec, classNodes);
-        await writeFile(directoryHandle, targetFolder, `${rec.id}.json`, text);
+        await dataSource.writeFile(targetFolder, rec.id, text);
         const folderChanged = targetFolder !== rec.diskFolder;
         const idChanged = rec.id !== rec.diskId;
-        if ((folderChanged || idChanged) && rec.originalText) {
+        if ((folderChanged || idChanged) && rec.originalText && dataSource.deleteFile) {
           try {
-            const oldHandle = await directoryHandle.getDirectoryHandle(rec.diskFolder);
-            await oldHandle.removeEntry(`${rec.diskId}.json`);
+            await dataSource.deleteFile(rec.diskFolder, rec.diskId);
           } catch (e) {
             console.warn('[definitions] could not remove old file after rename/relocate', e);
           }
