@@ -31,12 +31,16 @@ function mkPropertyMeta(...keys: string[]): Map<string, PropertyMeta> {
 
 test('clean record set yields no issues', () => {
   const defs = new Map([
-    mkRec('items', 'A', { id: 'A', class: 'UItemDefinition', name: { type: 'FString', value: 'x' } }),
+    mkRec('items', 'A', {
+      id: 'A',
+      class: 'UItemDefinition',
+      properties: { name: { type: 'FString', value: 'x' } },
+    }),
   ]);
   const issues = validateSchemaDrift(
     defs,
     mkClassNodes('UItemDefinition'),
-    mkPropertyMeta('ItemDefinition.name', 'ItemDefinition.id'),
+    mkPropertyMeta('ItemDefinition.name'),
   );
   assert.deepEqual(issues, []);
 });
@@ -75,13 +79,13 @@ test('unknown-property kind when property missing from schema', () => {
     mkRec('items', 'A', {
       id: 'A',
       class: 'UItemDefinition',
-      ghost_field: { type: 'FString', value: 'x' },
+      properties: { ghost_field: { type: 'FString', value: 'x' } },
     }),
   ]);
   const issues = validateSchemaDrift(
     defs,
     mkClassNodes('UItemDefinition'),
-    mkPropertyMeta('ItemDefinition.id'),
+    mkPropertyMeta('ItemDefinition.name'),
   );
   const unknown = issues.filter((i): i is Extract<DriftIssue, { kind: 'unknown-property' }> => i.kind === 'unknown-property');
   assert.equal(unknown.length, 1);
@@ -95,7 +99,7 @@ test('property check walks parent chain', () => {
       id: 'A',
       class: 'UConsumableDefinition',
       parent_classes: ['UItemDefinition'],
-      name: { type: 'FString', value: 'x' },
+      properties: { name: { type: 'FString', value: 'x' } },
     }),
   ]);
   const classNodes = new Map<string, ClassNode>([
@@ -105,7 +109,7 @@ test('property check walks parent chain', () => {
   const issues = validateSchemaDrift(
     defs,
     classNodes,
-    mkPropertyMeta('ItemDefinition.name', 'ItemDefinition.id'),
+    mkPropertyMeta('ItemDefinition.name'),
   );
   assert.deepEqual(issues, []);
 });
@@ -122,4 +126,60 @@ test('caps at 200 issues with an "and more" trailer', () => {
   assert.equal(sentinel.kind, 'unknown-class');
   assert.equal(sentinel.recordKey, '__and_more__');
   assert.equal(sentinel.className, '__and_more__');
+});
+
+test('realistic envelope shape — envelope keys are not validated as properties', () => {
+  const defs = new Map([
+    mkRec('items', 'A', {
+      id: 'A',
+      asset_path: '/Game/X',
+      class: 'UItemDefinition',
+      parent_classes: ['UDataAsset', 'UObject'],
+      properties: {
+        display_name: { type: 'text', value: 'Hi' },
+      },
+    }),
+  ]);
+  const issues = validateSchemaDrift(
+    defs,
+    mkClassNodes('UItemDefinition'),
+    mkPropertyMeta('ItemDefinition.display_name'),
+  );
+  // id, asset_path, class, parent_classes, properties at the envelope level
+  // must NOT trigger unknown-property — only keys under `properties` are checked.
+  assert.deepEqual(issues, []);
+});
+
+test('empty propertyMeta skips property-level checks', () => {
+  const defs = new Map([
+    mkRec('items', 'A', {
+      id: 'A',
+      class: 'UItemDefinition',
+      properties: {
+        any_property_at_all: { type: 'text', value: 'x' },
+        another: { type: 'int', value: 42 },
+      },
+    }),
+  ]);
+  // propertyMeta intentionally empty (source export lacks .property-meta.json).
+  // Validator can only check classes — properties must be skipped, not flagged.
+  const issues = validateSchemaDrift(
+    defs,
+    mkClassNodes('UItemDefinition'),
+    new Map(),
+  );
+  assert.deepEqual(issues, []);
+});
+
+test('record with no properties object yields no property issues', () => {
+  const defs = new Map([
+    mkRec('items', 'A', { id: 'A', class: 'UItemDefinition' }),
+    mkRec('items', 'B', { id: 'B', class: 'UItemDefinition', properties: null }),
+  ]);
+  const issues = validateSchemaDrift(
+    defs,
+    mkClassNodes('UItemDefinition'),
+    mkPropertyMeta('ItemDefinition.name'),
+  );
+  assert.deepEqual(issues, []);
 });

@@ -44,9 +44,19 @@ export function validateSchemaDrift(
       continue;
     }
 
+    // Property-level checks require propertyMeta to be populated. The source
+    // export doesn't always ship .property-meta.json; when it's empty we can
+    // only validate classes, not properties.
+    if (propertyMeta.size === 0) continue;
+
+    // Real records store game properties under a `properties` object. The
+    // top-level keys (id, asset_path, class, parent_classes, properties)
+    // are envelope fields, not game properties.
+    const props = rec.json?.properties;
+    if (!props || typeof props !== 'object') continue;
+
     const chain = parentChain(fullName, classNodes).map(bareName);
-    for (const propName of Object.keys(rec.json)) {
-      if (propName === 'class' || propName === 'parent_classes') continue;
+    for (const propName of Object.keys(props)) {
       const found = chain.some((c) => propertyMeta.has(`${c}.${propName}`));
       if (!found) {
         if (!push({
