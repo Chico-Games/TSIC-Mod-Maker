@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..', 'public', 'base-definitions');
+const ROOT = join(__dirname, '..', 'public', 'starter-project');
 
 const FURNITURE_FOLDERS = new Set(['damageable_furniture_definitions']);
 const STATION_FOLDERS = new Set([

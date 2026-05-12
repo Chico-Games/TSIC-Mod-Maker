@@ -11,7 +11,7 @@ npm run dev
 # open http://localhost:5173
 ```
 
-The first run loads the **bundled defaults** baked into the build at `web/public/base-definitions/`. To edit your real export, click `📂 Open folder` in the header and point at e.g. `C:\Users\Administrator\Documents\Unreal Projects\TSIC\Tools\Export\test-output\Definitions`. The directory handle persists in IndexedDB; subsequent reloads reconnect automatically.
+The first run loads the **starter project** baked into the build at `web/public/starter-project/`. To edit your real export, click `📂 Open folder` in the header and point at e.g. `C:\Users\Administrator\Documents\Unreal Projects\TSIC\Tools\Export\test-output\Definitions`. The directory handle persists in IndexedDB; subsequent reloads reconnect automatically.
 
 ## Header buttons
 
@@ -20,7 +20,7 @@ The first run loads the **bundled defaults** baked into the build at `web/public
 | 📂 Open folder | Pick a Definitions folder to read/write. |
 | 💾 Save | Save every dirty record back to the picked folder. |
 | Save as… | Pick a fresh folder; write the entire working set there. |
-| ↺ Bundled defaults | Drop the folder handle and reload the bundled tree. |
+| ↺ Starter project | Drop the folder handle and reload the starter-project tree. |
 | ⟳ Reload | Re-read the picked folder from disk (discards in-memory edits). |
 | ⌘K Search | Fuzzy search every loaded asset. |
 
@@ -41,15 +41,15 @@ The first run loads the **bundled defaults** baked into the build at `web/public
 
 A single `<DndContext>` at app root with a unified dispatcher in `web/src/dnd/dispatch.ts`. Sources: palette items (any definition), recipe cards, slot values. Targets: recipe input/output cells, upgrade cost cells, loot entries, ARR recipe lists, station rows. Dropping a recipe card on a station row pops the ref out of its current ARR and pushes it onto the target ARR — the recipe asset itself doesn't move on disk.
 
-## Bundled defaults
+## Starter project
 
-`web/scripts/sync-base-definitions.mjs` mirrors the live export into `web/public/base-definitions/` and emits a `manifest.json`. `npm run dev` and `npm run build` both run the sync first. Override the source with `TSIC_DEFINITIONS_SRC`:
+`web/scripts/sync-base-definitions.mjs` mirrors the live UE export into `web/public/schema/` (engine schema) and `web/public/starter-project/` (data). `npm run dev` and `npm run build` both run the sync first. Override the source with `TSIC_DEFINITIONS_SRC`:
 
 ```sh
 TSIC_DEFINITIONS_SRC="D:\\Game\\Definitions" npm run sync-defaults
 ```
 
-The bundled tree includes the `.class-hierarchy.json` and `.property-meta.json` sidecars, so the typed editor's UPROPERTY tooltips, clamp bounds, and enum dropdowns work the same regardless of source.
+The schema directory holds `class-hierarchy.json` and `property-meta.json`, which drive UPROPERTY tooltips, clamp bounds, and enum dropdowns in the typed editor. The starter-project directory holds all definition data files and a `manifest.json`.
 
 ## Tests
 
@@ -71,8 +71,9 @@ npm run smoke
 
 ```
 web/
-  scripts/sync-base-definitions.mjs    # mirrors Definitions/ → public/base-definitions/
-  public/base-definitions/             # bundled tree (generated; gitignored is fine)
+  scripts/sync-base-definitions.mjs    # mirrors Definitions/ → public/schema/ + public/starter-project/
+  public/schema/                        # engine schema: class-hierarchy.json, property-meta.json
+  public/starter-project/              # starter data tree + manifest.json (generated; gitignored is fine)
   src/
     App.tsx                            # DndContext + tab shell
     dnd/dispatch.ts                    # unified drag-drop dispatcher

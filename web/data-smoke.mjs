@@ -10,10 +10,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, 'public', 'base-definitions');
+const ROOT = join(__dirname, 'public', 'starter-project');
 
 if (!existsSync(ROOT)) {
-  console.error('No bundled defaults at', ROOT, '— run `npm run sync-defaults` first.');
+  console.error('No starter project at', ROOT, '— run `npm run sync-defaults` first.');
   process.exit(1);
 }
 
