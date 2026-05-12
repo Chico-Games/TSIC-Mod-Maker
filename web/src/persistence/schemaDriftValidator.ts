@@ -106,7 +106,13 @@ export function validateAssetRefs(
       if (!path) continue;
       const cls = env.class as string;
       const entries = catalogs.get(cls);
-      const entry = entries?.find((e) => e.path === path);
+
+      // No catalog for this class → no info to drift-check against. Skip.
+      // (Real-world example: Material / SoundCue refs surfacing before the
+      // exporter walks every referenced asset class.)
+      if (!entries) continue;
+
+      const entry = entries.find((e) => e.path === path);
       if (!entry) {
         out.push({ recordKey: key, kind: 'missing-asset-ref', path, assetClass: cls });
         continue;

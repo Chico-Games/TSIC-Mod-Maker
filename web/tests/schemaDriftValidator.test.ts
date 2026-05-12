@@ -195,7 +195,8 @@ test('validateAssetRefs: missing-asset-ref when path not in catalog', () => {
       static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/Missing.SM_Missing' }
     })],
   ]);
-  const catalogs = new Map<string, AssetCatalogEntry[]>();
+  // Catalog exists for the class but does not contain the referenced path.
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh', []]]);
   const issues = validateAssetRefs(defs, catalogs, {});
   assert.equal(issues.length, 1);
   assert.equal(issues[0].kind, 'missing-asset-ref');
@@ -269,8 +270,26 @@ test('validateAssetRefs: recurses into struct and array shapes', () => {
       }
     })],
   ]);
-  const issues = validateAssetRefs(defs, new Map(), {});
+  // Catalog exists for SoundCue but does not contain the referenced path.
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['SoundCue', []]]);
+  const issues = validateAssetRefs(defs, catalogs, {});
   assert.equal(issues.length, 1);
   assert.equal(issues[0].kind, 'missing-asset-ref');
   assert.equal((issues[0] as any).path, '/Game/Audio/Missing.SC_Missing');
+});
+
+test('validateAssetRefs: no issue when catalog for the class is absent entirely', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      audio_config: {
+        type: 'struct', struct_name: 'AudioConfig',
+        value: {
+          sound: { type: 'soft_asset_ref', class: 'SoundCue', value: '/Game/Audio/SC.SC' }
+        }
+      }
+    })],
+  ]);
+  // No SoundCue catalog in the map.
+  const issues = validateAssetRefs(defs, new Map(), {});
+  assert.deepEqual(issues, []);
 });
