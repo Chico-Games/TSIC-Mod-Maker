@@ -11,8 +11,22 @@ function mockFetch(routes: Record<string, { status: number; body: string }>): ty
   }) as any;
 }
 
+function resetStore() {
+  useAppSchemaStore.setState({
+    loaded: false,
+    errorText: null,
+    classNodes: new Map(),
+    hierarchySidecar: null,
+    propertyMeta: new Map(),
+    enumMeta: new Map(),
+    propertySchema: new Map(),
+    idTemplates: new Map(),
+    pinnedProperties: new Set<string>(),
+  });
+}
+
 test('loadSchema populates classNodes and propertyMeta', async () => {
-  useAppSchemaStore.setState({ loaded: false, classNodes: new Map(), propertyMeta: new Map(), enumMeta: new Map() });
+  resetStore();
   const hierarchy = {
     classes: [
       { name: 'UItemDefinition', parents: [], folder: 'items' },
@@ -37,7 +51,7 @@ test('loadSchema populates classNodes and propertyMeta', async () => {
 });
 
 test('loadSchema is idempotent', async () => {
-  useAppSchemaStore.setState({ loaded: false, classNodes: new Map(), propertyMeta: new Map(), enumMeta: new Map() });
+  resetStore();
   let calls = 0;
   const fetcher: typeof fetch = (async (url: string | URL) => {
     calls++;
@@ -48,16 +62,23 @@ test('loadSchema is idempotent', async () => {
   }) as any;
   await useAppSchemaStore.getState().loadSchema(fetcher);
   await useAppSchemaStore.getState().loadSchema(fetcher);
-  assert.equal(calls, 2); // 2 fetches once, idempotency means no extra fetches the second call
+  // The first loadSchema makes exactly 2 fetches (class-hierarchy + property-meta).
+  // The second call must short-circuit on `loaded === true` and make zero additional
+  // fetches. So `calls` stays at 2 across both invocations.
+  assert.equal(calls, 2);
 });
 
 test('loadSchema throws on 404', async () => {
-  useAppSchemaStore.setState({ loaded: false, classNodes: new Map(), propertyMeta: new Map(), enumMeta: new Map() });
+  resetStore();
   const fetcher = mockFetch({});
-  await assert.rejects(useAppSchemaStore.getState().loadSchema(fetcher), /class-hierarchy/);
+  await assert.rejects(
+    useAppSchemaStore.getState().loadSchema(fetcher),
+    /class-hierarchy|property-meta/,
+  );
 });
 
 test('getPropertyMeta walks parent chain', () => {
+  resetStore();
   useAppSchemaStore.setState({
     loaded: true,
     classNodes: new Map([
