@@ -41,6 +41,19 @@ test('clean record set yields no issues', () => {
   assert.deepEqual(issues, []);
 });
 
+test('record missing class field yields no issues (skipped)', () => {
+  const defs = new Map([
+    mkRec('items', 'A', { id: 'A' /* no class */ }),
+    mkRec('items', 'B', { id: 'B', class: 42 /* not a string */ }),
+  ]);
+  const issues = validateSchemaDrift(
+    defs,
+    mkClassNodes('UItemDefinition'),
+    mkPropertyMeta(),
+  );
+  assert.deepEqual(issues, []);
+});
+
 test('unknown-class kind when record class missing from schema', () => {
   const defs = new Map([
     mkRec('items', 'A', { id: 'A', class: 'UMysteryDef' }),
@@ -105,6 +118,8 @@ test('caps at 200 issues with an "and more" trailer', () => {
   }
   const issues = validateSchemaDrift(defs, mkClassNodes(), mkPropertyMeta());
   assert.equal(issues.length, 201);
-  assert.equal(issues[200].kind, 'unknown-class');
-  assert.equal((issues[200] as any).recordKey, '__and_more__');
+  const sentinel = issues[200] as Extract<DriftIssue, { kind: 'unknown-class' }>;
+  assert.equal(sentinel.kind, 'unknown-class');
+  assert.equal(sentinel.recordKey, '__and_more__');
+  assert.equal(sentinel.className, '__and_more__');
 });
