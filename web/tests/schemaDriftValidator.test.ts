@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateSchemaDrift, type DriftIssue } from '../src/persistence/schemaDriftValidator';
+import { validateSchemaDrift, validateAssetRefs, type DriftIssue } from '../src/persistence/schemaDriftValidator';
 import type { DefinitionRecord, DefinitionsKey } from '../src/store/definitionsStore';
 import type { ClassNode, PropertyMeta } from '../src/store/appSchemaStore';
+import type { AssetCatalogEntry } from '../src/persistence/dataSource';
 
 function mkRec(folder: string, id: string, json: any): [DefinitionsKey, DefinitionRecord] {
   const text = JSON.stringify(json);
@@ -182,4 +183,94 @@ test('record with no properties object yields no property issues', () => {
     mkPropertyMeta('ItemDefinition.name'),
   );
   assert.deepEqual(issues, []);
+});
+
+function mkAssetRec(_key: DefinitionsKey, props: any): DefinitionRecord {
+  return { json: { class: 'UFurnitureDefinition', properties: props }, dirty: false } as any;
+}
+
+test('validateAssetRefs: missing-asset-ref when path not in catalog', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/Missing.SM_Missing' }
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>();
+  const issues = validateAssetRefs(defs, catalogs, {});
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'missing-asset-ref');
+  assert.deepEqual({ recordKey: issues[0].recordKey, path: (issues[0] as any).path },
+                   { recordKey: 'FD_X', path: '/Game/Missing.SM_Missing' });
+});
+
+test('validateAssetRefs: asset-ref-guid-mismatch when expected != current', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/A.A' }
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh',
+    [{ path: '/Game/A.A', name: 'A', folder: '/Game', package_guid: 'BBBB' }]]]);
+  const expected = { '/Game/A.A': 'AAAA' };
+  const issues = validateAssetRefs(defs, catalogs, expected);
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'asset-ref-guid-mismatch');
+  assert.equal((issues[0] as any).expectedGuid, 'AAAA');
+  assert.equal((issues[0] as any).currentGuid, 'BBBB');
+});
+
+test('validateAssetRefs: no issue when guids match', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/A.A' }
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh',
+    [{ path: '/Game/A.A', name: 'A', folder: '/Game', package_guid: 'AAAA' }]]]);
+  const expected = { '/Game/A.A': 'AAAA' };
+  const issues = validateAssetRefs(defs, catalogs, expected);
+  assert.deepEqual(issues, []);
+});
+
+test('validateAssetRefs: no issue when guid recorded but catalog has empty (tamper unknown)', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/A.A' }
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh',
+    [{ path: '/Game/A.A', name: 'A', folder: '/Game', package_guid: '' }]]]);
+  const expected = { '/Game/A.A': '' };
+  // expected guid is "" (UE 5.x doesn't expose PackageGuid) — no mismatch claim.
+  const issues = validateAssetRefs(defs, catalogs, expected);
+  assert.deepEqual(issues, []);
+});
+
+test('validateAssetRefs: null soft_asset_ref value is skipped', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: null }
+    })],
+  ]);
+  const issues = validateAssetRefs(defs, new Map(), {});
+  assert.deepEqual(issues, []);
+});
+
+test('validateAssetRefs: recurses into struct and array shapes', () => {
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      audio_config: {
+        type: 'struct', struct_name: 'AudioConfig',
+        value: {
+          open_sound: {
+            type: 'soft_asset_ref', class: 'SoundCue', value: '/Game/Audio/Missing.SC_Missing'
+          }
+        }
+      }
+    })],
+  ]);
+  const issues = validateAssetRefs(defs, new Map(), {});
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'missing-asset-ref');
+  assert.equal((issues[0] as any).path, '/Game/Audio/Missing.SC_Missing');
 });

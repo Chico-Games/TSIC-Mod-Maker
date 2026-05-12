@@ -1,9 +1,12 @@
 import type { DefinitionRecord, DefinitionsKey } from '../store/definitionsStore';
 import type { ClassNode, PropertyMeta } from '../store/appSchemaStore';
+import type { AssetCatalogEntry } from './dataSource';
 
 export type DriftIssue =
   | { recordKey: DefinitionsKey; kind: 'unknown-class'; className: string }
-  | { recordKey: DefinitionsKey; kind: 'unknown-property'; parentType: string; propertyName: string };
+  | { recordKey: DefinitionsKey; kind: 'unknown-property'; parentType: string; propertyName: string }
+  | { recordKey: DefinitionsKey; kind: 'missing-asset-ref'; path: string; assetClass: string }
+  | { recordKey: DefinitionsKey; kind: 'asset-ref-guid-mismatch'; path: string; assetClass: string; expectedGuid: string; currentGuid: string };
 
 const MAX_ISSUES = 200;
 
@@ -65,6 +68,57 @@ export function validateSchemaDrift(
           parentType: bareName(fullName),
           propertyName: propName,
         })) return out;
+      }
+    }
+  }
+  return out;
+}
+
+/** Walk every "envelope" (object with a `type` field) reachable from a value,
+ *  recursing into struct/array bodies. Used by validateAssetRefs and the
+ *  asset-ref editor flow (Task 7.2). */
+export function* iterEnvelopes(value: any): Generator<any> {
+  if (value && typeof value === 'object') {
+    if ('type' in value) {
+      yield value;
+      const inner = value.value;
+      if (inner && (typeof inner === 'object')) yield* iterEnvelopes(inner);
+    } else if (Array.isArray(value)) {
+      for (const v of value) yield* iterEnvelopes(v);
+    } else {
+      for (const v of Object.values(value)) yield* iterEnvelopes(v);
+    }
+  }
+}
+
+export function validateAssetRefs(
+  defs: Map<DefinitionsKey, DefinitionRecord>,
+  catalogs: Map<string, AssetCatalogEntry[]>,
+  expectedGuids: Record<string, string>,
+): DriftIssue[] {
+  const out: DriftIssue[] = [];
+  for (const [key, rec] of defs) {
+    const props = rec.json?.properties;
+    if (!props) continue;
+    for (const env of iterEnvelopes(props)) {
+      if (env?.type !== 'soft_asset_ref') continue;
+      const path = env.value;
+      if (!path) continue;
+      const cls = env.class as string;
+      const entries = catalogs.get(cls);
+      const entry = entries?.find((e) => e.path === path);
+      if (!entry) {
+        out.push({ recordKey: key, kind: 'missing-asset-ref', path, assetClass: cls });
+        continue;
+      }
+      const expected = expectedGuids[path];
+      // Skip mismatch detection when either side is empty — guids are
+      // unknown/unavailable (UE 5.x doesn't expose PackageGuid by default).
+      if (expected && entry.package_guid && expected !== entry.package_guid) {
+        out.push({
+          recordKey: key, kind: 'asset-ref-guid-mismatch', path, assetClass: cls,
+          expectedGuid: expected, currentGuid: entry.package_guid,
+        });
       }
     }
   }
