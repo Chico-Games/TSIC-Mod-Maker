@@ -3,6 +3,7 @@ import { useDndContext, useDroppable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import type { DefinitionsKey } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 import { getFolderTheme } from './folderTheme';
 import { humanizeAssetId } from './definitionsNaming';
 import { RecipeCard } from './RecipeCard';
@@ -78,7 +79,7 @@ export function StationsSubTab() {
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
-  const classNodes = useDefinitionsStore((s) => s.classNodes);
+  const classNodes = useAppSchemaStore((s) => s.classNodes);
 
   const [filter, setFilter] = useState('');
   const selectedKey = useAppStore((s) => s.selectedStationKey);

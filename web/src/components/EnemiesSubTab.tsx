@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 import { humanizeAssetId } from './definitionsNaming';
 import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
@@ -26,7 +27,7 @@ export function EnemiesSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
-  const classNodes = useDefinitionsStore((s) => s.classNodes);
+  const classNodes = useAppSchemaStore((s) => s.classNodes);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);

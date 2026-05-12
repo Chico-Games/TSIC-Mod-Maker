@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 import { humanizeAssetId } from './definitionsNaming';
 import { getFolderTheme } from './folderTheme';
 import { DefRefSlot } from './DefRefSlot';
@@ -48,7 +49,7 @@ export function FurnitureSubTab() {
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const deleteDefinition = useDefinitionsStore((s) => s.deleteDefinition);
-  const classNodes = useDefinitionsStore((s) => s.classNodes);
+  const classNodes = useAppSchemaStore((s) => s.classNodes);
   const jumpToDef = useJumpToDefinition();
 
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);

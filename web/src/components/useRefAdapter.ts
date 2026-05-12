@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 import type { RefAdapter } from './TypedValueEditor';
 
 /** Build the RefAdapter that the TypedPropertiesEditor expects, sourced
@@ -12,9 +13,9 @@ export function useRefAdapter(onJumpToId?: (assetId: string) => void): RefAdapte
   const assetsOfClass = useDefinitionsStore((s) => s.assetsOfClass);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
   const lookupContainerType = useDefinitionsStore((s) => s.lookupContainerType);
-  const getPropertyMeta = useDefinitionsStore((s) => s.getPropertyMeta);
-  const lookupArrayElementClass = useDefinitionsStore((s) => s.lookupArrayElementClass);
-  const getEnumMembers = useDefinitionsStore((s) => s.getEnumMembers);
+  const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
+  const lookupArrayElementClass = useAppSchemaStore((s) => s.lookupArrayElementClass);
+  const getEnumMembers = useAppSchemaStore((s) => s.getEnumMembers);
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
 

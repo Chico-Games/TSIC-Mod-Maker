@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 import { JsonValueEditor } from './JsonValueEditor';
 import { TypedPropertiesEditor, type PinAdapter, type RefAdapter } from './TypedValueEditor';
 import { ReferenceViewer } from './ReferenceViewer';
@@ -46,13 +47,7 @@ export function DefinitionsTab() {
     createDefinitionForClass,
     assetsOfClass,
     lookupContainerType,
-    getPropertyMeta,
-    lookupArrayElementClass,
-    classNodes,
     changeClass,
-    pinnedProperties,
-    togglePinnedProperty,
-    getEnumMembers,
     renameAsset,
     findItemStaticPair,
     duplicateDefinition,
@@ -63,6 +58,13 @@ export function DefinitionsTab() {
     outgoingReferences,
     incomingReferences,
   } = useDefinitionsStore();
+
+  const classNodes = useAppSchemaStore((s) => s.classNodes);
+  const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
+  const lookupArrayElementClass = useAppSchemaStore((s) => s.lookupArrayElementClass);
+  const getEnumMembers = useAppSchemaStore((s) => s.getEnumMembers);
+  const pinnedProperties = useAppSchemaStore((s) => s.pinnedProperties);
+  const togglePinnedProperty = useAppSchemaStore((s) => s.togglePinnedProperty);
 
   const [globalQuery, setGlobalQuery] = useState('');
   const [showValidation, setShowValidation] = useState(false);

@@ -1,4 +1,5 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useAppSchemaStore } from '../store/appSchemaStore';
 
 export type DragSource =
   | { type: 'palette-item'; class: string; value: string }
@@ -31,10 +32,10 @@ export function isClassCompatible(sourceClass: string, expectedClass: string): b
   const want = expectedClass.replace(/^U/, '');
   const src = sourceClass.replace(/^U/, '');
   if (src === want) return true;
-  const store = useDefinitionsStore.getState();
+  const schemaStore = useAppSchemaStore.getState();
   const node =
-    store.classNodes.get(`U${src}`) ??
-    store.classNodes.get(src);
+    schemaStore.classNodes.get(`U${src}`) ??
+    schemaStore.classNodes.get(src);
   if (!node) return false;
   return node.parents.some((p) => {
     const bare = p.replace(/^U/, '');
