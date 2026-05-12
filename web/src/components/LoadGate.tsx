@@ -1,5 +1,4 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
-import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
 export function LoadGate() {
   const futureBlock = useDefinitionsStore((s) => s.futureVersionBlock);
@@ -27,8 +26,8 @@ export function LoadGate() {
   }
 
   if (gate && gate.mode === 'drift') {
-    const shown = (gate.issues as DriftIssue[]).filter((i) => i.recordKey !== '__and_more__').slice(0, 50);
-    const sentinel = (gate.issues as DriftIssue[]).find((i) => i.recordKey === '__and_more__');
+    const shown = gate.issues.filter((i) => i.recordKey !== '__and_more__').slice(0, 50);
+    const sentinel = gate.issues.find((i) => i.recordKey === '__and_more__');
     const more = (gate.issues.length - shown.length) - (sentinel ? 1 : 0);
     return (
       <div className="loadgate-overlay" onClick={() => dismissGate('cancel')}>
@@ -36,7 +35,7 @@ export function LoadGate() {
           <h2>Schema drift detected</h2>
           <p>
             The following records use classes or properties that don't appear in the current app schema.
-            Continue anyway to load them; they'll show up in the Validations tab.
+            You can load them and edit anyway; schema drift won't block saves.
           </p>
           <ul className="loadgate-issues">
             {shown.map((i, idx) => (
