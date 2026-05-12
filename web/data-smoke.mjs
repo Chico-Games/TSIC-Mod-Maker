@@ -111,6 +111,69 @@ async function main() {
   }
   console.log(`[data-smoke] partner-resolvable: ${partnerSlots - partnerMissing}/${partnerSlots} (missing ${partnerMissing} — auto-create will mint these)`);
 
+  // Asset catalogs + tags cross-check.
+  const catalogDir = join(ROOT, '.assets');
+  const catalogs = new Map(); // class -> Set of valid paths
+  if (existsSync(catalogDir)) {
+    for (const file of await readdir(catalogDir)) {
+      if (!file.endsWith('.json')) continue;
+      const cls = file.replace(/\.json$/, '');
+      const payload = JSON.parse(await readFile(join(catalogDir, file), 'utf8'));
+      catalogs.set(cls, new Set((payload.entries ?? []).map((e) => e.path)));
+    }
+  }
+
+  const tagFile = join(ROOT, '.gameplay-tags.json');
+  const tagSet = existsSync(tagFile)
+    ? new Set(JSON.parse(await readFile(tagFile, 'utf8')).tags ?? [])
+    : new Set();
+
+  function* envelopes(v) {
+    if (v && typeof v === 'object') {
+      if ('type' in v) {
+        yield v;
+        if (v.value && typeof v.value === 'object') yield* envelopes(v.value);
+      } else if (Array.isArray(v)) {
+        for (const x of v) yield* envelopes(x);
+      } else {
+        for (const x of Object.values(v)) yield* envelopes(x);
+      }
+    }
+  }
+
+  let unresolvedRefs = 0, unknownTags = 0, skippedNoCatalog = 0;
+  for (const { folder, id, json } of byId.values()) {
+    for (const env of envelopes(json.properties)) {
+      if (env.type === 'soft_asset_ref' && env.value) {
+        const cat = catalogs.get(env.class);
+        if (!cat) {
+          skippedNoCatalog++;
+          fail(`${folder}/${id}: no catalog for ref class ${env.class} (envelope path: ${env.value})`);
+          continue;
+        }
+        if (!cat.has(env.value)) {
+          unresolvedRefs++;
+          fail(`${folder}/${id}: unresolved ${env.class} ref ${env.value}`);
+        }
+      }
+      if (env.type === 'gameplay_tag' && env.value) {
+        if (!tagSet.has(env.value)) {
+          unknownTags++;
+          fail(`${folder}/${id}: unknown tag ${env.value}`);
+        }
+      }
+      if (env.type === 'gameplay_tag_container' && Array.isArray(env.value)) {
+        for (const t of env.value) {
+          if (!tagSet.has(t)) {
+            unknownTags++;
+            fail(`${folder}/${id}: unknown tag ${t}`);
+          }
+        }
+      }
+    }
+  }
+  console.log(`[data-smoke] cross-check: ${unresolvedRefs} unresolved soft asset refs, ${unknownTags} unknown tags, ${skippedNoCatalog} refs with no catalog (class not exported)`);
+
   if (failures.length > 0) {
     console.error('\n[data-smoke] FAILURES:');
     for (const f of failures.slice(0, 50)) console.error('  -', f);
