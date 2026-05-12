@@ -10,13 +10,16 @@ beforeEach(async () => {
 });
 
 test('listRecents starts empty after cleanup', async () => {
-  assert.deepEqual(await listRecents(), []);
+  const list = await listRecents();
+  assert.equal(list.length, 1);
+  assert.equal(list[0].handleName, 'starter-project');
+  assert.equal(list[0].name, 'Starter project');
 });
 
 test('addRecent stores and lists with lastOpened', async () => {
   await addRecent({ name: 'P1', handleName: 'h1', handle: fakeHandle('h1') });
   const list = await listRecents();
-  assert.equal(list.length, 1);
+  assert.equal(list.length, 2);
   assert.equal(list[0].handleName, 'h1');
   assert.equal(list[0].name, 'P1');
   assert.ok(typeof list[0].lastOpened === 'number');
@@ -28,7 +31,7 @@ test('addRecent dedupes by handleName and bumps lastOpened', async () => {
   await new Promise((r) => setTimeout(r, 5));
   await addRecent({ name: 'P', handleName: 'dup', handle: fakeHandle('dup') });
   const list = await listRecents();
-  assert.equal(list.length, 1);
+  assert.equal(list.length, 2);
   assert.ok(list[0].lastOpened > first, 'lastOpened should advance');
 });
 
@@ -38,12 +41,14 @@ test('listRecents is sorted desc by lastOpened and capped at 8', async () => {
     await new Promise((r) => setTimeout(r, 2));
   }
   const list = await listRecents();
-  assert.equal(list.length, 8);
-  for (let i = 1; i < list.length; i++) {
+  assert.equal(list.length, 9); // 8 real entries + Starter
+  for (let i = 1; i < list.length - 1; i++) {
     assert.ok(list[i - 1].lastOpened >= list[i].lastOpened);
   }
   // Most recent insertion wins.
   assert.equal(list[0].handleName, 'h11');
+  // Starter is always last.
+  assert.equal(list[list.length - 1].handleName, 'starter-project');
 });
 
 test('removeRecent drops the entry', async () => {
@@ -76,7 +81,7 @@ test('cap eviction drops oldest, keeps newest', async () => {
     await new Promise((r) => setTimeout(r, 2));
   }
   const list = await listRecents();
-  assert.equal(list.length, 8);
+  assert.equal(list.length, 9); // 8 real entries + Starter
   // The two oldest (cap0, cap1) should be gone.
   assert.equal(list.find((r) => r.handleName === 'cap0'), undefined);
   assert.equal(list.find((r) => r.handleName === 'cap1'), undefined);
@@ -94,4 +99,26 @@ test('DataCloneError fallback stores entry without handle', async () => {
   const list = await listRecents();
   const entry = list.find((r) => r.handleName === 'fb');
   assert.ok(entry, 'addRecent should always result in a listable entry');
+});
+
+test('listRecents always includes synthetic Starter entry', async () => {
+  const r1 = await listRecents();
+  assert.equal(r1.length, 1);
+  assert.equal(r1[0].handleName, 'starter-project');
+  assert.equal(r1[0].name, 'Starter project');
+
+  // Adding a real recent does not displace the Starter; Starter stays at the end.
+  await addRecent({ name: 'P', handleName: 'h1', handle: fakeHandle('h1') });
+  const r2 = await listRecents();
+  assert.equal(r2.length, 2);
+  assert.equal(r2[r2.length - 1].handleName, 'starter-project');
+});
+
+test('addRecent refuses to persist the synthetic Starter handleName', async () => {
+  await addRecent({ name: 'malicious', handleName: 'starter-project', handle: fakeHandle('x') });
+  const r = await listRecents();
+  // Should contain ONLY the synthetic Starter — the addRecent call was a no-op.
+  assert.equal(r.length, 1);
+  assert.equal(r[0].handleName, 'starter-project');
+  assert.equal(r[0].name, 'Starter project'); // Not 'malicious'.
 });
