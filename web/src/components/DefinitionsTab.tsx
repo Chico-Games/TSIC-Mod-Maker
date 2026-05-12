@@ -46,7 +46,6 @@ export function DefinitionsTab() {
     createDefinition,
     createDefinitionForClass,
     assetsOfClass,
-    lookupContainerType,
     changeClass,
     renameAsset,
     findItemStaticPair,
@@ -61,6 +60,7 @@ export function DefinitionsTab() {
 
   const classNodes = useAppSchemaStore((s) => s.classNodes);
   const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
+  const lookupContainerType = useAppSchemaStore((s) => s.lookupContainerType);
   const lookupArrayElementClass = useAppSchemaStore((s) => s.lookupArrayElementClass);
   const getEnumMembers = useAppSchemaStore((s) => s.getEnumMembers);
   const pinnedProperties = useAppSchemaStore((s) => s.pinnedProperties);

@@ -105,37 +105,6 @@ export interface DefinitionsStore {
   loading: boolean;
   /** Last error encountered. */
   errorText: string | null;
-  /** Class-hierarchy nodes keyed by U-prefixed name. Built from the sidecar
-   *  if present, otherwise from each record's class + parent_classes. */
-  classNodes: Map<string, ClassNode>;
-  /** Cached parsed `.class-hierarchy.json` payload — kept so that mutations
-   *  (createDefinition, deleteDefinition) can rebuild classNodes without
-   *  losing the sidecar's authoritative parent chains. */
-  hierarchySidecar: any | null;
-
-  /** Schema index built from every record's typed envelopes, keyed by the
-   *  dotted "type path" (no numeric indexes). Stores element_type for
-   *  array/set containers and key_type/value_type for maps. Lets the editor
-   *  fill in the element shape for an empty container by stealing it from
-   *  any sibling asset that has a non-empty value. */
-  propertySchema: Map<string, { element_type?: any; key_type?: any; value_type?: any }>;
-  /** Per-property metadata from the `.property-meta.json` sidecar — keyed
-   *  by `${ParentTypeName}.${snake_property_name}`. Both the b-stripped
-   *  and full snake form are registered; lookups can use either. */
-  propertyMeta: Map<string, PropertyMeta>;
-  /** Pinned property names. When a property in the editor matches a name
-   *  in this set, it floats to the top of the property list — regardless
-   *  of grouping. Persisted to localStorage so the choice is sticky. */
-  pinnedProperties: Set<string>;
-  /** Enum metadata from the `.property-meta.json` sidecar — keyed by the
-   *  bare enum name (no `E` prefix), matching the `enum_name` field that
-   *  the JSON exporter writes. */
-  enumMeta: Map<string, EnumMember[]>;
-  /** Per-class id naming template, derived on load from observed asset
-   *  names: `{prefix, suffix}` strings (possibly empty). Lets the editor
-   *  expose only the bare stem for the `id` field while reconstructing
-   *  the full `prefix_stem_suffix` form on save / new-asset creation. */
-  idTemplates: Map<string, { prefix: string; suffix: string }>;
 
   // Selection
   selectedFolder: string | null;
@@ -246,47 +215,9 @@ export interface DefinitionsStore {
    *  asset isn't referenced or the index hasn't been built yet. */
   referencedBy: (assetId: string) => import('./referencedByIndex').IncomingRef[];
 
-  /** Resolve a definition_ref class name (no leading U) to its folder. */
-  folderForClass: (bareClassName: string) => string | null;
-
-  /** Look up the container element/key/value type at a given property path
-   *  (no numeric segments). Returns null when no other loaded asset has a
-   *  non-null type for the same slot. Used by the typed editor to seed +Add
-   *  with the right shape for empty arrays/maps. */
-  lookupContainerType: (
-    path: (string | number)[],
-    slot: 'element_type' | 'key_type' | 'value_type',
-  ) => any | null;
-
-  /** Look up the UPROPERTY metadata for a property. `parentTypeName` is
-   *  either the asset class (no `U` prefix) or the enclosing struct name.
-   *  Walks the class parent chain so a property defined on `UItemDefinition`
-   *  is found when the asset is a `UConsumableDefinition`. */
-  getPropertyMeta: (
-    parentTypeName: string | null | undefined,
-    propertyName: string,
-  ) => PropertyMeta | null;
-
-  /** When meta has an `element_class` for the given property, return the
-   *  bare class name (no `U`) — used to seed empty arrays whose
-   *  element_type is null and where the schema sniff also turned up
-   *  nothing. Returns null when meta has no class. */
-  lookupArrayElementClass: (
-    parentTypeName: string | null | undefined,
-    propertyName: string,
-  ) => string | null;
-
   /** Update an asset's `class` (and parent_classes) — the file is moved to
    *  the new class's folder on the next save. */
   changeClass: (key: DefinitionsKey, newClass: string) => void;
-
-  /** Toggle whether a property name is pinned. Pinned names float to the
-   *  top of the typed-property editor on every asset that has them. */
-  togglePinnedProperty: (name: string) => void;
-
-  /** All members of an enum (bare name; `E` prefix dropped by the
-   *  exporter). Returns null when the sidecar has nothing for it. */
-  getEnumMembers: (enumName: string | null | undefined) => EnumMember[] | null;
 
   /** Rename an asset to a new bare stem. The store reconstructs the
    *  full `prefix_stem_suffix` id by consulting idTemplates, updates
@@ -384,25 +315,7 @@ export interface DefinitionsStore {
 }
 
 const LS_AUTOLOAD = 'tsic.def.autoload.v1';
-const LS_PINNED = 'tsic.def.pinned.v1';
 const HANDLE_KEY = 'definitions-root';
-
-function loadPinned(): Set<string> {
-  try {
-    const raw = localStorage.getItem(LS_PINNED);
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    return new Set(Array.isArray(arr) ? arr.map(String) : []);
-  } catch {
-    return new Set();
-  }
-}
-
-function savePinned(set: Set<string>) {
-  try {
-    localStorage.setItem(LS_PINNED, JSON.stringify([...set]));
-  } catch { /* noop */ }
-}
 
 function key(folder: string, id: string): DefinitionsKey {
   return `${folder}/${id}`;
@@ -696,33 +609,16 @@ async function readAllJson(
   folders: string[];
   defs: Map<DefinitionsKey, DefinitionRecord>;
   rawFiles: Array<{ folder: string; name: string; text: string }>;
-  hierarchySidecar: any | null;
-  propertyMetaSidecar: any | null;
 }> {
   const folders: string[] = [];
   const defs = new Map<DefinitionsKey, DefinitionRecord>();
   const rawFiles: Array<{ folder: string; name: string; text: string }> = [];
-  let hierarchySidecar: any | null = null;
-  let propertyMetaSidecar: any | null = null;
   // @ts-ignore - .entries() is part of the File System Access API but TS lib
   // typings sometimes lag.
   for await (const [name, entry] of rootHandle.entries()) {
     if ((entry as any).kind === 'file') {
-      if (name === '.class-hierarchy.json') {
-        try {
-          const file = await (entry as FileSystemFileHandle).getFile();
-          hierarchySidecar = JSON.parse(await file.text());
-        } catch (e) {
-          console.warn('[definitions] failed to read .class-hierarchy.json', e);
-        }
-      } else if (name === '.property-meta.json') {
-        try {
-          const file = await (entry as FileSystemFileHandle).getFile();
-          propertyMetaSidecar = JSON.parse(await file.text());
-        } catch (e) {
-          console.warn('[definitions] failed to read .property-meta.json', e);
-        }
-      }
+      // Sidecar files (.class-hierarchy.json, .property-meta.json) are no
+      // longer read from the project folder — schema comes from appSchemaStore.
       continue;
     }
     if ((entry as any).kind !== 'directory') continue;
@@ -761,36 +657,7 @@ async function readAllJson(
     }
   }
   folders.sort();
-  return { folders, defs, rawFiles, hierarchySidecar, propertyMetaSidecar };
-}
-
-/** Build the propertyMeta map from the `.property-meta.json` sidecar.
- *  The sidecar payload is `{ schema_version, properties: { key: meta } }`
- *  — we just lift `properties` into a Map for O(1) lookups. */
-function buildPropertyMeta(sidecar: any | null): Map<string, PropertyMeta> {
-  const out = new Map<string, PropertyMeta>();
-  if (!sidecar || typeof sidecar !== 'object') return out;
-  const props = sidecar.properties;
-  if (!props || typeof props !== 'object') return out;
-  for (const [k, v] of Object.entries(props)) {
-    if (v && typeof v === 'object') {
-      out.set(k, v as PropertyMeta);
-    }
-  }
-  return out;
-}
-
-function buildEnumMeta(sidecar: any | null): Map<string, EnumMember[]> {
-  const out = new Map<string, EnumMember[]>();
-  if (!sidecar || typeof sidecar !== 'object') return out;
-  const enums = sidecar.enums;
-  if (!enums || typeof enums !== 'object') return out;
-  for (const [k, v] of Object.entries(enums)) {
-    if (Array.isArray(v)) {
-      out.set(k, v as EnumMember[]);
-    }
-  }
-  return out;
+  return { folders, defs, rawFiles };
 }
 
 /** Inspect every loaded record to extract its (prefix, stem, suffix)
@@ -1189,12 +1056,13 @@ async function loadFromDataSource(
       set({ loadGate: null });
     }
 
-    // Build derived state. Keep populating both definitionsStore's schema
-    // fields AND appSchemaStore (read-only here) until Task 15 removes the
-    // former.
+    // Build per-load derived state and push into appSchemaStore.
     const classNodes = buildClassNodes(defs, schema.hierarchySidecar);
     const propertySchema = buildPropertySchema(defs);
     const idTemplates = buildIdTemplates(defs);
+
+    useAppSchemaStore.setState({ classNodes });
+    useAppSchemaStore.getState().setPerLoadDerived({ propertySchema, idTemplates });
 
     // Preserve current selection if still valid.
     const cur = get();
@@ -1212,12 +1080,6 @@ async function loadFromDataSource(
       definitions: defs,
       dirty: new Set(),
       folders,
-      classNodes,
-      hierarchySidecar: schema.hierarchySidecar,
-      propertySchema,
-      propertyMeta: schema.propertyMeta,
-      enumMeta: schema.enumMeta,
-      idTemplates,
       selectedFolder,
       selectedKey,
       loadedAt: Date.now(),
@@ -1273,14 +1135,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   loadedAt: null,
   loading: false,
   errorText: null,
-  classNodes: new Map(),
-  hierarchySidecar: null,
-  propertySchema: new Map(),
-  propertyMeta: new Map(),
-  pinnedProperties: loadPinned(),
-  enumMeta: new Map(),
-  idTemplates: new Map(),
-
   selectedFolder: null,
   selectedKey: null,
   filter: '',
@@ -1495,36 +1349,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       const manifest = await manifestResp.json() as {
         folders: string[];
         files: { folder: string; ids: string[] }[];
-        sidecars: { hierarchy: boolean; propertyMeta: boolean };
+        sidecars?: { hierarchy: boolean; propertyMeta: boolean };
       };
 
-      // Write sidecars.
-      if (manifest.sidecars?.hierarchy) {
-        try {
-          const r = await fetch(`${baseUrl}base-definitions/.class-hierarchy.json`);
-          if (r.ok) {
-            const text = await r.text();
-            const fh = await handle.getFileHandle('.class-hierarchy.json', { create: true });
-            const wr = await (fh as any).createWritable();
-            await wr.write(text);
-            await wr.close();
-          }
-        } catch (e) { console.warn('[definitions] failed to seed .class-hierarchy.json', e); }
-      }
-      if (manifest.sidecars?.propertyMeta) {
-        try {
-          const r = await fetch(`${baseUrl}base-definitions/.property-meta.json`);
-          if (r.ok) {
-            const text = await r.text();
-            const fh = await handle.getFileHandle('.property-meta.json', { create: true });
-            const wr = await (fh as any).createWritable();
-            await wr.write(text);
-            await wr.close();
-          }
-        } catch (e) { console.warn('[definitions] failed to seed .property-meta.json', e); }
-      }
-
       // Write every definition file, concurrency-capped.
+      // Sidecar files (.class-hierarchy.json, .property-meta.json) are NOT
+      // seeded into new projects — schema comes from appSchemaStore instead.
       const allFiles: { folder: string; id: string }[] = [];
       for (const f of manifest.files || []) {
         if (isLayoutFolder(f.folder)) continue;
@@ -1574,17 +1404,16 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   forgetDirectory: async () => {
     await deleteHandle(HANDLE_KEY);
+    useAppSchemaStore.setState({
+      classNodes: new Map(),
+      propertySchema: new Map(),
+      idTemplates: new Map(),
+    });
     set({
       directoryHandle: null,
       projectMeta: null,
       unrealSyncPath: '',
       definitions: new Map(),
-      classNodes: new Map(),
-      hierarchySidecar: null,
-      propertySchema: new Map(),
-      propertyMeta: new Map(),
-      enumMeta: new Map(),
-      idTemplates: new Map(),
       dirty: new Set(),
       folders: [],
       selectedFolder: null,
@@ -1666,7 +1495,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       }
       // Write every loaded record (regardless of dirty state) so the new
       // folder is a complete copy.
-      const { definitions, classNodes } = get();
+      const { definitions } = get();
+      const classNodes = useAppSchemaStore.getState().classNodes;
       let saved = 0;
       let failed = 0;
       const newDefs = new Map<DefinitionsKey, DefinitionRecord>();
@@ -1809,7 +1639,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
     const text = serializeDefinition(rec);
     try {
-      const targetFolder = computeTargetFolder(rec, get().classNodes);
+      const targetFolder = computeTargetFolder(rec, useAppSchemaStore.getState().classNodes);
       await dataSource.writeFile(targetFolder, rec.id, text);
       const folderChanged = targetFolder !== rec.diskFolder;
       const idChanged = rec.id !== rec.diskId;
@@ -1856,7 +1686,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   saveAllDirty: async () => {
-    const { dataSource, definitions, dirty, classNodes, folders } = get();
+    const { dataSource, definitions, dirty, folders } = get();
+    const classNodes = useAppSchemaStore.getState().classNodes;
     if (!dataSource) return { saved: 0, failed: 0 };
     if (dataSource.readOnly || !dataSource.writeFile) {
       set({ toast: { kind: 'error', text: 'This source is read-only. Use Save As to write changes.' } });
@@ -2013,65 +1844,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   referencedBy: (assetId) => get().referencedByIndex.get(assetId) ?? [],
 
-  folderForClass: (bareClassName) => {
-    if (!bareClassName) return null;
-    const { classNodes } = get();
-    const node = classNodes.get(`U${bareClassName}`) ?? classNodes.get(bareClassName);
-    return node?.folder ?? null;
-  },
-
-  lookupContainerType: (path, slot) => {
-    const { propertySchema } = get();
-    const k = path.filter((s) => typeof s === 'string').join('.');
-    const entry = propertySchema.get(k);
-    return entry ? (entry as any)[slot] ?? null : null;
-  },
-
-  getPropertyMeta: (parentTypeName, propertyName) => {
-    if (!propertyName) return null;
-    const { propertyMeta, classNodes } = get();
-    const candidates: string[] = [];
-    if (parentTypeName) {
-      const bare = parentTypeName.replace(/^U/, '');
-      candidates.push(bare);
-      // Walk class parent chain so a property declared on UItemDefinition is
-      // found when the asset is a UConsumableDefinition. Struct names (`F…`)
-      // won't have a node and just fall through.
-      const node = classNodes.get(`U${bare}`) ?? classNodes.get(bare);
-      if (node?.parents) {
-        for (const p of node.parents) {
-          candidates.push(p.replace(/^U/, ''));
-        }
-      }
-    }
-    // Try the b-stripped form too — the .h scanner registers both, but if
-    // the editor is asked about a name like `b_foo` and the meta only has
-    // `foo`, the alternate form lets us match.
-    const propAlternates = [propertyName];
-    if (/^b_[a-z]/.test(propertyName)) {
-      propAlternates.push(propertyName.slice(2));
-    }
-    for (const cls of candidates) {
-      for (const p of propAlternates) {
-        const hit = propertyMeta.get(`${cls}.${p}`);
-        if (hit) return hit;
-      }
-    }
-    return null;
-  },
-
-  lookupArrayElementClass: (parentTypeName, propertyName) => {
-    const meta = get().getPropertyMeta(parentTypeName, propertyName);
-    return meta?.element_class ?? null;
-  },
-
-  getEnumMembers: (enumName) => {
-    if (!enumName) return null;
-    const { enumMeta } = get();
-    const bare = enumName.replace(/^E/, '');
-    return enumMeta.get(bare) ?? enumMeta.get(enumName) ?? null;
-  },
-
   renameAsset: (k, newBareName) => {
     // Asset ids never carry whitespace — the user types the
     // humanized form ("Baked Potato") in either the asset title or
@@ -2087,7 +1859,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     // Use the per-class template when available; otherwise preserve the
     // record's existing prefix/suffix so renames don't accidentally drop
     // them.
-    const tmpl = cur.idTemplates.get(bareCls);
+    const tmpl = useAppSchemaStore.getState().idTemplates.get(bareCls);
     const existing = splitAssetId(rec.id);
     const prefix = tmpl?.prefix ?? existing.prefix;
     const suffix = tmpl?.suffix ?? existing.suffix;
@@ -2146,23 +1918,14 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     return newKey;
   },
 
-  togglePinnedProperty: (name) => {
-    if (!name) return;
-    const cur = get().pinnedProperties;
-    const next = new Set(cur);
-    if (next.has(name)) next.delete(name);
-    else next.add(name);
-    savePinned(next);
-    set({ pinnedProperties: next });
-  },
-
   changeClass: (k, newClass) => {
     const cur = get();
     const rec = cur.definitions.get(k);
     if (!rec) return;
     const want = newClass.startsWith('U') ? newClass : `U${newClass}`;
     if (rec.json?.class === want) return;
-    const node = cur.classNodes.get(want) ?? cur.classNodes.get(want.slice(1));
+    const schemaClassNodes = useAppSchemaStore.getState().classNodes;
+    const node = schemaClassNodes.get(want) ?? schemaClassNodes.get(want.slice(1));
     const parents = node?.parents ? [...node.parents] : Array.isArray(rec.json?.parent_classes)
       ? rec.json.parent_classes
       : [];
@@ -2240,7 +2003,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   findItemStaticPair: (k) => {
-    const { definitions, classNodes } = get();
+    const { definitions } = get();
+    const classNodes = useAppSchemaStore.getState().classNodes;
     const rec = definitions.get(k);
     if (!rec) return null;
     const cls = String(rec.json?.class ?? '');
@@ -2305,7 +2069,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     // name from the class (e.g. ConsumableDefinition → consumable_definitions)
     // if the sidecar doesn't know it.
     const wantClass = `U${bareClassName}`;
-    let folder = cur.classNodes.get(wantClass)?.folder ?? cur.classNodes.get(bareClassName)?.folder;
+    const schemaClassNodes = useAppSchemaStore.getState().classNodes;
+    let folder = schemaClassNodes.get(wantClass)?.folder ?? schemaClassNodes.get(bareClassName)?.folder;
     if (!folder) {
       // class_to_folder: trim trailing 'Definition' suffix only if there are
       // multiple words, then snake_case + add `_definitions` suffix.
@@ -2379,15 +2144,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const nextDirty = new Set(cur.dirty);
     nextDirty.add(k);
     const select = opts?.select ?? true;
+    // Refresh the class + schema indexes so the new asset shows up in
+    // dropdowns and any non-empty containers it carries seed +Add for
+    // future edits.
+    useAppSchemaStore.setState({
+      classNodes: buildClassNodes(nextDefs, useAppSchemaStore.getState().hierarchySidecar),
+      propertySchema: buildPropertySchema(nextDefs),
+    });
     set({
       definitions: nextDefs,
       dirty: nextDirty,
       ...(select ? { selectedFolder: folder, selectedKey: k } : {}),
-      // Refresh the class + schema indexes so the new asset shows up in
-      // dropdowns and any non-empty containers it carries seed +Add for
-      // future edits.
-      classNodes: buildClassNodes(nextDefs, cur.hierarchySidecar),
-      propertySchema: buildPropertySchema(nextDefs),
       toast: { kind: 'info', text: `Created ${id}.json (unsaved).` },
     });
     {
@@ -2428,11 +2195,13 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     nextDefs.set(newKey, rec);
     const nextDirty = new Set(cur.dirty);
     nextDirty.add(newKey);
+    useAppSchemaStore.setState({
+      classNodes: buildClassNodes(nextDefs, useAppSchemaStore.getState().hierarchySidecar),
+      propertySchema: buildPropertySchema(nextDefs),
+    });
     set({
       definitions: nextDefs,
       dirty: nextDirty,
-      classNodes: buildClassNodes(nextDefs, cur.hierarchySidecar),
-      propertySchema: buildPropertySchema(nextDefs),
       selectedKey: newKey,
       toast: { kind: 'info', text: `Duplicated to ${newId}.json (unsaved).` },
     });
@@ -2491,11 +2260,13 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       }
     }
     const cur = get();
+    useAppSchemaStore.setState({
+      classNodes: buildClassNodes(nextDefs, useAppSchemaStore.getState().hierarchySidecar),
+      propertySchema: buildPropertySchema(nextDefs),
+    });
     set({
       definitions: nextDefs,
       dirty: nextDirty,
-      classNodes: buildClassNodes(nextDefs, cur.hierarchySidecar),
-      propertySchema: buildPropertySchema(nextDefs),
       selectedKey: cur.selectedKey === k ? null : cur.selectedKey,
       toast: {
         kind: 'info',
@@ -2524,7 +2295,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   autoCreateMissingRefs: () => {
-    const { definitions, classNodes } = get();
+    const { definitions } = get();
+    const classNodes = useAppSchemaStore.getState().classNodes;
     const known = new Set<string>();
     for (const rec of definitions.values()) known.add(rec.id);
     // Collect missing (class, value) pairs once before mutating; then
@@ -2609,7 +2381,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   findOrphanReferences: () => {
-    const { definitions, classNodes } = get();
+    const { definitions } = get();
+    const classNodes = useAppSchemaStore.getState().classNodes;
     const known = new Set<string>();
     for (const rec of definitions.values()) known.add(rec.id);
     const issues: Array<{ key: DefinitionsKey; folder: string; id: string; refPath: string; refValue: string }> = [];
@@ -2642,7 +2415,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   findItemStaticOrphans: () => {
-    const { definitions, classNodes } = get();
+    const { definitions } = get();
+    const classNodes = useAppSchemaStore.getState().classNodes;
     const out: Array<{
       key: DefinitionsKey;
       folder: string;

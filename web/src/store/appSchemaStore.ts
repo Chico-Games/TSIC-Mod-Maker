@@ -47,10 +47,20 @@ interface AppSchemaStore {
   propertyMeta: Map<string, PropertyMeta>;
   enumMeta: Map<string, EnumMember[]>;
   pinnedProperties: Set<string>;
+  propertySchema: Map<string, { element_type?: any; key_type?: any; value_type?: any }>;
+  idTemplates: Map<string, { prefix: string; suffix: string }>;
 
   loadSchema: (fetcher?: typeof fetch) => Promise<void>;
 
+  setPerLoadDerived: (d: {
+    propertySchema: Map<string, { element_type?: any; key_type?: any; value_type?: any }>;
+    idTemplates: Map<string, { prefix: string; suffix: string }>;
+  }) => void;
   getPropertyMeta: (parentTypeName: string | null | undefined, propertyName: string) => PropertyMeta | null;
+  lookupContainerType: (
+    path: (string | number)[],
+    slot: 'element_type' | 'key_type' | 'value_type',
+  ) => any | null;
   lookupArrayElementClass: (parentTypeName: string | null | undefined, propertyName: string) => string | null;
   getEnumMembers: (enumName: string | null | undefined) => EnumMember[] | null;
   folderForClass: (bareClassName: string) => string | null;
@@ -118,6 +128,8 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
   propertyMeta: new Map(),
   enumMeta: new Map(),
   pinnedProperties: loadPinned(),
+  propertySchema: new Map(),
+  idTemplates: new Map(),
 
   loadSchema: async (fetcher = fetch) => {
     if (get().loaded) return;
@@ -142,6 +154,19 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
       set({ errorText: String(e?.message ?? e) });
       throw e;
     }
+  },
+
+  setPerLoadDerived: ({ propertySchema, idTemplates }) =>
+    set({ propertySchema, idTemplates }),
+
+  lookupContainerType: (path, slot) => {
+    // Walk the path key by key (strings only — numeric indices in arrays
+    // mean any element, so the recorded schema key is the parent).
+    const segs = path.filter((p) => typeof p === 'string') as string[];
+    const dotted = segs.join('.');
+    const entry = get().propertySchema.get(dotted);
+    if (!entry) return null;
+    return entry[slot] ?? null;
   },
 
   getPropertyMeta: (parentTypeName, propertyName) => {

@@ -12,7 +12,7 @@ export function useRefAdapter(onJumpToId?: (assetId: string) => void): RefAdapte
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const assetsOfClass = useDefinitionsStore((s) => s.assetsOfClass);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
-  const lookupContainerType = useDefinitionsStore((s) => s.lookupContainerType);
+  const lookupContainerType = useAppSchemaStore((s) => s.lookupContainerType);
   const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
   const lookupArrayElementClass = useAppSchemaStore((s) => s.lookupArrayElementClass);
   const getEnumMembers = useAppSchemaStore((s) => s.getEnumMembers);
