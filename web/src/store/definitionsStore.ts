@@ -927,15 +927,23 @@ async function loadFromDataSource(
         const i = nextIdx++;
         if (i >= allFiles.length) return;
         const { folder, id } = allFiles[i];
+        let text: string;
         try {
-          const text = await ds.readFile(folder, id);
+          text = await ds.readFile(folder, id);
+        } catch (e) {
+          console.warn(`[definitions] failed to read ${folder}/${id}`, e);
+          continue;
+        }
+        // Always push to rawFiles so the structural validator can surface
+        // invalid-JSON and missing-field issues even for unparseable files.
+        rawFiles.push({ folder, name: `${id}.json`, text });
+        try {
           const json = JSON.parse(text);
           defs.set(key(folder, id), {
             folder, id, json, originalText: text, diskId: id, diskFolder: folder,
           });
-          rawFiles.push({ folder, name: `${id}.json`, text });
-        } catch (e) {
-          console.warn(`[definitions] failed to read ${folder}/${id}`, e);
+        } catch {
+          // Parse error — collected in rawFiles for structural validator to surface.
         }
       }
     });
@@ -958,9 +966,14 @@ async function loadFromDataSource(
         });
       });
       if (!proceed) {
+        // Revert any handle/meta that openProject set optimistically before
+        // calling reload(), so the header doesn't show a half-loaded project.
         set({
           loading: false,
           loadGate: null,
+          directoryHandle: null,
+          dataSource: null,
+          projectMeta: null,
           toast: { kind: 'info', text: 'Load cancelled.' },
         });
         return;
@@ -987,7 +1000,14 @@ async function loadFromDataSource(
         });
       });
       if (!proceed) {
-        set({ loading: false, loadGate: null, toast: { kind: 'info', text: 'Load cancelled.' } });
+        set({
+          loading: false,
+          loadGate: null,
+          directoryHandle: null,
+          dataSource: null,
+          projectMeta: null,
+          toast: { kind: 'info', text: 'Load cancelled.' },
+        });
         return;
       }
       set({ loadGate: null });

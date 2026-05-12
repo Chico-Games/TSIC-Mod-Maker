@@ -68,13 +68,25 @@ function bareName(c: string): string { return c.startsWith('U') ? c.slice(1) : c
 function buildClassNodes(payload: any): Map<string, ClassNode> {
   const m = new Map<string, ClassNode>();
   if (!payload?.classes) return m;
-  for (const c of payload.classes) {
-    if (!c?.name) continue;
-    m.set(c.name, {
-      name: c.name,
-      parents: Array.isArray(c.parents) ? c.parents : [],
-      folder: c.folder ?? null,
-    });
+  const classes = payload.classes;
+  // Support both array format (unit tests) and object format (real UE export).
+  if (Array.isArray(classes)) {
+    for (const c of classes) {
+      if (!c?.name) continue;
+      m.set(c.name, {
+        name: c.name,
+        parents: Array.isArray(c.parents) ? c.parents : [],
+        folder: c.folder ?? null,
+      });
+    }
+  } else {
+    for (const [name, c] of Object.entries(classes) as [string, any][]) {
+      m.set(name, {
+        name,
+        parents: Array.isArray(c?.parents) ? c.parents : [],
+        folder: c?.folder ?? null,
+      });
+    }
   }
   return m;
 }

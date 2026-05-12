@@ -144,7 +144,7 @@ function buildMockPicker(initialContents) {
           'ID_OK_CI.json': JSON.stringify({
             id: 'ID_OK_CI',
             asset_path: '/Game/X',
-            class: 'BP_C',
+            class: 'UConstructableItemDefinition',
           }),
           'broken.json': '{ not valid json',
         },
@@ -168,6 +168,41 @@ function buildMockPicker(initialContents) {
     }
 
     // ====================================================================
+    // Test 2c: schema drift gate — Continue path
+    // ====================================================================
+    {
+      const ctx = await browser.newContext();
+      const page = await ctx.newPage();
+      const tree = {
+        'project.json': JSON.stringify({ schema_version: 1, name: 'DriftP' }, null, 2),
+        'consumable_definitions': {
+          'ID_Mystery_CN.json': JSON.stringify({
+            id: 'ID_Mystery_CN',
+            asset_path: '/Game/X/ID_Mystery_CN',
+            class: 'UFakeClass_QYZ', // intentionally unknown
+            properties: {},
+          }),
+        },
+      };
+      await page.addInitScript({ content: buildMockPicker(tree) });
+      await page.goto(`http://localhost:${PORT}/`);
+      await page.waitForSelector('.header .file-info');
+      await page.locator('button:has-text("Open project")').click();
+      await page.waitForSelector('.loadgate-modal h2:has-text("Schema drift detected")');
+      assert(true, 'Drift: LoadGate appears with drift heading');
+      const driftText = await page.locator('.loadgate-issues').textContent();
+      assert(
+        driftText && driftText.includes('UFakeClass_QYZ'),
+        'Drift: unknown class is listed in the modal',
+      );
+      await page.locator('.loadgate-modal button:has-text("Continue anyway")').click();
+      await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
+      await page.waitForSelector('.file-info:has-text("Project: DriftP")');
+      assert(true, 'Drift: project loads after Continue');
+      await ctx.close();
+    }
+
+    // ====================================================================
     // Test 2b: draft autosave + restore prompt
     // ====================================================================
     {
@@ -176,7 +211,7 @@ function buildMockPicker(initialContents) {
         'project.json': JSON.stringify({ schema_version: 1, name: 'DraftP' }, null, 2),
         'constructable_item_definitions': {
           'ID_DraftFoo_CI.json': JSON.stringify(
-            { id: 'ID_DraftFoo_CI', asset_path: '/Game/X', class: 'BP_C' },
+            { id: 'ID_DraftFoo_CI', asset_path: '/Game/X', class: 'UConstructableItemDefinition' },
             null,
             2,
           ),
@@ -257,7 +292,7 @@ function buildMockPicker(initialContents) {
         // handle.name as the project name and treat the version as 1.
         'constructable_item_definitions': {
           'ID_Legacy_CI.json': JSON.stringify(
-            { id: 'ID_Legacy_CI', asset_path: '/Game/L', class: 'BP_C' },
+            { id: 'ID_Legacy_CI', asset_path: '/Game/L', class: 'UConstructableItemDefinition' },
             null,
             2,
           ),
@@ -311,7 +346,7 @@ function buildMockPicker(initialContents) {
         'project.json': JSON.stringify({ schema_version: 1, name: 'DiscardP' }, null, 2),
         'constructable_item_definitions': {
           'ID_DiscardFoo_CI.json': JSON.stringify(
-            { id: 'ID_DiscardFoo_CI', asset_path: '/Game/X', class: 'BP_C' },
+            { id: 'ID_DiscardFoo_CI', asset_path: '/Game/X', class: 'UConstructableItemDefinition' },
             null,
             2,
           ),
@@ -376,7 +411,7 @@ function buildMockPicker(initialContents) {
         'project.json': JSON.stringify({ schema_version: 1, name: 'IsoA' }, null, 2),
         'constructable_item_definitions': {
           'ID_IsoA_CI.json': JSON.stringify(
-            { id: 'ID_IsoA_CI', asset_path: '/Game/X', class: 'BP_C' },
+            { id: 'ID_IsoA_CI', asset_path: '/Game/X', class: 'UConstructableItemDefinition' },
             null,
             2,
           ),
@@ -386,7 +421,7 @@ function buildMockPicker(initialContents) {
         'project.json': JSON.stringify({ schema_version: 1, name: 'IsoB' }, null, 2),
         'constructable_item_definitions': {
           'ID_IsoB_CI.json': JSON.stringify(
-            { id: 'ID_IsoB_CI', asset_path: '/Game/X', class: 'BP_C' },
+            { id: 'ID_IsoB_CI', asset_path: '/Game/X', class: 'UConstructableItemDefinition' },
             null,
             2,
           ),

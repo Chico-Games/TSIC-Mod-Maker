@@ -169,20 +169,19 @@ export function Header() {
         >▾</button>
         {recentsOpen && (
           <div className="recents-dropdown" onMouseLeave={() => setRecentsOpen(false)}>
-            {recents.length === 0 ? (
+            {recents.filter((r) => r.handleName !== 'starter-project').length === 0 && (
               <div className="recents-empty">No recent projects yet.</div>
-            ) : (
-              recents.map((r) => (
-                <button
-                  key={r.handleName}
-                  className="recents-item"
-                  onClick={async () => { setRecentsOpen(false); await openRecent(r.handleName); }}
-                >
-                  <span className="recents-name">{r.name}</span>
-                  <span className="recents-time">{relativeTime(r.lastOpened)}</span>
-                </button>
-              ))
             )}
+            {recents.map((r) => (
+              <button
+                key={r.handleName}
+                className="recents-item"
+                onClick={async () => { setRecentsOpen(false); await openRecent(r.handleName); }}
+              >
+                <span className="recents-name">{r.name}</span>
+                <span className="recents-time">{relativeTime(r.lastOpened)}</span>
+              </button>
+            ))}
           </div>
         )}
       </div>
