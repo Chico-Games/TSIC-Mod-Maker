@@ -228,13 +228,13 @@ Filtered tree of dotted tag strings. Click a leaf = add to container. Click a pa
 
 ### Drift / tamper detection
 
-`LoadGate` already runs drift detection for unknown classes/properties. Add a third pass that emits two new drift kinds, `missing_asset_ref` and `asset_ref_guid_mismatch`:
+`LoadGate` already runs drift detection for unknown classes/properties. Add a third pass that emits two new drift kinds, `missing-asset-ref` and `asset-ref-guid-mismatch`:
 
 1. Walk loaded definitions, collect every `soft_asset_ref` value with a non-null path.
 2. `assetCatalogStore.lookupByPath(class, path)` → catalog entry (or null).
-3. Null → emit `missing_asset_ref` drift row (path no longer in project).
+3. Null → emit `missing-asset-ref` drift row (path no longer in project).
 4. Non-null → read `.asset-refs.json` `expected_guids[path]` → recorded guid at last export.
-5. Recorded guid present and ≠ catalog entry's `packageGuid` → emit `asset_ref_guid_mismatch` drift row.
+5. Recorded guid present and ≠ catalog entry's `packageGuid` → emit `asset-ref-guid-mismatch` drift row.
 6. Recorded guid absent (catalog has the path but the export didn't record it as referenced) → no drift; harmless, just means the ref was added since the export ran.
 
 ## Build sequence
