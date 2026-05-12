@@ -6,7 +6,7 @@
 
 **Goal:** Stop the JSON exporter from stripping asset refs and engine structs, emit per-class asset catalogs and a populated gameplay-tag list, wire catalog-backed pickers into the editor's typed view, and add tamper-detection drift for asset refs.
 
-**Architecture:** Two cooperating layers. The Python exporter (`Tools/Export/`) — split across an in-editor Lua extractor (`extract.lua`) and an offline normalizer (`export_definitions.py` + `lib/`) — emits lossless JSON plus catalog sidecars. The web editor (`tsic-definition-editor/web/`) gains two zustand stores and three new components consumed by `TypedValueEditor`. All existing tabs benefit because they consume `TypedValueEditor`.
+**Architecture:** Two cooperating layers. The Python exporter (`Tools/Export/run_export.py`, runs inside Unreal) emits lossless typed-envelope JSON plus catalog sidecars. The web editor (`tsic-definition-editor/web/`) gains two zustand stores and three new components consumed by `TypedValueEditor`. All existing tabs benefit because they consume `TypedValueEditor`. The dormant offline pipeline (`extract.lua` + `export_definitions.py` + `lib/property_normalizer.py`) is explicitly out of scope (Phase 0).
 
 **Tech Stack:** Python 3.11+ with pytest (`Tools/Export/pyproject.toml`); Unreal Python API + Lua MCP (`extract.lua`); TypeScript + React + zustand + Node 22 `node:test` (web).
 
@@ -14,25 +14,31 @@
 
 ---
 
+## Background — two exporters, only one is active
+
+`Tools/Export/` contains two implementations:
+
+| Pipeline | Files | Output | Status |
+|---|---|---|---|
+| **In-editor Python** | `run_export.py` (one file, ~600 lines) | Typed envelopes (`{"type":"definition_ref","class":"...","value":"..."}`) | **Active** — produced the current `test-output/Definitions/` and the bundled defaults |
+| **Lua + offline** | `extract.lua` → `intermediate/raw-export.json` → `export_definitions.py` + `lib/property_normalizer.py` + `lib/property_serializer.py` | Flat values (the serializer returns `"IRD_X"` strings, no envelope) | Dormant — the offline serializer's output shape doesn't match what the editor consumes |
+
+**This plan modifies `run_export.py` only.** The offline pipeline is explicitly out of scope (Task 0). Any work to bring it back into alignment is a separate ticket.
+
 ## File Structure
 
-**`Tools/Export/` (Python + Lua, the exporter):**
+**`Tools/Export/` (the active in-editor exporter):**
 
 | File | Status | Responsibility |
 |---|---|---|
-| `extract.lua` | Modify | Add asset-registry walk per referenced class, emit `intermediate/asset-catalog.json` with paths/names/folders/guids/bounds. |
-| `lib/property_normalizer.py` | Modify | Delete strip lists. Emit `soft_asset_ref`, struct round-trips (FTransform, FVector, AudioConfig…) via `_normalize_parsed`. |
-| `lib/asset_catalog_dumper.py` | Create | Convert intermediate catalog rows into per-class `.assets/<Class>.json` payloads. |
-| `lib/asset_ref_index.py` | Create | Walk normalized definitions, collect every `soft_asset_ref` path, look up its current `package_guid` in the catalog, emit `.asset-refs.json`. |
-| `lib/manifest_builder.py` | Modify | Add `asset_catalogs`, `thumbnails_dir`, `has_asset_refs_sidecar` fields to the manifest output. |
-| `lib/tag_dumper.py` | Modify (probably none) | Already accepts a list of dotted tag strings. Only changes if the upstream tag enumeration is broken. |
-| `export_definitions.py` | Modify | Orchestrate: read intermediate catalog, call new dumpers, write `.assets/<Class>.json`, `.asset-refs.json`. |
-| `run_export.py` | Modify | Same orchestration changes for the in-editor path. Verify `GameplayTagsManager` enumeration actually populates `.gameplay-tags.json`. |
-| `tests/test_property_normalizer.py` | Modify | Add round-trip cases for asset refs and engine structs. Strip-nothing regression. |
+| `run_export.py` | Modify | Delete `_ENGINE_ASSET_CLASS_NAMES` / `_ENGINE_STRUCT_NAMES`. Emit `soft_asset_ref` envelopes in the `unreal.Object` branch of `_normalize_value`. Drop the engine-struct early-return in the struct branch. Add the asset-registry walk + catalog write. Add the `.asset-refs.json` writer. Verify `GameplayTagsManager` tag enumeration. |
+| `lib/asset_catalog_dumper.py` | Create | Pure helper: group catalog rows by class, sort by path, return per-class payloads. Imported by `run_export.py`. |
+| `lib/asset_ref_index.py` | Create | Pure helper: walk emitted typed-envelope definitions, collect every `soft_asset_ref` path, look up its `package_guid` in the catalogs, return the `expected_guids` map. Imported by `run_export.py`. |
+| `lib/manifest_builder.py` | Modify | Add `asset_catalogs`, `thumbnails_dir`, `has_asset_refs_sidecar` fields. |
+| `tests/test_run_export.py` | Create | Unit tests for the new helpers extracted from `run_export.py` (any logic worth testing standalone — `_normalize_value` branches, `_strip_value` skeleton emission for `soft_asset_ref`, etc.). |
 | `tests/test_asset_catalog_dumper.py` | Create | Idempotence + payload shape. |
 | `tests/test_asset_ref_index.py` | Create | Builds `expected_guids` from a fixture catalog + fixture definitions. |
-| `tests/test_manifest_builder.py` | Modify | Cover new fields. |
-| `tests/fixtures/raw-export-sample.json` | Modify | Add fixture entries that exercise asset refs + nested engine structs. |
+| `tests/test_manifest_builder.py` | Modify | Cover the new fields. |
 | `tests/fixtures/asset-catalog-sample.json` | Create | Fixture for catalog dumper + asset-ref index tests. |
 
 **`tsic-definition-editor/web/` (the editor):**
@@ -46,7 +52,8 @@
 | `src/components/pickers/TagPicker.tsx` | Create | Replaces `GameplayTagContainerEditor` (and works for `gameplay_tag` too). Tree-filtered selector backed by `gameplayTagStore`. |
 | `src/components/pickers/AssetRefPicker.tsx` | Create | Inline dropdown wrapping `SearchableSelect`, backed by `assetCatalogStore`. Renders thumbnails when present. |
 | `src/components/StructRows.tsx` | Create | Recursive struct expansion. Header row + collapsible nested `TypedField`s. Replaces `StructEditor`'s flat fallback. |
-| `src/components/TypedValueEditor.tsx` | Modify | Add `soft_asset_ref` case; route `gameplay_tag` / `gameplay_tag_container` to `TagPicker`; route `struct` to `StructRows` (preserving the `GameplayEffectsToApply` smart view). |
+| `src/components/TypedValueEditor.tsx` | Modify | Add `soft_asset_ref` case; route `gameplay_tag` / `gameplay_tag_container` to `TagPicker`; route `struct` to `StructRows` (preserving the `GameplayEffectsToApply` smart view); teach `ContainerEditor` how to mint a default `soft_asset_ref` envelope when "add element" is clicked on an array/set whose element type is `soft_asset_ref`. |
+| `src/components/definitionsNaming.ts` | Modify | Revise `isNoisyProperty` so `static_mesh` / `audio_config` aren't hidden behind "Show all fields" by default. |
 | `src/persistence/schemaDriftValidator.ts` | Modify | Extend `DriftIssue` union with `missing-asset-ref` and `asset-ref-guid-mismatch`. New validator pass. |
 | `src/components/LoadGate.tsx` | Modify | Render the two new drift kinds in the existing drift overlay. |
 | `src/store/definitionsStore.ts` | Modify | On load, read `.asset-refs.json` (if present) into store state for the drift pass. |
@@ -58,512 +65,412 @@
 
 ---
 
-## Phase 1: Exporter — property round-trip
+## Phase 0: Mark the offline pipeline out of scope
 
-The Python normalizer is the offline filter that turns Lua-extracted raw rows into typed envelopes. This phase removes its strip lists and adds new envelope cases.
+The dormant offline pipeline (`export_definitions.py` + `lib/property_normalizer.py` + `lib/property_serializer.py`) emits flat values, not typed envelopes — its tests already enforce that. We don't bring it into alignment in this work; we just make sure nobody mistakes it for the active path.
 
-### Task 1.1: Round-trip tests for soft_asset_ref (TDD)
+### Task 0.1: README pointer and module deprecation note
 
 **Files:**
-- Modify: `Tools/Export/tests/test_property_normalizer.py`
+- Modify: `Tools/Export/README.md` (top of file)
+- Modify: `Tools/Export/HOW_TO_RUN.md` (top of file)
+- Modify: `Tools/Export/export_definitions.py` (module docstring)
+- Modify: `Tools/Export/lib/property_normalizer.py` (module docstring)
+- Modify: `Tools/Export/lib/property_serializer.py` (module docstring)
 
-- [ ] **Step 1: Add failing tests for soft asset ref encoding**
+- [ ] **Step 1: Add an at-the-top note in `README.md` and `HOW_TO_RUN.md`:**
 
-Add to the bottom of `test_property_normalizer.py`:
+```
+> **Two exporter paths exist.** `run_export.py` (in-editor Python) is the
+> active path — it produces the typed-envelope JSON the web editor consumes.
+> The `extract.lua` + `export_definitions.py` offline pipeline emits a
+> different (flat-value) shape and is currently dormant. Until it's
+> realigned, run `run_export.py` from inside Unreal.
+```
+
+- [ ] **Step 2: Add a one-line deprecation note** to the module docstrings of `export_definitions.py`, `lib/property_normalizer.py`, and `lib/property_serializer.py`:
 
 ```python
-def test_soft_asset_ref_static_mesh_set():
-    """TObjectPtr<UStaticMesh> with a set path becomes a soft_asset_ref envelope."""
-    out = normalize_property(
-        name="static_mesh",
-        type_str="Object(StaticMesh)",
-        cpp_type="TObjectPtr<UStaticMesh>",
-        value_str="/Game/Furniture/Meshes/SM_Door.SM_Door",
-        definition_class_names={"UFurnitureDefinition"},
-    )
+"""...existing docstring...
+
+DEPRECATED: This module is part of the offline pipeline, which is dormant
+and emits a different JSON shape (flat values) than what the web editor
+consumes. The active path is `run_export.py` (in-editor). Do not edit
+this module as part of feature work targeting the editor.
+"""
+```
+
+- [ ] **Step 3: Commit**
+
+```
+git add Tools/Export/README.md Tools/Export/HOW_TO_RUN.md \
+        Tools/Export/export_definitions.py \
+        Tools/Export/lib/property_normalizer.py \
+        Tools/Export/lib/property_serializer.py
+git commit -m "docs(exporter): flag offline pipeline as dormant; canonical path is run_export.py"
+```
+
+---
+
+## Phase 1: Exporter — lossless property round-trip in `run_export.py`
+
+`run_export.py:_normalize_value` (line ~172) already emits typed envelopes for primitives, tags, definition refs, enums, containers, and structs — it just has two strip rules that need to go and two new envelope branches to add.
+
+The two strip rules:
+
+- `_ENGINE_ASSET_CLASS_NAMES` / `_ENGINE_STRUCT_NAMES` (top of file) — referenced inside `_normalize_value`'s struct branch (line ~300) and `unreal.Object` branch (line ~287). Together they cause meshes / materials / `FTransform` / `FAudioConfig` etc. to be dropped.
+- `_strip_value` (line ~320) — already-correct skeleton emission for container `element_type`; should "just work" for the new `soft_asset_ref` envelope once it carries `type` + `class`.
+
+The two new branches:
+
+- In the `unreal.Object` branch: when the target class is NOT a TSIC Definition class, emit a `soft_asset_ref` envelope instead of returning `None`.
+- In the struct branch: remove the `_ENGINE_STRUCT_NAMES` early-return; let recursion handle every USTRUCT.
+
+### Task 1.1: Round-trip tests for soft_asset_ref + struct (TDD)
+
+**Files:**
+- Create: `Tools/Export/tests/test_run_export.py`
+
+`run_export.py` currently has no dedicated test file because the legacy plan was to test via the offline pipeline. We're adding one that tests `_normalize_value`'s output shape directly using small UE mocks.
+
+- [ ] **Step 1: Write the failing tests**
+
+```python
+# Tools/Export/tests/test_run_export.py
+"""Unit tests for run_export._normalize_value.
+
+We mock just enough of the `unreal` module surface that the function under
+test can run. This lets us assert envelope shape without booting the editor.
+"""
+import sys
+import types
+import pytest
+
+
+@pytest.fixture
+def fake_unreal(monkeypatch):
+    """Inject a minimal stand-in for the `unreal` module."""
+    fake = types.ModuleType("unreal")
+
+    class _UNameLike(str): pass
+    class _UTextLike(str): pass
+    class _UObject:
+        def __init__(self, name, class_name, class_path="/Script/TSIC.Stub"):
+            self._name = name
+            self._cls = types.SimpleNamespace(
+                get_name=lambda: class_name,
+                get_path_name=lambda: class_path,
+            )
+        def get_name(self): return self._name
+        def get_class(self): return self._cls
+
+    class _EnumBase: pass
+
+    fake.Name = _UNameLike
+    fake.Text = _UTextLike
+    fake.Object = _UObject
+    fake.EnumBase = _EnumBase
+    fake.GameplayTag = type("GameplayTag", (), {})
+    fake.GameplayTagContainer = type("GameplayTagContainer", (), {})
+    fake.log = lambda *a, **kw: None
+    fake.log_warning = lambda *a, **kw: None
+
+    monkeypatch.setitem(sys.modules, "unreal", fake)
+    return fake
+
+
+def _import_normalize(fake_unreal):
+    """Re-import run_export with the mocked unreal in place."""
+    sys.modules.pop("run_export", None)
+    import run_export
+    return run_export._normalize_value
+
+
+def test_soft_asset_ref_unknown_class(fake_unreal):
+    """Object ref whose class is not a Definition class should NOT be
+    dropped — emit a soft_asset_ref envelope."""
+    _normalize = _import_normalize(fake_unreal)
+    obj = fake_unreal.Object(name="SM_Door", class_name="StaticMesh",
+                              class_path="/Script/Engine.StaticMesh")
+    out = _normalize(obj, definition_names_no_u={"FurnitureDefinition"})
+    assert out["type"] == "soft_asset_ref"
+    assert out["class"] == "StaticMesh"
+
+
+def test_definition_ref_unchanged(fake_unreal):
+    """Object ref to a Definition class still emits definition_ref."""
+    _normalize = _import_normalize(fake_unreal)
+    obj = fake_unreal.Object(name="FD_Door", class_name="FurnitureDefinition")
+    out = _normalize(obj, definition_names_no_u={"FurnitureDefinition"})
     assert out == {
-        "kind": "soft_asset_ref",
-        "class": "StaticMesh",
-        "value": "/Game/Furniture/Meshes/SM_Door.SM_Door",
+        "type": "definition_ref",
+        "class": "FurnitureDefinition",
+        "value": "FD_Door",
     }
 
 
-def test_soft_asset_ref_material_softptr_set():
-    """TSoftObjectPtr<UMaterial> with a set path becomes a soft_asset_ref envelope."""
-    out = normalize_property(
-        name="material",
-        type_str="SoftObject(Material)",
-        cpp_type="TSoftObjectPtr<UMaterial>",
-        value_str="/Game/Materials/M_Wood.M_Wood",
-        definition_class_names=set(),
-    )
-    assert out == {
-        "kind": "soft_asset_ref",
-        "class": "Material",
-        "value": "/Game/Materials/M_Wood.M_Wood",
-    }
+def test_struct_engine_type_no_longer_dropped(fake_unreal):
+    """An FTransform (or any USTRUCT previously in _ENGINE_STRUCT_NAMES) is
+    no longer short-circuited to None."""
+    _normalize = _import_normalize(fake_unreal)
+    class _Transform:
+        static_struct = lambda self: None
+    t = _Transform()
+    out = _normalize(t, definition_names_no_u=set())
+    assert out is not None
+    assert out["type"] == "struct"
+    assert out["value"] == {}
 
 
-def test_soft_asset_ref_none_value():
-    """A None / empty soft ref becomes value: None (not dropped)."""
-    out = normalize_property(
-        name="static_mesh",
-        type_str="Object(StaticMesh)",
-        cpp_type="TObjectPtr<UStaticMesh>",
-        value_str="None",
-        definition_class_names=set(),
-    )
-    assert out == {
-        "kind": "soft_asset_ref",
-        "class": "StaticMesh",
-        "value": None,
-    }
-
-
-def test_definition_ref_unchanged():
-    """Refs to a Definition class still produce a definition_ref envelope."""
-    out = normalize_property(
-        name="upgrade_recipe",
-        type_str="Object(FurnitureUpgradeRecipe)",
-        cpp_type="TObjectPtr<UFurnitureUpgradeRecipe>",
-        value_str="/Game/Foo.FURF_Door",
-        definition_class_names={"UFurnitureUpgradeRecipe"},
-    )
-    assert out["kind"] == "definition_ref"
-    assert out["asset_name"] == "FURF_Door"
+def test_strip_value_passes_soft_asset_ref_metadata():
+    """_strip_value should preserve `class` on a soft_asset_ref skeleton."""
+    sys.modules.pop("run_export", None)
+    import run_export
+    skel = run_export._strip_value({
+        "type": "soft_asset_ref", "class": "StaticMesh",
+        "value": "/Game/SM_Foo.SM_Foo",
+    })
+    assert skel == {"type": "soft_asset_ref", "class": "StaticMesh"}
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
-
-Run from `Tools/Export/`:
+- [ ] **Step 2: Run; verify FAIL**
 
 ```
-pytest tests/test_property_normalizer.py -k "soft_asset_ref or definition_ref_unchanged" -v
+cd Tools/Export
+pytest tests/test_run_export.py -v
 ```
 
-Expected: FAIL — current code returns `None` for engine-asset cpp types, no `soft_asset_ref` kind exists yet.
+Expected: FAIL — `unreal.Object` branch currently returns `None` for non-Definition classes; the struct branch currently `return None`s when the class is in `_ENGINE_STRUCT_NAMES` or the field walker comes back empty.
 
 - [ ] **Step 3: Commit the failing tests**
 
 ```
-git add Tools/Export/tests/test_property_normalizer.py
-git commit -m "test(exporter): pending soft_asset_ref + definition_ref round-trip cases"
+git add Tools/Export/tests/test_run_export.py
+git commit -m "test(run_export): pending soft_asset_ref + struct round-trip cases"
 ```
 
-### Task 1.2: Implement soft_asset_ref encoding
+### Task 1.2: Implement `soft_asset_ref` + drop engine-struct short-circuit
 
 **Files:**
-- Modify: `Tools/Export/lib/property_normalizer.py`
-- Modify: `Tools/Export/lib/property_serializer.py` (envelope emission)
+- Modify: `Tools/Export/run_export.py`
 
-- [ ] **Step 1: Read `lib/property_serializer.py` first** to learn how `kind: ...` dicts become final `type: ...` envelopes — the new `soft_asset_ref` kind will need a matching emission branch there.
+- [ ] **Step 1: Remove `_ENGINE_ASSET_CLASS_NAMES` and `_ENGINE_STRUCT_NAMES`** — the two frozensets at top of `run_export.py` (around line 55 and 74). Their only consumers are `_normalize_value` (the engine-struct early return) and the `unreal.Object` branch.
 
-- [ ] **Step 2: In `property_normalizer.py`, delete the strip lists and their guards.** Remove `_ENGINE_ASSET_CLASSES`, `_ENGINE_CONFIG_STRUCT_CPP_TYPES`, `_ENGINE_CONFIG_CPP_PATTERNS`, plus `_is_filtered_cpp_type` and its call site at the top of `normalize_property`. Replace the soft-ptr early-drop block with:
-
-```python
-    # Soft ptr to a non-Definition class → soft_asset_ref envelope.
-    soft_class = _engine_class_in_softptr(cpp_type)
-    if soft_class is not None:
-        if f"U{soft_class}" in definition_class_names:
-            # Soft ref to a Definition asset — keep existing definition_ref shape.
-            pass  # fall through to parse logic below
-        else:
-            return {
-                "kind": "soft_asset_ref",
-                "class": soft_class,
-                "value": _parse_soft_path(value_str),
-            }
-```
-
-Add the helper near the other parsers:
+- [ ] **Step 2: Rewrite the `unreal.Object` branch** in `_normalize_value` (currently around line 273):
 
 ```python
-def _parse_soft_path(value_str: str) -> str | None:
-    """Soft path strings come through as either ``/Game/...`` or the
-    sentinel ``None``. Normalize to ``None`` for the cleared case."""
-    v = value_str.strip()
-    if not v or v in {"None", "(None,None)"}:
-        return None
-    # Sometimes wrapped: ``(/Game/Foo.Foo,/Game/Foo.Foo)``
-    if v.startswith("(") and v.endswith(")"):
-        v = v[1:-1].split(",", 1)[0]
-    return v
+    # Object reference: definition_ref for TSIC Definition classes,
+    # soft_asset_ref for everything else.
+    if isinstance(value, unreal.Object):
+        cls = value.get_class()
+        cls_path = cls.get_path_name()
+        cls_name = cls.get_name()
+
+        # Inside TSIC: definition_ref when the leaf class (or an ancestor)
+        # is a known Definition class.
+        if cls_path.startswith("/Script/TSIC."):
+            if cls_name in definition_names_no_u:
+                return {"type": "definition_ref", "class": cls_name, "value": value.get_name()}
+            py = getattr(unreal, cls_name, None)
+            if py is not None:
+                for base in py.__mro__:
+                    if base.__name__ in definition_names_no_u and base.__name__ not in {
+                        "Object", "_ObjectBase", "_WrapperBase", "object", "DataAsset",
+                    }:
+                        return {"type": "definition_ref", "class": cls_name, "value": value.get_name()}
+
+        # Everything else: soft_asset_ref. Path comes from the asset's
+        # path name; the editor consumes this verbatim.
+        try:
+            path = value.get_path_name()
+        except Exception:
+            path = None
+        return {
+            "type": "soft_asset_ref",
+            "class": cls_name,
+            "value": path,
+        }
 ```
 
-- [ ] **Step 3: Replace the `Object(X)` arm** in `normalize_property` so non-Definition object refs become `soft_asset_ref`:
+- [ ] **Step 3: Rewrite the struct branch** (currently around line 297). Remove the `_ENGINE_STRUCT_NAMES` early return; recurse unconditionally:
 
 ```python
-    obj_class = _object_type_class(type_str)
-    if obj_class is not None:
-        full = f"U{obj_class}"
-        if full in definition_class_names:
-            # falls through to parse + _normalize_parsed → definition_ref
-            pass
-        else:
-            return {
-                "kind": "soft_asset_ref",
-                "class": obj_class,
-                "value": _parse_soft_path(value_str),
-            }
+    # Struct - recurse into every UPROPERTY field. No class blocklist;
+    # FTransform, FAudioConfig, FFurnitureLightConfig etc. all survive.
+    if hasattr(value, "static_struct"):
+        struct_cls_name = type(value).__name__
+        field_names = _struct_field_names(value)
+        out: dict[str, Any] = {}
+        for field_name in field_names:
+            try:
+                field_val = value.get_editor_property(field_name)
+            except Exception:
+                continue
+            sub = _normalize_value(field_val, definition_names_no_u, depth + 1)
+            if sub is None:
+                continue
+            out[pascal_to_snake(field_name)] = sub
+        return {"type": "struct", "struct_name": struct_cls_name, "value": out}
 ```
 
-- [ ] **Step 4: Add the matching `kind: "soft_asset_ref"` arm in `property_serializer.serialize`.** It should emit:
+Second behavioral change: an empty struct no longer returns `None` — it returns `{"type": "struct", "struct_name": "X", "value": {}}`. The editor benefits because empty structs are still editable surfaces.
 
-```python
-        if kind == "soft_asset_ref":
-            return {
-                "type": "soft_asset_ref",
-                "class": entry["class"],
-                "value": entry["value"],
-            }
-```
+- [ ] **Step 4: Verify `_strip_value`** (around line 320) — it preserves `class`, `struct_name`, `enum_name`; the test from Task 1.1 covers `soft_asset_ref`. No code change expected.
 
-- [ ] **Step 5: Run the tests from Task 1.1 — verify they pass**
+- [ ] **Step 5: Run; verify PASS**
 
 ```
-pytest tests/test_property_normalizer.py -k "soft_asset_ref or definition_ref_unchanged" -v
+pytest tests/test_run_export.py -v
 ```
 
-Expected: PASS.
-
-- [ ] **Step 6: Run the full exporter test suite — verify no regressions**
+- [ ] **Step 6: Full exporter suite — no regressions**
 
 ```
 pytest
 ```
 
-Expected: PASS (some tests may have been depending on the strip behavior — fix them as you go; the spec mandates strip-nothing). If `test_asset_exporter` or `test_export_definitions` fails because a fixture asset no longer drops, update the fixture's expected output to include the now-emitted soft_asset_ref.
+Expected: PASS. The offline pipeline's tests should not be affected by `run_export.py` edits.
 
 - [ ] **Step 7: Commit**
 
 ```
-git add Tools/Export/lib/property_normalizer.py Tools/Export/lib/property_serializer.py \
-        Tools/Export/tests/test_property_normalizer.py Tools/Export/tests/test_asset_exporter.py \
-        Tools/Export/tests/test_export_definitions.py
-git commit -m "feat(exporter): emit soft_asset_ref for non-Definition object refs"
+git add Tools/Export/run_export.py Tools/Export/tests/test_run_export.py
+git commit -m "feat(run_export): emit soft_asset_ref + keep all USTRUCTs lossless"
 ```
 
-### Task 1.3: Round-trip tests for FTransform + FVector + AudioConfig (TDD)
+### Task 1.3: Live re-export and diff
 
-**Files:**
-- Modify: `Tools/Export/tests/test_property_normalizer.py`
-- Modify: `Tools/Export/tests/fixtures/raw-export-sample.json`
+**Files:** none (verification).
 
-- [ ] **Step 1: Add a fixture row that contains a struct with a soft ref nested inside.** In `raw-export-sample.json`, add (or replace if a similar row exists):
-
-```json
-{
-  "asset_name": "FD_FixtureStruct",
-  "class_name": "FurnitureDefinition",
-  "asset_path": "/Game/Fixtures/FD_FixtureStruct",
-  "parent_classes": ["UFurnitureDefinition", "UWorldGenObjectDefinition"],
-  "properties": [
-    {
-      "name": "audio_config",
-      "type": "Struct(AudioConfig)",
-      "cpp_type": "FAudioConfig",
-      "category": "",
-      "value": "(open_sound=/Game/Audio/SC_DoorOpen.SC_DoorOpen,volume_multiplier=0.5)",
-      "blueprint_visible": true,
-      "editable": true
-    },
-    {
-      "name": "static_mesh",
-      "type": "Object(StaticMesh)",
-      "cpp_type": "TObjectPtr<UStaticMesh>",
-      "category": "",
-      "value": "/Game/Doors/SM_Door.SM_Door",
-      "blueprint_visible": true,
-      "editable": true
-    },
-    {
-      "name": "world_transform",
-      "type": "Struct(Transform)",
-      "cpp_type": "FTransform",
-      "category": "",
-      "value": "(translation=(x=100.0,y=-50.0,z=0.0),rotation=(pitch=0.0,yaw=90.0,roll=0.0),scale_3d=(x=1.0,y=1.0,z=1.0))",
-      "blueprint_visible": true,
-      "editable": true
-    }
-  ]
-}
-```
-
-- [ ] **Step 2: Add tests covering struct round-trip**
+`run_export.py` runs inside Unreal. Trigger via the editor's Python console:
 
 ```python
-def test_struct_transform_roundtrip():
-    out = normalize_property(
-        name="world_transform",
-        type_str="Struct(Transform)",
-        cpp_type="FTransform",
-        value_str="(translation=(x=100.0,y=-50.0,z=0.0),rotation=(pitch=0.0,yaw=90.0,roll=0.0),scale_3d=(x=1.0,y=1.0,z=1.0))",
-        definition_class_names=set(),
-    )
-    assert out["kind"] == "struct"
-    # The normalizer parses one level; nested vectors stay as raw strings
-    # and are re-parsed when the serializer recurses (see Task 1.4).
-    assert "translation" in out["value"]
-
-
-def test_struct_audio_config_with_nested_soft_ref():
-    out = normalize_property(
-        name="audio_config",
-        type_str="Struct(AudioConfig)",
-        cpp_type="FAudioConfig",
-        value_str="(open_sound=/Game/Audio/SC_DoorOpen.SC_DoorOpen,volume_multiplier=0.5)",
-        definition_class_names=set(),
-    )
-    assert out["kind"] == "struct"
-    assert set(out["value"].keys()) == {"open_sound", "volume_multiplier"}
-
-
-def test_strip_nothing_regression():
-    """Every property in the fixture row produces a non-None envelope."""
-    with open("tests/fixtures/raw-export-sample.json") as f:
-        sample = json.load(f)
-    fixture = next(a for a in sample["assets"] if a["asset_name"] == "FD_FixtureStruct")
-    for raw in fixture["properties"]:
-        out = normalize_property(
-            name=raw["name"],
-            type_str=raw["type"],
-            cpp_type=raw["cpp_type"],
-            value_str=raw["value"],
-            definition_class_names=set(),
-        )
-        assert out is not None, f"property {raw['name']} was silently dropped"
+exec(open(r"C:/Users/Administrator/Documents/Unreal Projects/TSIC/Tools/Export/run_export.py").read())
 ```
 
-Add `import json` at the top of the test file if missing.
+- [ ] **Step 1: Run `run_export.py` from inside Unreal.** Output lands in `Tools/Export/test-output/Definitions/`.
 
-- [ ] **Step 3: Run tests; verify they fail**
-
-```
-pytest tests/test_property_normalizer.py -k "struct_transform or audio_config or strip_nothing" -v
-```
-
-Expected: FAIL — current normalizer drops `FTransform` and `FAudioConfig` via the (now-removed) strip list, but the parser still needs structural support for nested fields.
-
-- [ ] **Step 4: Commit the failing tests**
+- [ ] **Step 2: Spot-check the diffs**
 
 ```
-git add Tools/Export/tests/test_property_normalizer.py Tools/Export/tests/fixtures/raw-export-sample.json
-git commit -m "test(exporter): pending struct + nested-ref round-trip cases"
+cd "C:/Users/Administrator/Documents/Unreal Projects/TSIC"
+git -C Tools/Export status
+git -C Tools/Export diff test-output/Definitions/furniture_definitions/FD_Door.json | head -80
+git -C Tools/Export diff test-output/Definitions/layout_definitions/LYD_Bathroom_All.json | head -120
 ```
 
-### Task 1.4: Implement struct round-trip (FTransform, FVector, generic USTRUCTs)
+Expected: `FD_Door.json` gains a `static_mesh` envelope and any `audio_config`/`light_config`/`vfx_config` struct from the source asset. `LYD_Bathroom_All.json` gains a `transform` field inside each `LayoutObject`.
 
-**Files:**
-- Modify: `Tools/Export/lib/property_normalizer.py`
-- Modify: `Tools/Export/lib/import_text_parser.py` (only if necessary — read first)
-
-- [ ] **Step 1: Read `lib/import_text_parser.py`** end-to-end. It parses the Lua-emitted `value_str` blobs like `(x=1.0,y=2.0,z=3.0)`. The existing parser already returns a `dict` for `Struct(*)` values; the normalizer just needs to recurse over the fields with their own typed envelopes.
-
-- [ ] **Step 2: Replace the generic-struct arm in `_normalize_parsed`** with a recursive call. Find the existing block:
-
-```python
-    # Generic struct — recurse with sub-values as raw strings.
-    if type_str.startswith("Struct("):
-        if not isinstance(parsed, dict) or not parsed:
-            return None
-        struct_value: dict[str, dict] = {}
-        for field_name, sub_raw in parsed.items():
-            struct_value[field_name] = {"kind": "string", "value": sub_raw}
-        return {"kind": "struct", "value": struct_value}
-```
-
-Replace with:
-
-```python
-    # Generic struct — recurse on each field. The Lua extractor emits each
-    # field's value as a raw string; we re-feed it through the parser plus
-    # a heuristic type lookup so nested Vectors/Rotators/soft refs round-trip.
-    if type_str.startswith("Struct("):
-        if not isinstance(parsed, dict):
-            return None
-        if not parsed:
-            # Empty struct: still emit so the editor sees the property exists.
-            return {"kind": "struct", "struct_name": _struct_inner_name(type_str), "value": {}}
-        struct_value: dict[str, dict] = {}
-        for field_name, sub_raw in parsed.items():
-            inferred = _infer_field_type(field_name, sub_raw)
-            sub = _normalize_parsed(
-                type_str=inferred,
-                parsed=parse(inferred, sub_raw) if isinstance(sub_raw, str) else sub_raw,
-                definition_class_names=definition_class_names,
-            )
-            if sub is None:
-                # Round-trip-or-die: stash as a raw string rather than drop.
-                sub = {"kind": "string", "value": sub_raw if isinstance(sub_raw, str) else str(sub_raw)}
-            struct_value[field_name] = sub
-        return {
-            "kind": "struct",
-            "struct_name": _struct_inner_name(type_str),
-            "value": struct_value,
-        }
-```
-
-Add the helpers below:
-
-```python
-def _struct_inner_name(type_str: str) -> str:
-    """Struct(Transform) → "Transform"."""
-    m = re.match(r"^Struct\((.+)\)$", type_str.strip())
-    return m.group(1) if m else "Struct"
-
-
-_NUMERIC_FIELDS = frozenset({
-    "x", "y", "z", "w",
-    "pitch", "yaw", "roll",
-    "r", "g", "b", "a",
-    "volume_multiplier", "pitch_multiplier",
-})
-_VECTOR_FIELDS = frozenset({"translation", "scale_3d"})
-_ROTATOR_FIELDS = frozenset({"rotation"})
-
-def _infer_field_type(field_name: str, value: Any) -> str:
-    """Heuristic-only — used until the schema sidecar can drive this."""
-    lower = field_name.lower()
-    if lower in _VECTOR_FIELDS:
-        return "Struct(Vector)"
-    if lower in _ROTATOR_FIELDS:
-        return "Struct(Rotator)"
-    if lower in _NUMERIC_FIELDS:
-        return "Float"
-    if isinstance(value, bool):
-        return "Bool"
-    if isinstance(value, dict):
-        return "Struct(Anonymous)"
-    if isinstance(value, str):
-        s = value.strip()
-        if s.startswith("/Game/"):
-            # Best guess: a soft asset ref to an unknown class. The catalog
-            # walker (Task 2) will determine the actual class via the asset
-            # registry; here we emit it as a generic soft path so it survives.
-            return "SoftObject(Unknown)"
-        if s.startswith("(") and "=" in s:
-            return "Struct(Anonymous)"
-    return "String"
-```
-
-Update `_engine_class_in_softptr` and the soft-ref arm to handle `SoftObject(Unknown)` cleanly (emit a `soft_asset_ref` with `class: "Unknown"` and the path).
-
-- [ ] **Step 3: Add the matching `kind: "struct"` arm in `property_serializer.serialize`** so the new `struct_name` survives:
-
-```python
-        if kind == "struct":
-            return {
-                "type": "struct",
-                "struct_name": entry.get("struct_name", "Struct"),
-                "value": {
-                    field: serialize(sub)
-                    for field, sub in entry["value"].items()
-                },
-            }
-```
-
-- [ ] **Step 4: Run Task 1.3's tests**
-
-```
-pytest tests/test_property_normalizer.py -k "struct_transform or audio_config or strip_nothing" -v
-```
-
-Expected: PASS.
-
-- [ ] **Step 5: Run the full exporter test suite**
-
-```
-pytest
-```
-
-Expected: PASS. Fixture expectations elsewhere may need updates because previously-dropped fields now round-trip — fix them by regenerating the expected output, e.g. `pytest tests/test_asset_exporter.py -v --tb=long` and updating fixture JSON where the failure says "extra key was emitted" rather than a substantive disagreement.
-
-- [ ] **Step 6: Commit**
-
-```
-git add Tools/Export/lib/property_normalizer.py Tools/Export/lib/property_serializer.py \
-        Tools/Export/tests/
-git commit -m "feat(exporter): recursive struct round-trip (FTransform/FVector/AudioConfig)"
-```
-
-### Task 1.5: Live re-export and diff
-
-**Files:** none (verification step).
-
-- [ ] **Step 1: Re-run the offline exporter** against the existing intermediate dump:
-
-```
-cd Tools/Export
-python export_definitions.py --clean --out-dir test-output/Definitions
-```
-
-- [ ] **Step 2: Spot-check a furniture and a layout file**
-
-```
-# Compare an FD_ file before/after using your last commit (HEAD~)
-git --no-pager diff HEAD~1 -- test-output/Definitions/furniture_definitions/FD_Door.json | head -80
-git --no-pager diff HEAD~1 -- test-output/Definitions/layout_definitions/LYD_Bathroom_All.json | head -120
-```
-
-Expected: `FD_Door.json` now contains a `static_mesh` envelope and any audio-config/light/VFX struct that the source asset had. `LYD_Bathroom_All.json` now contains a `transform` field inside each `LayoutObject` struct.
-
-- [ ] **Step 3: If the diff looks wrong, fix and iterate.** Diff is the source of truth here — the bullet above describes what should appear; if not, drop into the normalizer with `pytest tests/ -v` and a focused unit test before retrying.
+- [ ] **Step 3: If the diff looks wrong, add a focused unit test in `tests/test_run_export.py` before retrying.** The diff is the source of truth.
 
 - [ ] **Step 4: Commit the regenerated test-output**
 
 ```
-git add Tools/Export/test-output/
-git commit -m "build(exporter): regenerate test-output with lossless property round-trip"
+git -C Tools/Export add test-output/
+git -C Tools/Export commit -m "build(exporter): regenerate test-output with lossless property round-trip"
 ```
 
 ---
 
 ## Phase 2: Exporter — asset catalogs
 
-### Task 2.1: Lua side — walk the asset registry per referenced class
+### Task 2.1: In-editor catalog walk inside `run_export.py`
+
+`run_export.py` already runs in the Unreal editor and has access to `unreal.AssetRegistryHelpers`. The asset-registry walk lives here — no `extract.lua` changes are needed.
 
 **Files:**
-- Modify: `Tools/Export/extract.lua`
+- Modify: `Tools/Export/run_export.py`
 
-- [ ] **Step 1: Read `extract.lua` end-to-end first** so the orchestration of the existing `intermediate/*.json` writes is clear. Asset-registry access in Lua MCP is via `unreal.AssetRegistryHelpers.get_asset_registry()` (or local equivalent — check what the existing tag walker uses).
+- [ ] **Step 1: Collect referenced classes during the existing property walk.** As `_normalize_value` emits `soft_asset_ref` envelopes (Phase 1), record each `value["class"]` into a module-level set. The simplest path is a small `record_referenced_class(cls_name)` helper, called once from the new `soft_asset_ref` branch; the main `main()` reads the set after the walk completes.
 
-- [ ] **Step 2: After the property walk, collect the set of asset classes referenced by any property.** Cpp types like `TObjectPtr<UStaticMesh>` give you the class name. Build a `referenced_classes` set: every `TObjectPtr<U*>` and `TSoftObjectPtr<U*>` target *that is not* a TSIC Definition class.
+- [ ] **Step 2: Build the catalog rows.** Add a helper near the bottom of `run_export.py`:
 
-- [ ] **Step 3: For each referenced class, query the asset registry** for every asset under `/Game/...` of that class. For each asset record produce a row:
+```python
+def _collect_asset_catalog_rows(referenced_classes: set[str]) -> list[dict]:
+    """For every referenced asset class, dump every asset of that class
+    in /Game/. Returns the flat rows list consumed by
+    lib.asset_catalog_dumper.build_catalogs."""
+    rows: list[dict] = []
+    if not referenced_classes:
+        return rows
 
-```json
-{
-  "class": "StaticMesh",
-  "path": "/Game/Furniture/Meshes/SM_Door.SM_Door",
-  "name": "SM_Door",
-  "folder": "/Game/Furniture/Meshes",
-  "package_guid": "ABCDEF12-3456-789A-BCDE-F01234567890",
-  "bounds": { "min": [-50,-20,0], "max": [50,20,200] }
-}
+    asset_registry = unreal.AssetRegistryHelpers.get_asset_registry()
+    asset_registry.search_all_assets(True)
+
+    for class_name in sorted(referenced_classes):
+        # Build the class path. Engine classes are under /Script/Engine.
+        # We rely on AssetRegistry's class filter rather than path-prefixing.
+        ar_filter = unreal.ARFilter(
+            class_names=[class_name],
+            package_paths=["/Game"],
+            recursive_paths=True,
+        )
+        try:
+            assets = asset_registry.get_assets(ar_filter)
+        except Exception as exc:
+            unreal.log_warning(f"[catalog] AssetRegistry query failed for {class_name}: {exc}")
+            continue
+
+        for ad in assets:
+            try:
+                obj_path = str(ad.object_path)
+                package_path = str(ad.package_path)
+                asset_name = str(ad.asset_name)
+                package_guid = ""
+                pkg = ad.package_name
+                try:
+                    package = unreal.load_package(str(pkg)) if pkg else None
+                    if package is not None:
+                        # PackagePersistentGuid is exposed via the asset's
+                        # `persistent_guid` editor property on newer UE versions;
+                        # fall back to package_guid if not.
+                        for attr in ("persistent_guid", "package_guid", "guid"):
+                            if hasattr(package, attr):
+                                package_guid = str(getattr(package, attr))
+                                break
+                except Exception:
+                    pass
+
+                row: dict[str, Any] = {
+                    "class": class_name,
+                    "path": obj_path,
+                    "name": asset_name,
+                    "folder": package_path,
+                    "package_guid": package_guid,
+                }
+
+                # Mesh-only: include axis-aligned bounds.
+                if class_name == "StaticMesh":
+                    try:
+                        mesh = ad.get_asset()
+                        bbox = mesh.get_bounding_box()  # FBox
+                        row["bounds"] = {
+                            "min": [bbox.min.x, bbox.min.y, bbox.min.z],
+                            "max": [bbox.max.x, bbox.max.y, bbox.max.z],
+                        }
+                    except Exception as exc:
+                        unreal.log_warning(f"[catalog] bounds failed for {obj_path}: {exc}")
+
+                rows.append(row)
+            except Exception as exc:
+                unreal.log_warning(f"[catalog] row build failed: {exc}")
+
+    return rows
 ```
 
-`package_guid` comes from the package's `PersistentGuid` (Unreal API: `package:GetPersistentGuid()` or equivalent). `bounds` only for `StaticMesh` — use `static_mesh:GetBoundingBox()` and emit `[min.x, min.y, min.z]` / `[max.x, max.y, max.z]`. For other classes, omit the field.
+- [ ] **Step 3: Spot-check the AssetRegistry binding names.** Unreal's Python binding for `ARFilter` uses snake_case (`class_names`, `package_paths`, `recursive_paths`) in 5.x. If your version differs, the call signature in Step 2 needs adjusting. The two TSIC scripts that already use AssetRegistry are `extract.lua` (Lua-side) and `run_export.py:main` (around line 510 — search for `AssetRegistry`); copy their pattern.
 
-- [ ] **Step 4: Write rows to `intermediate/asset-catalog.json`**:
+- [ ] **Step 4: Write the rows.** In `main()`, after the per-asset walk but before the existing sidecar writes, call the helper and stash the rows for Phase 2.3 to consume:
 
-```json
-{
-  "schema_version": 1,
-  "generated_at": "<ISO-8601>",
-  "rows": [ ... ]
-}
+```python
+catalog_rows = _collect_asset_catalog_rows(REFERENCED_ASSET_CLASSES)
 ```
 
-- [ ] **Step 5: Smoke-test by running the extractor against the project.** Open `intermediate/asset-catalog.json` and confirm:
-  - It contains at least one `StaticMesh` row with `bounds` populated.
-  - It contains a `Material` (or `MaterialInstance`) row with `package_guid` populated, no bounds.
-  - The class set matches the references in `intermediate/raw-export.json` plus refs added by Phase 1 changes.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit (Steps 1-4 together; nothing visible yet — Phase 2.3 wires the writer).**
 
 ```
-git add Tools/Export/extract.lua Tools/Export/intermediate/asset-catalog.json
-git commit -m "feat(extract.lua): emit intermediate/asset-catalog.json"
+git add Tools/Export/run_export.py
+git commit -m "feat(run_export): collect referenced asset classes + walk registry"
 ```
 
 ### Task 2.2: Offline asset catalog dumper
@@ -739,97 +646,105 @@ git add Tools/Export/lib/asset_catalog_dumper.py \
 git commit -m "feat(exporter): asset_catalog_dumper groups rows into per-class payloads"
 ```
 
-### Task 2.3: Wire catalog dumper into `export_definitions.py`
+### Task 2.3: Wire catalog dumper into `run_export.py`
 
 **Files:**
-- Modify: `Tools/Export/export_definitions.py`
 - Modify: `Tools/Export/run_export.py`
 
-- [ ] **Step 1: In `export_definitions.py`**, after the existing tag/hierarchy dump block:
+- [ ] **Step 1: Import and call the dumper.** Near the top of `run_export.py`:
 
 ```python
 from lib.asset_catalog_dumper import build_catalogs
-
-# inside main(), after writing existing sidecars
-catalog_path = intermediate_dir / "asset-catalog.json"
-if catalog_path.exists():
-    with catalog_path.open("r", encoding="utf-8") as f:
-        catalog_rows = json.load(f)["rows"]
-    per_class = build_catalogs(
-        catalog_rows,
-        generated_at=generated_at,
-        schema_version=SCHEMA_VERSION,
-    )
-    assets_dir = out_dir / ".assets"
-    assets_dir.mkdir(parents=True, exist_ok=True)
-    for cls, payload in per_class.items():
-        _write_json(assets_dir / f"{cls}.json", payload)
-else:
-    # Lua side may not have emitted yet — warn but don't fail
-    print(f"[export_definitions] no {catalog_path}, skipping asset catalogs")
 ```
 
-- [ ] **Step 2: Mirror the same block in `run_export.py`** — its asset registry walk already happens inline; collect the same row shape and call `build_catalogs` with it.
+- [ ] **Step 2: In `main()`, after the per-asset walk** (right after Step 4 from Task 2.1 produced `catalog_rows`):
 
-- [ ] **Step 3: Run the offline exporter**
+```python
+per_class = build_catalogs(
+    catalog_rows,
+    generated_at=generated_at,
+    schema_version=SCHEMA_VERSION,
+)
+assets_dir = out_dir / ".assets"
+assets_dir.mkdir(parents=True, exist_ok=True)
+for cls, payload in per_class.items():
+    _write_json(assets_dir / f"{cls}.json", payload)
+```
+
+- [ ] **Step 3: Re-run the in-editor exporter.** Trigger from Unreal's Python console:
+
+```python
+exec(open(r"C:/Users/Administrator/Documents/Unreal Projects/TSIC/Tools/Export/run_export.py").read())
+```
+
+Then verify:
 
 ```
-cd Tools/Export
-python export_definitions.py --clean --out-dir test-output/Definitions
-ls test-output/Definitions/.assets
+ls "C:/Users/Administrator/Documents/Unreal Projects/TSIC/Tools/Export/test-output/Definitions/.assets"
 ```
 
-Expected: At least `StaticMesh.json` and `Material.json` (others depending on what the project actually references). Each file contains `schema_version`, `class`, `entries`, the entries sorted by `path`, each with `package_guid`.
+Expected: at least `StaticMesh.json` and `Material.json` (others depending on what the project actually references). Each file contains `schema_version`, `class`, `entries`, the entries sorted by `path`, each with `package_guid`.
 
 - [ ] **Step 4: Commit**
 
 ```
-git add Tools/Export/export_definitions.py Tools/Export/run_export.py Tools/Export/test-output/
-git commit -m "build(exporter): write .assets/<Class>.json sidecars"
+git -C Tools/Export add run_export.py test-output/
+git -C Tools/Export commit -m "build(exporter): write .assets/<Class>.json sidecars"
 ```
 
 ---
 
 ## Phase 3: Tags, asset-refs sidecar, manifest extension
 
-### Task 3.1: Verify and fix tag enumeration
+### Task 3.1: Verify and fix tag enumeration in `run_export.py`
 
 **Files:**
-- Modify (probably): `Tools/Export/run_export.py` or `extract.lua`
-- Modify: `Tools/Export/lib/tag_dumper.py` (only if its API needs to change)
+- Modify: `Tools/Export/run_export.py`
 
-- [ ] **Step 1: Re-run an export and inspect `.gameplay-tags.json`.** If `tags` is empty but tag *values* appear in the per-asset JSONs (as gameplay_tag_container values), the upstream enumeration is broken. Check both code paths:
-  - `extract.lua` line ~203: `mgr = unreal.GameplayTagsManager.get()` — does the call succeed inside MCP? If not, fall back to harvesting every distinct tag string seen in the property walk and deduping.
-  - `run_export.py` line ~533: `unreal.GameplayTagsManager` — same fallback.
+- [ ] **Step 1: Re-run an export and inspect `.gameplay-tags.json`.** If `tags` is empty but tag *values* appear in the per-asset JSONs (as `gameplay_tag_container` values), the upstream enumeration via `unreal.GameplayTagsManager` came up empty. Check `run_export.py` around line ~533 (search for `GameplayTagsManager`).
 
-- [ ] **Step 2: Add a backstop in `export_definitions.py`** so even if `gameplay-tags.json` arrives empty, the post-process collects every tag actually referenced and merges them in:
+- [ ] **Step 2: Add a backstop in `run_export.py`** so even if `GameplayTagsManager.request_all_gameplay_tags()` returns empty, the post-process collects every tag actually referenced by any emitted property and merges them in:
 
 ```python
-# After loading per-asset normalized output, but before writing sidecars:
+def _walk_envelopes_for_tags(value: Any, out: set[str]) -> None:
+    """Walk a typed-envelope value tree, collecting every tag string."""
+    if not isinstance(value, dict):
+        if isinstance(value, list):
+            for item in value:
+                _walk_envelopes_for_tags(item, out)
+        return
+    t = value.get("type")
+    if t == "gameplay_tag":
+        v = value.get("value")
+        if isinstance(v, str) and v:
+            out.add(v)
+    elif t == "gameplay_tag_container":
+        for v in value.get("value", []) or []:
+            if isinstance(v, str) and v:
+                out.add(v)
+    # Recurse into struct/array/map/set/element_type payloads.
+    inner = value.get("value")
+    if inner is not None:
+        _walk_envelopes_for_tags(inner, out)
+    for child_key in ("element_type", "key_type", "value_type"):
+        if child_key in value:
+            _walk_envelopes_for_tags(value[child_key], out)
+
+
+# In main(), right after the per-asset walk produces `emitted_assets`
+# (the list of JSON dicts about to be written):
 referenced_tags: set[str] = set()
-for asset in normalized_assets:
-    for prop in asset.get("properties", {}).values():
-        if prop.get("type") == "gameplay_tag":
-            v = prop.get("value")
-            if v:
-                referenced_tags.add(v)
-        elif prop.get("type") == "gameplay_tag_container":
-            for v in prop.get("value", []) or []:
-                if v:
-                    referenced_tags.add(v)
-# Walk struct children recursively — pseudo: traverse all subtrees too.
+for asset in emitted_assets:
+    _walk_envelopes_for_tags(asset.get("properties"), referenced_tags)
 
-merged = sorted(set(intermediate_tags) | referenced_tags)
-tag_dump = build_tag_dump(merged, generated_at=generated_at, schema_version=SCHEMA_VERSION)
+merged_tags = sorted(set(all_tags) | referenced_tags)
+tag_dump = build_tag_dump(merged_tags, generated_at=generated_at, schema_version=SCHEMA_VERSION)
 ```
 
-The recursion over struct subtrees is straightforward — walk `prop["value"]` when `type == "struct"` and recurse. Inline it as a helper, don't fan out unrelated cleanups.
-
-- [ ] **Step 3: Run the exporter, confirm `.gameplay-tags.json` is no longer empty.**
+- [ ] **Step 3: Re-run `run_export.py` from Unreal, confirm `.gameplay-tags.json` is no longer empty.**
 
 ```
-python export_definitions.py --clean --out-dir test-output/Definitions
-python -c "import json; d=json.load(open('test-output/Definitions/.gameplay-tags.json')); print(len(d['tags']), d['tags'][:5])"
+python -c "import json; d=json.load(open('C:/Users/Administrator/Documents/Unreal Projects/TSIC/Tools/Export/test-output/Definitions/.gameplay-tags.json')); print(len(d['tags']), d['tags'][:5])"
 ```
 
 Expected: a non-zero count and a sample of strings like `Entity.RandomGeneration.FurnitureType.Door`.
@@ -837,8 +752,8 @@ Expected: a non-zero count and a sample of strings like `Entity.RandomGeneration
 - [ ] **Step 4: Commit**
 
 ```
-git add Tools/Export/ test-output/Definitions/.gameplay-tags.json
-git commit -m "fix(exporter): backfill gameplay tags from referenced values when manager enum is empty"
+git -C Tools/Export add run_export.py test-output/Definitions/.gameplay-tags.json
+git -C Tools/Export commit -m "fix(run_export): backfill gameplay tags from referenced values"
 ```
 
 ### Task 3.2: Asset-ref index module (TDD)
@@ -1033,34 +948,31 @@ git add Tools/Export/lib/asset_ref_index.py Tools/Export/tests/test_asset_ref_in
 git commit -m "feat(exporter): asset_ref_index walks definitions for soft refs + catalog guids"
 ```
 
-### Task 3.3: Wire the asset-refs sidecar into the orchestrator
+### Task 3.3: Wire the asset-refs sidecar into `run_export.py`
 
 **Files:**
-- Modify: `Tools/Export/export_definitions.py`
 - Modify: `Tools/Export/run_export.py`
 
 - [ ] **Step 1: After catalogs are written, build and write `.asset-refs.json`**
 
-In `export_definitions.py` (and the parallel block in `run_export.py`):
-
 ```python
 from lib.asset_ref_index import build_asset_ref_index
 
-# `normalized_assets` is the list of final per-asset dicts already in scope
+# `emitted_assets` is the list of final per-asset dicts already in scope.
+# `per_class` is the catalogs dict built in Task 2.3.
 asset_ref_index = build_asset_ref_index(
-    normalized_assets,
-    per_class,                  # the catalogs dict built in Task 2.3
+    emitted_assets,
+    per_class,
     generated_at=generated_at,
     schema_version=SCHEMA_VERSION,
 )
 _write_json(out_dir / ".asset-refs.json", asset_ref_index)
 ```
 
-- [ ] **Step 2: Re-run export, verify output**
+- [ ] **Step 2: Re-run `run_export.py` from Unreal, verify output**
 
 ```
-python export_definitions.py --clean --out-dir test-output/Definitions
-python -c "import json; d=json.load(open('test-output/Definitions/.asset-refs.json')); print(len(d['expected_guids']))"
+python -c "import json; d=json.load(open('C:/Users/Administrator/Documents/Unreal Projects/TSIC/Tools/Export/test-output/Definitions/.asset-refs.json')); print(len(d['expected_guids']))"
 ```
 
 Expected: non-zero (one entry per distinct soft asset ref encountered).
@@ -1068,8 +980,8 @@ Expected: non-zero (one entry per distinct soft asset ref encountered).
 - [ ] **Step 3: Commit**
 
 ```
-git add Tools/Export/export_definitions.py Tools/Export/run_export.py Tools/Export/test-output/
-git commit -m "build(exporter): emit .asset-refs.json drift sidecar"
+git -C Tools/Export add run_export.py test-output/
+git -C Tools/Export commit -m "build(run_export): emit .asset-refs.json drift sidecar"
 ```
 
 ### Task 3.4: Manifest extension
@@ -1077,7 +989,7 @@ git commit -m "build(exporter): emit .asset-refs.json drift sidecar"
 **Files:**
 - Modify: `Tools/Export/lib/manifest_builder.py`
 - Modify: `Tools/Export/tests/test_manifest_builder.py`
-- Modify: `Tools/Export/export_definitions.py` / `run_export.py`
+- Modify: `Tools/Export/run_export.py`
 
 - [ ] **Step 1: Add failing tests in `test_manifest_builder.py`**
 
@@ -1115,7 +1027,7 @@ pytest tests/test_manifest_builder.py -v
 
 - [ ] **Step 3: Add the new optional kwargs to `build_manifest`** in `lib/manifest_builder.py`. Sorted, omitted when None / False / empty.
 
-- [ ] **Step 4: Pass them from the orchestrator** (`export_definitions.py` and `run_export.py`) using the set of catalog files just written.
+- [ ] **Step 4: Pass them from `run_export.py:main()`** using the set of catalog files just written.
 
 - [ ] **Step 5: Run tests; verify PASS**
 
@@ -1127,7 +1039,7 @@ pytest tests/test_manifest_builder.py -v
 
 ```
 git add Tools/Export/lib/manifest_builder.py Tools/Export/tests/test_manifest_builder.py \
-        Tools/Export/export_definitions.py Tools/Export/run_export.py \
+        Tools/Export/run_export.py \
         Tools/Export/test-output/Definitions/.manifest.json
 git commit -m "feat(exporter): manifest carries asset_catalogs + has_asset_refs_sidecar + thumbnails_dir"
 ```
@@ -1966,6 +1878,68 @@ git add web/src/components/pickers/AssetRefPicker.tsx \
 git commit -m "feat(editor): AssetRefPicker for soft_asset_ref envelopes"
 ```
 
+### Task 6.4: Revise `isNoisyProperty` so new pickers aren't hidden by default
+
+The existing hide rules drop any property whose name contains `audio`, `vfx`, `sound`, `mesh`, or `widget` (`web/src/components/definitionsNaming.ts:100`). With strip-nothing, `static_mesh` and `audio_config` get exported again — but the editor would hide them behind "Show all fields" until this rule is revised.
+
+**Files:**
+- Modify: `web/src/components/definitionsNaming.ts`
+
+- [ ] **Step 1: Remove `mesh`, `audio`, `sound`, `vfx` from the `HIDDEN_SUBSTRINGS` list.** Keep `widget` (it covers UI plumbing that's still noise).
+
+```ts
+const HIDDEN_SUBSTRINGS = ['widget'];
+```
+
+- [ ] **Step 2: Run typecheck + dev server, open a furniture definition.** Confirm `static_mesh` and `audio_config` now appear in the default view (not hidden behind "Show all fields").
+
+```
+npm run typecheck
+npm run dev
+```
+
+- [ ] **Step 3: Commit**
+
+```
+git add web/src/components/definitionsNaming.ts
+git commit -m "fix(editor): surface mesh/audio/sound/vfx properties by default"
+```
+
+### Task 6.5: Default-value spawner for `soft_asset_ref` in `ContainerEditor`
+
+Arrays/sets of `soft_asset_ref` (e.g., `TArray<TObjectPtr<UStaticMesh>>`) need a default element shape when the user clicks "add". Right now `ContainerEditor` only knows how to spawn primitives, definition refs, etc.
+
+**Files:**
+- Modify: `web/src/components/TypedValueEditor.tsx`
+
+- [ ] **Step 1: Find `ContainerEditor` and its "add" handler.** It dispatches on the array's `element_type.type` to build the new element envelope.
+
+- [ ] **Step 2: Add the `soft_asset_ref` arm:**
+
+```ts
+    case 'soft_asset_ref':
+      return {
+        type: 'soft_asset_ref',
+        class: typed.element_type?.class ?? 'Object',
+        value: null,
+      };
+```
+
+Mirror the same logic in `MapEditor`'s key/value spawner if its key or value type can be `soft_asset_ref` (it usually isn't — Definition refs dominate as keys — but check the dispatch and add the case for symmetry).
+
+- [ ] **Step 3: Typecheck + dev sanity.** Open a definition that has an array of soft asset refs, click "add", confirm a new entry appears with a working `AssetRefPicker`.
+
+```
+npm run typecheck
+```
+
+- [ ] **Step 4: Commit**
+
+```
+git add web/src/components/TypedValueEditor.tsx
+git commit -m "feat(editor): ContainerEditor mints soft_asset_ref defaults on add"
+```
+
 ---
 
 ## Phase 7: Drift detection
@@ -2325,10 +2299,11 @@ Expected: all green.
 
 | Spec section | Plan task |
 |---|---|
+| Mark offline pipeline out of scope | Task 0.1 |
 | Strip-list removal | Task 1.2 |
 | Encoding rules — `soft_asset_ref` | Task 1.2 |
-| Encoding rules — `FTransform`, `FVector`, generic struct round-trip | Task 1.4 |
-| `lib/asset_catalog_dumper.py` (asset catalog dumper) | Tasks 2.1 (Lua walk) + 2.2 (offline dumper) + 2.3 (orchestrator) |
+| Encoding rules — `FTransform`, `FVector`, generic struct round-trip | Task 1.2 (recursion already in `_normalize_value`'s struct branch; strip removal is what unlocks it) |
+| `lib/asset_catalog_dumper.py` (asset catalog dumper) | Tasks 2.1 (in-editor walk) + 2.2 (helper) + 2.3 (orchestrator) |
 | Catalog payload — path/name/folder/package_guid/bounds | Tasks 2.1 + 2.2 |
 | Catalog payload — thumbnail | Phase 8 |
 | `.asset-refs.json` drift sidecar | Tasks 3.2 + 3.3 |
@@ -2340,5 +2315,13 @@ Expected: all green.
 | `AssetRefPicker` | Task 6.3 |
 | `TagPicker` | Task 6.2 |
 | `StructRows` recursive expansion | Task 6.1 |
+| Revise `isNoisyProperty` hide list | Task 6.4 |
+| `ContainerEditor` default for soft_asset_ref | Task 6.5 |
 | Drift / tamper detection — `missing-asset-ref` + `asset-ref-guid-mismatch` | Tasks 7.1 + 7.2 |
-| Out of scope items (modal picker, bulk find-and-replace, GUID loader) | not in plan, by design |
+
+## Deliberately out of scope (callouts for future readers)
+
+- **Modal "content browser"-style picker, bulk find-and-replace of asset refs, in-game GUID-based loading** — per the spec.
+- **`referencedByIndex`** in `web/src/store/referencedByIndex.ts` deliberately stays scoped to `definition_ref`. Soft-asset-ref reverse lookups ("which definitions use SM_Door?") would be useful but are separate work; if you add them, they belong in a new index module rather than expanding the existing one (different lifetime — catalogs come and go independently of definitions).
+- **Offline pipeline alignment** — `extract.lua` + `export_definitions.py` + `lib/property_normalizer.py` + `lib/property_serializer.py` emit flat values rather than typed envelopes. Bringing them into alignment with `run_export.py` is a separate ticket. Until then, Phase 0 deprecation notes are the only mark we leave on those files.
+- **`scan_property_meta.py`** already walks every UPROPERTY in C++ headers regardless of what the exporter emits, so the per-property tooltips / clamp bounds / enum members will populate naturally for the now-surviving fields when a real project is loaded. No changes needed there.
