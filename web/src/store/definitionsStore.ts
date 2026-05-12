@@ -160,11 +160,11 @@ export interface DefinitionsStore {
   forgetDirectory: () => Promise<void>;
   /** Try to restore last picked directory + auto-load if enabled.
    *  If no saved handle exists, fall back to loading bundled defaults
-   *  from `web/public/base-definitions/`. */
+   *  from `web/public/starter-project/`. */
   bootstrap: () => Promise<void>;
   reload: () => Promise<void>;
   /** Load the bundled default Definitions tree from
-   *  `web/public/base-definitions/` (manifest + each file). Discards any
+   *  `web/public/starter-project/` (manifest + each file). Discards any
    *  current directory handle so the next Save prompts Save As. */
   loadBundledDefaults: () => Promise<void>;
   /** Pick a folder and write the entire current working set to it as
@@ -1278,9 +1278,9 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     await writeProjectMeta(handle, meta);
 
     if (seedFromBundled) {
-      // Mirror web/public/base-definitions/ into the handle.
+      // Mirror web/public/starter-project/ into the handle.
       const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
-      const manifestUrl = `${baseUrl}base-definitions/manifest.json`;
+      const manifestUrl = `${baseUrl}starter-project/manifest.json`;
       const manifestResp = await fetch(manifestUrl);
       if (!manifestResp.ok) {
         set({ toast: { kind: 'error', text: `Failed to fetch bundled manifest: ${manifestResp.status}` } });
@@ -1289,7 +1289,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       const manifest = await manifestResp.json() as {
         folders: string[];
         files: { folder: string; ids: string[] }[];
-        sidecars?: { hierarchy: boolean; propertyMeta: boolean };
       };
 
       // Write every definition file, concurrency-capped.
@@ -1308,7 +1307,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
           if (i >= allFiles.length) return;
           const { folder, id } = allFiles[i];
           try {
-            const url = `${baseUrl}base-definitions/${folder}/${id}.json`;
+            const url = `${baseUrl}starter-project/${folder}/${id}.json`;
             const r = await fetch(url);
             if (!r.ok) { console.warn(`seed fetch ${folder}/${id} → ${r.status}`); continue; }
             const text = await r.text();
