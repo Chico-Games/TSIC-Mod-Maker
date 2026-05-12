@@ -139,13 +139,16 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
   propertySchema: new Map(),
   idTemplates: new Map(),
 
-  loadSchema: async (fetcher = fetch) => {
+  loadSchema: async (fetcher?: typeof fetch) => {
     if (get().loaded) return;
+    // Default fetch needs `this === globalThis`; bind here so the call site is
+    // robust whether the caller passes a mock or not.
+    const doFetch = fetcher ?? fetch.bind(globalThis);
     try {
       const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
       const hUrl = `${baseUrl}schema/class-hierarchy.json`;
       const pUrl = `${baseUrl}schema/property-meta.json`;
-      const [hResp, pResp] = await Promise.all([fetcher(hUrl), fetcher(pUrl)]);
+      const [hResp, pResp] = await Promise.all([doFetch(hUrl), doFetch(pUrl)]);
       if (!hResp.ok) throw new Error(`class-hierarchy ${hResp.status}`);
       if (!pResp.ok) throw new Error(`property-meta ${pResp.status}`);
       const hierarchy = JSON.parse(await hResp.text());

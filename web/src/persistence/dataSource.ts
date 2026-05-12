@@ -28,10 +28,19 @@ export class HttpDataSource implements DataSource {
   readonly readOnly = true;
   readonly displayName = 'Starter project';
 
+  private readonly fetcher: typeof fetch;
+
   constructor(
     private readonly baseUrl: string,
-    private readonly fetcher: typeof fetch = (typeof fetch !== 'undefined' ? fetch : (() => { throw new Error('no fetch'); }) as any),
-  ) {}
+    fetcher?: typeof fetch,
+  ) {
+    // Default fetch must be invoked with `this === globalThis`; storing the
+    // unbound function on the instance and calling `this.fetcher(...)` would
+    // throw "Illegal invocation". Bind here so callers can use the method
+    // form without ceremony.
+    this.fetcher = fetcher
+      ?? (typeof fetch !== 'undefined' ? fetch.bind(globalThis) : (() => { throw new Error('no fetch'); }) as any);
+  }
 
   async readManifest(): Promise<DataSourceManifest> {
     const url = `${this.baseUrl}/manifest.json`;
@@ -127,7 +136,9 @@ export class FsaDataSource implements DataSource {
       const file = await fh.getFile();
       return JSON.parse(await file.text());
     } catch (e: any) {
-      if (e?.name === 'NotFoundError') return null;
+      // Real FSA throws DOMException with name='NotFoundError'. Test mocks
+      // sometimes throw plain Error with 'NotFoundError' as message. Accept both.
+      if (e?.name === 'NotFoundError' || e?.message === 'NotFoundError') return null;
       throw e;
     }
   }
