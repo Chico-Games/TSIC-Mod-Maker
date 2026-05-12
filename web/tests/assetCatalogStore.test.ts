@@ -84,3 +84,20 @@ test('setDataSource clears cache', async () => {
   useAssetCatalogStore.getState().setDataSource(mockDataSource(null));
   assert.deepEqual(useAssetCatalogStore.getState().catalogs, {});
 });
+
+test('readCatalog throws — store recovers (not stuck on loading)', async () => {
+  const errorDs: DataSource = {
+    kind: 'http', readOnly: true, displayName: 'mock',
+    readManifest: async () => ({ folders: [], files: [] }),
+    readFile: async () => '',
+    readProjectMeta: async () => null,
+    readCatalog: async () => { throw new Error('boom'); },
+    readTags: async () => [],
+    readAssetRefs: async () => ({}),
+  };
+  useAssetCatalogStore.setState({ catalogs: {}, inflight: {}, dataSource: errorDs });
+  const out = await useAssetCatalogStore.getState().loadCatalog('StaticMesh');
+  assert.deepEqual(out, []);
+  assert.equal(useAssetCatalogStore.getState().catalogs.StaticMesh, 'missing');
+  assert.equal(useAssetCatalogStore.getState().inflight.StaticMesh, undefined);
+});

@@ -32,8 +32,30 @@ export const useAssetCatalogStore = create<State>((set, get) => ({
 
     set((s) => ({ catalogs: { ...s.catalogs, [className]: 'loading' } }));
     const promise = (async () => {
-      const cat = await ds.readCatalog(className);
-      if (!cat) {
+      try {
+        const cat = await ds.readCatalog(className);
+        if (!cat) {
+          set((s) => {
+            const nextInflight = { ...s.inflight };
+            delete nextInflight[className];
+            return {
+              catalogs: { ...s.catalogs, [className]: 'missing' as const },
+              inflight: nextInflight,
+            };
+          });
+          return [];
+        }
+        set((s) => {
+          const nextInflight = { ...s.inflight };
+          delete nextInflight[className];
+          return {
+            catalogs: { ...s.catalogs, [className]: cat.entries },
+            inflight: nextInflight,
+          };
+        });
+        return cat.entries;
+      } catch (e) {
+        console.warn(`[assetCatalogStore] readCatalog(${className}) failed:`, e);
         set((s) => {
           const nextInflight = { ...s.inflight };
           delete nextInflight[className];
@@ -44,15 +66,6 @@ export const useAssetCatalogStore = create<State>((set, get) => ({
         });
         return [];
       }
-      set((s) => {
-        const nextInflight = { ...s.inflight };
-        delete nextInflight[className];
-        return {
-          catalogs: { ...s.catalogs, [className]: cat.entries },
-          inflight: nextInflight,
-        };
-      });
-      return cat.entries;
     })();
     set((s) => ({ inflight: { ...s.inflight, [className]: promise } }));
     return promise;
