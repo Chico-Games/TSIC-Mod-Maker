@@ -10,6 +10,7 @@ import type { DataSource } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
 import type { ClassNode } from './appSchemaStore';
+import { useGameplayTagStore } from './gameplayTagStore';
 import { validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 
@@ -1020,6 +1021,14 @@ async function loadFromDataSource(
 
     useAppSchemaStore.setState({ classNodes, propertySchema, idTemplates });
 
+    // Eager-load gameplay tags for this dataSource. Missing sidecar yields [].
+    try {
+      const tags = await ds.readTags();
+      useGameplayTagStore.getState().load(tags);
+    } catch (e) {
+      console.warn('[definitionsStore] readTags failed:', e);
+    }
+
     // Preserve current selection if still valid.
     const cur = get();
     const selectedFolder = cur.selectedFolder && folders.includes(cur.selectedFolder)
@@ -1489,9 +1498,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       try { await putHandle(HANDLE_KEY, handle); } catch (e) {
         console.warn('[definitions] could not persist directory handle', e);
       }
+      const saveAsDs = new FsaDataSource(handle);
       set({
         directoryHandle: handle,
-        dataSource: new FsaDataSource(handle),
+        dataSource: saveAsDs,
         projectMeta: get().projectMeta ?? { schema_version: 1, name: handle.name },
         definitions: newDefs,
         dirty: new Set(),
@@ -1502,15 +1512,21 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
             : `Save As: wrote ${saved}, failed ${failed}. See console.`,
         },
       });
+      // Refresh gameplay tags from the new dataSource (missing sidecar yields []).
+      try {
+        const tags = await saveAsDs.readTags();
+        useGameplayTagStore.getState().load(tags);
+      } catch (e) {
+        console.warn('[definitionsStore] readTags failed:', e);
+      }
       {
         const idx = buildReferencedByIndex(get().definitions);
         set({ referencedByIndex: idx });
       }
       // Write project.json so the new folder is a real project, not a legacy folder.
       try {
-        const ds = new FsaDataSource(handle);
-        if (ds.writeProjectMeta) {
-          await ds.writeProjectMeta(get().projectMeta!);
+        if (saveAsDs.writeProjectMeta) {
+          await saveAsDs.writeProjectMeta(get().projectMeta!);
         }
       } catch (e) {
         console.warn('[definitions] could not write project.json after save-as', e);
