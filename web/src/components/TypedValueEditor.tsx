@@ -9,6 +9,7 @@ import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/disp
 import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
 import { PropertyTooltip } from './PropertyTooltip';
 import { SmartEffectsView } from './classBrowser/SmartEffectsView';
+import { StructRows } from './StructRows';
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -79,7 +80,7 @@ export interface RefAdapter {
   folderForId: (assetId: string) => string | null;
 }
 
-interface FieldProps {
+export interface FieldProps {
   label?: string;
   /** Raw property name (snake_case) — used as a meta-lookup key and for
    *  bool-variant decisions. Top-level fields supply this; deeply-nested
@@ -1129,7 +1130,7 @@ export function TypedField(props: FieldProps) {
           />
         );
       }
-      return <StructEditor {...props} />;
+      return <StructRows {...props} />;
     case 'array':
     case 'set':
       return <ContainerEditor {...props} />;

@@ -2050,6 +2050,21 @@ body.resizing-col * { cursor: col-resize !important; }
 }
 .def-add-prop input { flex: 1; max-width: 200px; }
 .def-empty { color: var(--muted); font-style: italic; font-size: 12px; padding: 4px 0; }
+.def-chevron { display: inline-block; width: 1em; opacity: 0.7; margin-right: 4px; }
+.def-struct-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 0.75em;
+  padding-left: 0.5em;
+  border-left: 1px dashed var(--border);
+}
+.def-struct-empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 12px;
+  padding: 4px 0 4px 1em;
+}
 .def-bool-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
 .def-raw { display: flex; flex-direction: column; gap: 4px; }
 .def-raw textarea {
