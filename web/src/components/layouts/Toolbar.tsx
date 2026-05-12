@@ -10,6 +10,9 @@ export function Toolbar() {
   const setSeed = useLayoutEditorStore((s) => s.setSeed);
   const rerollSeed = useLayoutEditorStore((s) => s.rerollSeed);
   const definitions = useDefinitionsStore((s) => s.definitions);
+  const dirty = useDefinitionsStore((s) => s.dirty);
+  const saveOne = useDefinitionsStore((s) => s.saveOne);
+  const isDirty = selectedLayoutKey ? dirty.has(selectedLayoutKey) : false;
   const gizmoMode = useLayoutEditorStore((s) => s.gizmoMode);
   const setGizmoMode = useLayoutEditorStore((s) => s.setGizmoMode);
   const tileTagsOverride = useLayoutEditorStore((s) => s.tileTagsOverride);
@@ -40,6 +43,13 @@ export function Toolbar() {
         <option value="">— pick a layout —</option>
         {layouts.map((id) => <option key={id} value={id}>{id}</option>)}
       </select>
+      <button
+        disabled={!isDirty || !selectedLayoutKey}
+        onClick={() => selectedLayoutKey && saveOne(selectedLayoutKey)}
+        className="layouts-save"
+      >
+        Save{isDirty ? ' ●' : ''}
+      </button>
       <label className="layouts-toolbar-seed">
         Seed
         <input
