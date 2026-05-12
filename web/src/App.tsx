@@ -24,6 +24,7 @@ import { RecipesAndLootTab } from './components/RecipesAndLootTab';
 import { ValidationsTab } from './components/ValidationsTab';
 import { ItemsTab } from './components/ItemsTab';
 import { FurnitureTab } from './components/FurnitureTab';
+import { LayoutsTab } from './components/layouts/LayoutsTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
 import { dispatchDnD, type DragSource, type DropTarget } from './dnd/dispatch';
@@ -168,7 +169,7 @@ export function App() {
       case 'items': return <ItemsTab />;
       case 'furniture': return <FurnitureTab />;
       case 'definitions': return <DefinitionsTab />;
-      case 'layouts': return null;
+      case 'layouts': return <LayoutsTab />;
       case 'validations': return <ValidationsTab />;
     }
   };

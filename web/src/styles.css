@@ -3003,3 +3003,12 @@ body.resizing-col * { cursor: col-resize !important; }
 }
 .assetrefpicker-list-folder { opacity: 0.6; font-size: 0.85em; }
 .assetrefpicker-empty { padding: 0.25em 0.4em; opacity: 0.6; font-style: italic; }
+
+.layouts-tab { display: flex; flex-direction: column; height: 100%; }
+.layouts-toolbar { display: flex; gap: 0.5em; padding: 0.5em; align-items: center; border-bottom: 1px solid var(--border, #444); }
+.layouts-toolbar-seed { display: inline-flex; gap: 0.25em; align-items: center; }
+.layouts-toolbar-seed input { width: 6em; padding: 0.15em 0.4em; background: transparent; border: 1px solid var(--border, #444); border-radius: 0.25em; }
+.layouts-panes { display: grid; grid-template-columns: 220px 1fr 320px; flex: 1; min-height: 0; }
+.layouts-outliner { border-right: 1px solid var(--border, #444); overflow-y: auto; }
+.layouts-viewport { background: #111; min-height: 0; }
+.layouts-details { border-left: 1px solid var(--border, #444); overflow-y: auto; }
