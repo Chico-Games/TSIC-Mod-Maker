@@ -1,0 +1,1758 @@
+{
+  "id": "LYD_Warehouse_Decrease",
+  "asset_path": "/Game/WorldGeneration/Layouts/Warehouse/HandlesHeight/LYD_Warehouse_Decrease",
+  "class": "ULayoutDefinition",
+  "parent_classes": [
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "layout_objects": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "LayoutObject",
+        "fields": {
+          "layout_actor_type": {
+            "type": "enum",
+            "enum_name": "LayoutActorType"
+          },
+          "b_visual_helper": {
+            "type": "bool"
+          },
+          "definition_filter": {
+            "type": "struct",
+            "struct_name": "DefinitionFilter",
+            "fields": {
+              "seed_offset": {
+                "type": "int"
+              },
+              "search_queries": {
+                "type": "array",
+                "element_type": {
+                  "type": "struct",
+                  "struct_name": "ProxySearchTreeQuery",
+                  "fields": {
+                    "search_query": {
+                      "type": "enum",
+                      "enum_name": "SearchQuery"
+                    },
+                    "tags": {
+                      "type": "gameplay_tag_container"
+                    },
+                    "b_not": {
+                      "type": "bool"
+                    }
+                  }
+                }
+              },
+              "tile_requirements": {
+                "type": "array",
+                "element_type": {
+                  "type": "struct",
+                  "struct_name": "ProxySearchTreeQuery",
+                  "fields": {
+                    "search_query": {
+                      "type": "enum",
+                      "enum_name": "SearchQuery"
+                    },
+                    "tags": {
+                      "type": "gameplay_tag_container"
+                    },
+                    "b_not": {
+                      "type": "bool"
+                    }
+                  }
+                }
+              },
+              "spawn_chance_over": {
+                "type": "float"
+              },
+              "spawn_chance_under": {
+                "type": "float"
+              }
+            }
+          },
+          "transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-2.Up",
+                            "Tile.Offset.Height.-1.Up"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 513.3835929482024
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -2.911548807696903
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 2.2737367544323206e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-2.Right",
+                            "Tile.Offset.Height.-1.Right"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 34.202522417740056
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 527.5959171572554
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.1368683772161603e-12
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-1.Left",
+                            "Tile.Offset.Height.-2.Left"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 30.712466190076412
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -539.7379651788519
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -7.503331289626658e-12
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-1.Down",
+                            "Tile.Offset.Height.-2.Down"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -538.2263698542445
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 8.864588029707022
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-2.Up",
+                            "Tile.Offset.Height.-1.Up"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 537.1624262768265
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 525.2093684494297
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 6.821210263296962e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-2.Right",
+                            "Tile.Offset.Height.-1.Right"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -511.0949626910623
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 523.9410838043635
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -1.1368683772161603e-12
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-1.Down",
+                            "Tile.Offset.Height.-2.Down"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -547.8797867125986
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -524.7257774334823
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Tile.Offset.Height.-1.Left",
+                            "Tile.Offset.Height.-2.Left"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 513.4932285059051
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -534.2492333849166
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 6.821210263296962e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.LAYOUT: 1>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": {
+                    "type": "struct",
+                    "struct_name": "ProxySearchTreeQuery",
+                    "fields": {
+                      "search_query": {
+                        "type": "enum",
+                        "enum_name": "SearchQuery"
+                      },
+                      "tags": {
+                        "type": "gameplay_tag_container"
+                      },
+                      "b_not": {
+                        "type": "bool"
+                      }
+                    }
+                  },
+                  "value": [
+                    {
+                      "type": "struct",
+                      "struct_name": "ProxySearchTreeQuery",
+                      "value": {
+                        "search_query": {
+                          "type": "enum",
+                          "enum_name": "SearchQuery",
+                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
+                        },
+                        "tags": {
+                          "type": "gameplay_tag_container",
+                          "value": [
+                            "Layout.Type.Display",
+                            "Tile.Biome.Warehouse"
+                          ]
+                        },
+                        "b_not": {
+                          "type": "bool",
+                          "value": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 34.202520795211115
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -14.973774715007806
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

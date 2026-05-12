@@ -15,10 +15,6 @@ const STARTER_DIR = join(REPO_WEB, 'public', 'starter-project');
 const SRC = process.env.TSIC_DEFINITIONS_SRC
   ?? 'C:\\Users\\Administrator\\Documents\\Unreal Projects\\TSIC\\Tools\\Export\\test-output\\Definitions';
 
-function isLayoutFolder(name) {
-  return /^layout/.test(name);
-}
-
 async function ensureDir(p) {
   if (!existsSync(p)) await mkdir(p, { recursive: true });
 }
@@ -58,7 +54,6 @@ async function main() {
     }
     if (!entry.isDirectory()) continue;
     if (name.startsWith('.')) continue;
-    if (isLayoutFolder(name)) continue;
 
     const folderSrc = join(SRC, name);
     const starterDst = join(STARTER_DIR, name);

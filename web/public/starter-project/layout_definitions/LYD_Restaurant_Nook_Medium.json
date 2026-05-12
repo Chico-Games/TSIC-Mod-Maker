@@ -1,0 +1,1583 @@
+{
+  "id": "LYD_Restaurant_Nook_Medium",
+  "asset_path": "/Game/WorldGeneration/Layouts/Restaurant/Shared/Nooks/LYD_Restaurant_Nook_Medium",
+  "class": "ULayoutDefinition",
+  "parent_classes": [
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "layout_objects": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "LayoutObject",
+        "fields": {
+          "layout_actor_type": {
+            "type": "enum",
+            "enum_name": "LayoutActorType"
+          },
+          "b_visual_helper": {
+            "type": "bool"
+          },
+          "definition_filter": {
+            "type": "struct",
+            "struct_name": "DefinitionFilter",
+            "fields": {
+              "seed_offset": {
+                "type": "int"
+              },
+              "search_queries": {
+                "type": "array",
+                "element_type": null
+              },
+              "tile_requirements": {
+                "type": "array",
+                "element_type": null
+              },
+              "spawn_chance_over": {
+                "type": "float"
+              },
+              "spawn_chance_under": {
+                "type": "float"
+              }
+            }
+          },
+          "furniture_definition": {
+            "type": "definition_ref",
+            "class": "DamageableFurnitureDefinition"
+          },
+          "transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_StoreWall_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 150.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -300.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_StoreWall_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 150.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_StoreWall_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 175.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -300.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_StoreWall_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 175.923175
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 275.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_6_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -111.97694597444453
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -195.50973149840482
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -6.195932655828074e-12
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_6_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -111.97694599999997
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -41.70688426414149
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 5.614353824512364e-06
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "FurnitureDefinition",
+              "value": "FD_Decal_3"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -2.64266513713418e-09
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": -111.97694628256679
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 99.6050488632238
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_7_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 102.28691989193386
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -238.8002921298621
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -2.324881279719827e-12
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_7_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 102.28691984998291
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -175.77950204481814
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -1.648313630091226e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_7_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 102.28692000961327
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -111.19131918317872
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 4.0360282559895756e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_4_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 104.28444060959106
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -24.22078264171782
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -2.785182007307386e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_4_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 104.28443727601228
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 88.4394141459451
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": -7.956623471791057e-14
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "LayoutObject",
+          "value": {
+            "layout_actor_type": {
+              "type": "enum",
+              "enum_name": "LayoutActorType",
+              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+            },
+            "b_visual_helper": {
+              "type": "bool",
+              "value": false
+            },
+            "definition_filter": {
+              "type": "struct",
+              "struct_name": "DefinitionFilter",
+              "value": {
+                "seed_offset": {
+                  "type": "int",
+                  "value": -1
+                },
+                "search_queries": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "tile_requirements": {
+                  "type": "array",
+                  "element_type": null,
+                  "value": []
+                },
+                "spawn_chance_over": {
+                  "type": "float",
+                  "value": 0.0
+                },
+                "spawn_chance_under": {
+                  "type": "float",
+                  "value": 1.0
+                }
+              }
+            },
+            "furniture_definition": {
+              "type": "definition_ref",
+              "class": "DamageableFurnitureDefinition",
+              "value": "FD_ServingCounter_4_DF"
+            },
+            "transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": -0.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0.7071067750158768
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 0.7071067873572183
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 104.28443440863441
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 201.60656502196136
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.1938573129491748e-13
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": [
+        "Tile.Biome.Restaurant",
+        "Layout.Type.Nook",
+        "Entity.RandomGeneration.Size.Medium"
+      ]
+    }
+  }
+}

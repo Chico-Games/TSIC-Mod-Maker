@@ -103,20 +103,23 @@ function mockDir(entries: Record<string, FileSystemFileHandle | FileSystemDirect
   } as any;
 }
 
-test('FsaDataSource: readManifest skips dot-files and layout folders', async () => {
+test('FsaDataSource: readManifest skips dot-files', async () => {
   const root = mockDir({
     items: mockDir({
       'A.json': mockFile('{"id":"A"}'),
       'B.json': mockFile('{"id":"B"}'),
     }),
-    layout_meta: mockDir({ 'X.json': mockFile('{}') }),
+    layout_definitions: mockDir({ 'X.json': mockFile('{}') }),
     '.class-hierarchy.json': mockFile('{}'),
     '.property-meta.json': mockFile('{}'),
   });
   const ds = new FsaDataSource(root);
   const m = await ds.readManifest();
-  assert.deepEqual(m.folders, ['items']);
-  assert.deepEqual(m.files, [{ folder: 'items', ids: ['A', 'B'] }]);
+  assert.deepEqual(m.folders, ['items', 'layout_definitions']);
+  assert.deepEqual(m.files, [
+    { folder: 'items', ids: ['A', 'B'] },
+    { folder: 'layout_definitions', ids: ['X'] },
+  ]);
 });
 
 test('FsaDataSource: readFile returns file text', async () => {

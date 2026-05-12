@@ -38,10 +38,6 @@ export interface DataSource {
   readAssetRefs(): Promise<Record<string, string>>;
 }
 
-function isLayoutFolder(name: string): boolean {
-  return /^layout/i.test(name);
-}
-
 /** HTTP-backed read-only DataSource. Used for the Starter project. */
 export class HttpDataSource implements DataSource {
   readonly kind = 'http' as const;
@@ -68,8 +64,8 @@ export class HttpDataSource implements DataSource {
     if (!r.ok) throw new Error(`manifest ${r.status}`);
     const json = JSON.parse(await r.text());
     return {
-      folders: (json.folders ?? []).filter((f: string) => !isLayoutFolder(f)),
-      files: (json.files ?? []).filter((f: any) => !isLayoutFolder(f.folder)),
+      folders: json.folders ?? [],
+      files: json.files ?? [],
     };
   }
 
@@ -126,7 +122,6 @@ export class FsaDataSource implements DataSource {
     for await (const [name, entry] of this.rootHandle.entries()) {
       if ((entry as any).kind !== 'directory') continue;
       if (name.startsWith('.')) continue;
-      if (isLayoutFolder(name)) continue;
       folders.push(name);
       const ids: string[] = [];
       // @ts-ignore
