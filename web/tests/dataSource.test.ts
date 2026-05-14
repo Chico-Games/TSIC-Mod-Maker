@@ -41,11 +41,11 @@ test('HttpDataSource: readFile fetches file body', async () => {
   assert.equal(text, '{"id":"A"}');
 });
 
-test('HttpDataSource: readProjectMeta returns synthesised meta', async () => {
-  const ds = new HttpDataSource('/starter-project', mockFetch({}));
+test('HttpDataSource: readProjectMeta returns schema_version 2 with name Default project', async () => {
+  const ds = new HttpDataSource('http://x/sp', (async () => new Response('', { status: 404 })) as typeof fetch);
   const meta = await ds.readProjectMeta();
-  assert.equal(meta?.name, 'Starter project');
-  assert.equal(meta?.schema_version, 1);
+  assert.equal(meta?.schema_version, 2);
+  assert.equal(meta?.name, 'Default project');
 });
 
 test('HttpDataSource: writeFile undefined (read-only)', () => {
