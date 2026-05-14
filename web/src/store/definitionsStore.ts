@@ -188,6 +188,11 @@ export interface DefinitionsStore {
    *  Identical semantics to the old loadBundledDefaults but also populates
    *  `defaultProject` and resets `tombstones`. */
   loadDefaultProject: () => Promise<void>;
+  /** Store an FSA directory handle as the preferred default-project source,
+   *  then refresh the working set from that source. */
+  setDefaultProjectSource: (handle: FileSystemDirectoryHandle) => Promise<void>;
+  /** Clear the stored FSA default-project source setting and reload from HTTP. */
+  clearDefaultProjectSource: () => Promise<void>;
   /** Load the bundled default Definitions tree from
    *  `web/public/starter-project/` (manifest + each file). Discards any
    *  current directory handle so the next Save prompts Save As. */
@@ -1547,12 +1552,52 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   loadDefaultProject: async () => {
     try { await deleteHandle(HANDLE_KEY); } catch { /* ignore */ }
-    const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
-    const trimmed = baseUrl.replace(/\/$/, '');
-    const def = await loadDefaultProjectFromHttp(`${trimmed}/starter-project`);
+    let def: import('../persistence/defaultProject').DefaultProject | null = null;
+    let ds: import('../persistence/dataSource').DataSource | null = null;
+    try {
+      const { getDefaultSourceHandle } = await import('../persistence/defaultSourceSetting');
+      const setting = await getDefaultSourceHandle();
+      if (setting) {
+        const ok = await ensurePermission(setting, 'readwrite');
+        if (ok) {
+          const { loadDefaultProjectFromFsa } = await import('../persistence/defaultProject');
+          def = await loadDefaultProjectFromFsa(setting);
+          ds = new FsaDataSource(setting);
+        }
+      }
+    } catch (e) {
+      console.warn('[default-project] FSA source failed; falling back to HTTP', e);
+    }
+    if (!def) {
+      const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
+      const trimmed = baseUrl.replace(/\/$/, '');
+      def = await loadDefaultProjectFromHttp(`${trimmed}/starter-project`);
+      ds = new HttpDataSource(`${trimmed}/starter-project`);
+    }
     set({ defaultProject: def, tombstones: new Set<DefinitionsKey>() });
-    const ds = new HttpDataSource(`${trimmed}/starter-project`);
-    await loadFromDataSource(set, get, ds);
+    await loadFromDataSource(set, get, ds!);
+  },
+
+  setDefaultProjectSource: async (handle) => {
+    const ok = await ensurePermission(handle, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for default source folder.' } });
+      return;
+    }
+    const { setDefaultSourceHandle } = await import('../persistence/defaultSourceSetting');
+    try { await setDefaultSourceHandle(handle); }
+    catch (e) {
+      set({ toast: { kind: 'error', text: `Failed to save default-source setting: ${String(e)}` } });
+      return;
+    }
+    await get().loadDefaultProject();
+  },
+
+  clearDefaultProjectSource: async () => {
+    const { clearDefaultSourceHandle } = await import('../persistence/defaultSourceSetting');
+    try { await clearDefaultSourceHandle(); }
+    catch { /* noop */ }
+    await get().loadDefaultProject();
   },
 
   loadBundledDefaults: async () => {
