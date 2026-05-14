@@ -1,6 +1,6 @@
 import type { ProjectMeta } from '../store/definitionsStore';
 
-export const SUPPORTED_VERSION = 1;
+export const SUPPORTED_VERSION = 2;
 
 export function isSupported(v: number): boolean {
   return Number.isInteger(v) && v >= 1 && v <= SUPPORTED_VERSION;

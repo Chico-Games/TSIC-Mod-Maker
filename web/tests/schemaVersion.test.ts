@@ -17,7 +17,7 @@ test('isSupported / isFuture partition the space', () => {
 });
 
 test('parseMeta accepts a valid project.json shape', () => {
-  const res = parseMeta({ schema_version: 1, name: 'P', ue_sync_path: 'X' });
+  const res = parseMeta({ schema_version: 1, name: 'P' });
   assert.equal(res.ok, true);
   if (res.ok) assert.equal(res.meta.name, 'P');
 });
@@ -63,15 +63,31 @@ test('parseMeta preserves optional fields verbatim', () => {
   const raw = {
     schema_version: 1,
     name: 'P',
-    ue_sync_path: 'D:/X',
     description: 'hello',
     created_at: '2026-01-01T00:00:00Z',
   };
   const r = parseMeta(raw);
   assert.equal(r.ok, true);
   if (r.ok) {
-    assert.equal(r.meta.ue_sync_path, 'D:/X');
     assert.equal(r.meta.description, 'hello');
     assert.equal(r.meta.created_at, '2026-01-01T00:00:00Z');
   }
+});
+
+test('parseMeta accepts the new overlay v2 shape including based_on_default_version', () => {
+  const r = parseMeta({ schema_version: 2, name: 'P', based_on_default_version: 3 });
+  assert.equal(r.ok, true);
+  if (r.ok) {
+    assert.equal(r.meta.schema_version, 2);
+    assert.equal((r.meta as any).based_on_default_version, 3);
+  }
+});
+
+test('parseMeta accepts legacy v1 (no based_on_default_version)', () => {
+  const r = parseMeta({ schema_version: 1, name: 'P' });
+  assert.equal(r.ok, true);
+});
+
+test('SUPPORTED_VERSION is 2 (after overlay bump)', () => {
+  assert.equal(SUPPORTED_VERSION, 2);
 });

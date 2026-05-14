@@ -71,6 +71,7 @@ export interface ProjectMeta {
   description?: string;
   ue_sync_path?: string;
   created_at?: string;
+  based_on_default_version?: number;
 }
 
 export interface DefinitionsStore {
