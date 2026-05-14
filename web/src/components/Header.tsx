@@ -1,13 +1,93 @@
 import { useDefinitionsStore } from '../store/definitionsStore';
+import { useModIoStore } from '../store/modIoStore';
 import { useAppStore, type AppTab } from '../store/appStore';
 import { SemanticChip } from './SemanticChip';
 import { useEffect, useRef, useState } from 'react';
-import { SignInButton } from './modio/SignInButton';
 import { PublishButton } from './modio/PublishButton';
-import { BrowseModsButton } from './modio/BrowseModsButton';
+import { BrowseModsDialog } from './modio/BrowseModsDialog';
+import { SignInModal } from './modio/SignInModal';
 import { SyncChip } from './modio/SyncChip';
 import { SettingsModal } from './SettingsModal';
 import { SaveAsModal } from './SaveAsModal';
+
+type MenuItem = {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  hint?: string;
+  deemphasised?: boolean;
+};
+
+function HoverMenu({ trigger, items }: { trigger: React.ReactNode; items: MenuItem[] }) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+  const cancelClose = () => {
+    if (closeTimer.current != null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = window.setTimeout(() => setOpen(false), 120);
+  };
+  useEffect(() => () => cancelClose(), []);
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => { cancelClose(); setOpen(true); }}
+      onMouseLeave={scheduleClose}
+    >
+      <button onClick={() => setOpen((v) => !v)} aria-haspopup="menu" aria-expanded={open}>
+        {trigger}
+      </button>
+      {open && (
+        <div
+          role="menu"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            marginTop: 2,
+            minWidth: 200,
+            background: 'var(--panel, #1a1a1a)',
+            border: '1px solid var(--border, #444)',
+            borderRadius: 6,
+            boxShadow: '0 6px 18px rgba(0, 0, 0, 0.45)',
+            padding: 4,
+            zIndex: 200,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {items.map((it, i) => (
+            <button
+              key={i}
+              role="menuitem"
+              onClick={() => { if (!it.disabled) { it.onClick(); setOpen(false); } }}
+              disabled={it.disabled}
+              title={it.hint}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                textAlign: 'left',
+                padding: '6px 10px',
+                cursor: it.disabled ? 'default' : 'pointer',
+                color: it.disabled ? 'var(--muted)' : (it.deemphasised ? 'var(--muted)' : 'var(--text)'),
+                fontSize: it.deemphasised ? '0.85em' : '0.95em',
+                borderRadius: 3,
+              }}
+              onMouseEnter={(e) => { if (!it.disabled) (e.currentTarget as HTMLButtonElement).style.background = 'var(--panel-2, #2a2a2a)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              {it.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function relativeTime(ms: number): string {
   const d = Date.now() - ms;
@@ -33,6 +113,14 @@ export function Header() {
   const setSearchOpen = useAppStore((s) => s.setSearchOpen);
   const tab = useAppStore((s) => s.tab);
   const setTab = useAppStore((s) => s.setTab);
+
+  // mod.io selectors for the unified menu.
+  const modIoCfg = useModIoStore((s) => s.cfg);
+  const modIoToken = useModIoStore((s) => s.token);
+  const modIoUser = useModIoStore((s) => s.user);
+  const openBrowseMods = useModIoStore((s) => s.openBrowse);
+  const openSignInModal = useModIoStore((s) => s.openSignInModal);
+  const signOutModIo = useModIoStore((s) => s.signOut);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [recentsOpen, setRecentsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -90,8 +178,6 @@ export function Header() {
       </span>
       <SemanticChip />
       <div className="spacer" />
-      <SignInButton />
-      <BrowseModsButton />
       <PublishButton />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
       <div className="open-project-split">
@@ -142,42 +228,85 @@ export function Header() {
         )}
       </div>
       <button onClick={() => setNewProjectOpen(true)} disabled={!fsa} title="Create a new project folder">✨ New project</button>
-      <button
-        onClick={() => void saveAllDirty()}
-        disabled={dirtyCount === 0 || !directoryHandle || readOnly}
-        title={readOnly ? 'This source is read-only — use Save As to write changes.' : undefined}
-      >
-        💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}
-      </button>
-      <button
-        onClick={() => {
-          if (projectsRootHandle) setSaveAsOpen(true);
-          else void saveAs();
-        }}
-        disabled={!fsa || definitions.size === 0}
-      >Save as…</button>
-      <button
-        onClick={async () => {
-          const blob = await useDefinitionsStore.getState().exportFlattenedZip();
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'project-flattened.zip';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        }}
-        disabled={definitions.size === 0}
-        title="Download a complete snapshot of the current project (default + overlay merged)."
-      >
-        Export flattened
-      </button>
+      <HoverMenu
+        trigger={<>💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''} ▾</>}
+        items={[
+          {
+            label: dirtyCount > 0 ? `Save (${dirtyCount} unsaved)` : 'Save',
+            onClick: () => void saveAllDirty(),
+            disabled: dirtyCount === 0 || !directoryHandle || readOnly,
+            hint: readOnly ? 'This source is read-only — use Save As to write changes.' : undefined,
+          },
+          {
+            label: 'Save as…',
+            onClick: () => {
+              if (projectsRootHandle) setSaveAsOpen(true);
+              else void saveAs();
+            },
+            disabled: !fsa || definitions.size === 0,
+          },
+          {
+            label: 'Export',
+            onClick: async () => {
+              const blob = await useDefinitionsStore.getState().exportZip();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'project.zip';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+            },
+            disabled: definitions.size === 0,
+            hint: 'Download the project as a ZIP (overlay format).',
+          },
+          {
+            label: 'Export flattened',
+            onClick: async () => {
+              const blob = await useDefinitionsStore.getState().exportFlattenedZip();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'project-flattened.zip';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+            },
+            disabled: definitions.size === 0,
+            hint: 'Download a complete snapshot of the current project (default + overlay merged). Not usually needed.',
+            deemphasised: true,
+          },
+          ...(modIoCfg
+            ? [
+                {
+                  label: '📥 Browse mods',
+                  onClick: openBrowseMods,
+                  hint: 'Browse mods on mod.io',
+                },
+                modIoToken
+                  ? {
+                      label: `🌐 Sign out (${modIoUser?.username ?? 'mod.io'})`,
+                      onClick: () => void signOutModIo(),
+                      hint: 'Sign out of mod.io',
+                    }
+                  : {
+                      label: '🌐 Sign in (mod.io)',
+                      onClick: openSignInModal,
+                      hint: 'Sign in to mod.io',
+                    },
+              ]
+            : []),
+        ]}
+      />
       <button
         onClick={() => setSettingsOpen(true)}
         title="Settings"
       >⚙</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
+      <BrowseModsDialog />
+      <SignInModal />
 
       {newProjectOpen && (
         <NewProjectModal

@@ -230,6 +230,13 @@ export interface DefinitionsStore {
   /** Replace the entire JSON object for a definition (used by raw-JSON editor). */
   replaceJson: (key: DefinitionsKey, json: any) => void;
 
+  /** Undo / redo stacks. Each frame snapshots `definitions`, `dirty`, and
+   *  `tombstones` Maps/Sets. The stacks are bounded so memory stays sane. */
+  historyPast: Array<{ definitions: Map<DefinitionsKey, DefinitionRecord>; dirty: Set<DefinitionsKey>; tombstones: Set<DefinitionsKey> }>;
+  historyFuture: Array<{ definitions: Map<DefinitionsKey, DefinitionRecord>; dirty: Set<DefinitionsKey>; tombstones: Set<DefinitionsKey> }>;
+  undo: () => void;
+  redo: () => void;
+
   /** Save a single record back to disk. */
   saveOne: (key: DefinitionsKey) => Promise<void>;
   /** Save every dirty record. */
@@ -1188,6 +1195,9 @@ async function loadFromDataSource(
       loadedAt: Date.now(),
       loading: false,
       tombstones: overlayTombstones,
+      // Fresh load wipes the undo stack — history can't span a project change.
+      historyPast: [],
+      historyFuture: [],
       toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
     });
 
@@ -1224,6 +1234,36 @@ async function loadFromDataSource(
   }
 }
 
+// Undo-history config.
+const HISTORY_MAX = 100;
+// When two consecutive mutations share the same coalesce key within this
+// window, we don't push a new frame — keystroke-level edits to the same
+// input collapse into a single undo step.
+const HISTORY_COALESCE_MS = 600;
+let lastHistoryAt = 0;
+let lastHistoryKey: string | null = null;
+
+function pushHistory(
+  get: () => DefinitionsStore,
+  set: (state: Partial<DefinitionsStore>) => void,
+  opts?: { coalesceKey?: string },
+) {
+  const now = Date.now();
+  const coalesce =
+    opts?.coalesceKey != null &&
+    lastHistoryKey === opts.coalesceKey &&
+    now - lastHistoryAt < HISTORY_COALESCE_MS;
+  lastHistoryAt = now;
+  lastHistoryKey = opts?.coalesceKey ?? null;
+  if (coalesce) return;
+  const s = get();
+  const frame = { definitions: s.definitions, dirty: s.dirty, tombstones: s.tombstones };
+  const next = [...s.historyPast, frame];
+  while (next.length > HISTORY_MAX) next.shift();
+  // Any new mutation invalidates the redo stack.
+  set({ historyPast: next, historyFuture: [] });
+}
+
 export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   directoryHandle: null,
   dataSource: null,
@@ -1251,6 +1291,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   recents: [],
   projectsRootHandle: null,
   projectsInRoot: [],
+  historyPast: [],
+  historyFuture: [],
 
   setToast: (t) => set({ toast: t }),
   dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
@@ -1974,6 +2016,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const cur = get();
     const rec = cur.definitions.get(k);
     if (!rec) return;
+    pushHistory(get, set, { coalesceKey: `update:${k}:${path.join('.')}` });
     const nextJson = setIn(rec.json, path, value);
     const nextRec: DefinitionRecord = { ...rec, json: nextJson };
     const nextDefs = new Map(cur.definitions);
@@ -1997,6 +2040,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const cur = get();
     const rec = cur.definitions.get(k);
     if (!rec) return;
+    pushHistory(get, set, { coalesceKey: `replace:${k}` });
     const nextRec: DefinitionRecord = { ...rec, json };
     const nextDefs = new Map(cur.definitions);
     nextDefs.set(k, nextRec);
@@ -2013,6 +2057,49 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       reindexRecord(idx, k, updated.folder, updated.json?.properties);
       set({ referencedByIndex: new Map(idx) });
     }
+  },
+
+  undo: () => {
+    const cur = get();
+    const last = cur.historyPast[cur.historyPast.length - 1];
+    if (!last) return;
+    const past = cur.historyPast.slice(0, -1);
+    const futureFrame = {
+      definitions: cur.definitions,
+      dirty: cur.dirty,
+      tombstones: cur.tombstones,
+    };
+    set({
+      definitions: last.definitions,
+      dirty: last.dirty,
+      tombstones: last.tombstones,
+      historyPast: past,
+      historyFuture: [...cur.historyFuture, futureFrame],
+    });
+    // Rebuild reverse-ref index after applying the snapshot.
+    const idx = buildReferencedByIndex(get().definitions);
+    set({ referencedByIndex: idx });
+  },
+
+  redo: () => {
+    const cur = get();
+    const next = cur.historyFuture[cur.historyFuture.length - 1];
+    if (!next) return;
+    const future = cur.historyFuture.slice(0, -1);
+    const pastFrame = {
+      definitions: cur.definitions,
+      dirty: cur.dirty,
+      tombstones: cur.tombstones,
+    };
+    set({
+      definitions: next.definitions,
+      dirty: next.dirty,
+      tombstones: next.tombstones,
+      historyPast: [...cur.historyPast, pastFrame],
+      historyFuture: future,
+    });
+    const idx = buildReferencedByIndex(get().definitions);
+    set({ referencedByIndex: idx });
   },
 
   saveOne: async (k) => {
@@ -2511,6 +2598,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       set({ toast: { kind: 'error', text: `${id}.json already exists.` } });
       return null;
     }
+    pushHistory(get, set);
     const blank = template ?? {
       id,
       asset_path: `/Game/Definitions/${folder}/${id}`,
@@ -2615,6 +2703,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const { directoryHandle, definitions, dirty } = get();
     const rec = definitions.get(k);
     if (!rec) return;
+    pushHistory(get, set);
     // Remove from disk if it was ever saved (originalText non-empty means it
     // existed on disk).
     if (directoryHandle && rec.originalText) {

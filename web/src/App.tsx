@@ -226,6 +226,19 @@ export function App() {
         }
         return;
       }
+      // Undo / redo for the definitions store. Inside input fields the
+      // browser's native text-undo handles Ctrl+Z; this app-level handler
+      // only fires when no input is focused.
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && k === 'z') {
+        e.preventDefault();
+        useDefinitionsStore.getState().undo();
+        return;
+      }
+      if (((e.ctrlKey || e.metaKey) && k === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && k === 'z')) {
+        e.preventDefault();
+        useDefinitionsStore.getState().redo();
+        return;
+      }
       if (e.key === 'Escape') {
         setSearchOpen(false);
         // Clear selection on Escape so the next keypress doesn't
