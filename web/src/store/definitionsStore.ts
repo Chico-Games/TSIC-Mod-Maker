@@ -15,7 +15,7 @@ import { useAssetCatalogStore } from './assetCatalogStore';
 import { iterEnvelopes, validateAssetRefs, validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 import { loadDefaultProjectFromHttp, type DefaultProject } from '../persistence/defaultProject';
-import { composeWorkingSet } from '../persistence/overlay';
+import { composeWorkingSet, computeOverlay } from '../persistence/overlay';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -180,9 +180,12 @@ export interface DefinitionsStore {
    *  `defaultProject` and resets `tombstones`. */
   loadDefaultProject: () => Promise<void>;
   loadBundledDefaults: () => Promise<void>;
-  /** Pick a folder and write the entire current working set to it as
-   *  Save As. Replaces the saved directory handle. */
-  saveAs: () => Promise<void>;
+  /** Pick a folder and write the overlay (overrides + additions + tombstone
+   *  placeholders) to it as Save As. Stamps project.json with schema_version:2
+   *  and based_on_default_version. Replaces the saved directory handle.
+   *  When `opts.targetName` is provided AND a projects-root is configured,
+   *  the target becomes `{projectsRoot}/{targetName}/` and no picker shows. */
+  saveAs: (opts?: { targetName?: string }) => Promise<void>;
   /** Walk every loaded asset for `definition_ref` envelopes whose
    *  value is set but doesn't resolve. For each missing target whose
    *  class is known, mint a blank asset of that class. Returns the
@@ -1537,9 +1540,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     await get().loadDefaultProject();
   },
 
-  saveAs: async () => {
+  saveAs: async (opts) => {
     const w = window as any;
-    if (!w.showDirectoryPicker) {
+    const targetName = opts?.targetName?.trim();
+    if (!targetName && !w.showDirectoryPicker) {
       set({ toast: { kind: 'error', text: 'This browser lacks the File System Access API. Use Chrome / Edge / Brave.' } });
       return;
     }
@@ -1550,40 +1554,114 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
         return;
       }
-      // Write every loaded record (regardless of dirty state) so the new
-      // folder is a complete copy.
-      const { definitions } = get();
-      const classNodes = useAppSchemaStore.getState().classNodes;
+      const { definitions, defaultProject, tombstones: storeTombstones } = get();
+
+      // --- Overlay-only write ---
+      // When a defaultProject is loaded, write only the delta (overrides,
+      // additions, tombstone placeholders). Fall back to full-tree write if
+      // defaultProject is unexpectedly absent.
       let saved = 0;
       let failed = 0;
-      const newDefs = new Map<DefinitionsKey, DefinitionRecord>();
-      for (const [k, rec] of definitions) {
-        const text = serializeDefinition(rec);
-        try {
-          const targetFolder = computeTargetFolder(rec, classNodes);
-          await writeFile(handle, targetFolder, `${rec.id}.json`, text);
-          const newKey = key(targetFolder, rec.id);
-          newDefs.set(newKey, {
-            ...rec,
-            folder: targetFolder,
-            originalText: text,
-            diskId: rec.id,
-            diskFolder: targetFolder,
-          });
-          saved++;
-        } catch (e) {
-          console.warn(`[definitions] save-as failed ${k}`, e);
-          failed++;
+      const newDefs = new Map<DefinitionsKey, DefinitionRecord>(definitions);
+
+      if (!defaultProject) {
+        // Defensive fallback — should not happen in normal usage.
+        console.warn('[definitions] saveAs: defaultProject is null, falling back to full-tree write');
+        const classNodes = useAppSchemaStore.getState().classNodes;
+        for (const [k, rec] of definitions) {
+          const text = serializeDefinition(rec);
+          try {
+            const targetFolder = computeTargetFolder(rec, classNodes);
+            await writeFile(handle, targetFolder, `${rec.id}.json`, text);
+            newDefs.set(key(targetFolder, rec.id), {
+              ...rec,
+              folder: targetFolder,
+              originalText: text,
+              diskId: rec.id,
+              diskFolder: targetFolder,
+            });
+            saved++;
+          } catch (e) {
+            console.warn(`[definitions] save-as failed ${k}`, e);
+            failed++;
+          }
+        }
+      } else {
+        const { overrides, additions, tombstones: computedTombs } = computeOverlay(defaultProject, definitions);
+
+        // Merge store tombstones (from prior deletes) with computed tombstones.
+        const mergedTombstones = new Set<DefinitionsKey>([...computedTombs, ...storeTombstones]);
+
+        // 1) Write overrides.
+        for (const [k, json] of overrides) {
+          const text = serializeDefinition({ json } as DefinitionRecord);
+          try {
+            const slash = k.indexOf('/');
+            const folder = k.slice(0, slash);
+            const id = k.slice(slash + 1);
+            await writeFile(handle, folder, `${id}.json`, text);
+            const existing = definitions.get(k);
+            if (existing) {
+              newDefs.set(k, { ...existing, originalText: text });
+            }
+            saved++;
+          } catch (e) {
+            console.warn(`[definitions] save-as override failed ${k}`, e);
+            failed++;
+          }
+        }
+
+        // 2) Write additions.
+        for (const [k, json] of additions) {
+          const text = serializeDefinition({ json } as DefinitionRecord);
+          try {
+            const slash = k.indexOf('/');
+            const folder = k.slice(0, slash);
+            const id = k.slice(slash + 1);
+            await writeFile(handle, folder, `${id}.json`, text);
+            const existing = definitions.get(k);
+            if (existing) {
+              newDefs.set(k, { ...existing, originalText: text });
+            }
+            saved++;
+          } catch (e) {
+            console.warn(`[definitions] save-as addition failed ${k}`, e);
+            failed++;
+          }
+        }
+
+        // 3) Write zero-byte placeholders for tombstoned records.
+        for (const k of mergedTombstones) {
+          try {
+            const slash = k.indexOf('/');
+            const folder = k.slice(0, slash);
+            const id = k.slice(slash + 1);
+            await writeFile(handle, folder, `${id}.json`, '');
+            saved++;
+          } catch (e) {
+            console.warn(`[definitions] save-as tombstone failed ${k}`, e);
+            failed++;
+          }
         }
       }
+
       try { await putHandle(HANDLE_KEY, handle); } catch (e) {
         console.warn('[definitions] could not persist directory handle', e);
       }
       const saveAsDs = new FsaDataSource(handle);
+      // Compose project meta with schema_version:2 and based_on_default_version.
+      const existingMeta = get().projectMeta;
+      const newMeta: ProjectMeta = {
+        schema_version: 2,
+        name: targetName ?? existingMeta?.name ?? handle.name,
+        description: existingMeta?.description,
+        based_on_default_version: defaultProject?.meta.version,
+        created_at: existingMeta?.created_at ?? new Date().toISOString(),
+      };
       set({
         directoryHandle: handle,
         dataSource: saveAsDs,
-        projectMeta: get().projectMeta ?? { schema_version: 1, name: handle.name },
+        projectMeta: newMeta,
         definitions: newDefs,
         dirty: new Set(),
         toast: {
