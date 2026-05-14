@@ -82,3 +82,49 @@ test('composeWorkingSet: folders list contains every folder used', () => {
   });
   assert.deepEqual([...out.folders].sort(), ['items', 'recipes']);
 });
+
+import { computeOverlay } from '../src/persistence/overlay';
+
+test('computeOverlay: unchanged-from-default keys produce no overrides/additions', () => {
+  const def = makeDefault({ 'items/A': { id: 'A' }, 'items/B': { id: 'B' } });
+  const compose = composeWorkingSet(def, {
+    overrides: new Map(), overrideTexts: new Map(), additions: new Map(), tombstones: new Set(),
+  });
+  const diff = computeOverlay(def, compose.definitions);
+  assert.equal(diff.overrides.size, 0);
+  assert.equal(diff.additions.size, 0);
+  assert.equal(diff.tombstones.size, 0);
+});
+
+test('computeOverlay: edited default key is an override', () => {
+  const def = makeDefault({ 'items/A': { id: 'A', v: 1 } });
+  const compose = composeWorkingSet(def, {
+    overrides: new Map(), overrideTexts: new Map(), additions: new Map(), tombstones: new Set(),
+  });
+  const rec = compose.definitions.get('items/A')!;
+  rec.json = { id: 'A', v: 999 };
+  const diff = computeOverlay(def, compose.definitions);
+  assert.equal(diff.overrides.size, 1);
+  assert.equal(diff.overrides.get('items/A').v, 999);
+  assert.equal(diff.additions.size, 0);
+});
+
+test('computeOverlay: missing default key is a tombstone', () => {
+  const def = makeDefault({ 'items/A': { id: 'A' } });
+  const diff = computeOverlay(def, new Map()); // empty working set
+  assert.equal(diff.tombstones.size, 1);
+  assert.ok(diff.tombstones.has('items/A'));
+});
+
+test('computeOverlay: not-in-default key is an addition', () => {
+  const def = makeDefault({});
+  const compose = composeWorkingSet(def, {
+    overrides: new Map(),
+    overrideTexts: new Map(),
+    additions: new Map([['items/X', { id: 'X' }]]),
+    tombstones: new Set(),
+  });
+  const diff = computeOverlay(def, compose.definitions);
+  assert.equal(diff.additions.size, 1);
+  assert.equal(diff.additions.get('items/X').id, 'X');
+});

@@ -74,3 +74,35 @@ export function composeWorkingSet(
 
   return { definitions: out, folders: [...folderSet].sort() };
 }
+
+export interface ComputedOverlay {
+  /** Keys present in default whose working-set JSON differs. */
+  overrides: Map<DefinitionsKey, any>;
+  /** Keys not present in default. */
+  additions: Map<DefinitionsKey, any>;
+  /** Keys present in default but absent from the working set. */
+  tombstones: Set<DefinitionsKey>;
+}
+
+export function computeOverlay(
+  def: DefaultProject,
+  working: Map<DefinitionsKey, DefinitionRecord>,
+): ComputedOverlay {
+  const overrides = new Map<DefinitionsKey, any>();
+  const additions = new Map<DefinitionsKey, any>();
+  const tombstones = new Set<DefinitionsKey>();
+
+  for (const [k, rec] of working) {
+    const defText = def.texts.get(k);
+    const recText = canonicalTextOf(rec.json);
+    if (defText === undefined) {
+      additions.set(k, rec.json);
+    } else if (defText !== recText) {
+      overrides.set(k, rec.json);
+    }
+  }
+  for (const k of def.records.keys()) {
+    if (!working.has(k)) tombstones.add(k);
+  }
+  return { overrides, additions, tombstones };
+}
