@@ -39,40 +39,57 @@ function LoadingOverlay() {
   const loadGate = useDefinitionsStore((s) => s.loadGate);
   const restoreDraftPrompt = useDefinitionsStore((s) => s.restoreDraftPrompt);
   const futureVersionBlock = useDefinitionsStore((s) => s.futureVersionBlock);
-  // Hide the spinner whenever a gate/modal is waiting on the user — otherwise
-  // the overlay covers the modal and the load never completes.
+  // Track whether a gate has been shown during this load. Once the user has
+  // engaged with any gate modal, we drop into a non-blocking corner indicator
+  // for the rest of the load — otherwise the spinner re-appears over the now-
+  // empty tree and looks "stuck".
+  const [gateSeen, setGateSeen] = useState(false);
+  useEffect(() => {
+    if (loading && (loadGate || restoreDraftPrompt || futureVersionBlock)) {
+      setGateSeen(true);
+    }
+    if (!loading) setGateSeen(false);
+  }, [loading, loadGate, restoreDraftPrompt, futureVersionBlock]);
+
   if (!loading) return null;
+  // While a gate modal is on screen, never render the spinner — it covers the modal.
   if (loadGate || restoreDraftPrompt || futureVersionBlock) return null;
+
+  const compact = gateSeen;
   return (
     <div
       style={{
         position: 'fixed',
-        inset: 0,
-        background: 'rgba(0, 0, 0, 0.55)',
-        backdropFilter: 'blur(2px)',
+        inset: compact ? 'auto auto 16px 16px' : 0,
+        background: compact ? 'rgba(20, 20, 20, 0.9)' : 'rgba(0, 0, 0, 0.55)',
+        backdropFilter: compact ? 'none' : 'blur(2px)',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: compact ? 'row' : 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '1rem',
+        gap: compact ? '0.5rem' : '1rem',
+        padding: compact ? '8px 14px' : 0,
+        borderRadius: compact ? 6 : 0,
+        boxShadow: compact ? '0 4px 14px rgba(0, 0, 0, 0.4)' : 'none',
         zIndex: 9999,
-        cursor: 'wait',
+        cursor: compact ? 'default' : 'wait',
+        pointerEvents: compact ? 'none' : 'auto',
       }}
-      onClick={(e) => e.preventDefault()}
-      onPointerDown={(e) => e.preventDefault()}
+      onClick={(e) => { if (!compact) e.preventDefault(); }}
+      onPointerDown={(e) => { if (!compact) e.preventDefault(); }}
     >
       <div
         style={{
-          width: 48,
-          height: 48,
-          border: '4px solid rgba(255, 255, 255, 0.18)',
+          width: compact ? 16 : 48,
+          height: compact ? 16 : 48,
+          border: `${compact ? 2 : 4}px solid rgba(255, 255, 255, 0.18)`,
           borderTopColor: 'rgba(255, 255, 255, 0.85)',
           borderRadius: '50%',
           animation: 'tsic-spin 0.9s linear infinite',
         }}
       />
-      <div style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.95rem' }}>
-        Loading project…
+      <div style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: compact ? '0.85rem' : '0.95rem' }}>
+        {compact ? 'Finishing load…' : 'Loading project…'}
       </div>
       <style>{`@keyframes tsic-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
