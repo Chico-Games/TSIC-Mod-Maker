@@ -4,8 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TSIC Definition Editor</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; background: #1a1a1a; color: #e7e7e7; font-family: system-ui, sans-serif; }
+      #tsic-boot {
+        position: fixed; inset: 0;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 1rem;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(2px);
+        z-index: 9999;
+      }
+      #tsic-boot .spin {
+        width: 48px; height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.18);
+        border-top-color: rgba(255, 255, 255, 0.85);
+        border-radius: 50%;
+        animation: tsic-boot-spin 0.9s linear infinite;
+      }
+      #tsic-boot .label { color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; }
+      @keyframes tsic-boot-spin { to { transform: rotate(360deg); } }
+    </style>
   </head>
   <body>
+    <div id="tsic-boot">
+      <div class="spin"></div>
+      <div class="label">Loading project…</div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
