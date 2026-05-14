@@ -6,6 +6,14 @@ import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
 import { addRecent, listRecents, removeRecent, type RecentEntry } from '../persistence/recentProjects';
+import {
+  clearProjectsRoot,
+  getProjectsRoot,
+  getOrCreateProjectFolder,
+  listProjectsInRoot,
+  setProjectsRoot,
+  type ProjectListing,
+} from '../persistence/projectsRoot';
 import type { DataSource, AssetCatalogEntry } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
 import { useAppSchemaStore } from './appSchemaStore';
@@ -14,6 +22,7 @@ import { useGameplayTagStore } from './gameplayTagStore';
 import { useAssetCatalogStore } from './assetCatalogStore';
 import { iterEnvelopes, validateAssetRefs, validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
+import { makeZip } from '../modio/zip';
 import { loadDefaultProjectFromHttp, type DefaultProject } from '../persistence/defaultProject';
 import { composeWorkingSet, computeOverlay } from '../persistence/overlay';
 
@@ -71,7 +80,6 @@ export interface ProjectMeta {
   schema_version: number;
   name: string;
   description?: string;
-  ue_sync_path?: string;
   created_at?: string;
   based_on_default_version?: number;
 }
@@ -141,6 +149,11 @@ export interface DefinitionsStore {
   /** Recently-opened projects (desc by lastOpened), capped at 8. Refreshed
    *  by refreshRecents() and after every openProject / createProject. */
   recents: RecentEntry[];
+  /** User-chosen root folder. When set, new projects are created as subfolders
+   *  here and the dropdown lists those subfolders. Null = unconfigured. */
+  projectsRootHandle: FileSystemDirectoryHandle | null;
+  /** Subdirectory listing under projectsRootHandle, refreshed lazily. */
+  projectsInRoot: ProjectListing[];
 
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
@@ -163,7 +176,6 @@ export interface DefinitionsStore {
   createProject: (options: {
     handle: FileSystemDirectoryHandle;
     name: string;
-    ueSyncPath?: string;
     seedFromBundled?: boolean;
   }) => Promise<void>;
   forgetDirectory: () => Promise<void>;
@@ -172,20 +184,32 @@ export interface DefinitionsStore {
    *  from `web/public/starter-project/`. */
   bootstrap: () => Promise<void>;
   reload: () => Promise<void>;
-  /** Load the bundled default Definitions tree from
-   *  `web/public/starter-project/` (manifest + each file). Discards any
-   *  current directory handle so the next Save prompts Save As. */
   /** Load the Default Project into memory and use it as the initial working set.
    *  Identical semantics to the old loadBundledDefaults but also populates
    *  `defaultProject` and resets `tombstones`. */
   loadDefaultProject: () => Promise<void>;
+  /** Load the bundled default Definitions tree from
+   *  `web/public/starter-project/` (manifest + each file). Discards any
+   *  current directory handle so the next Save prompts Save As. */
   loadBundledDefaults: () => Promise<void>;
+  /** Load from an arbitrary DataSource (e.g. an in-memory ZIP unpacker used
+   *  by the mod.io "open mod" flow). Treated as read-only — the user can
+   *  Save As to commit it to disk. */
+  loadFromCustomDataSource: (ds: DataSource) => Promise<void>;
   /** Pick a folder and write the overlay (overrides + additions + tombstone
    *  placeholders) to it as Save As. Stamps project.json with schema_version:2
    *  and based_on_default_version. Replaces the saved directory handle.
    *  When `opts.targetName` is provided AND a projects-root is configured,
    *  the target becomes `{projectsRoot}/{targetName}/` and no picker shows. */
   saveAs: (opts?: { targetName?: string }) => Promise<void>;
+  /** Set the projects-root folder (after picking via showDirectoryPicker). */
+  setProjectsRootHandle: (handle: FileSystemDirectoryHandle) => Promise<void>;
+  /** Forget the projects-root folder. */
+  clearProjectsRootHandle: () => Promise<void>;
+  /** Re-enumerate subfolders under the projects-root. */
+  refreshProjectsInRoot: () => Promise<void>;
+  /** Open the subfolder `folderName` under the projects-root as the current project. */
+  openProjectInRoot: (folderName: string) => Promise<void>;
   /** Walk every loaded asset for `definition_ref` envelopes whose
    *  value is set but doesn't resolve. For each missing target whose
    *  class is known, mint a blank asset of that class. Returns the
@@ -204,15 +228,6 @@ export interface DefinitionsStore {
   saveAllDirty: () => Promise<{ saved: number; failed: number }>;
   /** Discard unsaved changes for one record. */
   revertOne: (key: DefinitionsKey) => void;
-
-  /** Save all dirty, then POST to the TSICEditorSync endpoint to apply
-   *  changes to UE. Returns the plain-text report. */
-  syncToUnreal: () => Promise<{ ok: boolean; report: string }>;
-  /** Absolute path to the on-disk Definitions folder. Stored in projectMeta
-   *  when a project is open; falls back to localStorage for legacy folders. */
-  unrealSyncPath: string;
-  /** Update the sync path. When a project is open, also persists to project.json. */
-  setUnrealSyncPath: (path: string) => Promise<void>;
 
   /** Export the whole working set as a downloadable ZIP. */
   exportZip: () => Promise<Blob>;
@@ -1129,7 +1144,6 @@ async function loadFromDataSource(
       selectedKey,
       loadedAt: Date.now(),
       loading: false,
-      unrealSyncPath: projectMeta.ue_sync_path ?? '',
       tombstones: overlayTombstones,
       toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
     });
@@ -1192,6 +1206,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   loadGate: null,
   restoreDraftPrompt: null,
   recents: [],
+  projectsRootHandle: null,
+  projectsInRoot: [],
 
   setToast: (t) => set({ toast: t }),
   dismissFutureVersionBlock: () => set({ futureVersionBlock: null }),
@@ -1277,7 +1293,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       set({
         directoryHandle: entry.handle,
         projectMeta,
-        unrealSyncPath: projectMeta.ue_sync_path ?? '',
         errorText: null,
       });
       await get().reload();
@@ -1334,22 +1349,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         }
         projectMeta = rawMeta;
       } else {
-        // Legacy folder without project.json — migrate localStorage sync path
-        // into a transient in-memory meta (not persisted until user saves settings).
-        const lsSyncPath = (() => {
-          try { return localStorage.getItem('tsic.def.syncpath.v1') ?? undefined; }
-          catch { return undefined; }
-        })();
-        projectMeta = {
-          schema_version: 1,
-          name: handle.name,
-          ...(lsSyncPath ? { ue_sync_path: lsSyncPath } : {}),
-        };
+        projectMeta = { schema_version: 1, name: handle.name };
       }
       set({
         directoryHandle: handle,
         projectMeta,
-        unrealSyncPath: projectMeta.ue_sync_path ?? '',
         errorText: null,
       });
       await get().reload();
@@ -1372,7 +1376,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     await get().openProject();
   },
 
-  createProject: async ({ handle, name, ueSyncPath, seedFromBundled = true }) => {
+  createProject: async ({ handle, name, seedFromBundled = true }) => {
     const ok = await ensurePermission(handle, 'readwrite');
     if (!ok) {
       set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
@@ -1382,7 +1386,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const meta: ProjectMeta = {
       schema_version: 1,
       name,
-      ...(ueSyncPath ? { ue_sync_path: ueSyncPath } : {}),
       created_at: new Date().toISOString(),
     };
 
@@ -1440,7 +1443,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     set({
       directoryHandle: handle,
       projectMeta: meta,
-      unrealSyncPath: meta.ue_sync_path ?? '',
       errorText: null,
     });
     await get().reload();
@@ -1462,7 +1464,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     set({
       directoryHandle: null,
       projectMeta: null,
-      unrealSyncPath: '',
       definitions: new Map(),
       dirty: new Set(),
       folders: [],
@@ -1498,10 +1499,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         set({
           directoryHandle: handle,
           projectMeta: resolvedMeta,
-          unrealSyncPath: resolvedMeta.ue_sync_path ?? (() => {
-            try { return localStorage.getItem('tsic.def.syncpath.v1') ?? ''; }
-            catch { return ''; }
-          })(),
         });
         if (status === 'granted' && get().autoLoadEnabled && !skipAuto) {
           await get().reload();
@@ -1520,6 +1517,28 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     // Populate the recents dropdown on every bootstrap so the header
     // doesn't have to wait for the user to open the menu.
     try { await get().refreshRecents(); } catch { /* noop */ }
+    // Restore the projects-root handle. Only enumerate subfolders if
+    // permission is still granted — never prompt during bootstrap.
+    try {
+      const root = await getProjectsRoot();
+      if (root) {
+        const anyR = root as any;
+        const status = typeof anyR.queryPermission === 'function'
+          ? await anyR.queryPermission({ mode: 'readwrite' })
+          : 'granted';
+        set({ projectsRootHandle: root });
+        if (status === 'granted') {
+          try {
+            const listing = await listProjectsInRoot(root);
+            set({ projectsInRoot: listing });
+          } catch (e) {
+            console.warn('[projectsRoot] bootstrap list failed', e);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[projectsRoot] bootstrap failed', e);
+    }
   },
 
   openStarterProject: async () => {
@@ -1540,15 +1559,33 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     await get().loadDefaultProject();
   },
 
+  loadFromCustomDataSource: async (ds) => {
+    try { await deleteHandle(HANDLE_KEY); } catch { /* ignore */ }
+    await loadFromDataSource(set, get, ds);
+  },
+
   saveAs: async (opts) => {
     const w = window as any;
     const targetName = opts?.targetName?.trim();
+    const rootHandle = get().projectsRootHandle;
+    // Path A: targetName + projects-root => create/use subfolder; no picker.
+    // Path B: legacy => prompt with showDirectoryPicker.
     if (!targetName && !w.showDirectoryPicker) {
       set({ toast: { kind: 'error', text: 'This browser lacks the File System Access API. Use Chrome / Edge / Brave.' } });
       return;
     }
     try {
-      const handle: FileSystemDirectoryHandle = await w.showDirectoryPicker({ mode: 'readwrite' });
+      let handle: FileSystemDirectoryHandle;
+      if (targetName && rootHandle) {
+        const rootOk = await ensurePermission(rootHandle, 'readwrite');
+        if (!rootOk) {
+          set({ toast: { kind: 'error', text: 'Permission denied for the projects root folder.' } });
+          return;
+        }
+        handle = await getOrCreateProjectFolder(rootHandle, targetName);
+      } else {
+        handle = await w.showDirectoryPicker({ mode: 'readwrite' });
+      }
       const ok = await ensurePermission(handle, 'readwrite');
       if (!ok) {
         set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
@@ -1700,10 +1737,93 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       } catch (e) {
         console.warn('[definitions] could not add recent after save-as', e);
       }
+      // If saving into the projects-root, refresh the listing so the new
+      // subfolder appears in the dropdown immediately.
+      if (rootHandle) {
+        try { await get().refreshProjectsInRoot(); } catch { /* noop */ }
+      }
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') {
         set({ toast: { kind: 'error', text: String(e) } });
       }
+    }
+  },
+
+  setProjectsRootHandle: async (handle) => {
+    const ok = await ensurePermission(handle, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for projects root.' } });
+      return;
+    }
+    try {
+      await setProjectsRoot(handle);
+    } catch (e) {
+      console.warn('[projectsRoot] could not persist handle', e);
+    }
+    set({ projectsRootHandle: handle });
+    await get().refreshProjectsInRoot();
+  },
+
+  clearProjectsRootHandle: async () => {
+    try { await clearProjectsRoot(); } catch { /* noop */ }
+    set({ projectsRootHandle: null, projectsInRoot: [] });
+  },
+
+  refreshProjectsInRoot: async () => {
+    const root = get().projectsRootHandle;
+    if (!root) { set({ projectsInRoot: [] }); return; }
+    try {
+      const ok = await ensurePermission(root, 'readwrite');
+      if (!ok) { set({ projectsInRoot: [] }); return; }
+      const listing = await listProjectsInRoot(root);
+      set({ projectsInRoot: listing });
+    } catch (e) {
+      console.warn('[projectsRoot] refresh failed', e);
+      set({ projectsInRoot: [] });
+    }
+  },
+
+  openProjectInRoot: async (folderName) => {
+    const root = get().projectsRootHandle;
+    if (!root) {
+      set({ toast: { kind: 'error', text: 'No projects root configured.' } });
+      return;
+    }
+    const ok = await ensurePermission(root, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for projects root.' } });
+      return;
+    }
+    let handle: FileSystemDirectoryHandle;
+    try {
+      handle = await root.getDirectoryHandle(folderName);
+    } catch (e) {
+      set({ toast: { kind: 'error', text: `Project folder not found: ${folderName}` } });
+      return;
+    }
+    // Mirror openProject without the directory-picker step.
+    const rawMeta = await readProjectMeta(handle);
+    let projectMeta: ProjectMeta;
+    if (rawMeta) {
+      const v = (rawMeta as { schema_version?: number }).schema_version;
+      if (typeof v === 'number' && isFuture(v)) {
+        set({ futureVersionBlock: { foundVersion: v, supportedVersion: SUPPORTED_VERSION } });
+        return;
+      }
+      projectMeta = rawMeta;
+    } else {
+      projectMeta = { schema_version: 1, name: handle.name };
+    }
+    try { await putHandle(HANDLE_KEY, handle); } catch (e) {
+      console.warn('[definitions] could not persist directory handle', e);
+    }
+    set({ directoryHandle: handle, projectMeta, dataSource: null, errorText: null });
+    await get().reload();
+    try {
+      await addRecent({ name: projectMeta.name, handleName: handle.name, handle });
+      await get().refreshRecents();
+    } catch (e) {
+      console.warn('[recents] could not record openProjectInRoot', e);
     }
   },
 
@@ -1822,6 +1942,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       const nextFolders = get().folders.includes(targetFolder)
         ? get().folders
         : [...get().folders, targetFolder].sort();
+      // If the just-written content is identical to the default, the override file
+      // has no reason to exist on disk — delete it. The in-memory record stays.
+      const defProject = get().defaultProject;
+      if (defProject) {
+        const defText = defProject.texts.get(key(targetFolder, rec.id));
+        if (defText !== undefined && defText === text) {
+          if (dataSource.deleteFile) {
+            try { await dataSource.deleteFile(targetFolder, rec.id); } catch { /* noop */ }
+          }
+        }
+      }
       set({
         definitions: nextDefs,
         dirty: nextDirty,
@@ -1894,19 +2025,65 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         failed++;
       }
     }
+    // Task A2: write zero-byte placeholders for tombstoned keys.
+    const tombsList = [...get().tombstones];
+    for (const tk of tombsList) {
+      const i = tk.indexOf('/');
+      const tf = tk.slice(0, i);
+      const ti = tk.slice(i + 1);
+      try { await dataSource.writeFile(tf, ti, ''); } catch { /* noop */ }
+    }
+    let finalToast: { kind: 'info' | 'error'; text: string } = {
+      kind: failed === 0 ? 'info' : 'error',
+      text: failed === 0
+        ? `Saved ${saved} files.`
+        : `Saved ${saved}, failed ${failed}. See console.`,
+    };
+    let finalMeta = get().projectMeta;
+    // Task C: v1 → v2 migration on first saveAllDirty.
+    if ((get().projectMeta?.schema_version ?? 1) < 2 && dataSource.kind === 'fsa' && get().defaultProject) {
+      const def = get().defaultProject!;
+      const diff = computeOverlay(def, get().definitions);
+      // Delete files that are identical to the default (redundant in overlay format).
+      for (const [k, rec] of get().definitions) {
+        if (diff.overrides.has(k)) continue;
+        if (diff.additions.has(k)) continue;
+        if (diff.tombstones.has(k)) continue;
+        // Unchanged from default — only delete if bytes match exactly.
+        const defText = def.texts.get(k);
+        const recText = JSON.stringify(rec.json, null, 2) + '\n';
+        if (defText === undefined || defText !== recText) continue;
+        const slash = k.indexOf('/');
+        const folder = k.slice(0, slash);
+        const id = k.slice(slash + 1);
+        // Only delete if a file actually exists on disk.
+        try {
+          await dataSource.readFile(folder, id);
+          if (dataSource.deleteFile) {
+            try { await dataSource.deleteFile(folder, id); } catch { /* noop */ }
+          }
+        } catch { /* file not on disk, nothing to delete */ }
+      }
+      // Write updated project.json with schema_version: 2.
+      const existingMeta = get().projectMeta;
+      finalMeta = {
+        ...(existingMeta ?? { name: dataSource.displayName }),
+        schema_version: 2,
+        based_on_default_version: def.meta.version,
+      };
+      if (dataSource.writeProjectMeta) {
+        try { await dataSource.writeProjectMeta(finalMeta); } catch { /* noop */ }
+      }
+      finalToast = { kind: 'info', text: 'Migrated to overlay format. Files identical to the default were removed from disk.' };
+    }
     set({
       definitions: nextDefs,
       dirty: nextDirty,
       folders: nextFolders,
       selectedKey: nextSelectedKey,
       selectedFolder: nextSelectedFolder,
-      toast: {
-        kind: failed === 0 ? 'info' : 'error',
-        text:
-          failed === 0
-            ? `Saved ${saved} files.`
-            : `Saved ${saved}, failed ${failed}. See console.`,
-      },
+      projectMeta: finalMeta,
+      toast: finalToast,
     });
     return { saved, failed };
   },
@@ -1929,58 +2106,6 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       });
     } catch (e) {
       set({ toast: { kind: 'error', text: `Revert failed: ${String(e)}` } });
-    }
-  },
-
-  syncToUnreal: async () => {
-    const { saveAllDirty: doSave } = get();
-    await doSave();
-    const path = get().unrealSyncPath?.trim();
-    if (!path) {
-      const report = "Set the Unreal Definitions folder path first (Settings → Sync path).";
-      set({ toast: { kind: 'error', text: report } });
-      return { ok: false, report };
-    }
-    try {
-      const resp = await fetch('http://localhost:13378/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ definitions_dir: path, force: false }),
-      });
-      const report = await resp.text();
-      const ok = resp.ok && !report.includes('FAILED') && !report.includes('ERROR:');
-      set({ toast: { kind: ok ? 'info' : 'error', text: report } });
-      return { ok, report };
-    } catch (e) {
-      const report = `Could not reach Unreal Editor sync server at http://localhost:13378.\n` +
-        `Is the editor running with the TSICEditorSync module loaded?\n\n` +
-        `Network error: ${String(e)}`;
-      set({ toast: { kind: 'error', text: report } });
-      return { ok: false, report };
-    }
-  },
-
-  unrealSyncPath: (() => {
-    try { return localStorage.getItem('tsic.def.syncpath.v1') ?? ''; }
-    catch { return ''; }
-  })(),
-
-  setUnrealSyncPath: async (p: string) => {
-    const { directoryHandle, projectMeta } = get();
-    const nextMeta: ProjectMeta | null = projectMeta
-      ? { ...projectMeta, ue_sync_path: p }
-      : null;
-    set({ unrealSyncPath: p, projectMeta: nextMeta });
-    // Persist to project.json when a project is open.
-    if (directoryHandle && nextMeta) {
-      try {
-        await writeProjectMeta(directoryHandle, nextMeta);
-      } catch (e) {
-        console.warn('[definitions] could not write project.json', e);
-      }
-    } else {
-      // Fall back to localStorage for legacy/no-project-json folders.
-      try { localStorage.setItem('tsic.def.syncpath.v1', p); } catch { /* noop */ }
     }
   },
 
@@ -2302,9 +2427,16 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       classNodes: buildClassNodes(nextDefs, useAppSchemaStore.getState().hierarchySidecar),
       propertySchema: buildPropertySchema(nextDefs),
     });
+    // If this key was previously tombstoned (deleted default record), un-tombstone it.
+    let nextTombstones = cur.tombstones;
+    if (cur.tombstones.has(k)) {
+      nextTombstones = new Set(cur.tombstones);
+      nextTombstones.delete(k);
+    }
     set({
       definitions: nextDefs,
       dirty: nextDirty,
+      tombstones: nextTombstones,
       ...(select ? { selectedFolder: folder, selectedKey: k } : {}),
       toast: { kind: 'info', text: `Created ${id}.json (unsaved).` },
     });
@@ -2415,9 +2547,18 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       classNodes: buildClassNodes(nextDefs, useAppSchemaStore.getState().hierarchySidecar),
       propertySchema: buildPropertySchema(nextDefs),
     });
+    // If the deleted key is a default-project record, tombstone it so
+    // saveAllDirty writes a zero-byte placeholder for it on next save.
+    let nextTombstones = get().tombstones;
+    const defProjectForDelete = get().defaultProject;
+    if (defProjectForDelete?.records.has(k)) {
+      nextTombstones = new Set(get().tombstones);
+      nextTombstones.add(k);
+    }
     set({
       definitions: nextDefs,
       dirty: nextDirty,
+      tombstones: nextTombstones,
       selectedKey: cur.selectedKey === k ? null : cur.selectedKey,
       toast: {
         kind: 'info',
@@ -2695,115 +2836,18 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   exportZip: async () => {
-    // Minimal pure-JS ZIP writer (store-only; no compression). Each file
-    // becomes one local-file-header + the bytes, followed by a central
-    // directory and end-of-central-directory record. Good enough for this
-    // export — total dataset is a few MB of JSON.
     const enc = new TextEncoder();
     const { definitions } = get();
-    const files: { path: string; data: Uint8Array; crc: number }[] = [];
+    const entries: { path: string; data: Uint8Array }[] = [];
     for (const rec of definitions.values()) {
-      const data = enc.encode(serializeDefinition(rec));
-      files.push({
+      entries.push({
         path: `${rec.folder}/${rec.id}.json`,
-        data,
-        crc: crc32(data),
+        data: enc.encode(serializeDefinition(rec)),
       });
     }
-    return makeZip(files);
+    return makeZip(entries);
   },
 }));
-
-// CRC-32 — table-based, IEEE polynomial. Used for ZIP per-file checksum.
-const CRC_TABLE: number[] = (() => {
-  const table = new Array<number>(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    table[n] = c >>> 0;
-  }
-  return table;
-})();
-
-function crc32(buf: Uint8Array): number {
-  let c = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-function makeZip(files: { path: string; data: Uint8Array; crc: number }[]): Blob {
-  const enc = new TextEncoder();
-  const localChunks: Uint8Array[] = [];
-  const centralChunks: Uint8Array[] = [];
-  let offset = 0;
-  let centralSize = 0;
-  for (const f of files) {
-    const nameBytes = enc.encode(f.path);
-    const local = new Uint8Array(30 + nameBytes.length + f.data.length);
-    const dv = new DataView(local.buffer);
-    dv.setUint32(0, 0x04034b50, true); // local file header signature
-    dv.setUint16(4, 20, true); // version
-    dv.setUint16(6, 0, true); // flags
-    dv.setUint16(8, 0, true); // compression: store
-    dv.setUint16(10, 0, true); // mod time
-    dv.setUint16(12, 0, true); // mod date
-    dv.setUint32(14, f.crc, true);
-    dv.setUint32(18, f.data.length, true);
-    dv.setUint32(22, f.data.length, true);
-    dv.setUint16(26, nameBytes.length, true);
-    dv.setUint16(28, 0, true); // extra
-    local.set(nameBytes, 30);
-    local.set(f.data, 30 + nameBytes.length);
-    localChunks.push(local);
-
-    const central = new Uint8Array(46 + nameBytes.length);
-    const cv = new DataView(central.buffer);
-    cv.setUint32(0, 0x02014b50, true);
-    cv.setUint16(4, 20, true); // version made by
-    cv.setUint16(6, 20, true); // version needed
-    cv.setUint16(8, 0, true);
-    cv.setUint16(10, 0, true);
-    cv.setUint16(12, 0, true);
-    cv.setUint16(14, 0, true);
-    cv.setUint32(16, f.crc, true);
-    cv.setUint32(20, f.data.length, true);
-    cv.setUint32(24, f.data.length, true);
-    cv.setUint16(28, nameBytes.length, true);
-    cv.setUint16(30, 0, true);
-    cv.setUint16(32, 0, true);
-    cv.setUint16(34, 0, true);
-    cv.setUint16(36, 0, true);
-    cv.setUint32(38, 0, true);
-    cv.setUint32(42, offset, true);
-    central.set(nameBytes, 46);
-    centralChunks.push(central);
-    centralSize += central.length;
-
-    offset += local.length;
-  }
-  const eocd = new Uint8Array(22);
-  const ev = new DataView(eocd.buffer);
-  ev.setUint32(0, 0x06054b50, true);
-  ev.setUint16(4, 0, true);
-  ev.setUint16(6, 0, true);
-  ev.setUint16(8, files.length, true);
-  ev.setUint16(10, files.length, true);
-  ev.setUint32(12, centralSize, true);
-  ev.setUint32(16, offset, true);
-  ev.setUint16(20, 0, true);
-  // Concatenate into a single ArrayBuffer to dodge typing inconsistencies
-  // between Uint8Array<ArrayBufferLike> and BlobPart.
-  let total = 0;
-  for (const c of localChunks) total += c.length;
-  for (const c of centralChunks) total += c.length;
-  total += eocd.length;
-  const out = new Uint8Array(total);
-  let off = 0;
-  for (const c of localChunks) { out.set(c, off); off += c.length; }
-  for (const c of centralChunks) { out.set(c, off); off += c.length; }
-  out.set(eocd, off);
-  return new Blob([out as BlobPart], { type: 'application/zip' });
-}
 
 // ---------------------------------------------------------------------------
 // Draft autosave: debounce flushes of the dirty set into IndexedDB so a tab
