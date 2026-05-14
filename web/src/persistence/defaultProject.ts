@@ -83,3 +83,45 @@ export async function loadDefaultProjectFromHttp(
   await Promise.all(tasks);
   return { meta, records, texts };
 }
+
+export type DefaultProjectSource =
+  | { kind: 'http'; baseUrl: string }
+  | { kind: 'fsa'; handle: FileSystemDirectoryHandle };
+
+export async function loadDefaultProjectFromFsa(
+  handle: FileSystemDirectoryHandle,
+): Promise<DefaultProject> {
+  // Manifest
+  const manifestText = await (await (await handle.getFileHandle('manifest.json')).getFile()).text();
+  const manifest: { folders: string[]; files: { folder: string; ids: string[] }[] } =
+    JSON.parse(manifestText);
+
+  // default.json (optional)
+  let meta = FALLBACK_META;
+  try {
+    const fh = await handle.getFileHandle('default.json');
+    const text = await (await fh.getFile()).text();
+    const parsed = parseDefaultProjectMeta(JSON.parse(text));
+    if (parsed.ok) meta = parsed.meta;
+  } catch (e: any) {
+    if (e?.name !== 'NotFoundError' && e?.message !== 'NotFoundError') throw e;
+  }
+
+  const records = new Map<string, any>();
+  const texts = new Map<string, string>();
+  for (const f of manifest.files) {
+    let dir: FileSystemDirectoryHandle;
+    try { dir = await handle.getDirectoryHandle(f.folder); }
+    catch { continue; }
+    for (const id of f.ids) {
+      try {
+        const fh = await dir.getFileHandle(`${id}.json`);
+        const raw = await (await fh.getFile()).text();
+        const text = canonical(raw);
+        records.set(`${f.folder}/${id}`, JSON.parse(text));
+        texts.set(`${f.folder}/${id}`, text);
+      } catch { /* skip missing/malformed */ }
+    }
+  }
+  return { meta, records, texts };
+}

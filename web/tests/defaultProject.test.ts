@@ -75,3 +75,75 @@ test('loadDefaultProjectFromHttp tolerates missing default.json (treats as v0)',
   assert.equal(d.meta.version, 0);
   assert.equal(d.meta.label, '');
 });
+
+import { loadDefaultProjectFromFsa } from '../src/persistence/defaultProject';
+
+function makeFakeFsa(files: Record<string, string>): any {
+  // Path keys look like 'manifest.json' or 'items/A.json' or 'default.json'.
+  const root: any = {
+    name: 'fake-root',
+    kind: 'directory',
+    async getFileHandle(name: string) {
+      if (!(name in files)) {
+        const e: any = new Error('NotFoundError'); e.name = 'NotFoundError'; throw e;
+      }
+      const text = files[name];
+      return {
+        kind: 'file',
+        async getFile() { return { async text() { return text; } } as any; },
+      };
+    },
+    async getDirectoryHandle(name: string) {
+      const prefix = name + '/';
+      const sub: any = {
+        name, kind: 'directory',
+        async getFileHandle(child: string) {
+          const k = prefix + child;
+          if (!(k in files)) {
+            const e: any = new Error('NotFoundError'); e.name = 'NotFoundError'; throw e;
+          }
+          return {
+            kind: 'file',
+            async getFile() { return { async text() { return files[k]; } } as any; },
+          };
+        },
+        async *entries() {
+          for (const k of Object.keys(files)) {
+            if (!k.startsWith(prefix)) continue;
+            const rest = k.slice(prefix.length);
+            if (rest.includes('/')) continue;
+            yield [rest, { kind: 'file' }];
+          }
+        },
+      };
+      return sub;
+    },
+    async *entries() {
+      const seenDirs = new Set<string>();
+      for (const k of Object.keys(files)) {
+        const slash = k.indexOf('/');
+        if (slash > 0) {
+          const dir = k.slice(0, slash);
+          if (seenDirs.has(dir)) continue;
+          seenDirs.add(dir);
+          yield [dir, { kind: 'directory' }];
+        }
+      }
+    },
+  };
+  return root;
+}
+
+test('loadDefaultProjectFromFsa reads manifest, default.json, and JSONs from disk', async () => {
+  const fsa = makeFakeFsa({
+    'manifest.json': JSON.stringify({ folders: ['items'], files: [{ folder: 'items', ids: ['A'] }] }),
+    'default.json': JSON.stringify({
+      schema_version: 1, version: 7, label: '', published_at: '2026-05-14T00:00:00Z',
+    }),
+    'items/A.json': '{"id":"A"}\n',
+  });
+  const d = await loadDefaultProjectFromFsa(fsa);
+  assert.equal(d.meta.version, 7);
+  assert.equal(d.records.size, 1);
+  assert.equal(d.records.get('items/A').id, 'A');
+});
