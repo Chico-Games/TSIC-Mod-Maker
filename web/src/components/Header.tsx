@@ -2,6 +2,12 @@ import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore, type AppTab } from '../store/appStore';
 import { SemanticChip } from './SemanticChip';
 import { useEffect, useRef, useState } from 'react';
+import { SignInButton } from './modio/SignInButton';
+import { PublishButton } from './modio/PublishButton';
+import { BrowseModsButton } from './modio/BrowseModsButton';
+import { SyncChip } from './modio/SyncChip';
+import { SettingsModal } from './SettingsModal';
+import { SaveAsModal } from './SaveAsModal';
 
 function relativeTime(ms: number): string {
   const d = Date.now() - ms;
@@ -9,42 +15,6 @@ function relativeTime(ms: number): string {
   if (d < 3_600_000) return `${Math.floor(d / 60_000)}m ago`;
   if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}h ago`;
   return `${Math.floor(d / 86_400_000)}d ago`;
-}
-
-const SYNC_ENDPOINT = 'http://localhost:13378/sync';
-
-/** Polls the sync endpoint for reachability. Returns "yes" / "no" / "checking"
- *  ("checking" only on first tick before the first fetch resolves). */
-function useEditorReachable(): 'yes' | 'no' | 'checking' {
-  const [state, setState] = useState<'yes' | 'no' | 'checking'>('checking');
-
-  useEffect(() => {
-    let cancelled = false;
-    const ping = async () => {
-      try {
-        const controller = new AbortController();
-        const timeoutId = window.setTimeout(() => controller.abort(), 1500);
-        const resp = await fetch(SYNC_ENDPOINT, {
-          method: 'OPTIONS',
-          signal: controller.signal,
-        });
-        window.clearTimeout(timeoutId);
-        if (cancelled) return;
-        setState(resp.ok || resp.status === 204 ? 'yes' : 'no');
-      } catch {
-        if (cancelled) return;
-        setState('no');
-      }
-    };
-    ping(); // immediate
-    const id = window.setInterval(ping, 3000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, []);
-
-  return state;
 }
 
 export function Header() {
@@ -64,43 +34,24 @@ export function Header() {
   const setSearchOpen = useAppStore((s) => s.setSearchOpen);
   const tab = useAppStore((s) => s.tab);
   const setTab = useAppStore((s) => s.setTab);
-  const syncToUnreal = useDefinitionsStore((s) => s.syncToUnreal);
-  const unrealSyncPath = useDefinitionsStore((s) => s.unrealSyncPath);
-  const setUnrealSyncPath = useDefinitionsStore((s) => s.setUnrealSyncPath);
-  const [syncing, setSyncing] = useState(false);
-  const [pathEditing, setPathEditing] = useState(false);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [recentsOpen, setRecentsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [saveAsOpen, setSaveAsOpen] = useState(false);
   const recents = useDefinitionsStore((s) => s.recents);
   const openRecent = useDefinitionsStore((s) => s.openRecent);
   const refreshRecents = useDefinitionsStore((s) => s.refreshRecents);
   const dataSource = useDefinitionsStore((s) => s.dataSource);
   const readOnly = dataSource?.readOnly ?? true;
+  const projectsRootHandle = useDefinitionsStore((s) => s.projectsRootHandle);
+  const projectsInRoot = useDefinitionsStore((s) => s.projectsInRoot);
+  const openProjectInRoot = useDefinitionsStore((s) => s.openProjectInRoot);
+  const refreshProjectsInRoot = useDefinitionsStore((s) => s.refreshProjectsInRoot);
   useEffect(() => { void refreshRecents(); }, [refreshRecents]);
-
-  const editorReachable = useEditorReachable();
+  useEffect(() => { if (projectsRootHandle) void refreshProjectsInRoot(); }, [projectsRootHandle, refreshProjectsInRoot]);
 
   const dirtyCount = dirty.size;
   const fsa = typeof (window as any).showDirectoryPicker === 'function';
-
-  // Decide the Sync-button state. Order matters: most-specific blocker first
-  // so the title attribute tells the user the one thing they need to do.
-  let syncBlocker: string | null = null;
-  if (syncing) {
-    syncBlocker = 'Sync already in progress';
-  } else if (editorReachable === 'no') {
-    syncBlocker = 'Unreal Editor is not reachable at localhost:13378. Launch it (with the TSICEditorSync plugin) and try again.';
-  } else if (!directoryHandle) {
-    syncBlocker = "No project open. Click 'Open project' or 'New project' to get started.";
-  } else if (readOnly) {
-    syncBlocker = 'Starter project is read-only. Save As to make this project editable.';
-  } else if (dirtyCount > 0) {
-    syncBlocker = `Save the ${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'} before syncing.`;
-  } else if (!unrealSyncPath) {
-    syncBlocker = 'Set the absolute path to the Unreal Definitions folder (⚙ button) first.';
-  }
-
-  const syncTitle = syncBlocker ?? 'Reconcile this JSON tree into Unreal (UE assets are mutated in place).';
 
   const tabs: Array<{ id: AppTab; label: string; badge?: number }> = [
     { id: 'recipes-loot', label: 'Recipes & Loot' },
@@ -136,29 +87,13 @@ export function Header() {
         {definitions.size} defs · {folders.length} folders
         {dirtyCount > 0 && <span className="dirty"> · {dirtyCount} unsaved</span>}
         {loading && <span> · loading…</span>}
-        {' · '}
-        <span
-          title={
-            editorReachable === 'yes'
-              ? 'Unreal Editor reachable at localhost:13378'
-              : editorReachable === 'no'
-                ? 'Unreal Editor not running'
-                : 'Checking for Unreal Editor…'
-          }
-          style={{
-            color:
-              editorReachable === 'yes'
-                ? '#7dd87d'
-                : editorReachable === 'no'
-                  ? '#888'
-                  : '#cca747',
-          }}
-        >
-          ● UE {editorReachable === 'yes' ? 'connected' : editorReachable === 'no' ? 'offline' : '…'}
-        </span>
+        <SyncChip />
       </span>
       <SemanticChip />
       <div className="spacer" />
+      <SignInButton />
+      <BrowseModsButton />
+      <PublishButton />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
       <div className="open-project-split">
         <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
@@ -170,6 +105,27 @@ export function Header() {
         >▾</button>
         {recentsOpen && (
           <div className="recents-dropdown" onMouseLeave={() => setRecentsOpen(false)}>
+            {projectsRootHandle && (
+              <>
+                <div className="recents-section-label">
+                  Projects in {projectsRootHandle.name}
+                </div>
+                {projectsInRoot.length === 0 && (
+                  <div className="recents-empty">No projects in root yet.</div>
+                )}
+                {projectsInRoot.map((p) => (
+                  <button
+                    key={`root:${p.folderName}`}
+                    className="recents-item"
+                    onClick={async () => { setRecentsOpen(false); await openProjectInRoot(p.folderName); }}
+                  >
+                    <span className="recents-name">{p.name}</span>
+                    <span className="recents-time">{p.folderName}</span>
+                  </button>
+                ))}
+                <div className="recents-section-label">Recents</div>
+              </>
+            )}
             {recents.filter((r) => r.handleName !== 'starter-project').length === 0 && (
               <div className="recents-empty">No recent projects yet.</div>
             )}
@@ -195,24 +151,33 @@ export function Header() {
         💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''}
       </button>
       <button
-        onClick={async () => {
-          setSyncing(true);
-          try {
-            await syncToUnreal();
-          } finally {
-            setSyncing(false);
-          }
+        onClick={() => {
+          if (projectsRootHandle) setSaveAsOpen(true);
+          else void saveAs();
         }}
-        disabled={syncBlocker !== null}
-        title={syncTitle}
+        disabled={!fsa || definitions.size === 0}
+      >Save as…</button>
+      <button
+        onClick={async () => {
+          const blob = await useDefinitionsStore.getState().exportFlattenedZip();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'project-flattened.zip';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        }}
+        disabled={definitions.size === 0}
+        title="Download a complete snapshot of the current project (default + overlay merged)."
       >
-        {syncing ? '⏳ Syncing…' : '🔄 Sync to Unreal'}
+        Export flattened
       </button>
       <button
-        onClick={() => setPathEditing(true)}
-        title="Set the absolute path to the Unreal Definitions folder for this project (used by Sync to Unreal)"
+        onClick={() => setSettingsOpen(true)}
+        title="Settings"
       >⚙</button>
-      <button onClick={() => void saveAs()} disabled={!fsa || definitions.size === 0}>Save as…</button>
       <button
         onClick={async () => {
           await loadDefaultProject();
@@ -224,34 +189,6 @@ export function Header() {
       >📂 Open Default Project</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
 
-      {pathEditing && (
-        <div className="path-editor-overlay" onClick={() => setPathEditing(false)}>
-          <div className="path-editor" onClick={(e) => e.stopPropagation()}>
-            <label>Absolute path to Unreal Definitions folder for this project (for Sync to Unreal):</label>
-            <input
-              autoFocus
-              defaultValue={unrealSyncPath}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  void setUnrealSyncPath((e.target as HTMLInputElement).value.trim());
-                  setPathEditing(false);
-                } else if (e.key === 'Escape') {
-                  setPathEditing(false);
-                }
-              }}
-              onBlur={(e) => {
-                void setUnrealSyncPath(e.target.value.trim());
-                setPathEditing(false);
-              }}
-              style={{ width: '40rem' }}
-            />
-            <p style={{ fontSize: '0.85em', opacity: 0.7 }}>
-              Example: C:\Users\Administrator\Documents\Unreal Projects\TSIC\Tools\Export\test-output\Definitions
-            </p>
-          </div>
-        </div>
-      )}
-
       {newProjectOpen && (
         <NewProjectModal
           onClose={() => setNewProjectOpen(false)}
@@ -261,6 +198,8 @@ export function Header() {
           }}
         />
       )}
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+      {saveAsOpen && <SaveAsModal onClose={() => setSaveAsOpen(false)} />}
     </div>
   );
 }
@@ -268,7 +207,6 @@ export function Header() {
 interface NewProjectOpts {
   handle: FileSystemDirectoryHandle;
   name: string;
-  ueSyncPath?: string;
   seedFromBundled?: boolean;
 }
 
@@ -281,7 +219,6 @@ function NewProjectModal({
 }) {
   const [handle, setHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [name, setName] = useState('');
-  const [ueSyncPath, setUeSyncPath] = useState('');
   const [seed, setSeed] = useState(true);
   const [picking, setPicking] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -313,7 +250,6 @@ function NewProjectModal({
       await onCreate({
         handle,
         name: name.trim(),
-        ueSyncPath: ueSyncPath.trim() || undefined,
         seedFromBundled: seed,
       });
     } catch (e) {
@@ -348,16 +284,6 @@ function NewProjectModal({
             onChange={(e) => setName(e.target.value)}
             placeholder="My TSIC Project"
             style={{ width: '20rem' }}
-          />
-        </div>
-
-        <div className="np-form-row">
-          <label>Unreal sync path <span style={{ opacity: 0.6 }}>(optional)</span></label>
-          <input
-            value={ueSyncPath}
-            onChange={(e) => setUeSyncPath(e.target.value)}
-            placeholder="C:\...\Tools\Export\test-output\Definitions"
-            style={{ width: '30rem', fontFamily: 'monospace' }}
           />
         </div>
 
