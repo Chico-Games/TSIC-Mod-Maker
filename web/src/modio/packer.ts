@@ -8,8 +8,8 @@ export function serializeRecord(rec: DefinitionRecord): string {
   return JSON.stringify(rec.json, null, 2) + '\n';
 }
 
-/** Bare-id-keyed map of canonical text from the bundled starter-project,
- *  used as the "base" to diff a working set against. Keyed as `${folder}/${id}`. */
+/** Bare-id-keyed map of canonical text from the Default Project, used as the
+ *  "base" to diff a working set against. Keyed as `${folder}/${id}`. */
 export type StarterCatalog = Map<string, string>;
 
 export interface PackedFileEntry {

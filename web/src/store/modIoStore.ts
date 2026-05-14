@@ -25,7 +25,7 @@ import { parseModioRef } from '../modio/parseRef';
 import { normalizeLogoFile, validatePublish, type PublishIssue } from '../modio/validation';
 import { toastError, toastInfo, toastSuccess } from './modIoToastStore';
 import { ModioError } from '../modio/errors';
-import { buildDeltaZip, defaultCatalogFromLoaded, loadStarterCatalog, type PackedMod, type StarterCatalog } from '../modio/packer';
+import { buildDeltaZip, defaultCatalogFromLoaded, type PackedMod, type StarterCatalog } from '../modio/packer';
 import { readZipAsync } from '../modio/zip';
 import { emptySidecar, readLogo, readSidecar, writeLogo, writeSidecar } from '../modio/sidecar';
 import { InMemoryDataSource } from '../modio/inMemoryDataSource';

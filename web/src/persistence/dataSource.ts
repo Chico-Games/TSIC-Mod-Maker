@@ -77,7 +77,7 @@ export class HttpDataSource implements DataSource {
   }
 
   async readProjectMeta(): Promise<ProjectMeta> {
-    return { schema_version: 2, name: 'Default project' };
+    return { schema_version: 2, name: 'Default Project' };
   }
 
   async readCatalog(className: string): Promise<AssetCatalog | null> {
