@@ -36,7 +36,13 @@ import { semanticTextFor } from './search/semanticText';
 
 function LoadingOverlay() {
   const loading = useDefinitionsStore((s) => s.loading);
+  const loadGate = useDefinitionsStore((s) => s.loadGate);
+  const restoreDraftPrompt = useDefinitionsStore((s) => s.restoreDraftPrompt);
+  const futureVersionBlock = useDefinitionsStore((s) => s.futureVersionBlock);
+  // Hide the spinner whenever a gate/modal is waiting on the user — otherwise
+  // the overlay covers the modal and the load never completes.
   if (!loading) return null;
+  if (loadGate || restoreDraftPrompt || futureVersionBlock) return null;
   return (
     <div
       style={{
