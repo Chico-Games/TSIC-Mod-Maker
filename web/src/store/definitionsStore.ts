@@ -240,6 +240,11 @@ export interface DefinitionsStore {
   /** Export the whole working set as a downloadable ZIP. */
   exportZip: () => Promise<Blob>;
 
+  /** Export a flattened snapshot (default + overlay merged) as a ZIP.
+   *  Every effective record is written to its canonical path; tombstoned
+   *  records are absent because they are already absent from `definitions`. */
+  exportFlattenedZip: () => Promise<Blob>;
+
   /** Find the storage key for a bare asset name (cross-reference resolver).
    *  Returns null if not found in any folder. */
   findKeyById: (assetId: string) => DefinitionsKey | null;
@@ -2923,6 +2928,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         data: enc.encode(serializeDefinition(rec)),
       });
     }
+    return makeZip(entries);
+  },
+
+  exportFlattenedZip: async () => {
+    const enc = new TextEncoder();
+    const entries: { path: string; data: Uint8Array }[] = [];
+    for (const rec of get().definitions.values()) {
+      const text = JSON.stringify(rec.json, null, 2) + '\n';
+      entries.push({ path: `${rec.folder}/${rec.id}.json`, data: enc.encode(text) });
+    }
+    const { makeZip } = await import('../modio/zip');
     return makeZip(entries);
   },
 }));
