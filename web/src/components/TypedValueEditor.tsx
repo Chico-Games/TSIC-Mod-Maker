@@ -10,6 +10,7 @@ import type { EnumMember, PropertyMeta } from '../store/definitionsStore';
 import { PropertyTooltip } from './PropertyTooltip';
 import { SmartEffectsView } from './classBrowser/SmartEffectsView';
 import { StructRows } from './StructRows';
+import { TransformEditor } from './TransformEditor';
 import { TagPicker } from './pickers/TagPicker';
 import { AssetRefPicker } from './pickers/AssetRefPicker';
 
@@ -440,6 +441,13 @@ function extractEnumMemberName(raw: string): string {
   return raw;
 }
 
+/** Normalise an enum member name for fuzzy comparison. Strips underscores
+ *  and lowercases, so `PROXY_ACTOR` (Python exporter form) matches
+ *  `ProxyActor` (C++ PascalCase from the schema). */
+function normEnumName(s: string): string {
+  return (s ?? '').replace(/_/g, '').toLowerCase();
+}
+
 /** Title-case a CamelCase / SNAKE_CASE / dash-separated identifier into a
  *  display label. Converts "TriggeringGameplayEffect" → "Triggering
  *  Gameplay Effect" and "FLAT_HEAL" → "Flat Heal". */
@@ -467,7 +475,12 @@ function EnumEditor({
   const meta = propertyName ? refAdapter.getPropertyMeta(parentTypeName, propertyName) : null;
   const members = enumName ? refAdapter.getEnumMembers(enumName) : null;
   const rawValue = String(typed.value ?? '');
-  const memberKey = extractEnumMemberName(rawValue);
+  const extracted = extractEnumMemberName(rawValue);
+  // Resolve the extracted member name (e.g. PROXY_ACTOR from the Python
+  // exporter) against schema members (e.g. ProxyActor) using a fuzzy
+  // (underscore/case-insensitive) comparison.
+  const matchedMember = members?.find((m) => normEnumName(m.name) === normEnumName(extracted));
+  const memberKey = matchedMember?.name ?? extracted;
 
   const options = useMemo<SelectOption[]>(() => {
     if (!members) return [];
@@ -899,58 +912,58 @@ function ContainerEditor({
         {arr.length === 0 && <div className="def-empty">(empty)</div>}
         {arr.map((item, i) => (
           <div className="def-array-item" key={i}>
-            <div className="def-array-item-head">
-              <span className="def-array-idx">[{i}]</span>
-              <div className="def-field-controls">
-                <button
-                  type="button"
-                  disabled={i === 0}
-                  title="Move up"
-                  onClick={() => {
-                    if (i === 0) return;
-                    const next = arr.slice();
-                    [next[i - 1], next[i]] = [next[i], next[i - 1]];
-                    onChange({ ...typed, value: next });
-                  }}
-                >
-                  ▲
-                </button>
-                <button
-                  type="button"
-                  disabled={i === arr.length - 1}
-                  title="Move down"
-                  onClick={() => {
-                    if (i === arr.length - 1) return;
-                    const next = arr.slice();
-                    [next[i], next[i + 1]] = [next[i + 1], next[i]];
-                    onChange({ ...typed, value: next });
-                  }}
-                >
-                  ▼
-                </button>
-                <button
-                  type="button"
-                  className="danger"
-                  title="Remove"
-                  onClick={() => onChange({ ...typed, value: arr.filter((_, idx) => idx !== i) })}
-                >
-                  ×
-                </button>
-              </div>
+            <span className="def-array-idx">[{i}]</span>
+            <div className="def-array-item-body">
+              <TypedField
+                typed={item}
+                parentTypeName={parentTypeName}
+                onChange={(v) => {
+                  const next = arr.slice();
+                  next[i] = v;
+                  onChange({ ...typed, value: next });
+                }}
+                refAdapter={refAdapter}
+                path={[...path, i]}
+                pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i] : undefined}
+                ownerKey={ownerKey}
+              />
             </div>
-            <TypedField
-              typed={item}
-              parentTypeName={parentTypeName}
-              onChange={(v) => {
-                const next = arr.slice();
-                next[i] = v;
-                onChange({ ...typed, value: next });
-              }}
-              refAdapter={refAdapter}
-              path={[...path, i]}
-              pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i] : undefined}
-              ownerKey={ownerKey}
-            />
+            <div className="def-field-controls def-array-item-controls">
+              <button
+                type="button"
+                disabled={i === 0}
+                title="Move up"
+                onClick={() => {
+                  if (i === 0) return;
+                  const next = arr.slice();
+                  [next[i - 1], next[i]] = [next[i], next[i - 1]];
+                  onChange({ ...typed, value: next });
+                }}
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                disabled={i === arr.length - 1}
+                title="Move down"
+                onClick={() => {
+                  if (i === arr.length - 1) return;
+                  const next = arr.slice();
+                  [next[i], next[i + 1]] = [next[i + 1], next[i]];
+                  onChange({ ...typed, value: next });
+                }}
+              >
+                ▼
+              </button>
+              <button
+                type="button"
+                className="danger"
+                title="Remove"
+                onClick={() => onChange({ ...typed, value: arr.filter((_, idx) => idx !== i) })}
+              >
+                ×
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -1016,19 +1029,7 @@ function MapEditor({
         {entries.length === 0 && <div className="def-empty">(empty map)</div>}
         {entries.map((entry, i) => (
           <div className="def-map-entry" key={i}>
-            <div className="def-array-item-head">
-              <span className="def-array-idx">[{i}]</span>
-              <div className="def-field-controls">
-                <button
-                  type="button"
-                  className="danger"
-                  title="Remove entry"
-                  onClick={() => onChange({ ...typed, value: entries.filter((_, idx) => idx !== i) })}
-                >
-                  ×
-                </button>
-              </div>
-            </div>
+            <span className="def-array-idx">[{i}]</span>
             <div className="def-map-kv">
               <TypedField
                 label="key"
@@ -1058,6 +1059,16 @@ function MapEditor({
                 pathFromRoot={pathFromRoot ? [...pathFromRoot, 'value', i, 'value'] : undefined}
                 ownerKey={ownerKey}
               />
+            </div>
+            <div className="def-field-controls def-array-item-controls">
+              <button
+                type="button"
+                className="danger"
+                title="Remove entry"
+                onClick={() => onChange({ ...typed, value: entries.filter((_, idx) => idx !== i) })}
+              >
+                ×
+              </button>
             </div>
           </div>
         ))}
@@ -1135,6 +1146,7 @@ export function TypedField(props: FieldProps) {
           <TagPicker
             multi={false}
             value={typed.value ?? ''}
+            categories={meta?.categories ?? null}
             onChange={(v) => props.onChange({ ...typed, value: v })}
           />
         </PrimitiveRow>
@@ -1164,6 +1176,7 @@ export function TypedField(props: FieldProps) {
           <TagPicker
             multi={true}
             value={tags}
+            categories={meta?.categories ?? null}
             onChange={(v) => props.onChange({ ...typed, value: v })}
           />
         </div>
@@ -1201,6 +1214,9 @@ export function TypedField(props: FieldProps) {
             onChange={(next) => props.onChange(next)}
           />
         );
+      }
+      if (typed?.struct_name === 'Transform') {
+        return <TransformEditor {...props} />;
       }
       return <StructRows {...props} />;
     case 'array':
