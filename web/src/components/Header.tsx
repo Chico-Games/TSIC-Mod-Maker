@@ -18,7 +18,22 @@ type MenuItem = {
   deemphasised?: boolean;
 };
 
-function HoverMenu({ trigger, items }: { trigger: React.ReactNode; items: MenuItem[] }) {
+function HoverMenu({
+  trigger,
+  items,
+  onClick,
+  disabled,
+  title,
+}: {
+  trigger: React.ReactNode;
+  items: MenuItem[];
+  /** When provided, clicking the button runs this action and does NOT toggle
+   *  the menu. The dropdown still opens on hover. Without this, clicking
+   *  toggles the menu (the original behaviour). */
+  onClick?: () => void;
+  disabled?: boolean;
+  title?: string;
+}) {
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
   const cancelClose = () => {
@@ -38,7 +53,20 @@ function HoverMenu({ trigger, items }: { trigger: React.ReactNode; items: MenuIt
       onMouseEnter={() => { cancelClose(); setOpen(true); }}
       onMouseLeave={scheduleClose}
     >
-      <button onClick={() => setOpen((v) => !v)} aria-haspopup="menu" aria-expanded={open}>
+      <button
+        onClick={() => {
+          if (onClick) {
+            if (!disabled) onClick();
+            setOpen(false);
+          } else {
+            setOpen((v) => !v);
+          }
+        }}
+        disabled={disabled}
+        title={title}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
         {trigger}
       </button>
       {open && (
@@ -230,13 +258,10 @@ export function Header() {
       <button onClick={() => setNewProjectOpen(true)} disabled={!fsa} title="Create a new project folder">✨ New project</button>
       <HoverMenu
         trigger={<>💾 Save{dirtyCount > 0 ? ` (${dirtyCount})` : ''} ▾</>}
+        onClick={() => void saveAllDirty()}
+        disabled={dirtyCount === 0 || !directoryHandle || readOnly}
+        title={readOnly ? 'This source is read-only — use Save As to write changes.' : 'Click to save. Hover for more options.'}
         items={[
-          {
-            label: dirtyCount > 0 ? `Save (${dirtyCount} unsaved)` : 'Save',
-            onClick: () => void saveAllDirty(),
-            disabled: dirtyCount === 0 || !directoryHandle || readOnly,
-            hint: readOnly ? 'This source is read-only — use Save As to write changes.' : undefined,
-          },
           {
             label: 'Save as…',
             onClick: () => {
