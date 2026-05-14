@@ -632,7 +632,7 @@ function DefinitionEditor({
   const bareClass = String(json.class ?? '').replace(/^U/, '');
 
   const [propSearch, setPropSearch] = useState('');
-  const [groupBy, setGroupBy] = useState<'default' | 'type' | 'category'>('default');
+  const [groupBy, setGroupBy] = useState<'default' | 'type' | 'category'>('category');
   const [bareNameDraft, setBareNameDraft] = useState(humanizeAssetId(rec.id));
   // Item↔StaticItem inline partner panel: collapsible, defaults open
   // when a partner exists so users see both halves at once.
