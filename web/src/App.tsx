@@ -27,10 +27,51 @@ import { FurnitureTab } from './components/FurnitureTab';
 import { LayoutsTab } from './components/layouts/LayoutsTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
+import { useModIoStore } from './store/modIoStore';
+import { ToastStack } from './components/modio/ToastStack';
 import { dispatchDnD, type DragSource, type DropTarget } from './dnd/dispatch';
 import { copyCurrentSelection, pasteCurrentSelection } from './clipboard';
 import { getSemantic } from './search/semantic';
 import { semanticTextFor } from './search/semanticText';
+
+function LoadingOverlay() {
+  const loading = useDefinitionsStore((s) => s.loading);
+  if (!loading) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0, 0, 0, 0.55)',
+        backdropFilter: 'blur(2px)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '1rem',
+        zIndex: 9999,
+        cursor: 'wait',
+      }}
+      onClick={(e) => e.preventDefault()}
+      onPointerDown={(e) => e.preventDefault()}
+    >
+      <div
+        style={{
+          width: 48,
+          height: 48,
+          border: '4px solid rgba(255, 255, 255, 0.18)',
+          borderTopColor: 'rgba(255, 255, 255, 0.85)',
+          borderRadius: '50%',
+          animation: 'tsic-spin 0.9s linear infinite',
+        }}
+      />
+      <div style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.95rem' }}>
+        Loading project…
+      </div>
+      <style>{`@keyframes tsic-spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 export function App() {
   const tab = useAppStore((s) => s.tab);
@@ -71,7 +112,31 @@ export function App() {
   // Bootstrap: load saved handle or fall back to bundled defaults.
   useEffect(() => {
     void useDefinitionsStore.getState().bootstrap();
+    // Boot the mod.io store as well: probes any stored token + lazy-loads
+    // the starter catalog for diffing.
+    void useModIoStore.getState().bootstrap();
   }, []);
+
+  // When the loaded project changes, reload the mod.io sidecar from the new
+  // data source. Subscribing by reference (dataSource identity) — every
+  // open/save-as builds a fresh DataSource so the reference is sufficient.
+  const dataSource = useDefinitionsStore((s) => s.dataSource);
+  useEffect(() => {
+    void useModIoStore.getState().loadSidecar();
+  }, [dataSource]);
+
+  // Periodic remote-event polling while the publish wizard is open AND the
+  // project is bound to a mod. Lightweight (one request per 60s) and bails
+  // when the wizard closes. The store no-ops when not bound.
+  const wizardOpen = useModIoStore((s) => s.publishWizardOpen);
+  const boundModId = useModIoStore((s) => s.sidecar?.mod_id ?? null);
+  useEffect(() => {
+    if (!wizardOpen || !boundModId) return;
+    const t = setInterval(() => { void useModIoStore.getState().pollRemoteEvents(); }, 60_000);
+    // Fire immediately too so the wizard is up-to-date when opened.
+    void useModIoStore.getState().pollRemoteEvents();
+    return () => clearInterval(t);
+  }, [wizardOpen, boundModId]);
 
   // Auto-warm the semantic index in the background after definitions
   // load. The model download happens once per browser, embeddings are
@@ -189,7 +254,9 @@ export function App() {
           <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} onJump={(t) => { setTab(t); setSearchOpen(false); }} />
           <LoadGate />
           <RestoreDraftPrompt />
+          <LoadingOverlay />
           {toastText && <div className={`toast ${toastText.kind}`}>{toastText.text}</div>}
+          <ToastStack />
         </div>
         <DragOverlay
           dropAnimation={null}

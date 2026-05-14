@@ -945,6 +945,11 @@ async function loadFromDataSource(
   set: (state: Partial<DefinitionsStore>) => void,
   get: () => DefinitionsStore,
   ds: DataSource,
+  /** When provided, skip the per-file fetch loop and seed the working set from
+   *  these canonical texts directly. Used to avoid double-fetching the
+   *  Default Project tree that was already pulled into memory by
+   *  `loadDefaultProjectFromHttp` / `loadDefaultProjectFromFsa`. */
+  preloadedTexts?: Map<string, string>,
 ): Promise<void> {
   set({ loading: true, errorText: null });
   try {
@@ -953,46 +958,71 @@ async function loadFromDataSource(
 
     const defs = new Map<DefinitionsKey, DefinitionRecord>();
     const rawFiles: Array<{ folder: string; name: string; text: string }> = [];
-    const concurrency = 32;
-    const allFiles: { folder: string; id: string }[] = [];
-    for (const f of manifest.files) {
-      for (const id of f.ids) allFiles.push({ folder: f.folder, id });
-    }
-    let nextIdx = 0;
-    const workers = Array.from({ length: concurrency }, async () => {
-      for (;;) {
-        const i = nextIdx++;
-        if (i >= allFiles.length) return;
-        const { folder, id } = allFiles[i];
-        let text: string;
-        try {
-          text = await ds.readFile(folder, id);
-        } catch (e) {
-          console.warn(`[definitions] failed to read ${folder}/${id}`, e);
-          continue;
-        }
-        // Always push to rawFiles so the structural validator can surface
-        // invalid-JSON and missing-field issues even for unparseable files.
-        // Zero-byte files are overlay tombstone sentinels — skip rawFiles push
-        // (no structural issue to surface) and store with json: null.
-        if (text.length === 0) {
-          defs.set(key(folder, id), {
-            folder, id, json: null, originalText: '', diskId: id, diskFolder: folder,
-          });
-          continue;
-        }
-        rawFiles.push({ folder, name: `${id}.json`, text });
-        try {
-          const json = JSON.parse(text);
-          defs.set(key(folder, id), {
-            folder, id, json, originalText: text, diskId: id, diskFolder: folder,
-          });
-        } catch {
-          // Parse error — collected in rawFiles for structural validator to surface.
+    if (preloadedTexts) {
+      for (const f of manifest.files) {
+        for (const id of f.ids) {
+          const k = key(f.folder, id);
+          const text = preloadedTexts.get(k);
+          if (text === undefined) continue;
+          if (text.length === 0) {
+            defs.set(k, {
+              folder: f.folder, id, json: null, originalText: '', diskId: id, diskFolder: f.folder,
+            });
+            continue;
+          }
+          rawFiles.push({ folder: f.folder, name: `${id}.json`, text });
+          try {
+            const json = JSON.parse(text);
+            defs.set(k, {
+              folder: f.folder, id, json, originalText: text, diskId: id, diskFolder: f.folder,
+            });
+          } catch {
+            // collected for structural validator
+          }
         }
       }
-    });
-    await Promise.all(workers);
+    } else {
+      const concurrency = 32;
+      const allFiles: { folder: string; id: string }[] = [];
+      for (const f of manifest.files) {
+        for (const id of f.ids) allFiles.push({ folder: f.folder, id });
+      }
+      let nextIdx = 0;
+      const workers = Array.from({ length: concurrency }, async () => {
+        for (;;) {
+          const i = nextIdx++;
+          if (i >= allFiles.length) return;
+          const { folder, id } = allFiles[i];
+          let text: string;
+          try {
+            text = await ds.readFile(folder, id);
+          } catch (e) {
+            console.warn(`[definitions] failed to read ${folder}/${id}`, e);
+            continue;
+          }
+          // Always push to rawFiles so the structural validator can surface
+          // invalid-JSON and missing-field issues even for unparseable files.
+          // Zero-byte files are overlay tombstone sentinels — skip rawFiles push
+          // (no structural issue to surface) and store with json: null.
+          if (text.length === 0) {
+            defs.set(key(folder, id), {
+              folder, id, json: null, originalText: '', diskId: id, diskFolder: folder,
+            });
+            continue;
+          }
+          rawFiles.push({ folder, name: `${id}.json`, text });
+          try {
+            const json = JSON.parse(text);
+            defs.set(key(folder, id), {
+              folder, id, json, originalText: text, diskId: id, diskFolder: folder,
+            });
+          } catch {
+            // Parse error — collected in rawFiles for structural validator to surface.
+          }
+        }
+      });
+      await Promise.all(workers);
+    }
 
     const rawMeta = await ds.readProjectMeta();
     const projectMeta: ProjectMeta = rawMeta ?? { schema_version: 1, name: ds.displayName };
@@ -1583,7 +1613,9 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       ds = new HttpDataSource(`${trimmed}/starter-project`);
     }
     set({ defaultProject: def, tombstones: new Set<DefinitionsKey>() });
-    await loadFromDataSource(set, get, ds!);
+    // The DefaultProject load already pulled every record's canonical text
+    // into memory — pass it through so loadFromDataSource doesn't re-fetch.
+    await loadFromDataSource(set, get, ds!, def.texts);
   },
 
   setDefaultProjectSource: async (handle) => {
