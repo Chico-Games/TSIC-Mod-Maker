@@ -97,7 +97,39 @@ export function BiomeSubTab() {
 
   if (selectedBiome == null && biomes.length > 0) setSelectedBiome(biomes[0].biome);
 
+  /** Mint a BD_<stem>.json envelope for an existing orphan biome whose
+   *  Floor/Furniture LSPs already live on disk. Mirrors the "New biome"
+   *  button's BD template but reuses the LSP paths the orphan already
+   *  points at so the freshly-minted BD lines up with reality. */
+  const createBdForOrphan = (stem: string) => {
+    if (findKeyById(`BD_${stem}`)) return;
+    const bdTemplate = {
+      id: `BD_${stem}`,
+      asset_path: `/Game/WorldGeneration/Biomes/${stem}/BD_${stem}`,
+      class: 'UBiomeDefinition',
+      parent_classes: ['UPrimaryDataAsset', 'UDataAsset', 'UObject'],
+      properties: {
+        biome_tag_name: { type: 'name', value: `Tile.Biome.${stem}` },
+        display_name: { type: 'text', value: stem },
+        role: { type: 'enum', value: 'EBiomeRole::Environmental' },
+        map_color: { type: 'linear_color', value: '(R=0.5,G=0.5,B=0.5,A=1.0)' },
+        maze_openness: { type: 'float', value: 0.5 },
+        loot_multiplier: { type: 'float', value: 1.0 },
+        floor_lsp: {
+          type: 'soft_asset_ref',
+          value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Floor`,
+        },
+        furniture_lsp: {
+          type: 'soft_asset_ref',
+          value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Furniture`,
+        },
+      },
+    };
+    createDefinition(BD_FOLDER, `BD_${stem}`, bdTemplate, { select: false });
+  };
+
   const selected = selectedBiome ? biomes.find((b) => b.biome === selectedBiome) ?? null : null;
+  const bdRec = selected?.bdKey ? definitions.get(selected.bdKey) : null;
   const floorRec = selected?.floorKey ? definitions.get(selected.floorKey) : null;
   const furnRec = selected?.furnitureKey ? definitions.get(selected.furnitureKey) : null;
 
@@ -210,36 +242,66 @@ export function BiomeSubTab() {
             </header>
 
             <div className="biome-cols">
-              <section className="biome-col">
-                <h3>Floor (LSP_{selected.biome}_Floor)</h3>
-                {floorRec && selected.floorKey ? (
+              <section className="biome-col biome-col-bd">
+                <h3>BiomeDefinition (BD_{selected.biome})</h3>
+                {bdRec && selected.bdKey ? (
                   <TypedPropertiesEditor
-                    parentTypeName={String(floorRec.json?.class ?? '').replace(/^U/, '')}
-                    properties={floorRec.json?.properties ?? {}}
+                    parentTypeName={String(bdRec.json?.class ?? '').replace(/^U/, '')}
+                    properties={bdRec.json?.properties ?? {}}
                     showAllFields={false}
-                    onChange={(next) => updateValueAtPath(selected.floorKey!, ['properties'], next)}
+                    onChange={(next) => updateValueAtPath(selected.bdKey!, ['properties'], next)}
                     refAdapter={refAdapter}
-                    ownerKey={selected.floorKey}
+                    ownerKey={selected.bdKey}
                   />
                 ) : (
-                  <div className="muted">No LSP_{selected.biome}_Floor asset.</div>
+                  <div className="biome-pane-empty">
+                    <p>
+                      No <code>BD_{selected.biome}</code> envelope — this biome is
+                      an orphan with LSPs but no BiomeDefinition.
+                    </p>
+                    <button
+                      className="add-row"
+                      onClick={() => createBdForOrphan(selected.biome)}
+                      title="Mint BD_<biome>.json wired to the existing Floor/Furniture LSPs"
+                    >
+                      ＋ Create BiomeDefinition
+                    </button>
+                  </div>
                 )}
               </section>
 
-              <section className="biome-col">
-                <h3>Furniture (LSP_{selected.biome}_Furniture)</h3>
-                {furnRec && selected.furnitureKey ? (
-                  <TypedPropertiesEditor
-                    parentTypeName={String(furnRec.json?.class ?? '').replace(/^U/, '')}
-                    properties={furnRec.json?.properties ?? {}}
-                    showAllFields={false}
-                    onChange={(next) => updateValueAtPath(selected.furnitureKey!, ['properties'], next)}
-                    refAdapter={refAdapter}
-                    ownerKey={selected.furnitureKey}
-                  />
-                ) : (
-                  <div className="muted">No LSP_{selected.biome}_Furniture asset.</div>
-                )}
+              <section className="biome-col biome-col-lsps">
+                <section className="biome-sub-col">
+                  <h3>Floor (LSP_{selected.biome}_Floor)</h3>
+                  {floorRec && selected.floorKey ? (
+                    <TypedPropertiesEditor
+                      parentTypeName={String(floorRec.json?.class ?? '').replace(/^U/, '')}
+                      properties={floorRec.json?.properties ?? {}}
+                      showAllFields={false}
+                      onChange={(next) => updateValueAtPath(selected.floorKey!, ['properties'], next)}
+                      refAdapter={refAdapter}
+                      ownerKey={selected.floorKey}
+                    />
+                  ) : (
+                    <div className="muted">No LSP_{selected.biome}_Floor asset.</div>
+                  )}
+                </section>
+
+                <section className="biome-sub-col">
+                  <h3>Furniture (LSP_{selected.biome}_Furniture)</h3>
+                  {furnRec && selected.furnitureKey ? (
+                    <TypedPropertiesEditor
+                      parentTypeName={String(furnRec.json?.class ?? '').replace(/^U/, '')}
+                      properties={furnRec.json?.properties ?? {}}
+                      showAllFields={false}
+                      onChange={(next) => updateValueAtPath(selected.furnitureKey!, ['properties'], next)}
+                      refAdapter={refAdapter}
+                      ownerKey={selected.furnitureKey}
+                    />
+                  ) : (
+                    <div className="muted">No LSP_{selected.biome}_Furniture asset.</div>
+                  )}
+                </section>
               </section>
             </div>
           </>
