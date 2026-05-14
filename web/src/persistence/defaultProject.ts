@@ -14,7 +14,7 @@ export function parseDefaultProjectMeta(raw: unknown): ParseMetaResult {
   const r = raw as Record<string, unknown>;
   const sv = r.schema_version;
   const v = r.version;
-  if (typeof sv !== 'number' || !Number.isInteger(sv)) return { ok: false, reason: 'bad-version' };
+  if (typeof sv !== 'number' || !Number.isInteger(sv) || sv < 1) return { ok: false, reason: 'bad-version' };
   if (typeof v !== 'number' || !Number.isInteger(v) || v < 0) return { ok: false, reason: 'bad-version' };
   const label = typeof r.label === 'string' ? r.label : '';
   const published_at = typeof r.published_at === 'string' ? r.published_at : new Date(0).toISOString();

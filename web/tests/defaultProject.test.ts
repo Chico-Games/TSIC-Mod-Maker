@@ -29,3 +29,8 @@ test('parseDefaultProjectMeta rejects non-object input', () => {
   assert.equal(parseDefaultProjectMeta(null).ok, false);
   assert.equal(parseDefaultProjectMeta('hi').ok, false);
 });
+
+test('parseDefaultProjectMeta rejects non-positive schema_version', () => {
+  assert.equal(parseDefaultProjectMeta({ schema_version: 0, version: 1 }).ok, false);
+  assert.equal(parseDefaultProjectMeta({ schema_version: -1, version: 1 }).ok, false);
+});
