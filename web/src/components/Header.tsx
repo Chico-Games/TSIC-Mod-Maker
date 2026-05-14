@@ -29,7 +29,6 @@ export function Header() {
   const createProject = useDefinitionsStore((s) => s.createProject);
   const saveAllDirty = useDefinitionsStore((s) => s.saveAllDirty);
   const saveAs = useDefinitionsStore((s) => s.saveAs);
-  const loadDefaultProject = useDefinitionsStore((s) => s.loadDefaultProject);
   const reload = useDefinitionsStore((s) => s.reload);
   const setSearchOpen = useAppStore((s) => s.setSearchOpen);
   const tab = useAppStore((s) => s.tab);
@@ -178,15 +177,6 @@ export function Header() {
         onClick={() => setSettingsOpen(true)}
         title="Settings"
       >⚙</button>
-      <button
-        onClick={async () => {
-          await loadDefaultProject();
-          if (typeof (window as any).showDirectoryPicker === 'function') {
-            await saveAs();
-          }
-        }}
-        title="Open the Default Project. Edits become an overlay you can Save As to a new folder."
-      >📂 Open Default Project</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
 
       {newProjectOpen && (
