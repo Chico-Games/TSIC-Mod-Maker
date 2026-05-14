@@ -14,6 +14,7 @@ import { useGameplayTagStore } from './gameplayTagStore';
 import { useAssetCatalogStore } from './assetCatalogStore';
 import { iterEnvelopes, validateAssetRefs, validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
+import { loadDefaultProjectFromHttp, type DefaultProject } from '../persistence/defaultProject';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -89,6 +90,10 @@ export interface DefinitionsStore {
 
   // Data
   definitions: Map<DefinitionsKey, DefinitionRecord>;
+  /** The currently-loaded Default Project (in memory). Null until loaded. */
+  defaultProject: DefaultProject | null;
+  /** Tombstones for default keys removed by the user (empty placeholder files on disk). */
+  tombstones: Set<DefinitionsKey>;
   /** Per-record dirty flag — present means the record differs from disk. */
   dirty: Set<DefinitionsKey>;
   /** Reverse-reference index, lazily built once after each loadAll(). */
@@ -169,6 +174,10 @@ export interface DefinitionsStore {
   /** Load the bundled default Definitions tree from
    *  `web/public/starter-project/` (manifest + each file). Discards any
    *  current directory handle so the next Save prompts Save As. */
+  /** Load the Default Project into memory and use it as the initial working set.
+   *  Identical semantics to the old loadBundledDefaults but also populates
+   *  `defaultProject` and resets `tombstones`. */
+  loadDefaultProject: () => Promise<void>;
   loadBundledDefaults: () => Promise<void>;
   /** Pick a folder and write the entire current working set to it as
    *  Save As. Replaces the saved directory handle. */
@@ -1119,6 +1128,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   autoLoadEnabled: loadAutoLoadFlag(),
 
   definitions: new Map(),
+  defaultProject: null,
+  tombstones: new Set<DefinitionsKey>(),
   dirty: new Set(),
   referencedByIndex: new Map(),
   folders: [],
@@ -1465,15 +1476,21 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   openStarterProject: async () => {
-    await get().loadBundledDefaults();
+    await get().loadDefaultProject();
   },
 
-  loadBundledDefaults: async () => {
+  loadDefaultProject: async () => {
     try { await deleteHandle(HANDLE_KEY); } catch { /* ignore */ }
     const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
     const trimmed = baseUrl.replace(/\/$/, '');
+    const def = await loadDefaultProjectFromHttp(`${trimmed}/starter-project`);
+    set({ defaultProject: def, tombstones: new Set<DefinitionsKey>() });
     const ds = new HttpDataSource(`${trimmed}/starter-project`);
     await loadFromDataSource(set, get, ds);
+  },
+
+  loadBundledDefaults: async () => {
+    await get().loadDefaultProject();
   },
 
   saveAs: async () => {

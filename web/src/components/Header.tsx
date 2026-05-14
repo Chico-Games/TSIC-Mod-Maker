@@ -59,7 +59,7 @@ export function Header() {
   const createProject = useDefinitionsStore((s) => s.createProject);
   const saveAllDirty = useDefinitionsStore((s) => s.saveAllDirty);
   const saveAs = useDefinitionsStore((s) => s.saveAs);
-  const loadBundledDefaults = useDefinitionsStore((s) => s.loadBundledDefaults);
+  const loadDefaultProject = useDefinitionsStore((s) => s.loadDefaultProject);
   const reload = useDefinitionsStore((s) => s.reload);
   const setSearchOpen = useAppStore((s) => s.setSearchOpen);
   const tab = useAppStore((s) => s.tab);
@@ -215,13 +215,13 @@ export function Header() {
       <button onClick={() => void saveAs()} disabled={!fsa || definitions.size === 0}>Save as…</button>
       <button
         onClick={async () => {
-          await loadBundledDefaults();
+          await loadDefaultProject();
           if (typeof (window as any).showDirectoryPicker === 'function') {
             await saveAs();
           }
         }}
-        title="Load the bundled sample data into a fresh save folder"
-      >📂 Load test project</button>
+        title="Open the Default Project. Edits become an overlay you can Save As to a new folder."
+      >📂 Open Default Project</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
 
       {pathEditing && (
@@ -362,7 +362,7 @@ function NewProjectModal({
         </div>
 
         <div className="np-form-row">
-          <label>Seed from bundled defaults?</label>
+          <label>Seed from default project?</label>
           <input
             type="checkbox"
             checked={seed}

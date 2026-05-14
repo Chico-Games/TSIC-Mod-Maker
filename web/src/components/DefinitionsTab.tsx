@@ -319,7 +319,7 @@ export function DefinitionsTab() {
             <code>Documents\Unreal Projects\TSIC\Tools\Export\test-output\Definitions</code>.
             The path is remembered between sessions. You can also click
             <em> Load test project</em> in the header to start from the
-            bundled sample data.
+            the default project.
           </p>
           <button className="primary" onClick={pickDirectory} disabled={!fsaSupported}>
             Pick directory…
