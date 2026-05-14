@@ -571,7 +571,7 @@ function buildMockPicker(initialContents) {
         await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
       }
 
-      await page.waitForSelector('.file-info:has-text("Project: Starter project")');
+      await page.waitForSelector('.file-info:has-text("Project: Default Project")');
       assert(true, 'AssetRefPicker: starter project loaded');
 
       // Switch to the Definitions tab.
@@ -636,7 +636,7 @@ function buildMockPicker(initialContents) {
         await page.locator('.loadgate-modal button:has-text("Continue anyway")').click();
         await page.waitForSelector('.loadgate-modal', { state: 'hidden' });
       }
-      await page.waitForSelector('.file-info:has-text("Project: Starter project")');
+      await page.waitForSelector('.file-info:has-text("Project: Default Project")');
 
       // Switch to the Layouts tab.
       await page.locator('.tabs button.tab:has-text("Layouts")').click();

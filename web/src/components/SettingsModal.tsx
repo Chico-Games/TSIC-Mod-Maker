@@ -114,7 +114,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem', color: 'var(--muted)' }}>Default project</h3>
         <p style={{ margin: '0 0 0.75rem', color: 'var(--muted)', fontSize: '0.9em' }}>
           The Default Project is the baseline that every project layers on top of.
-          By default it is the bundled tree shipped with the editor (loaded over HTTP).
+          By default it is the default project shipped with the editor (loaded over HTTP).
           Devs can point at a local copy on disk to load read-write and publish new versions from.
         </p>
 
@@ -122,7 +122,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
           <label>Location</label>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
             <span style={{ fontFamily: 'monospace', fontSize: '0.9em', color: defaultHandleName ? 'var(--text)' : 'var(--muted)' }}>
-              {defaultHandleName ?? 'Bundled (HTTP)'}
+              {defaultHandleName ?? 'Default Project (HTTP)'}
             </span>
             <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
               <button

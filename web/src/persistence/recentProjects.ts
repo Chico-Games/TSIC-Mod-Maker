@@ -10,7 +10,7 @@ export interface RecentEntry {
 const CAP = 8;
 
 const STARTER_HANDLE_NAME = 'starter-project';
-const STARTER_NAME = 'Starter project';
+const STARTER_NAME = 'Default Project';
 
 /** The synthetic Starter entry. `handle` is null — the Starter project is
  *  HTTP-backed, not FSA. `openRecent('starter-project')` in definitionsStore

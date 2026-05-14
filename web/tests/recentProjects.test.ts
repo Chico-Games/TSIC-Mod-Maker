@@ -13,7 +13,7 @@ test('listRecents starts empty after cleanup', async () => {
   const list = await listRecents();
   assert.equal(list.length, 1);
   assert.equal(list[0].handleName, 'starter-project');
-  assert.equal(list[0].name, 'Starter project');
+  assert.equal(list[0].name, 'Default Project');
 });
 
 test('addRecent stores and lists with lastOpened', async () => {
@@ -105,7 +105,7 @@ test('listRecents always includes synthetic Starter entry', async () => {
   const r1 = await listRecents();
   assert.equal(r1.length, 1);
   assert.equal(r1[0].handleName, 'starter-project');
-  assert.equal(r1[0].name, 'Starter project');
+  assert.equal(r1[0].name, 'Default Project');
 
   // Adding a real recent does not displace the Starter; Starter stays at the end.
   await addRecent({ name: 'P', handleName: 'h1', handle: fakeHandle('h1') });
@@ -120,5 +120,5 @@ test('addRecent refuses to persist the synthetic Starter handleName', async () =
   // Should contain ONLY the synthetic Starter — the addRecent call was a no-op.
   assert.equal(r.length, 1);
   assert.equal(r[0].handleName, 'starter-project');
-  assert.equal(r[0].name, 'Starter project'); // Not 'malicious'.
+  assert.equal(r[0].name, 'Default Project'); // Not 'malicious'.
 });

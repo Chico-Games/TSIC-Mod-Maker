@@ -42,7 +42,7 @@ export interface DataSource {
 export class HttpDataSource implements DataSource {
   readonly kind = 'http' as const;
   readonly readOnly = true;
-  readonly displayName = 'Starter project';
+  readonly displayName = 'Default Project';
 
   private readonly fetcher: typeof fetch;
 
