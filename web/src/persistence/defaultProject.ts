@@ -65,22 +65,34 @@ export async function loadDefaultProjectFromHttp(
 
   const records = new Map<string, any>();
   const texts = new Map<string, string>();
-  const tasks: Promise<void>[] = [];
+  // Flatten to a flat work list, then chew through it with a fixed-size worker
+  // pool. The starter-project ships thousands of files; firing them all at
+  // once gives Chrome ERR_INSUFFICIENT_RESOURCES.
+  const work: { folder: string; id: string }[] = [];
   for (const f of manifest.files) {
-    for (const id of f.ids) {
-      tasks.push((async () => {
-        const fr = await fetcher(`${stripped}/${f.folder}/${id}.json`);
-        if (!fr.ok) return;
-        const raw = await fr.text();
-        const text = canonical(raw);
-        try {
-          records.set(`${f.folder}/${id}`, JSON.parse(text));
-          texts.set(`${f.folder}/${id}`, text);
-        } catch { /* skip malformed */ }
-      })());
-    }
+    for (const id of f.ids) work.push({ folder: f.folder, id });
   }
-  await Promise.all(tasks);
+  const concurrency = 32;
+  let next = 0;
+  const workers = Array.from({ length: concurrency }, async () => {
+    for (;;) {
+      const i = next++;
+      if (i >= work.length) return;
+      const { folder, id } = work[i];
+      let raw: string;
+      try {
+        const fr = await fetcher(`${stripped}/${folder}/${id}.json`);
+        if (!fr.ok) continue;
+        raw = await fr.text();
+      } catch { continue; }
+      const text = canonical(raw);
+      try {
+        records.set(`${folder}/${id}`, JSON.parse(text));
+        texts.set(`${folder}/${id}`, text);
+      } catch { /* skip malformed */ }
+    }
+  });
+  await Promise.all(workers);
   return { meta, records, texts };
 }
 
