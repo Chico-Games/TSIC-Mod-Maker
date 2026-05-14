@@ -191,6 +191,9 @@ export interface DefinitionsStore {
   /** Store an FSA directory handle as the preferred default-project source,
    *  then refresh the working set from that source. */
   setDefaultProjectSource: (handle: FileSystemDirectoryHandle) => Promise<void>;
+  /** Pick a folder, write the current working set as a new numbered version of
+   *  the Default Project, then reload. */
+  publishAsNewDefaultVersion: (opts?: { label?: string }) => Promise<void>;
   /** Clear the stored FSA default-project source setting and reload from HTTP. */
   clearDefaultProjectSource: () => Promise<void>;
   /** Load the bundled default Definitions tree from
@@ -1591,6 +1594,36 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       return;
     }
     await get().loadDefaultProject();
+  },
+
+  publishAsNewDefaultVersion: async (opts = {}) => {
+    const w = window as any;
+    if (!w.showDirectoryPicker) {
+      set({ toast: { kind: 'error', text: 'Picker unavailable in this browser.' } });
+      return;
+    }
+    const { getDefaultSourceHandle } = await import('../persistence/defaultSourceSetting');
+    const startIn = await getDefaultSourceHandle();
+    try {
+      const target: FileSystemDirectoryHandle = await w.showDirectoryPicker({
+        mode: 'readwrite', ...(startIn ? { startIn } : {}),
+      });
+      const ok = await ensurePermission(target, 'readwrite');
+      if (!ok) { set({ toast: { kind: 'error', text: 'Permission denied.' } }); return; }
+      const cur = get().defaultProject;
+      if (!cur) { set({ toast: { kind: 'error', text: 'No default project loaded.' } }); return; }
+      // Strip tombstones from the working set before publishing.
+      const working = new Map(get().definitions);
+      for (const k of get().tombstones) working.delete(k);
+      const { publishAsNewDefaultVersion } = await import('../persistence/defaultPublisher');
+      const newMeta = await publishAsNewDefaultVersion(target, working, cur, { label: opts.label });
+      set({ toast: { kind: 'info', text: `Published default v${newMeta.version}${newMeta.label ? ` (${newMeta.label})` : ''}.` } });
+      await get().loadDefaultProject();
+    } catch (e) {
+      if ((e as Error)?.name !== 'AbortError') {
+        set({ toast: { kind: 'error', text: `Publish failed: ${String((e as Error).message ?? e)}` } });
+      }
+    }
   },
 
   clearDefaultProjectSource: async () => {
