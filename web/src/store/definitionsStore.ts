@@ -15,6 +15,7 @@ import { useAssetCatalogStore } from './assetCatalogStore';
 import { iterEnvelopes, validateAssetRefs, validateSchemaDrift } from '../persistence/schemaDriftValidator';
 import type { DriftIssue } from '../persistence/schemaDriftValidator';
 import { loadDefaultProjectFromHttp, type DefaultProject } from '../persistence/defaultProject';
+import { composeWorkingSet } from '../persistence/overlay';
 
 // One JSON file in the Definitions tree. We keep the parsed object plus the
 // pristine copy and a serialized "original" string so per-record dirty state
@@ -941,6 +942,14 @@ async function loadFromDataSource(
         }
         // Always push to rawFiles so the structural validator can surface
         // invalid-JSON and missing-field issues even for unparseable files.
+        // Zero-byte files are overlay tombstone sentinels — skip rawFiles push
+        // (no structural issue to surface) and store with json: null.
+        if (text.length === 0) {
+          defs.set(key(folder, id), {
+            folder, id, json: null, originalText: '', diskId: id, diskFolder: folder,
+          });
+          continue;
+        }
         rawFiles.push({ folder, name: `${id}.json`, text });
         try {
           const json = JSON.parse(text);
@@ -1063,6 +1072,40 @@ async function loadFromDataSource(
       console.warn('[definitionsStore] readTags failed:', e);
     }
 
+    // Overlay composition: when loading an FSA project at schema_version >= 2
+    // that has a default project loaded, compose the raw overlay files
+    // (overrides, additions, tombstones) against the default to produce the
+    // full working set.
+    const isOverlayCandidate =
+      ds.kind === 'fsa' &&
+      (projectMeta?.schema_version ?? 1) >= 2 &&
+      get().defaultProject !== null;
+
+    let overlayTombstones = new Set<DefinitionsKey>();
+    if (isOverlayCandidate) {
+      const def = get().defaultProject!;
+      const overrides = new Map<DefinitionsKey, any>();
+      const overrideTexts = new Map<DefinitionsKey, string>();
+      const additions = new Map<DefinitionsKey, any>();
+      for (const [k, rec] of defs) {
+        const text = rec.originalText ?? '';
+        if (text === '') { overlayTombstones.add(k); continue; }
+        if (def.records.has(k)) {
+          overrides.set(k, rec.json);
+          overrideTexts.set(k, text);
+        } else {
+          additions.set(k, rec.json);
+        }
+      }
+      const composed = composeWorkingSet(def, {
+        overrides, overrideTexts, additions, tombstones: overlayTombstones,
+      });
+      defs.clear();
+      for (const [k, r] of composed.definitions) defs.set(k, r);
+      folders.length = 0;
+      for (const f of composed.folders) folders.push(f);
+    }
+
     // Preserve current selection if still valid.
     const cur = get();
     const selectedFolder = cur.selectedFolder && folders.includes(cur.selectedFolder)
@@ -1084,6 +1127,7 @@ async function loadFromDataSource(
       loadedAt: Date.now(),
       loading: false,
       unrealSyncPath: projectMeta.ue_sync_path ?? '',
+      tombstones: overlayTombstones,
       toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
     });
 
