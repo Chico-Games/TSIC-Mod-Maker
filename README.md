@@ -11,7 +11,7 @@ npm run dev
 # open http://localhost:5173
 ```
 
-The first run loads the **starter project** baked into the build at `web/public/starter-project/`. To edit your real export, click `📂 Open folder` in the header and point at e.g. `C:\Users\Administrator\Documents\Unreal Projects\TSIC\Tools\Export\test-output\Definitions`. The directory handle persists in IndexedDB; subsequent reloads reconnect automatically.
+The first run loads the **starter project** baked into the build at `web/public/starter-project/`. To edit a project of your own, click `📂 Open project` in the header and point at a folder of typed-envelope JSON. The directory handle persists in IndexedDB; subsequent reloads reconnect automatically.
 
 ## Header buttons
 
@@ -43,13 +43,7 @@ A single `<DndContext>` at app root with a unified dispatcher in `web/src/dnd/di
 
 ## Starter project
 
-`web/scripts/sync-base-definitions.mjs` mirrors the live UE export into `web/public/schema/` (engine schema) and `web/public/starter-project/` (data). `npm run dev` and `npm run build` both run the sync first. Override the source with `TSIC_DEFINITIONS_SRC`:
-
-```sh
-TSIC_DEFINITIONS_SRC="D:\\Game\\Definitions" npm run sync-defaults
-```
-
-The schema directory holds `class-hierarchy.json` and `property-meta.json`, which drive UPROPERTY tooltips, clamp bounds, and enum dropdowns in the typed editor. The starter-project directory holds all definition data files and a `manifest.json`.
+`web/public/schema/` holds `class-hierarchy.json` and `property-meta.json`, which drive UPROPERTY tooltips, clamp bounds, and enum dropdowns in the typed editor. `web/public/starter-project/` holds the bundled definition data tree plus a `manifest.json`. Both are committed to the repo and shipped with the build.
 
 ## Tests
 
@@ -71,9 +65,8 @@ npm run smoke
 
 ```
 web/
-  scripts/sync-base-definitions.mjs    # mirrors Definitions/ → public/schema/ + public/starter-project/
   public/schema/                        # engine schema: class-hierarchy.json, property-meta.json
-  public/starter-project/              # starter data tree + manifest.json (generated; gitignored is fine)
+  public/starter-project/              # starter data tree + manifest.json
   src/
     App.tsx                            # DndContext + tab shell
     dnd/dispatch.ts                    # unified drag-drop dispatcher

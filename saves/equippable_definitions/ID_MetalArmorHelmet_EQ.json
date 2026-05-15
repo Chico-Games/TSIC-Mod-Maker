@@ -1,0 +1,401 @@
+{
+  "id": "ID_MetalArmorHelmet_EQ",
+  "asset_path": "/Game/Items/Equipment/Armor/MetalArmor/Helmet/ID_MetalArmorHelmet_EQ",
+  "class": "UEquippableDefinition",
+  "parent_classes": [
+    "UItemDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "equipment_actors_and_meshes": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "EquipmentActorsMeshes",
+        "fields": {
+          "mesh": {
+            "type": "soft_asset_ref",
+            "class": "StaticMesh"
+          },
+          "attach_socket": {
+            "type": "name"
+          },
+          "attach_transform": {
+            "type": "struct",
+            "struct_name": "Transform",
+            "fields": {
+              "rotation": {
+                "type": "struct",
+                "struct_name": "Quat",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  },
+                  "w": {
+                    "type": "float"
+                  }
+                }
+              },
+              "translation": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              },
+              "scale3_d": {
+                "type": "struct",
+                "struct_name": "Vector",
+                "fields": {
+                  "x": {
+                    "type": "float"
+                  },
+                  "y": {
+                    "type": "float"
+                  },
+                  "z": {
+                    "type": "float"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "EquipmentActorsMeshes",
+          "value": {
+            "mesh": {
+              "type": "soft_asset_ref",
+              "class": "StaticMesh",
+              "value": "/Game/Items/Equipment/Armor/MetalArmor/Helmet/Meshes/SM_MetalArmor_Helmet.SM_MetalArmor_Helmet"
+            },
+            "attach_socket": {
+              "type": "name",
+              "value": "head_armor"
+            },
+            "attach_transform": {
+              "type": "struct",
+              "struct_name": "Transform",
+              "value": {
+                "rotation": {
+                  "type": "struct",
+                  "struct_name": "Quat",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0
+                    },
+                    "w": {
+                      "type": "float",
+                      "value": 1
+                    }
+                  }
+                },
+                "translation": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 0
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 0
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 0
+                    }
+                  }
+                },
+                "scale3_d": {
+                  "type": "struct",
+                  "struct_name": "Vector",
+                  "value": {
+                    "x": {
+                      "type": "float",
+                      "value": 1
+                    },
+                    "y": {
+                      "type": "float",
+                      "value": 1
+                    },
+                    "z": {
+                      "type": "float",
+                      "value": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_sets_to_grant": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "effects_to_apply": {
+      "type": "struct",
+      "struct_name": "GameplayEffectsToApply",
+      "value": {
+        "b_apply_heal_per_second": {
+          "type": "bool",
+          "value": false
+        },
+        "heal_per_second": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_instant_heal": {
+          "type": "bool",
+          "value": false
+        },
+        "instant_heal": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_max_health_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "max_health_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_flat_armour_increase": {
+          "type": "bool",
+          "value": true
+        },
+        "flat_armour_increase": {
+          "type": "float",
+          "value": 8
+        },
+        "b_apply_flat_speed_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "flat_speed_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_max_stamina_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "max_stamina_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_stamina_regen_per_second": {
+          "type": "bool",
+          "value": false
+        },
+        "stamina_regen_per_second": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_stamina_regen_delay_reduction": {
+          "type": "bool",
+          "value": false
+        },
+        "stamina_regen_delay_reduction": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_percentage_damage_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "percentage_damage_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_flat_damage_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "flat_damage_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_life_steal_percentage": {
+          "type": "bool",
+          "value": false
+        },
+        "life_steal_percentage": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_flat_satiation": {
+          "type": "bool",
+          "value": false
+        },
+        "flat_satiation": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_satiation_per_second": {
+          "type": "bool",
+          "value": false
+        },
+        "satiation_per_second": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_radiation_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "radiation_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "b_apply_cold_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "cold_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "b_apply_heat_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "heat_immunity": {
+          "type": "bool",
+          "value": false
+        },
+        "b_apply_water_breathing": {
+          "type": "bool",
+          "value": false
+        },
+        "water_breathing": {
+          "type": "bool",
+          "value": false
+        },
+        "b_apply_carry_capacity_increase": {
+          "type": "bool",
+          "value": false
+        },
+        "carry_capacity_increase": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_tool_durability_multiplier": {
+          "type": "bool",
+          "value": false
+        },
+        "tool_durability_multiplier": {
+          "type": "float",
+          "value": 0
+        },
+        "b_apply_xp_gain_multiplier": {
+          "type": "bool",
+          "value": false
+        },
+        "xp_gain_multiplier": {
+          "type": "float",
+          "value": 0
+        },
+        "f_gameplay_effect_with_modifiers": {
+          "type": "array",
+          "element_type": null,
+          "value": []
+        },
+        "input_mapping_config": {
+          "type": "struct",
+          "struct_name": "EquipmentInputMappingConfig",
+          "value": {
+            "input_mapping_contexts_to_add": {
+              "type": "map",
+              "key_type": null,
+              "value_type": null,
+              "value": []
+            },
+            "input_mapping_contexts_to_remove": {
+              "type": "array",
+              "element_type": null,
+              "value": []
+            },
+            "b_local_player_only": {
+              "type": "bool",
+              "value": true
+            }
+          }
+        }
+      }
+    },
+    "has_durability": {
+      "type": "bool",
+      "value": true
+    },
+    "has_ammo": {
+      "type": "bool",
+      "value": false
+    },
+    "max_ammo": {
+      "type": "int",
+      "value": 0
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Metal Armor Helmet"
+    },
+    "description": {
+      "type": "text",
+      "value": "Heavy-duty metal helmet forged from processed metal sheets."
+    },
+    "stackable": {
+      "type": "bool",
+      "value": false
+    },
+    "weight": {
+      "type": "float",
+      "value": 0.10000000149011612
+    },
+    "static_item_definition": {
+      "type": "definition_ref",
+      "class": "StaticItemDefinition",
+      "value": "FD_MetalArmorHelmet_SI"
+    },
+    "equipment_slot": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Equipment.Slot.Head"
+    },
+    "item_category_tag": {
+      "type": "gameplay_tag",
+      "value": "Entity.Inventory.Item.Category.Armour"
+    }
+  }
+}

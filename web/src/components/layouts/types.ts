@@ -86,17 +86,32 @@ export type LayoutObject = {
   };
 };
 
-/** Parsed enum value: the JSON shows enum values like
- *  `"<ELayoutActorType.PROXY_ACTOR: 0>"` or `"PROXY_ACTOR"`. This helper
- *  normalizes to our union string. */
+/** Parsed enum value: the JSON shows enum values in any of several forms:
+ *  - Python repr from the asset exporter: `"<ELayoutActorType.PROXY_ACTOR: 0>"`
+ *  - Bare UPPER_SNAKE: `"PROXY_ACTOR"`
+ *  - C++ PascalCase from the dropdown: `"ProxyActor"`
+ *  Normalize by stripping non-alphanumerics + uppercasing, then substring-match. */
 export function parseLayoutActorType(raw: string): ELayoutActorType {
-  const upper = raw.toUpperCase();
-  if (upper.includes('PROXY_ACTOR')) return 'ProxyActor';
-  if (upper.includes('LAYOUT')) return 'Layout';
-  if (upper.includes('ENEMY_SPAWN')) return 'EnemySpawnPoint';
-  if (upper.includes('LOOT_SPAWN')) return 'LootSpawnPoint';
-  if (upper.includes('VISUAL_HELPER')) return 'VisualHelper';
+  const c = (raw ?? '').toUpperCase().replace(/[^A-Z]/g, '');
+  if (c.includes('PROXYACTOR')) return 'ProxyActor';
+  if (c.includes('ENEMYSPAWN')) return 'EnemySpawnPoint';
+  if (c.includes('LOOTSPAWN')) return 'LootSpawnPoint';
+  if (c.includes('VISUALHELPER')) return 'VisualHelper';
+  if (c.includes('LAYOUT')) return 'Layout';
   return 'ProxyActor';
+}
+
+/** Same normalization for ESearchQuery — the JSON dumps emit the Python
+ *  repr form `"<SearchQuery.HAS_ALL_EXACT: 4>"`, which doesn't match the
+ *  PascalCase union directly. Strip non-alphanumerics and substring-match. */
+export function parseSearchQuery(raw: string | undefined | null): ESearchQuery {
+  if (!raw) return 'None';
+  const c = raw.toUpperCase().replace(/[^A-Z]/g, '');
+  if (c.includes('HASANYINCLPARENTS')) return 'HasAnyInclParents';
+  if (c.includes('HASALLINCLPARENTS')) return 'HasAllInclParents';
+  if (c.includes('HASANYEXACT')) return 'HasAnyExact';
+  if (c.includes('HASALLEXACT')) return 'HasAllExact';
+  return 'None';
 }
 
 export type ResolverStatus =

@@ -1,7 +1,11 @@
 import { useLayoutEditorStore } from '../../../store/layoutEditorStore';
 import { useLayoutResolverStore } from '../../../store/layoutResolverStore';
 import { useDefinitionsStore } from '../../../store/definitionsStore';
+import { useAssetCatalogStore } from '../../../store/assetCatalogStore';
+import { useValidationStore } from '../../../store/validationStore';
 import { OutlinerRow } from './OutlinerRow';
+
+const EMPTY: never[] = [];
 
 export function Outliner() {
   const layoutKey = useLayoutEditorStore((s) => s.selectedLayoutKey);
@@ -13,6 +17,11 @@ export function Outliner() {
   const extendSelection = useLayoutEditorStore((s) => s.extendSelection);
   const resolveLayout = useLayoutResolverStore((s) => s.resolveLayout);
   const definitions = useDefinitionsStore((s) => s.definitions);
+  // Subscribe to catalogs so the outliner re-renders (and resolveLayout
+  // re-runs) once the StaticMesh catalog finishes loading async.
+  useAssetCatalogStore((s) => s.catalogs);
+  const issuesByKey = useValidationStore((s) => s.issuesByKey);
+  const layoutIssues = layoutKey ? issuesByKey.get(layoutKey) ?? EMPTY : EMPTY;
 
   if (!layoutKey) {
     return <div className="outliner-empty">No layout selected.</div>;
@@ -26,6 +35,11 @@ export function Outliner() {
 
   return (
     <div className="outliner">
+      {layoutIssues.length > 0 && (
+        <div className="outliner-issues-banner" title="Validation issues on the selected layout">
+          ⚠ {layoutIssues.length} issue{layoutIssues.length === 1 ? '' : 's'} on this layout
+        </div>
+      )}
       {resolved.map((r, i) => (
         <OutlinerRow
           key={i}

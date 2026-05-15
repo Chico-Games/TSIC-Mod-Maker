@@ -4,17 +4,19 @@
   "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/sync-base-definitions.mjs && vite",
-    "sync-defaults": "node scripts/sync-base-definitions.mjs",
-    "build": "node scripts/sync-base-definitions.mjs && tsc -b && vite build",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs && node savedload-ui-smoke.mjs",
+    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs && node savedload-ui-smoke.mjs && node layouts-ui-smoke.mjs",
     "smoke:def": "node definitions-ui-smoke.mjs",
     "smoke:loot": "node recipes-loot-ui-smoke.mjs",
     "smoke:itemsfurn": "node items-furniture-ui-smoke.mjs",
     "smoke:savedload": "node savedload-ui-smoke.mjs",
+    "smoke:layouts": "node layouts-ui-smoke.mjs",
     "test": "node scripts/run-tests.mjs",
+    "test:modio-e2e": "node scripts/run-modio-e2e.mjs",
+    "smoke:modio-ui": "node tests/modioBrowseUI.mjs",
     "data-smoke": "node data-smoke.mjs"
   },
   "dependencies": {

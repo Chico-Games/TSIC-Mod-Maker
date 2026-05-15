@@ -132,18 +132,6 @@ function buildMockPicker(initialContents) {
       await page.goto(`http://localhost:${PORT}/`);
       await page.waitForSelector('.header .file-info');
 
-      // Verify Sync button is disabled with the right tooltip BEFORE opening anything.
-      const syncBtn = page.locator('button:has-text("Sync to Unreal")');
-      await syncBtn.waitFor();
-      const disabledInitial = await syncBtn.isDisabled();
-      assert(disabledInitial, 'Sync button is disabled when no project is open');
-      const titleInitial = await syncBtn.getAttribute('title');
-      // editor may be unreachable in this test, so accept either "No project" or "Unreal Editor" reason
-      assert(
-        titleInitial && (titleInitial.includes('No project') || titleInitial.includes('Unreal Editor')),
-        `Sync tooltip is informative when blocked (got: ${titleInitial?.slice(0, 80)}…)`,
-      );
-
       // Open New Project modal.
       await page.locator('button:has-text("New project")').click();
       await page.waitForSelector('.new-project-form');
@@ -154,9 +142,8 @@ function buildMockPicker(initialContents) {
       await page.waitForSelector('.np-form-row span:has-text("MockRoot")');
       assert(true, 'Folder picker fires + folder name shown');
 
-      // Fill name + sync path.
+      // Fill name.
       await page.locator('.np-form-row input[placeholder*="TSIC Project"]').fill('My Test Project');
-      await page.locator('.np-form-row input[placeholder*="Tools"]').fill('C:/test/sync/path');
 
       // Uncheck the seed-from-bundled (faster test).
       await page.locator('.np-form-row input[type=checkbox]').uncheck();
@@ -178,22 +165,7 @@ function buildMockPicker(initialContents) {
       const parsed = JSON.parse(projectJson);
       assert(parsed.schema_version === 1, 'project.json schema_version=1');
       assert(parsed.name === 'My Test Project', 'project.json.name preserved');
-      assert(parsed.ue_sync_path === 'C:/test/sync/path', 'project.json.ue_sync_path preserved');
       assert(typeof parsed.created_at === 'string', 'project.json.created_at is a string');
-
-      // The sync path should also be reflected in the store's unrealSyncPath
-      // and thus disappear the "set path first" blocker — but Unreal isn't
-      // running in this test so we won't check the Sync button itself here.
-      // Instead, verify the gear shows the right path by opening the path
-      // editor and reading the input.
-      await page.locator('button:has-text("⚙")').click();
-      await page.waitForSelector('.path-editor input');
-      const pathVal = await page.locator('.path-editor input').inputValue();
-      assert(pathVal === 'C:/test/sync/path', `gear path editor shows the project's sync path (got: ${pathVal})`);
-
-      // Close the path editor.
-      await page.keyboard.press('Escape');
-      await page.waitForSelector('.path-editor', { state: 'hidden' });
 
       if (errors.length) {
         console.error('Console errors during test 1:');
@@ -217,7 +189,6 @@ function buildMockPicker(initialContents) {
         'project.json': JSON.stringify({
           schema_version: 1,
           name: 'Existing Project',
-          ue_sync_path: 'D:/somewhere/Definitions',
           created_at: '2025-01-01T00:00:00.000Z',
         }, null, 2),
       };
@@ -228,13 +199,6 @@ function buildMockPicker(initialContents) {
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.file-info:has-text("Project: Existing Project")');
       assert(true, 'Open project: file-info shows project name from project.json');
-
-      // Verify gear shows the project's sync path.
-      await page.locator('button:has-text("⚙")').click();
-      await page.waitForSelector('.path-editor input');
-      const pathVal = await page.locator('.path-editor input').inputValue();
-      assert(pathVal === 'D:/somewhere/Definitions', `gear shows project's sync path (got: ${pathVal})`);
-      await page.keyboard.press('Escape');
 
       if (errors.length) {
         console.error('Console errors during test 2:');
@@ -261,20 +225,6 @@ function buildMockPicker(initialContents) {
       await page.locator('button:has-text("Open project")').click();
       await page.waitForSelector('.file-info:has-text("Project: MockRoot")');
       assert(true, 'Legacy folder: file-info shows "Project: <folder name>" fallback');
-
-      // Set a sync path — should NOW write project.json (since the user
-      // is configuring a previously-legacy folder, our store auto-creates one).
-      await page.locator('button:has-text("⚙")').click();
-      await page.waitForSelector('.path-editor input');
-      await page.locator('.path-editor input').fill('E:/new/path');
-      await page.keyboard.press('Enter');
-      await page.waitForSelector('.path-editor', { state: 'hidden' });
-
-      // Did project.json get written?
-      const written = await page.evaluate(() => window._mockWrites?.['project.json'] ?? null);
-      assert(written, 'Setting sync path on a legacy folder creates project.json');
-      const meta = written ? JSON.parse(written) : {};
-      assert(meta.ue_sync_path === 'E:/new/path', `project.json.ue_sync_path matches (got: ${meta.ue_sync_path})`);
 
       if (errors.length) {
         console.error('Console errors during test 3:');

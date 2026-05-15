@@ -2848,6 +2848,16 @@ body.resizing-col * { cursor: col-resize !important; }
 .recents-name { font-weight: 500; }
 .recents-time { opacity: 0.6; font-size: 0.85em; }
 .recents-empty { padding: 0.6rem 0.8rem; opacity: 0.7; font-style: italic; }
+.recents-row { display: flex; align-items: stretch; }
+.recents-row .recents-item { flex: 1; min-width: 0; }
+.recents-delete {
+  background: none; border: none; color: inherit;
+  padding: 0 0.6rem; cursor: pointer;
+  opacity: 0; transition: opacity 100ms;
+  font-size: 1.1em;
+}
+.recents-row:hover .recents-delete { opacity: 0.55; }
+.recents-delete:hover { opacity: 1 !important; color: var(--error, #f88); }
 .recents-section-label {
   padding: 0.4rem 0.8rem 0.2rem;
   font-size: 0.75em;
@@ -2913,30 +2923,59 @@ body.resizing-col * { cursor: col-resize !important; }
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
   margin: 2px 0 0 0;
-  padding: 4px 0;
-  list-style: none;
+  padding: 4px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 4px;
-  max-height: 240px;
-  overflow-y: auto;
   z-index: 10;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex; flex-direction: column;
+  width: 28em;
+  max-width: 90vw;
+  height: 22em;
+  max-height: 60vh;
 }
-.tagpicker-menu li {
-  padding: 4px 8px;
+.tagpicker-menu-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5em;
+  padding: 0 0.25em 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.tagpicker-menu-status { font-size: 0.85em; opacity: 0.7; }
+.tagpicker-view-toggle { display: inline-flex; gap: 0; }
+.tagpicker-view-toggle button {
+  background: var(--panel-2, #2a2a2a);
+  border: 1px solid var(--border, #444);
+  color: inherit;
+  padding: 0.1em 0.4em;
   cursor: pointer;
+  font-size: 0.9em;
 }
-.tagpicker-menu li:hover {
+.tagpicker-view-toggle button:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.tagpicker-view-toggle button:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; }
+.tagpicker-view-toggle button.active { background: var(--accent, #5fb3ff); color: #0a0d12; }
+.tagpicker-vlist { flex: 1; min-height: 0; }
+.tagpicker-empty { padding: 0.5em; opacity: 0.6; font-style: italic; font-size: 0.9em; }
+.tagpicker-row, .tagpicker-tree-branch, .tagpicker-tree-leaf {
+  display: flex; align-items: center; gap: 0.4em;
+  width: 100%;
+  padding: 0.15em 0.4em;
+  background: transparent; border: none; color: inherit;
+  cursor: pointer; text-align: left;
+  font: inherit;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tagpicker-row code, .tagpicker-tree-leaf code {
+  background: transparent; padding: 0; font-size: 12px;
+}
+.tagpicker-row:hover, .tagpicker-tree-branch:hover, .tagpicker-tree-leaf:hover {
   background: var(--panel-2);
 }
-.tagpicker-menu li code {
-  background: transparent;
-  padding: 0;
-  font-size: 12px;
-}
+.tagpicker-tree-caret { width: 1em; display: inline-block; opacity: 0.7; }
+.tagpicker-tree-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.tagpicker-tree-count { opacity: 0.6; font-size: 0.8em; }
 
 /* ───────────── AssetRefPicker (catalog-backed soft_asset_ref dropdown) ───────────── */
 .assetrefpicker { position: relative; display: inline-block; min-width: 16em; }
@@ -2957,7 +2996,7 @@ body.resizing-col * { cursor: col-resize !important; }
   cursor: pointer; padding: 0;
 }
 .assetrefpicker-pop {
-  position: absolute; top: 100%; left: 0; right: 0;
+  position: absolute; top: 100%; left: 0;
   margin-top: 0.25em;
   background: var(--panel, #1a1a1a);
   border: 1px solid var(--border, #444);
@@ -2965,29 +3004,52 @@ body.resizing-col * { cursor: col-resize !important; }
   padding: 0.25em;
   z-index: 20;
   display: flex; flex-direction: column;
-  max-height: 24em;
+  width: 32em;
+  max-width: 90vw;
+  height: 28em;
+  max-height: 70vh;
+}
+.assetrefpicker-toolbar {
+  display: flex; gap: 0.25em; align-items: stretch;
+  margin-bottom: 0.25em;
 }
 .assetrefpicker-search {
   padding: 0.25em 0.4em;
   background: transparent;
   border: 1px solid var(--border, #444);
   border-radius: 0.25em;
-  margin-bottom: 0.25em;
+  flex: 1; min-width: 0;
 }
-.assetrefpicker-status { font-size: 0.85em; opacity: 0.7; padding: 0.1em 0.4em; }
-.assetrefpicker-list {
-  list-style: none; margin: 0; padding: 0;
-  overflow-y: auto; flex: 1;
-}
-.assetrefpicker-list li {
-  display: flex; align-items: center; gap: 0.5em;
-  padding: 0.25em 0.4em;
+.assetrefpicker-view-toggle { display: inline-flex; gap: 0; }
+.assetrefpicker-view-toggle button {
+  background: var(--panel-2, #2a2a2a);
+  border: 1px solid var(--border, #444);
+  color: inherit;
+  padding: 0.15em 0.5em;
   cursor: pointer;
+  font-size: 0.95em;
 }
-.assetrefpicker-list li:hover {
-  background: var(--def-bg-hover, #2a2a2a);
+.assetrefpicker-view-toggle button:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.assetrefpicker-view-toggle button:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; }
+.assetrefpicker-view-toggle button.active { background: var(--accent, #5fb3ff); color: #0a0d12; }
+.assetrefpicker-status { font-size: 0.85em; opacity: 0.7; padding: 0.1em 0.4em; }
+.assetrefpicker-vlist { flex: 1; min-height: 0; }
+.assetrefpicker-row, .assetrefpicker-tree-folder, .assetrefpicker-tree-entry {
+  display: flex; align-items: center; gap: 0.4em;
+  width: 100%;
+  padding: 0.2em 0.4em;
+  background: transparent; border: none; color: inherit;
+  cursor: pointer; text-align: left;
+  font: inherit;
 }
-.assetrefpicker-list-folder { opacity: 0.6; font-size: 0.85em; }
+.assetrefpicker-row:hover, .assetrefpicker-tree-folder:hover, .assetrefpicker-tree-entry:hover {
+  background: var(--panel-2, #2a2a2a);
+}
+.assetrefpicker-row-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.assetrefpicker-row-folder { opacity: 0.55; font-size: 0.8em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; }
+.assetrefpicker-tree-caret { width: 1em; display: inline-block; opacity: 0.7; }
+.assetrefpicker-tree-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.assetrefpicker-tree-count { opacity: 0.6; font-size: 0.8em; }
 .assetrefpicker-empty { padding: 0.25em 0.4em; opacity: 0.6; font-style: italic; }
 
 .layouts-tab { display: flex; flex-direction: column; height: 100%; }

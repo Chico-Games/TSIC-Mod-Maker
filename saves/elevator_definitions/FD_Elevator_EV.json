@@ -1,0 +1,635 @@
+{
+  "id": "FD_Elevator_EV",
+  "asset_path": "/Game/Furniture/Elevators/Furniture/FD_Elevator_EV",
+  "class": "UElevatorDefinition",
+  "parent_classes": [
+    "UInteractableFurnitureDefinition",
+    "UFurnitureWithComponentsDefinition",
+    "UDamageableFurnitureDefinition",
+    "UFurnitureDefinition",
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "floor_offset": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": 1000
+        },
+        "y": {
+          "type": "float",
+          "value": 0
+        },
+        "z": {
+          "type": "float",
+          "value": 0
+        }
+      }
+    },
+    "left_door_closed_transform": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": -69.47121816067943
+            },
+            "y": {
+              "type": "float",
+              "value": 129.8271629051397
+            },
+            "z": {
+              "type": "float",
+              "value": 5.0937941864503955e-8
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0299999713897705
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0299999713897705
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0299999713897705
+            }
+          }
+        }
+      }
+    },
+    "right_door_closed_transform": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 2.940581173321605
+            },
+            "y": {
+              "type": "float",
+              "value": 128.42947969643762
+            },
+            "z": {
+              "type": "float",
+              "value": 1.4867396203044336e-10
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1.0299999713897705
+            },
+            "y": {
+              "type": "float",
+              "value": 1.0299999713897705
+            },
+            "z": {
+              "type": "float",
+              "value": 1.0299999713897705
+            }
+          }
+        }
+      }
+    },
+    "left_door_open_offset": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": -100
+        },
+        "y": {
+          "type": "float",
+          "value": 0
+        },
+        "z": {
+          "type": "float",
+          "value": 0
+        }
+      }
+    },
+    "right_door_open_offset": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": 100
+        },
+        "y": {
+          "type": "float",
+          "value": 0
+        },
+        "z": {
+          "type": "float",
+          "value": 0
+        }
+      }
+    },
+    "doorway_volume_transform": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 6.732080497506843e-7
+            },
+            "y": {
+              "type": "float",
+              "value": 116.89832708914346
+            },
+            "z": {
+              "type": "float",
+              "value": 119.56475532806456
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1
+            },
+            "y": {
+              "type": "float",
+              "value": 1
+            },
+            "z": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        }
+      }
+    },
+    "doorway_volume_extent": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": 70
+        },
+        "y": {
+          "type": "float",
+          "value": 15
+        },
+        "z": {
+          "type": "float",
+          "value": 115
+        }
+      }
+    },
+    "interior_volume_transform": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0.000001330311712344212
+            },
+            "y": {
+              "type": "float",
+              "value": -5.938163252244941
+            },
+            "z": {
+              "type": "float",
+              "value": 130.74697583104052
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1
+            },
+            "y": {
+              "type": "float",
+              "value": 1
+            },
+            "z": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        }
+      }
+    },
+    "interior_volume_extent": {
+      "type": "struct",
+      "struct_name": "Vector",
+      "value": {
+        "x": {
+          "type": "float",
+          "value": 115
+        },
+        "y": {
+          "type": "float",
+          "value": 110
+        },
+        "z": {
+          "type": "float",
+          "value": 130
+        }
+      }
+    },
+    "call_sound": {
+      "type": "soft_asset_ref",
+      "class": "SoundWave",
+      "value": "/Game/Characters/Enemies/Janitor/Animations/Audio/Wavs/Gore_Slime_Creature_Meat_Blood_Medium_Movement_Various09.Gore_Slime_Creature_Meat_Blood_Medium_Movement_Various09"
+    },
+    "blocked_sound": {
+      "type": "soft_asset_ref",
+      "class": "SoundWave",
+      "value": "/Game/Fab/HandDrawingDemo/Demo/Bot/Sounds/S_step_01.S_step_01"
+    },
+    "door_open_sound": {
+      "type": "soft_asset_ref",
+      "class": "SoundWave",
+      "value": "/Game/Fab/HandDrawingDemo/Demo/Bot/Sounds/S_step_07.S_step_07"
+    },
+    "moving_sound": {
+      "type": "soft_asset_ref",
+      "class": "SoundWave",
+      "value": "/Game/Characters/Enemies/Janitor/Animations/Audio/Wavs/Pressing_Down_Sizzling_Burger.Pressing_Down_Sizzling_Burger"
+    },
+    "arrived_sound": {
+      "type": "soft_asset_ref",
+      "class": "SoundWave",
+      "value": "/Game/Shared/Audio/Wavs/Footsteps/Concrete/SW_Concrete_Walk_05.SW_Concrete_Walk_05"
+    },
+    "cab_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Fab/Office80s/Models/Walls/SM_Elevator.SM_Elevator"
+    },
+    "door_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Fab/Office80s/Models/Walls/SM_ElevatorDoors.SM_ElevatorDoors"
+    },
+    "interaction_hold_time": {
+      "type": "float",
+      "value": 0
+    },
+    "interaction_prompt_text": {
+      "type": "text",
+      "value": "Call Elevator"
+    },
+    "has_static_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_audio": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_lights": {
+      "type": "bool",
+      "value": false
+    },
+    "has_static_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_on_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "has_toggled_off_vfx": {
+      "type": "bool",
+      "value": false
+    },
+    "starting_health": {
+      "type": "float",
+      "value": 100
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1
+            },
+            "y": {
+              "type": "float",
+              "value": 1
+            },
+            "z": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        }
+      }
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": false
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "casts_shadow": {
+      "type": "bool",
+      "value": false
+    },
+    "collision_profile_name": {
+      "type": "struct",
+      "struct_name": "CollisionProfileName",
+      "value": {
+        "name": {
+          "type": "name",
+          "value": "Furniture"
+        }
+      }
+    },
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "destruction_impulse_strength": {
+      "type": "float",
+      "value": 0
+    },
+    "door_anim_duration": {
+      "type": "float",
+      "value": 0.800000011920929
+    },
+    "door_timeout_duration": {
+      "type": "float",
+      "value": 2.5
+    },
+    "drag_angular_damping": {
+      "type": "float",
+      "value": 5
+    },
+    "drag_linear_damping": {
+      "type": "float",
+      "value": 5
+    },
+    "drag_mass": {
+      "type": "float",
+      "value": 1
+    },
+    "drag_max_angular_velocity": {
+      "type": "float",
+      "value": 90
+    },
+    "drag_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "friction": {
+      "type": "float",
+      "value": 0.699999988079071
+    },
+    "furniture_armour": {
+      "type": "int",
+      "value": 2
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "release_angular_damping": {
+      "type": "float",
+      "value": 0.05000000074505806
+    },
+    "release_linear_damping": {
+      "type": "float",
+      "value": 0.009999999776482582
+    },
+    "restitution": {
+      "type": "float",
+      "value": 0.30000001192092896
+    },
+    "teleport_delay": {
+      "type": "float",
+      "value": 1.5
+    },
+    "travel_duration": {
+      "type": "float",
+      "value": 2
+    }
+  }
+}

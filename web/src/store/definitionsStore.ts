@@ -218,6 +218,14 @@ export interface DefinitionsStore {
   refreshProjectsInRoot: () => Promise<void>;
   /** Open the subfolder `folderName` under the projects-root as the current project. */
   openProjectInRoot: (folderName: string) => Promise<void>;
+  /** Recursively delete `folderName` from the projects-root and refresh the
+   *  listing. Caller is responsible for confirming with the user. */
+  deleteProjectInRoot: (folderName: string) => Promise<void>;
+  /** Delete the recent project's folder from disk (best-effort via
+   *  FileSystemDirectoryHandle.remove) and remove it from the recents list.
+   *  Falls back to forget-only when the browser doesn't expose `.remove()`
+   *  or the handle has been lost. Caller is responsible for confirming. */
+  deleteRecent: (handleName: string) => Promise<void>;
   /** Walk every loaded asset for `definition_ref` envelopes whose
    *  value is set but doesn't resolve. For each missing target whose
    *  class is known, mint a blank asset of that class. Returns the
@@ -1982,6 +1990,61 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     } catch (e) {
       console.warn('[recents] could not record openProjectInRoot', e);
     }
+  },
+
+  deleteProjectInRoot: async (folderName) => {
+    const root = get().projectsRootHandle;
+    if (!root) {
+      set({ toast: { kind: 'error', text: 'No projects root configured.' } });
+      return;
+    }
+    const ok = await ensurePermission(root, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for projects root.' } });
+      return;
+    }
+    try {
+      await (root as any).removeEntry(folderName, { recursive: true });
+    } catch (e) {
+      set({ toast: { kind: 'error', text: `Could not delete ${folderName}: ${(e as Error).message}` } });
+      return;
+    }
+    // If the deleted folder is the currently open project, drop it.
+    if (get().directoryHandle?.name === folderName) {
+      set({ directoryHandle: null });
+    }
+    await removeRecent(folderName);
+    await get().refreshRecents();
+    await get().refreshProjectsInRoot();
+    set({ toast: { kind: 'info', text: `Deleted ${folderName}` } });
+  },
+
+  deleteRecent: async (handleName) => {
+    if (handleName === 'starter-project') return;
+    const all = await listRecents();
+    const entry = all.find((r) => r.handleName === handleName);
+    const handle = entry?.handle as any;
+    let diskRemoved = false;
+    if (handle && typeof handle.remove === 'function') {
+      try {
+        const ok = await ensurePermission(handle, 'readwrite');
+        if (ok) {
+          await handle.remove({ recursive: true });
+          diskRemoved = true;
+        }
+      } catch (e) {
+        console.warn('[recents] handle.remove failed', e);
+      }
+    }
+    await removeRecent(handleName);
+    if (get().directoryHandle?.name === handleName) set({ directoryHandle: null });
+    await get().refreshRecents();
+    await get().refreshProjectsInRoot();
+    set({
+      toast: diskRemoved
+        ? { kind: 'info', text: `Deleted ${entry?.name ?? handleName}` }
+        : { kind: 'info', text: `Removed ${entry?.name ?? handleName} from recents (folder not deleted)` },
+    });
   },
 
   reload: async () => {

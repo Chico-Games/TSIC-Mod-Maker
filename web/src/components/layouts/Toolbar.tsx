@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLayoutEditorStore } from '../../store/layoutEditorStore';
 import { useDefinitionsStore } from '../../store/definitionsStore';
+import { useValidationStore } from '../../store/validationStore';
 import { TagPicker } from '../pickers/TagPicker';
+import { LayoutPicker } from './LayoutPicker';
 
 function defaultLayoutObject(actorType: string) {
   return {
@@ -67,20 +69,26 @@ export function Toolbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, [setGizmoMode]);
 
-  const layouts = [...definitions.values()]
-    .filter((d) => d.json?.class === 'ULayoutDefinition' || d.json?.class === 'LayoutDefinition')
-    .map((d) => ({ key: `${d.folder}/${d.id}`, label: d.id }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const issuesByKey = useValidationStore((s) => s.issuesByKey);
+  const layouts = useMemo(() => {
+    return [...definitions.values()]
+      .filter((d) => d.json?.class === 'ULayoutDefinition' || d.json?.class === 'LayoutDefinition')
+      .map((d) => ({
+        key: `${d.folder}/${d.id}`,
+        label: d.id,
+        tags: (d.json?.properties?.gameplay_tags?.value as string[] | undefined) ?? [],
+        issueCount: issuesByKey.get(`${d.folder}/${d.id}`)?.length ?? 0,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [definitions, issuesByKey]);
 
   return (
     <div className="layouts-toolbar">
-      <select
+      <LayoutPicker
         value={selectedLayoutKey ?? ''}
-        onChange={(e) => setLayout(e.target.value || null)}
-      >
-        <option value="">— pick a layout —</option>
-        {layouts.map((opt) => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
-      </select>
+        options={layouts}
+        onChange={(k) => setLayout(k || null)}
+      />
       <button
         disabled={!isDirty || !selectedLayoutKey}
         onClick={() => selectedLayoutKey && saveOne(selectedLayoutKey)}
@@ -119,11 +127,15 @@ export function Toolbar() {
         <button className={gizmoMode === 'rotate' ? 'active' : ''} onClick={() => setGizmoMode('rotate')}>Rotate (E)</button>
         <button className={gizmoMode === 'scale' ? 'active' : ''} onClick={() => setGizmoMode('scale')}>Scale (R)</button>
       </div>
-      <div className="tile-tag-override">
+      <div
+        className="tile-tag-override"
+        title="Overrides the gameplay tags the resolver uses as the tile context for this preview. When empty, the layout's own `gameplay_tags` are used as the fallback (matching Unreal's ALayoutLevelScriptActor.TestGameplayTags). Restricted to Tile.* tags."
+      >
         <span className="label">Tile tags override:</span>
         <TagPicker
           multi
           value={tileTagsOverride}
+          categories="Tile"
           onChange={(v) => setTileTagsOverride(v as string[])}
         />
       </div>

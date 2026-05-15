@@ -1,0 +1,83 @@
+{
+  "id": "LD_PlasticLampLoot",
+  "asset_path": "/Game/Furniture/Lights/Loot/LD_PlasticLampLoot",
+  "class": "ULootDefinition",
+  "parent_classes": [
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "items_to_drop": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "ItemToDrop",
+        "fields": {
+          "item_to_drop": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition"
+          },
+          "count": {
+            "type": "int"
+          },
+          "chance_to_drop": {
+            "type": "float"
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_PlasticScrap_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_ExtensionCord_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

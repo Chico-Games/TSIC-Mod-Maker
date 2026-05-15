@@ -1,0 +1,85 @@
+{
+  "id": "RD_DowelBat_CR",
+  "asset_path": "/Game/Items/Equipment/Weapons/DowelBat/Recipes/RD_DowelBat_CR",
+  "class": "UCraftRecipeDefinition",
+  "parent_classes": [
+    "URecipeDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "recipe_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "input": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "CraftingMaterialDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_WoodenDowel_CM"
+          },
+          "value": {
+            "type": "int",
+            "value": 4
+          }
+        },
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_Tape_CM"
+          },
+          "value": {
+            "type": "int",
+            "value": 2
+          }
+        }
+      ]
+    },
+    "output": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "EquippableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "EquippableDefinition",
+            "value": "ID_DowelBat_EQ"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "duration": {
+      "type": "float",
+      "value": 3
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

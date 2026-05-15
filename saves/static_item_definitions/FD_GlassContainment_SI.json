@@ -1,0 +1,76 @@
+{
+  "id": "FD_GlassContainment_SI",
+  "asset_path": "/Game/Furniture/ScientificDevices/Item/FD_GlassContainment_SI",
+  "class": "UStaticItemDefinition",
+  "parent_classes": [
+    "UFurnitureDefinition",
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "item_definition": {
+      "type": "definition_ref",
+      "class": "ConstructableItemDefinition",
+      "value": "ID_GlassContainment_CI"
+    },
+    "loot_mesh_size": {
+      "type": "enum",
+      "enum_name": "LootMeshSize",
+      "value": "<LootMeshSize.SMALL: 0>"
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "casts_shadow": {
+      "type": "bool",
+      "value": false
+    },
+    "collision_profile_name": {
+      "type": "struct",
+      "struct_name": "CollisionProfileName",
+      "value": {
+        "name": {
+          "type": "name",
+          "value": "Furniture"
+        }
+      }
+    },
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

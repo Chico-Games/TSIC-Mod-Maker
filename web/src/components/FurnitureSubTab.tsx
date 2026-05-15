@@ -13,6 +13,8 @@ import { UpgradeRecipeSection } from './UpgradeRecipeSection';
 import { buildUpgradeChains, familyKey as nameFamilyKey } from '../upgradeChains';
 import { AssetTitle } from './AssetTitle';
 import { SearchBox } from './SearchBox';
+import { IssueDot } from './IssueDot';
+import { useValidationStore } from '../store/validationStore';
 import { inferAcceptedFolders } from '../inferFolders';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
@@ -359,6 +361,8 @@ function FurnitureFamilyEntry({
   onDeleteTier: (k: DefinitionsKey) => void;
 }) {
   const theme = getFolderTheme(FURNITURE_FOLDER);
+  const issuesByKey = useValidationStore((s) => s.issuesByKey);
+  const familyIssues = members.flatMap((m) => issuesByKey.get(m.item.key) ?? []);
   const selectedMember = members.find((m) => m.item.key === selectedKey);
   const familySelected = !!selectedMember;
   const isChain = members.length > 1;
@@ -385,6 +389,7 @@ function FurnitureFamilyEntry({
           <span className="label">
             <HighlightedText text={familyName} ranges={headLabelHit.ranges} />
           </span>
+          <IssueDot issues={familyIssues} />
         </button>
         <button
           className="rail-inline-add"
@@ -392,9 +397,8 @@ function FurnitureFamilyEntry({
           title="Add an upgraded tier (mints next furniture + linking recipe)"
         >＋</button>
       </div>
-      {isChain && (
-        <div className="rail-family-tiers">
-          {members.map((m) => {
+      <div className="rail-family-tiers">
+        {members.map((m) => {
             const tier = m.item.tier;
             const label = tier > 0 ? `T${tier}` : 'base';
             const isSel = selectedKey === m.item.key;
@@ -421,8 +425,7 @@ function FurnitureFamilyEntry({
               </span>
             );
           })}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

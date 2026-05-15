@@ -1,0 +1,73 @@
+{
+  "id": "RD_Toilet_CN",
+  "asset_path": "/Game/Furniture/Bathroom/Construction/RD_Toilet_CN",
+  "class": "UFurnitureUpgradeRecipe",
+  "parent_classes": [
+    "URecipeDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "recipe_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "input": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "CraftingMaterialDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_ConcreteBag_CM"
+          },
+          "value": {
+            "type": "int",
+            "value": 10
+          }
+        },
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_MetalScrews_CM"
+          },
+          "value": {
+            "type": "int",
+            "value": 3
+          }
+        }
+      ]
+    },
+    "output": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "duration": {
+      "type": "float",
+      "value": 2.5
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "upgrade_tier": {
+      "type": "int",
+      "value": 4
+    },
+    "upgraded_furniture_definition": {
+      "type": "definition_ref",
+      "class": "DamageableFurnitureDefinition",
+      "value": "FD_Urinal_Constructed_DF"
+    }
+  }
+}

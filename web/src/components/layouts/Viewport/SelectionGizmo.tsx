@@ -22,11 +22,18 @@ export function SelectionGizmo() {
     const t = lo.value.transform.value;
     targetRef.current.position.set(
       t.translation.value.x.value, t.translation.value.y.value, t.translation.value.z.value);
-    targetRef.current.rotation.set(
-      (t.rotation.value.pitch?.value ?? 0) * Math.PI / 180,
-      (t.rotation.value.yaw?.value ?? 0) * Math.PI / 180,
-      (t.rotation.value.roll?.value ?? 0) * Math.PI / 180,
-    );
+    const r = t.rotation;
+    if (r.struct_name === 'Quat' && r.value?.w !== undefined) {
+      targetRef.current.quaternion.set(
+        r.value.x?.value ?? 0, r.value.y?.value ?? 0, r.value.z?.value ?? 0, r.value.w?.value ?? 1,
+      );
+    } else {
+      targetRef.current.rotation.set(
+        (r.value?.pitch?.value ?? 0) * Math.PI / 180,
+        (r.value?.yaw?.value ?? 0) * Math.PI / 180,
+        (r.value?.roll?.value ?? 0) * Math.PI / 180,
+      );
+    }
     targetRef.current.scale.set(
       t.scale3_d.value.x.value, t.scale3_d.value.y.value, t.scale3_d.value.z.value);
   }, [layoutKey, selected, definitions]);
@@ -46,9 +53,16 @@ export function SelectionGizmo() {
     next.value.translation.value.x.value = o.position.x;
     next.value.translation.value.y.value = o.position.y;
     next.value.translation.value.z.value = o.position.z;
-    next.value.rotation.value.pitch.value = o.rotation.x * 180 / Math.PI;
-    next.value.rotation.value.yaw.value = o.rotation.y * 180 / Math.PI;
-    next.value.rotation.value.roll.value = o.rotation.z * 180 / Math.PI;
+    if (next.value.rotation.struct_name === 'Quat') {
+      next.value.rotation.value.x.value = o.quaternion.x;
+      next.value.rotation.value.y.value = o.quaternion.y;
+      next.value.rotation.value.z.value = o.quaternion.z;
+      next.value.rotation.value.w.value = o.quaternion.w;
+    } else {
+      next.value.rotation.value.pitch.value = o.rotation.x * 180 / Math.PI;
+      next.value.rotation.value.yaw.value = o.rotation.y * 180 / Math.PI;
+      next.value.rotation.value.roll.value = o.rotation.z * 180 / Math.PI;
+    }
     next.value.scale3_d.value.x.value = o.scale.x;
     next.value.scale3_d.value.y.value = o.scale.y;
     next.value.scale3_d.value.z.value = o.scale.z;

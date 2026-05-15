@@ -1,0 +1,241 @@
+{
+  "id": "FD_Table_11_DF",
+  "asset_path": "/Game/Furniture/Tables/Furniture/FD_Table_11_DF",
+  "class": "UDamageableFurnitureDefinition",
+  "parent_classes": [
+    "UFurnitureDefinition",
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "starting_health": {
+      "type": "float",
+      "value": 43
+    },
+    "destructible_collection": {
+      "type": "soft_asset_ref",
+      "class": "GeometryCollection",
+      "value": "/Game/Furniture/Tables/GeometryCollections/GCS_Table04.GCS_Table04"
+    },
+    "loot_dropped_on_death": {
+      "type": "array",
+      "element_type": {
+        "type": "definition_ref",
+        "class": "LootDefinition"
+      },
+      "value": [
+        {
+          "type": "definition_ref",
+          "class": "LootDefinition",
+          "value": "LD_WoodAndMetalTableLoot"
+        }
+      ]
+    },
+    "constructable_item_to_grant": {
+      "type": "definition_ref",
+      "class": "ConstructableItemDefinition",
+      "value": "ID_Table_11_CI"
+    },
+    "deconstruction_tier": {
+      "type": "int",
+      "value": 0
+    },
+    "collision_box_data": {
+      "type": "soft_asset_ref",
+      "class": "CollisionBoxData",
+      "value": "/Game/Furniture/Tables/Construction/CBD_Table_11_Constructed.CBD_Table_11_Constructed"
+    },
+    "building_base": {
+      "type": "struct",
+      "struct_name": "Transform",
+      "value": {
+        "rotation": {
+          "type": "struct",
+          "struct_name": "Quat",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            },
+            "w": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        },
+        "translation": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 0
+            },
+            "y": {
+              "type": "float",
+              "value": 0
+            },
+            "z": {
+              "type": "float",
+              "value": 0
+            }
+          }
+        },
+        "scale3_d": {
+          "type": "struct",
+          "struct_name": "Vector",
+          "value": {
+            "x": {
+              "type": "float",
+              "value": 1
+            },
+            "y": {
+              "type": "float",
+              "value": 1
+            },
+            "z": {
+              "type": "float",
+              "value": 1
+            }
+          }
+        }
+      }
+    },
+    "upgrade_recipe": {
+      "type": "definition_ref",
+      "class": "FurnitureUpgradeRecipe",
+      "value": "RD_WoodenTable_CN"
+    },
+    "is_draggable": {
+      "type": "bool",
+      "value": true
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Table"
+    },
+    "description": {
+      "type": "text",
+      "value": "A table from the store floor."
+    },
+    "level": {
+      "type": "int",
+      "value": 1
+    },
+    "default_world_gen_gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "meta_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "is_pingable": {
+      "type": "bool",
+      "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Furniture/Tables/Meshes/SM_Table04.SM_Table04"
+    },
+    "casts_shadow": {
+      "type": "bool",
+      "value": true
+    },
+    "collision_profile_name": {
+      "type": "struct",
+      "struct_name": "CollisionProfileName",
+      "value": {
+        "name": {
+          "type": "name",
+          "value": "Furniture"
+        }
+      }
+    },
+    "random_material_overrides": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "loot_positions": {
+      "type": "array",
+      "element_type": null,
+      "value": []
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 6000
+    },
+    "destruction_impulse_strength": {
+      "type": "float",
+      "value": 0
+    },
+    "drag_angular_damping": {
+      "type": "float",
+      "value": 5
+    },
+    "drag_linear_damping": {
+      "type": "float",
+      "value": 5
+    },
+    "drag_mass": {
+      "type": "float",
+      "value": 1
+    },
+    "drag_max_angular_velocity": {
+      "type": "float",
+      "value": 90
+    },
+    "drag_tier": {
+      "type": "int",
+      "value": 1
+    },
+    "friction": {
+      "type": "float",
+      "value": 0.699999988079071
+    },
+    "furniture_armour": {
+      "type": "int",
+      "value": 2
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": [
+        "Tile.Biome.SCPBase",
+        "Entity.RandomGeneration.CanBeRandom",
+        "Entity.RandomGeneration.FurnitureType.Table",
+        "Entity.RandomGeneration.Materials.Wood",
+        "Entity.RandomGeneration.FurnitureCategory.ScienceLab",
+        "Entity.RandomGeneration.FurnitureCategory.Office",
+        "Entity.RandomGeneration.Size.Large"
+      ]
+    },
+    "release_angular_damping": {
+      "type": "float",
+      "value": 0.05000000074505806
+    },
+    "release_linear_damping": {
+      "type": "float",
+      "value": 0.009999999776482582
+    },
+    "restitution": {
+      "type": "float",
+      "value": 0.30000001192092896
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "ARR_DefaultCustomerRecipes",
+  "asset_path": "/Game/Characters/Customer/Recipes/ARR_DefaultCustomerRecipes",
+  "class": "UAvailableRecipeRulesDefinition",
+  "parent_classes": [
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "production_machine_rules": {
+      "type": "struct",
+      "struct_name": "ProductionMachineRules",
+      "value": {
+        "recipes": {
+          "type": "array",
+          "element_type": {
+            "type": "definition_ref",
+            "class": "CraftRecipeDefinition"
+          },
+          "value": [
+            {
+              "type": "definition_ref",
+              "class": "CraftRecipeDefinition",
+              "value": "RD_Tier1Screwdriver_CR"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

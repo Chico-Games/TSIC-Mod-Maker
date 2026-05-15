@@ -16,8 +16,7 @@ import { RecipeBuilderView, isRecipeFolder } from './RecipeBuilderView';
 //   left: folder list (one per definition class)
 //   middle: file list within selected folder
 //   right: schema-aware editor for the selected file
-// A toolbar at the top covers picking the path, reload, save, save-all,
-// and export.
+// Pick-directory, auto-load, save and export live in the Header / Settings.
 
 export function DefinitionsTab() {
   const {
@@ -28,22 +27,15 @@ export function DefinitionsTab() {
     selectedFolder,
     selectedKey,
     filter,
-    autoLoadEnabled,
     loading,
-    loadedAt,
-    pickDirectory,
-    forgetDirectory,
     reload,
     selectFolder,
     selectDefinition,
     setFilter,
-    setAutoLoad,
     saveOne,
-    saveAllDirty,
     revertOne,
     updateValueAtPath,
     replaceJson,
-    exportZip,
     findKeyById,
     createDefinition,
     createDefinitionForClass,
@@ -59,7 +51,6 @@ export function DefinitionsTab() {
     outgoingReferences,
     incomingReferences,
   } = useDefinitionsStore();
-  const dataSource = useDefinitionsStore((s) => s.dataSource);
 
   const classNodes = useAppSchemaStore((s) => s.classNodes);
   const getPropertyMeta = useAppSchemaStore((s) => s.getPropertyMeta);
@@ -129,80 +120,11 @@ export function DefinitionsTab() {
     return counts;
   }, [issuesByKey, definitions]);
 
-  const totalDirty = dirty.size;
   const totalDefs = definitions.size;
   const selected = selectedKey ? definitions.get(selectedKey) : null;
-  const selectedDirty = selectedKey ? dirty.has(selectedKey) : false;
-
-  const onExport = async () => {
-    try {
-      const blob = await exportZip();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'tsic-definitions.zip';
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const headerLabel = dataSource ? `Target: ${dataSource.displayName}` : 'No directory selected';
 
   return (
     <div className="def-layout">
-      <div className="def-toolbar">
-        <span className={`def-target ${directoryHandle ? '' : 'def-target-none'}`}>
-          {headerLabel}
-        </span>
-        <button onClick={pickDirectory} disabled={!fsaSupported} title="Pick the Definitions root directory">
-          {directoryHandle ? 'Change…' : 'Pick directory…'}
-        </button>
-        {directoryHandle && (
-          <button onClick={reload} disabled={loading}>
-            {loading ? 'Loading…' : 'Reload'}
-          </button>
-        )}
-        {directoryHandle && (
-          <button onClick={forgetDirectory} title="Stop auto-loading from this path">
-            Forget path
-          </button>
-        )}
-        <label className="def-autoload" title="Auto-load on app start">
-          <input
-            type="checkbox"
-            checked={autoLoadEnabled}
-            onChange={(e) => setAutoLoad(e.target.checked)}
-          />
-          Auto-load
-        </label>
-        <div className="spacer" />
-        <span className="def-stats">
-          {totalDefs} files · {Object.keys(folderCounts).length} folders
-          {totalDirty > 0 && <span className="def-dirty"> · {totalDirty} unsaved</span>}
-          {loadedAt && <span className="def-loaded"> · loaded {timeAgo(loadedAt)}</span>}
-        </span>
-        <button
-          onClick={() => selectedKey && saveOne(selectedKey)}
-          disabled={!selectedDirty || (dataSource?.readOnly ?? true)}
-          title={dataSource?.readOnly ? 'Read-only source — use Save As' : undefined}
-        >
-          Save current
-        </button>
-        <button
-          onClick={() => saveAllDirty()}
-          disabled={totalDirty === 0 || (dataSource?.readOnly ?? true)}
-          className={totalDirty > 0 && !dataSource?.readOnly ? 'primary' : ''}
-          title={dataSource?.readOnly ? 'Read-only source — use Save As' : undefined}
-        >
-          Save all ({totalDirty})
-        </button>
-        <button onClick={onExport} disabled={totalDefs === 0}>
-          Export ZIP
-        </button>
-      </div>
-
       {directoryHandle && totalDefs > 0 && (
         <div className="def-toolbar def-subbar">
           <input
@@ -487,7 +409,7 @@ export function DefinitionsTab() {
               <DefinitionEditor
                 key={selectedKey ?? ''}
                 rec={selected}
-                isDirty={selectedDirty}
+                isDirty={selectedKey ? dirty.has(selectedKey) : false}
                 showAllFields={showAllFields}
                 onChange={(path, value) => updateValueAtPath(selectedKey!, path, value)}
                 onReplace={(json) => replaceJson(selectedKey!, json)}
@@ -567,15 +489,6 @@ function prettifyFolder(folder: string): string {
   return folder
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function timeAgo(ts: number): string {
-  const s = Math.max(1, Math.floor((Date.now() - ts) / 1000));
-  if (s < 60) return `${s}s ago`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  return `${h}h ago`;
 }
 
 function DefinitionEditor({

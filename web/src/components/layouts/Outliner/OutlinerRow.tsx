@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { useEffect, useRef, type MouseEvent } from 'react';
 import { TypeIcon } from './icons';
 import type { ResolvedActor } from '../types';
 
@@ -30,12 +30,17 @@ function deriveName(r: ResolvedActor): string {
 
 export function OutlinerRow({ resolved, selected, onClick }: Props) {
   const name = deriveName(resolved);
+  const ref = useRef<HTMLDivElement | null>(null);
   const isError =
     resolved.status.kind !== 'ok' &&
     resolved.status.kind !== 'spawn-chance-skipped' &&
     resolved.status.kind !== 'filtered-by-tile-requirements';
+  useEffect(() => {
+    if (selected) ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [selected]);
   return (
     <div
+      ref={ref}
       className={`outliner-row${selected ? ' selected' : ''}`}
       onClick={onClick}
     >

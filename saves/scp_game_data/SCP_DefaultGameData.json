@@ -1,0 +1,374 @@
+{
+  "id": "SCP_DefaultGameData",
+  "asset_path": "/Game/Core/SCP_DefaultGameData",
+  "class": "UScpGameData",
+  "parent_classes": [
+    "UPrimaryDataAsset",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "front_end_map": {
+      "type": "soft_asset_ref",
+      "class": "World",
+      "value": "/Game/Core/Maps/L_MainMenu.L_MainMenu"
+    },
+    "class_to_soft_blueprint_map": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "class_to_hard_blueprint_map": {
+      "type": "map",
+      "key_type": {
+        "type": "soft_asset_ref",
+        "class": "Class"
+      },
+      "value_type": {
+        "type": "soft_asset_ref",
+        "class": "WidgetBlueprintGeneratedClass"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.CostWidget"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Selection/W_Cost.W_Cost_C"
+          }
+        }
+      ]
+    },
+    "icon_asset_map": {
+      "type": "map",
+      "key_type": null,
+      "value_type": null,
+      "value": []
+    },
+    "ghost_material": {
+      "type": "soft_asset_ref",
+      "class": "Material",
+      "value": "/Game/Furniture/Shared/Materials/ConstructionGhost/M_ConstructionGhost.M_ConstructionGhost"
+    },
+    "post_process_stencil_material": {
+      "type": "soft_asset_ref",
+      "class": "MaterialInstanceConstant",
+      "value": "/Game/Fab/HandDrawingDemo/Materials/MI_Draw2.MI_Draw2"
+    },
+    "fallback_static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": "/Game/Items/CraftingMaterials/Cardboard/Meshes/SM_CartonBox2_05.SM_CartonBox2_05"
+    },
+    "fallback_item_thumbnail": {
+      "type": "soft_asset_ref",
+      "class": "Texture2D",
+      "value": "/Game/Items/CraftingMaterials/Cardboard/Textures/T_Thumb_SM_CartonBox2_05.T_Thumb_SM_CartonBox2_05"
+    },
+    "default_lore_screen_widget_class": {
+      "type": "soft_asset_ref",
+      "class": "WidgetBlueprintGeneratedClass",
+      "value": "/Game/UI/Widgets/Interaction/W_InteractableText_CustomerNote.W_InteractableText_CustomerNote_C"
+    },
+    "death_box_definition": {
+      "type": "definition_ref",
+      "class": "DeathBoxDefinition",
+      "value": "FD_DeathBox_DB"
+    },
+    "item_pickup_visual_actor_class": {
+      "type": "soft_asset_ref",
+      "class": "BlueprintGeneratedClass",
+      "value": "/Game/Items/Shared/BP_ItemPickupVisual.BP_ItemPickupVisual_C"
+    },
+    "default_item_pickup_sounds": {
+      "type": "struct",
+      "struct_name": "ItemPickupSounds",
+      "value": {}
+    },
+    "default_footstep_cue_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "default_furniture_shake_data": {
+      "type": "soft_asset_ref",
+      "class": "FurnitureShakeData",
+      "value": "/Game/Furniture/Shared/FurnitureShake/DA_DefaultFurnitureShake.DA_DefaultFurnitureShake"
+    },
+    "menu_input_actions": {
+      "type": "map",
+      "key_type": {
+        "type": "soft_asset_ref",
+        "class": "InputAction"
+      },
+      "value_type": {
+        "type": "gameplay_tag"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "InputAction",
+            "value": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenInventoryMenu.IA_OpenInventoryMenu"
+          },
+          "value": {
+            "type": "gameplay_tag",
+            "value": "UI.GameScreen.Inventory"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "InputAction",
+            "value": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenMapMenu.IA_OpenMapMenu"
+          },
+          "value": {
+            "type": "gameplay_tag",
+            "value": "UI.GameScreen.Map"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "InputAction",
+            "value": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenCraftingMenu.IA_OpenCraftingMenu"
+          },
+          "value": {
+            "type": "gameplay_tag",
+            "value": "UI.GameScreen.Crafting"
+          }
+        }
+      ]
+    },
+    "consume_ability_set": {
+      "type": "definition_ref",
+      "class": "ScpAbilitySet",
+      "value": "AS_Consume"
+    },
+    "default_screen_widget_map": {
+      "type": "map",
+      "key_type": {
+        "type": "soft_asset_ref",
+        "class": "Class"
+      },
+      "value_type": {
+        "type": "soft_asset_ref",
+        "class": "WidgetBlueprintGeneratedClass"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.CraftingStationDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Crafting/W_CraftingScreen.W_CraftingScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.ProductionStationDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Production/W_ProductionScreen.W_ProductionScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.StorageDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Inventory/W_StorageScreen.W_StorageScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.TeleporterDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Teleporter/W_TeleporterScreen.W_TeleporterScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.BossSummonerDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/BossSummoner/W_BossSummoner.W_BossSummoner_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.LootableDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Inventory/W_StorageScreen.W_StorageScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.UniversalStorageDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/UniversalStorage/W_UniversalStorageSetupScreen.W_UniversalStorageSetupScreen_C"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "Class",
+            "value": "/Script/TSIC.InteractableTextDefinition"
+          },
+          "value": {
+            "type": "soft_asset_ref",
+            "class": "WidgetBlueprintGeneratedClass",
+            "value": "/Game/UI/Widgets/Interaction/W_InteractableText_CustomerNote.W_InteractableText_CustomerNote_C"
+          }
+        }
+      ]
+    },
+    "enemy_class_to_captured_item_map": {
+      "type": "map",
+      "key_type": {
+        "type": "soft_asset_ref",
+        "class": "BlueprintGeneratedClass"
+      },
+      "value_type": {
+        "type": "definition_ref",
+        "class": "CraftingMaterialDefinition"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/TVHead/Blueprints/CH_TVHead.CH_TVHead_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedTVHead_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/MaleStaff/Blueprints/CH_MaleStaff.CH_MaleStaff_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedMaleStaff_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/LivingMannequin/Blueprints/CH_LivingMannequin.CH_LivingMannequin_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedLivingMannequin_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/Janitor/Blueprints/CH_Janitor.CH_Janitor_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedJanitor_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/HeavyStaff/Blueprints/CH_HeavyStaff.CH_HeavyStaff_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedHeavyStaff_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/Gardener/Blueprints/CH_Gardener.CH_Gardener_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedGardener_CE"
+          }
+        },
+        {
+          "key": {
+            "type": "soft_asset_ref",
+            "class": "BlueprintGeneratedClass",
+            "value": "/Game/Characters/Enemies/BoneHead/Blueprints/CH_BoneHead.CH_BoneHead_C"
+          },
+          "value": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition",
+            "value": "ID_CapturedBoneHead_CE"
+          }
+        }
+      ]
+    },
+    "research_credit_tier1": {
+      "type": "definition_ref",
+      "class": "CraftingMaterialDefinition",
+      "value": "ID_ResearchCredit_T1_CM"
+    },
+    "research_credit_tier2": {
+      "type": "definition_ref",
+      "class": "CraftingMaterialDefinition",
+      "value": "ID_ResearchCredit_T2_CM"
+    },
+    "research_credit_tier3": {
+      "type": "definition_ref",
+      "class": "CraftingMaterialDefinition",
+      "value": "ID_ResearchCredit_T3_CM"
+    }
+  }
+}

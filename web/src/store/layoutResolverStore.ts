@@ -74,3 +74,13 @@ export const useLayoutResolverStore = create<State>((set, get) => ({
     });
   },
 }));
+
+// Catalogs load async after a Layout may already have been resolved with
+// bounds=null. Drop the resolver cache when the catalogs map changes so the
+// next resolveLayout call re-runs with the now-populated bounds.
+let lastCatalogs: unknown = useAssetCatalogStore.getState().catalogs;
+useAssetCatalogStore.subscribe((s) => {
+  if (s.catalogs === lastCatalogs) return;
+  lastCatalogs = s.catalogs;
+  useLayoutResolverStore.getState().invalidate();
+});

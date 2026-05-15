@@ -1,0 +1,266 @@
+{
+  "id": "LSP_SCPBase_Furniture",
+  "asset_path": "/Game/WorldGeneration/SpawnPoints/Items/SCPBase/LSP_SCPBase_Furniture",
+  "class": "ULootSpawnPointDefinition",
+  "parent_classes": [
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "loot_by_difficulty": {
+      "type": "map",
+      "key_type": {
+        "type": "enum",
+        "enum_name": "CurrentStoreDifficulty"
+      },
+      "value_type": {
+        "type": "struct",
+        "struct_name": "LootDifficultyTier",
+        "fields": {
+          "loot_items": {
+            "type": "array",
+            "element_type": {
+              "type": "struct",
+              "struct_name": "LootItem",
+              "fields": {
+                "count": {
+                  "type": "int"
+                },
+                "weight": {
+                  "type": "int"
+                }
+              }
+            }
+          },
+          "spawn_chance": {
+            "type": "float"
+          }
+        }
+      },
+      "value": [
+        {
+          "key": {
+            "type": "enum",
+            "enum_name": "CurrentStoreDifficulty",
+            "value": "<CurrentStoreDifficulty.EASY: 0>"
+          },
+          "value": {
+            "type": "struct",
+            "struct_name": "LootDifficultyTier",
+            "value": {
+              "loot_items": {
+                "type": "array",
+                "element_type": {
+                  "type": "struct",
+                  "struct_name": "LootItem",
+                  "fields": {
+                    "count": {
+                      "type": "int"
+                    },
+                    "weight": {
+                      "type": "int"
+                    }
+                  }
+                },
+                "value": [
+                  {
+                    "type": "struct",
+                    "struct_name": "LootItem",
+                    "value": {
+                      "count": {
+                        "type": "int",
+                        "value": 1
+                      },
+                      "weight": {
+                        "type": "int",
+                        "value": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "struct",
+                    "struct_name": "LootItem",
+                    "value": {
+                      "item_entity": {
+                        "type": "definition_ref",
+                        "class": "StaticItemDefinition",
+                        "value": "FD_Clipboard_SI"
+                      },
+                      "count": {
+                        "type": "int",
+                        "value": 1
+                      },
+                      "weight": {
+                        "type": "int",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              "spawn_chance": {
+                "type": "float",
+                "value": 0.3499999940395355
+              }
+            }
+          }
+        },
+        {
+          "key": {
+            "type": "enum",
+            "enum_name": "CurrentStoreDifficulty",
+            "value": "<CurrentStoreDifficulty.NORMAL: 1>"
+          },
+          "value": {
+            "type": "struct",
+            "struct_name": "LootDifficultyTier",
+            "value": {
+              "loot_items": {
+                "type": "array",
+                "element_type": {
+                  "type": "struct",
+                  "struct_name": "LootItem",
+                  "fields": {
+                    "item_entity": {
+                      "type": "definition_ref",
+                      "class": "StaticItemDefinition"
+                    },
+                    "count": {
+                      "type": "int"
+                    },
+                    "weight": {
+                      "type": "int"
+                    }
+                  }
+                },
+                "value": [
+                  {
+                    "type": "struct",
+                    "struct_name": "LootItem",
+                    "value": {
+                      "item_entity": {
+                        "type": "definition_ref",
+                        "class": "StaticItemDefinition",
+                        "value": "FD_CircuitBoard_SI"
+                      },
+                      "count": {
+                        "type": "int",
+                        "value": 1
+                      },
+                      "weight": {
+                        "type": "int",
+                        "value": 1
+                      }
+                    }
+                  },
+                  {
+                    "type": "struct",
+                    "struct_name": "LootItem",
+                    "value": {
+                      "item_entity": {
+                        "type": "definition_ref",
+                        "class": "StaticItemDefinition",
+                        "value": "FD_SteelPanel_SI"
+                      },
+                      "count": {
+                        "type": "int",
+                        "value": 1
+                      },
+                      "weight": {
+                        "type": "int",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              "spawn_chance": {
+                "type": "float",
+                "value": 0.3499999940395355
+              }
+            }
+          }
+        },
+        {
+          "key": {
+            "type": "enum",
+            "enum_name": "CurrentStoreDifficulty",
+            "value": "<CurrentStoreDifficulty.HARD: 2>"
+          },
+          "value": {
+            "type": "struct",
+            "struct_name": "LootDifficultyTier",
+            "value": {
+              "loot_items": {
+                "type": "array",
+                "element_type": {
+                  "type": "struct",
+                  "struct_name": "LootItem",
+                  "fields": {
+                    "item_entity": {
+                      "type": "definition_ref",
+                      "class": "StaticItemDefinition"
+                    },
+                    "count": {
+                      "type": "int"
+                    },
+                    "weight": {
+                      "type": "int"
+                    }
+                  }
+                },
+                "value": [
+                  {
+                    "type": "struct",
+                    "struct_name": "LootItem",
+                    "value": {
+                      "item_entity": {
+                        "type": "definition_ref",
+                        "class": "StaticItemDefinition",
+                        "value": "FD_PrinterPaper_SI"
+                      },
+                      "count": {
+                        "type": "int",
+                        "value": 1
+                      },
+                      "weight": {
+                        "type": "int",
+                        "value": 1
+                      }
+                    }
+                  }
+                ]
+              },
+              "spawn_chance": {
+                "type": "float",
+                "value": 0.3499999940395355
+              }
+            }
+          }
+        }
+      ]
+    },
+    "accumulate_previous_tiers": {
+      "type": "bool",
+      "value": true
+    },
+    "source_type": {
+      "type": "enum",
+      "enum_name": "LootSource",
+      "value": "<LootSource.FLOOR: 0>"
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

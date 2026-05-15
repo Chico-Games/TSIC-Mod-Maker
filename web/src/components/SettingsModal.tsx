@@ -14,6 +14,12 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
   const setDefaultProjectSource = useDefinitionsStore((s) => s.setDefaultProjectSource);
   const clearDefaultProjectSource = useDefinitionsStore((s) => s.clearDefaultProjectSource);
 
+  const directoryHandle = useDefinitionsStore((s) => s.directoryHandle);
+  const pickDirectory = useDefinitionsStore((s) => s.pickDirectory);
+  const forgetDirectory = useDefinitionsStore((s) => s.forgetDirectory);
+  const autoLoadEnabled = useDefinitionsStore((s) => s.autoLoadEnabled);
+  const setAutoLoad = useDefinitionsStore((s) => s.setAutoLoad);
+
   const [picking, setPicking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fsa = typeof (window as any).showDirectoryPicker === 'function';
@@ -56,6 +62,43 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
     <div className="new-project-overlay" onClick={onClose}>
       <div className="new-project-form" onClick={(e) => e.stopPropagation()}>
         <h2 style={{ margin: '0 0 1rem' }}>⚙ Settings</h2>
+
+        <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem', color: 'var(--muted)' }}>Working directory</h3>
+        <p style={{ margin: '0 0 0.75rem', color: 'var(--muted)', fontSize: '0.9em' }}>
+          The directory currently open. Auto-load restores it on app start.
+        </p>
+
+        <div className="np-form-row">
+          <label>Current</label>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flex: 1 }}>
+            <span style={{ fontFamily: 'monospace', fontSize: '0.9em', color: directoryHandle ? 'var(--text)' : 'var(--muted)' }}>
+              {directoryHandle ? directoryHandle.name : '— not set —'}
+            </span>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+              <button onClick={() => void pickDirectory()} disabled={!fsa}>
+                {directoryHandle ? 'Change…' : '📂 Pick directory'}
+              </button>
+              {directoryHandle && (
+                <button onClick={() => void forgetDirectory()} title="Stop auto-loading from this path">
+                  Forget
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="np-form-row">
+          <label>
+            <input
+              type="checkbox"
+              checked={autoLoadEnabled}
+              onChange={(e) => setAutoLoad(e.target.checked)}
+            />
+            {' '}Auto-load on app start
+          </label>
+        </div>
+
+        <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '1rem 0' }} />
 
         <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem', color: 'var(--muted)' }}>Projects folder</h3>
         <p style={{ margin: '0 0 0.75rem', color: 'var(--muted)', fontSize: '0.9em' }}>

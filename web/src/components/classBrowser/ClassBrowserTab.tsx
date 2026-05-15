@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useDefinitionsStore, type DefinitionsKey } from '../../store/definitionsStore';
+import { useValidationStore } from '../../store/validationStore';
+import { IssueDot } from '../IssueDot';
 import { useAppStore } from '../../store/appStore';
 import { humanizeAssetId } from '../definitionsNaming';
 import { getFolderTheme } from '../folderTheme';
@@ -558,6 +560,7 @@ function RailColumn(props: {
                     }}
                   >{ws.length}</span>
                 )}
+                <RowIssueDot keyId={h.item.key} />
               </button>
             );
           }}
@@ -573,6 +576,13 @@ function RailColumn(props: {
       )}
     </aside>
   );
+}
+
+const EMPTY_ISSUES: never[] = [];
+function RowIssueDot({ keyId }: { keyId: DefinitionsKey }) {
+  const issuesByKey = useValidationStore((s) => s.issuesByKey);
+  const issues = issuesByKey.get(keyId) ?? EMPTY_ISSUES;
+  return <IssueDot issues={issues} />;
 }
 
 function EchoPublishingPane({ children }: { children: ReactNode }) {

@@ -167,6 +167,84 @@ function skeleton(typed: any): any {
   return out;
 }
 
+/** Split `s` at the first top-level comma, respecting nested `<…>`. */
+function splitGenericArgs(s: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '<') depth++;
+    else if (c === '>') depth--;
+    else if (c === ',' && depth === 0) {
+      out.push(s.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  out.push(s.slice(start).trim());
+  return out;
+}
+
+/** Parse a UE cpp_type string (e.g. `TMap<int32, FMaterialOverridePool>`) into
+ *  a TypedValue skeleton. Returns null when the type isn't recognised. Used as
+ *  a fallback when an empty container has no recorded element/key/value type
+ *  and no sibling asset to sniff from. */
+function typedFromCppType(cppType: string | null | undefined): any | null {
+  if (!cppType) return null;
+  const t = cppType.trim();
+
+  const mMap = t.match(/^TMap<(.+)>$/);
+  if (mMap) {
+    const args = splitGenericArgs(mMap[1]);
+    if (args.length === 2) {
+      return {
+        type: 'map',
+        key_type: typedFromCppType(args[0]),
+        value_type: typedFromCppType(args[1]),
+      };
+    }
+  }
+  const mArr = t.match(/^TArray<(.+)>$/);
+  if (mArr) return { type: 'array', element_type: typedFromCppType(mArr[1]) };
+  const mSet = t.match(/^TSet<(.+)>$/);
+  if (mSet) return { type: 'set', element_type: typedFromCppType(mSet[1]) };
+
+  const mObj = t.match(/^TObjectPtr<U?(\w+)>$/);
+  if (mObj) return { type: 'definition_ref', class: mObj[1] };
+  const mSub = t.match(/^TSubclassOf<U?(\w+)>$/);
+  if (mSub) return { type: 'definition_ref', class: mSub[1] };
+  const mSoftObj = t.match(/^TSoftObjectPtr<U?(\w+)>$/);
+  if (mSoftObj) return { type: 'soft_asset_ref', class: mSoftObj[1] };
+  const mSoftCls = t.match(/^TSoftClassPtr<U?(\w+)>$/);
+  if (mSoftCls) return { type: 'soft_asset_ref', class: mSoftCls[1] };
+
+  if (/^(int|int8|int16|int32|int64|uint8|uint16|uint32|uint64)$/.test(t)) return { type: 'int' };
+  if (t === 'float' || t === 'double') return { type: 'float' };
+  if (t === 'bool') return { type: 'bool' };
+  if (t === 'FString') return { type: 'string' };
+  if (t === 'FName') return { type: 'name' };
+  if (t === 'FText') return { type: 'text' };
+  if (t === 'FGameplayTag') return { type: 'gameplay_tag' };
+  if (t === 'FGameplayTagContainer') return { type: 'gameplay_tag_container' };
+
+  if (/^E[A-Z]\w*$/.test(t)) return { type: 'enum', enum_name: t };
+  if (/^F[A-Z]\w*$/.test(t)) return { type: 'struct', struct_name: t.slice(1) };
+
+  return null;
+}
+
+/** Short human label for a typed skeleton, used in container headers. */
+function typedLabel(skel: any): string {
+  if (!skel || typeof skel !== 'object') return '?';
+  switch (skel.type) {
+    case 'definition_ref': return skel.class ?? 'ref';
+    case 'soft_asset_ref': return `soft ${skel.class ?? 'ref'}`;
+    case 'enum': return skel.enum_name ?? 'enum';
+    case 'struct': return skel.struct_name ?? 'struct';
+    default: return skel.type;
+  }
+}
+
 /** Build a fresh blank typed envelope from a skeleton. */
 function blankFromSkeleton(skel: any): any {
   if (!isTypedEnvelope(skel)) return { type: 'string', value: '' };
@@ -876,6 +954,10 @@ function ContainerEditor({
       elementType = { type: 'definition_ref', class: elementClass, value: '' };
     }
   }
+  if (!elementType) {
+    const fromCpp = typedFromCppType(meta?.cpp_type);
+    if (fromCpp?.element_type) elementType = fromCpp.element_type;
+  }
   return (
     <div className="def-field def-type-color-array">
       <FieldHead
@@ -985,14 +1067,24 @@ function MapEditor({
   pathFromRoot,
 }: FieldProps) {
   const entries: Array<{ key: any; value: any }> = Array.isArray(typed.value) ? typed.value : [];
-  const keyType = typed.key_type ?? refAdapter.lookupContainerType(path, 'key_type');
-  const valueType = typed.value_type ?? refAdapter.lookupContainerType(path, 'value_type');
   const meta = propertyName ? refAdapter.getPropertyMeta(parentTypeName, propertyName) : null;
+  const fromCpp = typedFromCppType(meta?.cpp_type);
+  const keyType =
+    typed.key_type
+    ?? refAdapter.lookupContainerType(path, 'key_type')
+    ?? fromCpp?.key_type
+    ?? null;
+  const valueType =
+    typed.value_type
+    ?? refAdapter.lookupContainerType(path, 'value_type')
+    ?? fromCpp?.value_type
+    ?? null;
+  const shape = keyType && valueType ? `${typedLabel(keyType)} → ${typedLabel(valueType)}` : '';
   return (
     <div className="def-field def-type-color-map">
       <FieldHead
         label={label}
-        type={`map · ${entries.length}`}
+        type={`map${shape ? ' · ' + shape : ''} · ${entries.length}`}
         meta={meta}
         propertyName={propertyName}
         pinAdapter={pinAdapter}

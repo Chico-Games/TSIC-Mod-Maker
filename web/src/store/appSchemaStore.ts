@@ -128,6 +128,40 @@ function buildEnumMeta(payload: any): Map<string, EnumMember[]> {
   return m;
 }
 
+/** Hand-authored enum members for enums the Unreal exporter doesn't yet dump
+ *  into property-meta.json. Used as a fallback so the editor always renders
+ *  a dropdown instead of a free-text input. When the exporter is updated,
+ *  schema-provided members for the same enum take precedence. */
+const BUILT_IN_ENUMS: Record<string, EnumMember[]> = {
+  LayoutActorType: [
+    { name: 'PROXY_ACTOR', display_name: 'Proxy Actor' },
+    { name: 'LAYOUT', display_name: 'Layout' },
+    { name: 'ENEMY_SPAWN_POINT', display_name: 'Enemy Spawn Point' },
+    { name: 'LOOT_SPAWN_POINT', display_name: 'Loot Spawn Point' },
+    { name: 'VISUAL_HELPER', display_name: 'Visual Helper' },
+  ],
+  SearchQuery: [
+    { name: 'NONE', display_name: 'None' },
+    { name: 'HAS_ANY_INCL_PARENTS', display_name: 'Has Any (incl. parents)' },
+    { name: 'HAS_ANY_EXACT', display_name: 'Has Any (exact)' },
+    { name: 'HAS_ALL_INCL_PARENTS', display_name: 'Has All (incl. parents)' },
+    { name: 'HAS_ALL_EXACT', display_name: 'Has All (exact)' },
+  ],
+  LootMeshSize: [
+    { name: 'SMALL', display_name: 'Small' },
+    { name: 'MEDIUM', display_name: 'Medium' },
+    { name: 'LARGE', display_name: 'Large' },
+  ],
+  LootSource: [
+    { name: 'FLOOR', display_name: 'Floor' },
+  ],
+  CurrentStoreDifficulty: [
+    { name: 'EASY', display_name: 'Easy' },
+    { name: 'NORMAL', display_name: 'Normal' },
+    { name: 'HARD', display_name: 'Hard' },
+  ],
+};
+
 export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
   loaded: false,
   errorText: null,
@@ -198,7 +232,7 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
   getEnumMembers: (enumName) => {
     if (!enumName) return null;
     const bare = enumName.startsWith('E') ? enumName.slice(1) : enumName;
-    return get().enumMeta.get(bare) ?? null;
+    return get().enumMeta.get(bare) ?? BUILT_IN_ENUMS[bare] ?? null;
   },
 
   folderForClass: (bareClassName) => {

@@ -17,16 +17,21 @@ export type SearchTree = {
 };
 
 /** Build a search tree of every definition whose `class` matches `klass`
- *  (or its bareName equivalent). Pulls `gameplay_tags` off each. */
+ *  OR whose `parent_classes` list contains `klass`. Bare and U-prefixed names
+ *  both match. Pulls `gameplay_tags` off each. */
 export function buildSearchTree(
   defs: Map<string, { id: string; json: any }>,
   klass: string,
 ): SearchTree {
-  const bareKlass = klass.startsWith('U') ? klass.slice(1) : klass;
+  const norm = (s: string | undefined) => (s ? (s.startsWith('U') ? s : 'U' + s) : '');
+  const target = norm(klass);
   const allDefs: SearchTreeDef[] = [];
   for (const [, rec] of defs) {
-    const recClass = rec.json?.class;
-    if (recClass !== klass && recClass !== bareKlass) continue;
+    const recClass = norm(rec.json?.class);
+    if (!recClass) continue;
+    const parents = (rec.json?.parent_classes as string[] | undefined) ?? [];
+    const matches = recClass === target || parents.some((p) => norm(p) === target);
+    if (!matches) continue;
     const tagsEnv = rec.json?.properties?.gameplay_tags;
     const tags = (tagsEnv?.value as string[] | undefined) ?? [];
     allDefs.push({ id: rec.id, tags, json: rec.json });

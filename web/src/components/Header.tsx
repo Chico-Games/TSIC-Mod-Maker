@@ -3,7 +3,7 @@ import { useModIoStore } from '../store/modIoStore';
 import { useAppStore, type AppTab } from '../store/appStore';
 import { SemanticChip } from './SemanticChip';
 import { useEffect, useRef, useState } from 'react';
-import { PublishButton } from './modio/PublishButton';
+import { PublishWizard } from './modio/PublishWizard';
 import { BrowseModsDialog } from './modio/BrowseModsDialog';
 import { SignInModal } from './modio/SignInModal';
 import { SyncChip } from './modio/SyncChip';
@@ -149,6 +149,8 @@ export function Header() {
   const openBrowseMods = useModIoStore((s) => s.openBrowse);
   const openSignInModal = useModIoStore((s) => s.openSignInModal);
   const signOutModIo = useModIoStore((s) => s.signOut);
+  const openPublishWizard = useModIoStore((s) => s.openPublishWizard);
+  const modIoSyncState = useModIoStore((s) => s.syncState);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
   const [recentsOpen, setRecentsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -156,12 +158,14 @@ export function Header() {
   const recents = useDefinitionsStore((s) => s.recents);
   const openRecent = useDefinitionsStore((s) => s.openRecent);
   const refreshRecents = useDefinitionsStore((s) => s.refreshRecents);
+  const deleteRecent = useDefinitionsStore((s) => s.deleteRecent);
   const dataSource = useDefinitionsStore((s) => s.dataSource);
   const readOnly = dataSource?.readOnly ?? true;
   const projectsRootHandle = useDefinitionsStore((s) => s.projectsRootHandle);
   const projectsInRoot = useDefinitionsStore((s) => s.projectsInRoot);
   const openProjectInRoot = useDefinitionsStore((s) => s.openProjectInRoot);
   const refreshProjectsInRoot = useDefinitionsStore((s) => s.refreshProjectsInRoot);
+  const deleteProjectInRoot = useDefinitionsStore((s) => s.deleteProjectInRoot);
   useEffect(() => { void refreshRecents(); }, [refreshRecents]);
   useEffect(() => { if (projectsRootHandle) void refreshProjectsInRoot(); }, [projectsRootHandle, refreshProjectsInRoot]);
 
@@ -206,7 +210,6 @@ export function Header() {
       </span>
       <SemanticChip />
       <div className="spacer" />
-      <PublishButton />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
       <div className="open-project-split">
         <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
@@ -227,14 +230,24 @@ export function Header() {
                   <div className="recents-empty">No projects in root yet.</div>
                 )}
                 {projectsInRoot.map((p) => (
-                  <button
-                    key={`root:${p.folderName}`}
-                    className="recents-item"
-                    onClick={async () => { setRecentsOpen(false); await openProjectInRoot(p.folderName); }}
-                  >
-                    <span className="recents-name">{p.name}</span>
-                    <span className="recents-time">{p.folderName}</span>
-                  </button>
+                  <div key={`root:${p.folderName}`} className="recents-row">
+                    <button
+                      className="recents-item"
+                      onClick={async () => { setRecentsOpen(false); await openProjectInRoot(p.folderName); }}
+                    >
+                      <span className="recents-name">{p.name}</span>
+                      <span className="recents-time">{p.folderName}</span>
+                    </button>
+                    <button
+                      className="recents-delete"
+                      title={`Delete ${p.name} from disk`}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!window.confirm(`Delete project "${p.name}" (${p.folderName}) from disk?\nThis cannot be undone.`)) return;
+                        await deleteProjectInRoot(p.folderName);
+                      }}
+                    >×</button>
+                  </div>
                 ))}
                 <div className="recents-section-label">Recents</div>
               </>
@@ -242,16 +255,28 @@ export function Header() {
             {recents.filter((r) => r.handleName !== 'starter-project').length === 0 && (
               <div className="recents-empty">No recent projects yet.</div>
             )}
-            {recents.map((r) => (
-              <button
-                key={r.handleName}
-                className="recents-item"
-                onClick={async () => { setRecentsOpen(false); await openRecent(r.handleName); }}
-              >
-                <span className="recents-name">{r.name}</span>
-                <span className="recents-time">{relativeTime(r.lastOpened)}</span>
-              </button>
-            ))}
+            {recents
+              .filter((r) => r.handleName !== 'starter-project')
+              .map((r) => (
+                <div key={r.handleName} className="recents-row">
+                  <button
+                    className="recents-item"
+                    onClick={async () => { setRecentsOpen(false); await openRecent(r.handleName); }}
+                  >
+                    <span className="recents-name">{r.name}</span>
+                    <span className="recents-time">{relativeTime(r.lastOpened)}</span>
+                  </button>
+                  <button
+                    className="recents-delete"
+                    title={`Delete ${r.name} from disk`}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!window.confirm(`Delete project "${r.name}" from disk?\nThis cannot be undone.`)) return;
+                      await deleteRecent(r.handleName);
+                    }}
+                  >×</button>
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -306,6 +331,21 @@ export function Header() {
           ...(modIoCfg
             ? [
                 {
+                  label: '📤 Publish to mod.io',
+                  onClick: () => openPublishWizard('bind'),
+                  disabled:
+                    !dataSource || dataSource.kind !== 'fsa' || !modIoToken,
+                  hint: !dataSource
+                    ? 'Open a project first'
+                    : dataSource.kind !== 'fsa'
+                    ? 'Save the project to a folder first'
+                    : !modIoToken
+                    ? 'Sign in to mod.io to publish'
+                    : modIoSyncState === 'clean'
+                    ? 'Up to date'
+                    : 'Publish to mod.io',
+                },
+                {
                   label: '📥 Browse mods',
                   onClick: openBrowseMods,
                   hint: 'Browse mods on mod.io',
@@ -330,6 +370,7 @@ export function Header() {
         title="Settings"
       >⚙</button>
       {directoryHandle && <button onClick={() => void reload()} title="Reload from disk">⟳ Reload</button>}
+      <PublishWizard />
       <BrowseModsDialog />
       <SignInModal />
 
