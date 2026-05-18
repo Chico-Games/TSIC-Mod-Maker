@@ -1,6 +1,6 @@
 {
-  "id": "ARR_DishwasherRecipes",
-  "asset_path": "/Game/Furniture/CraftingBenches/Recipes/ARR_DishwasherRecipes",
+  "id": "ARR_FirstAidBoxRecipes",
+  "asset_path": "/Game/Furniture/CraftingBenches/Recipes/ARR_FirstAidBoxRecipes",
   "class": "UAvailableRecipeRulesDefinition",
   "parent_classes": [
     "UDataAsset",
@@ -17,7 +17,13 @@
             "type": "definition_ref",
             "class": "CraftRecipeDefinition"
           },
-          "value": []
+          "value": [
+            {
+              "type": "definition_ref",
+              "class": "CraftRecipeDefinition",
+              "value": "RD_WoundDressing_CR"
+            }
+          ]
         }
       }
     }
