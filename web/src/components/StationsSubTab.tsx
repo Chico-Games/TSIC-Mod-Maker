@@ -173,7 +173,7 @@ export function StationsSubTab() {
     bestRank: number; // index in `filtered` of the best member
   };
   const families = useMemo(() => {
-    const byGroup: Record<StationGroup, RankedFamily[]> = { crafting: [], production: [], plantable: [] };
+    const byGroup: Record<StationGroup, RankedFamily[]> = { crafting: [], production: [], shop: [], plantable: [] };
     const byKey = new Map<string, RankedFamily>();
     filtered.forEach((r, idx) => {
       const compositeKey = `${r.row.group}::${r.row.familyKey}`;

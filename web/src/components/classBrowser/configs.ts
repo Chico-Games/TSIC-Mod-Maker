@@ -91,6 +91,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   furniture_definitions: {
     label: 'Furniture', emoji: t('furniture_definitions'),
     newRecordClass: 'FurnitureDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
       { key: 'weight', label: 'Wt', path: ['properties','weighted_chance','value'], kind: 'number', width: 70 },
@@ -99,6 +100,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   damageable_furniture_definitions: {
     label: 'Damageable', emoji: t('damageable_furniture_definitions'),
     newRecordClass: 'DamageableFurnitureDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'health', label: 'HP', path: ['properties','starting_health','value'], kind: 'number', width: 70 },
       { key: 'armour', label: 'Arm', path: ['properties','furniture_armour','value'], kind: 'number', width: 60 },
@@ -110,6 +112,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   toggleable_furniture_definitions: {
     label: 'Toggleable', emoji: t('toggleable_furniture_definitions'),
     newRecordClass: 'ToggleableFurnitureDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
     ],
@@ -117,6 +120,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   furniture_with_components_definitions: {
     label: 'With Components', emoji: t('furniture_with_components_definitions'),
     newRecordClass: 'FurnitureWithComponentsDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
     ],
@@ -124,6 +128,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   storage_definitions: {
     label: 'Storage', emoji: t('storage_definitions'),
     newRecordClass: 'StorageDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
     ],
@@ -131,11 +136,13 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   universal_storage_definitions: {
     label: 'Universal Storage', emoji: t('universal_storage_definitions'),
     newRecordClass: 'UniversalStorageDefinition',
+    tierGrouping: true,
     columns: [],
   },
   crafting_station_definitions: {
     label: 'Crafting Stations', emoji: t('crafting_station_definitions'),
     newRecordClass: 'CraftingStationDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'arr', label: 'ARR', path: ['properties','available_recipe_rules_definition','value'], kind: 'ref' },
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
@@ -144,6 +151,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   production_station_definitions: {
     label: 'Production Stations', emoji: t('production_station_definitions'),
     newRecordClass: 'ProductionStationDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'arr', label: 'ARR', path: ['properties','available_recipe_rules_definition','value'], kind: 'ref' },
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
@@ -152,6 +160,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   shop_definitions: {
     label: 'Shops', emoji: t('shop_definitions'),
     newRecordClass: 'ShopDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'arr', label: 'ARR', path: ['properties','available_recipe_rules_definition','value'], kind: 'ref' },
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
@@ -160,6 +169,7 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   plantable_definitions: {
     label: 'Plantable', emoji: t('plantable_definitions'),
     newRecordClass: 'PlantableDefinition',
+    tierGrouping: true,
     columns: [
       { key: 'arr', label: 'ARR', path: ['properties','available_recipe_rules_definition','value'], kind: 'ref' },
     ],

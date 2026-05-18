@@ -1,0 +1,235 @@
+{
+  "id": "LD_BiomeWarehouse",
+  "asset_path": "/Game/Loot/Biomes/LD_BiomeWarehouse",
+  "class": "ULootDefinition",
+  "parent_classes": [
+    "UWorldGenObjectDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "items_to_drop": {
+      "type": "array",
+      "element_type": {
+        "type": "struct",
+        "struct_name": "ItemToDrop",
+        "fields": {
+          "item_to_drop": {
+            "type": "definition_ref",
+            "class": "CraftingMaterialDefinition"
+          },
+          "count": {
+            "type": "int"
+          },
+          "chance_to_drop": {
+            "type": "float"
+          }
+        }
+      },
+      "value": [
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "ConsumableDefinition",
+              "value": "ID_DurhamCerealBar_CN"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_Bracket_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_DrawerRail_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_MDFBoard_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_MetalScrews_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "ConsumableDefinition",
+              "value": "ID_DurhamFitnessDrink_CN"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_BiscuitTin_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_MetalChairLeg_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_Calculator_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        },
+        {
+          "type": "struct",
+          "struct_name": "ItemToDrop",
+          "value": {
+            "item_to_drop": {
+              "type": "definition_ref",
+              "class": "CraftingMaterialDefinition",
+              "value": "ID_ConcreteBag_CM"
+            },
+            "count": {
+              "type": "int",
+              "value": 1
+            },
+            "chance_to_drop": {
+              "type": "float",
+              "value": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "weighted_chance": {
+      "type": "int",
+      "value": 1000
+    },
+    "world_gen_priority": {
+      "type": "int",
+      "value": 1000
+    },
+    "gameplay_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}
