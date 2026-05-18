@@ -1,0 +1,62 @@
+{
+  "id": "RD_FriedFish_CR",
+  "asset_path": "/Game/Items/consumable_definitions/RD_FriedFish_CR",
+  "class": "UCraftRecipeDefinition",
+  "parent_classes": [
+    "URecipeDefinition",
+    "UDataAsset",
+    "UObject"
+  ],
+  "properties": {
+    "recipe_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    },
+    "input": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "CraftingMaterialDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": []
+    },
+    "output": {
+      "type": "map",
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_FriedFish_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
+    },
+    "duration": {
+      "type": "float",
+      "value": 3.0
+    },
+    "level": {
+      "type": "int",
+      "value": 2
+    },
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
+    }
+  }
+}

@@ -39,6 +39,7 @@ const THEMES: Record<string, FolderTheme> = {
   production_station_definitions: { emoji: '🏭', color: '#a78fff' },
   scp_game_data: { emoji: '🎮', color: '#5fb3ff' },
   seed_item_definitions: { emoji: '🌰', color: '#b08968' },
+  shop_definitions: { emoji: '🏪', color: '#7ec5b1' },
   shopping_cart_definitions: { emoji: '🛒', color: '#7ec5b1' },
   spawn_point_definitions: { emoji: '📌', color: '#a4c8ff' },
   static_item_definitions: { emoji: '📦', color: '#a08c66' },

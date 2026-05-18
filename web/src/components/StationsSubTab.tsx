@@ -18,21 +18,24 @@ import { AddPicker } from './AddPicker';
 import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
 
-type StationGroup = 'crafting' | 'production' | 'plantable';
+type StationGroup = 'crafting' | 'production' | 'shop' | 'plantable';
 
 const STATION_FOLDERS: Record<StationGroup, string[]> = {
   crafting: ['crafting_station_definitions'],
   production: ['production_station_definitions'],
+  shop: ['shop_definitions'],
   plantable: ['plantable_definitions'],
 };
 const GROUP_LABEL: Record<StationGroup, string> = {
   crafting: 'Crafting',
   production: 'Production',
+  shop: 'Shops',
   plantable: 'Plantable',
 };
 const GROUP_EMOJI: Record<StationGroup, string> = {
   crafting: '🛠️',
   production: '🏭',
+  shop: '🏪',
   plantable: '🌿',
 };
 

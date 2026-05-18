@@ -149,6 +149,14 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
       { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
     ],
   },
+  shop_definitions: {
+    label: 'Shops', emoji: t('shop_definitions'),
+    newRecordClass: 'ShopDefinition',
+    columns: [
+      { key: 'arr', label: 'ARR', path: ['properties','available_recipe_rules_definition','value'], kind: 'ref' },
+      { key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 },
+    ],
+  },
   plantable_definitions: {
     label: 'Plantable', emoji: t('plantable_definitions'),
     newRecordClass: 'PlantableDefinition',
