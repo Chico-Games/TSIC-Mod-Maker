@@ -1,7 +1,7 @@
 {
-  "id": "RD_PlasticExtruder_CN",
-  "asset_path": "/Game/Furniture/Processing/Construction/RD_PlasticExtruder_CN",
-  "class": "UFurnitureUpgradeRecipe",
+  "id": "RD_BoilerBoneBroth_CR",
+  "asset_path": "/Game/Items/Recipes/RD_BoilerBoneBroth_CR",
+  "class": "UCraftRecipeDefinition",
   "parent_classes": [
     "URecipeDefinition",
     "UDataAsset",
@@ -26,70 +26,71 @@
           "key": {
             "type": "definition_ref",
             "class": "CraftingMaterialDefinition",
-            "value": "ID_PlasticScrap_CM"
+            "value": "ID_BoneChunk_CM"
           },
           "value": {
             "type": "int",
-            "value": 7
+            "value": 2
           }
         },
         {
           "key": {
             "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_MetalScrews_CM"
+            "class": "ConsumableDefinition",
+            "value": "ID_DurhamWater_CN"
           },
           "value": {
             "type": "int",
-            "value": 3
+            "value": 1
           }
         },
         {
           "key": {
             "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ExtensionCord_CM"
+            "class": "ConsumableDefinition",
+            "value": "ID_Lemongrass_CN"
           },
           "value": {
             "type": "int",
-            "value": 3
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_CircuitBoard_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 5
+            "value": 1
           }
         }
       ]
     },
     "output": {
       "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_SCPRations_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 1
+          }
+        }
+      ]
     },
     "duration": {
       "type": "float",
-      "value": 2.5
+      "value": 4.0
     },
     "level": {
       "type": "int",
-      "value": 1
+      "value": 2
     },
-    "upgrade_tier": {
-      "type": "int",
-      "value": 3
-    },
-    "upgraded_furniture_definition": {
-      "type": "definition_ref",
-      "class": "ProductionStationDefinition",
-      "value": "FD_PlasticExtruder_PS"
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

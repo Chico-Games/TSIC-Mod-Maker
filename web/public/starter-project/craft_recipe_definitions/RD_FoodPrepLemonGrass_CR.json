@@ -1,7 +1,7 @@
 {
-  "id": "RD_PizzaOven_CN",
-  "asset_path": "/Game/Furniture/Counters/Construction/RD_PizzaOven_CN",
-  "class": "UFurnitureUpgradeRecipe",
+  "id": "RD_FoodPrepLemonGrass_CR",
+  "asset_path": "/Game/Items/Recipes/RD_FoodPrepLemonGrass_CR",
+  "class": "UCraftRecipeDefinition",
   "parent_classes": [
     "URecipeDefinition",
     "UDataAsset",
@@ -25,71 +25,61 @@
         {
           "key": {
             "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ScrapMetal_CM"
+            "class": "ConsumableDefinition",
+            "value": "ID_Lemongrass_CN"
           },
           "value": {
             "type": "int",
-            "value": 13
+            "value": 2
           }
         },
         {
           "key": {
             "type": "definition_ref",
             "class": "CraftingMaterialDefinition",
-            "value": "ID_MetalScrews_CM"
+            "value": "ID_WoodenSpoon_CM"
           },
           "value": {
             "type": "int",
-            "value": 4
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ExtensionCord_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_CircuitBoard_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 5
+            "value": 1
           }
         }
       ]
     },
     "output": {
       "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
+      "key_type": {
+        "type": "definition_ref",
+        "class": "ConsumableDefinition"
+      },
+      "value_type": {
+        "type": "int"
+      },
+      "value": [
+        {
+          "key": {
+            "type": "definition_ref",
+            "class": "ConsumableDefinition",
+            "value": "ID_Lemongrass_CN"
+          },
+          "value": {
+            "type": "int",
+            "value": 3
+          }
+        }
+      ]
     },
     "duration": {
       "type": "float",
-      "value": 4
+      "value": 4.0
     },
     "level": {
       "type": "int",
       "value": 1
     },
-    "upgrade_tier": {
-      "type": "int",
-      "value": 3
-    },
-    "upgraded_furniture_definition": {
-      "type": "definition_ref",
-      "class": "ProductionStationDefinition",
-      "value": "FD_PizzaOven_PS"
+    "crafting_bench_tags": {
+      "type": "gameplay_tag_container",
+      "value": []
     }
   }
 }

@@ -1,6 +1,6 @@
 {
-  "id": "FD_ArmorBenchTier2_SI",
-  "asset_path": "/Game/Furniture/CraftingBenches/ArmorCrafting/Item/FD_ArmorBenchTier2_SI",
+  "id": "FD_Banana_SI",
+  "asset_path": "/Game/Items/Consumables/Food/Bananas/Static/FD_Banana_SI",
   "class": "UStaticItemDefinition",
   "parent_classes": [
     "UFurnitureDefinition",
@@ -11,13 +11,17 @@
   "properties": {
     "item_definition": {
       "type": "definition_ref",
-      "class": "ConstructableItemDefinition",
-      "value": "ID_ArmorBenchTier2_CI"
+      "class": "ConsumableDefinition",
+      "value": "ID_Banana_CN"
     },
     "loot_mesh_size": {
       "type": "enum",
       "enum_name": "LootMeshSize",
       "value": "<LootMeshSize.SMALL: 0>"
+    },
+    "display_name": {
+      "type": "text",
+      "value": "Bananas"
     },
     "level": {
       "type": "int",
@@ -34,6 +38,11 @@
     "is_pingable": {
       "type": "bool",
       "value": false
+    },
+    "static_mesh": {
+      "type": "soft_asset_ref",
+      "class": "StaticMesh",
+      "value": ""
     },
     "casts_shadow": {
       "type": "bool",
