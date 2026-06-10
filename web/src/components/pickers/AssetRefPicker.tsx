@@ -21,6 +21,12 @@ type Props = {
 
 type ViewMode = 'list' | 'tree';
 
+// Stable empty-array reference for the catalog selector. Returning a fresh `[]`
+// from a Zustand (useSyncExternalStore) selector makes every snapshot compare
+// unequal, which React treats as a perpetual store change → infinite re-render
+// loop ("getSnapshot should be cached" → "Maximum update depth exceeded").
+const EMPTY_ENTRIES: AssetCatalogEntry[] = [];
+
 type TreeNode = {
   /** Display label for this segment (e.g. "Furniture"). */
   label: string;
@@ -108,7 +114,7 @@ export function AssetRefPicker({ className, value, onChange }: Props) {
   const loadCatalog = useAssetCatalogStore((s) => s.loadCatalog);
   const entries = useAssetCatalogStore((s) => {
     const c = s.catalogs[className];
-    return Array.isArray(c) ? c : [];
+    return Array.isArray(c) ? c : EMPTY_ENTRIES;
   });
   const status = useAssetCatalogStore((s) => {
     const c = s.catalogs[className];
@@ -178,12 +184,22 @@ export function AssetRefPicker({ className, value, onChange }: Props) {
           {value ? (current?.name ?? value) : '(none)'}
         </span>
         {value && (
-          <button
-            type="button"
+          // role=button span rather than a real <button>: this lives inside the
+          // trigger <button>, and a button-in-button is invalid DOM nesting.
+          <span
+            role="button"
+            tabIndex={0}
             className="danger assetrefpicker-clear"
             onClick={(e) => { e.stopPropagation(); onChange(null); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                onChange(null);
+              }
+            }}
             title="Clear"
-          >×</button>
+          >×</span>
         )}
       </button>
       {open && (
