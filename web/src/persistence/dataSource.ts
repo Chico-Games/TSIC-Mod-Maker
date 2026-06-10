@@ -1,4 +1,38 @@
 import type { ProjectMeta } from '../store/definitionsStore';
+import {
+  envelopePropsToLean,
+  isLeanProperties,
+  leanPropsToEnvelope,
+  type LeanSchema,
+} from './leanEnvelope';
+
+// ── lean ⇆ envelope text translation ────────────────────────────────────────
+// The game ships lean JSON; this editor renders typed envelopes. We translate
+// at the DataSource boundary using the pack's own `_schema.json`, so everything
+// above the DataSource sees envelopes and disk stays lean (identical to what the
+// game reads). When a pack has no `_schema.json` (legacy envelope packs), the
+// text passes through untouched.
+
+/** Lean file text → envelope file text (properties only). No-op without schema. */
+function leanTextToEnvelope(text: string, schema: LeanSchema | null): string {
+  if (!schema) return text;
+  let j: any;
+  try { j = JSON.parse(text); } catch { return text; }
+  if (!j || typeof j.class !== 'string' || !j.properties || typeof j.properties !== 'object') return text;
+  if (!isLeanProperties(j.properties)) return text; // already envelopes — don't double-wrap
+  j.properties = leanPropsToEnvelope(j.properties, j.class, schema);
+  return JSON.stringify(j, null, 2) + '\n';
+}
+
+/** Envelope file text → lean file text (properties only). No-op without schema. */
+function envelopeTextToLean(text: string, schema: LeanSchema | null): string {
+  if (!schema) return text;
+  let j: any;
+  try { j = JSON.parse(text); } catch { return text; }
+  if (!j || !j.properties || typeof j.properties !== 'object') return text;
+  j.properties = envelopePropsToLean(j.properties, schema);
+  return JSON.stringify(j, null, 2) + '\n';
+}
 
 export interface DataSourceManifest {
   folders: string[];
@@ -69,11 +103,26 @@ export class HttpDataSource implements DataSource {
     };
   }
 
+  private schemaCache: Promise<LeanSchema | null> | null = null;
+  /** Lazy-load the pack's `_schema.json` (cached). Null when absent. */
+  private getSchema(): Promise<LeanSchema | null> {
+    if (!this.schemaCache) {
+      this.schemaCache = (async () => {
+        try {
+          const r = await this.fetcher(`${this.baseUrl}/_schema.json`);
+          if (!r.ok) return null;
+          return JSON.parse(await r.text()) as LeanSchema;
+        } catch { return null; }
+      })();
+    }
+    return this.schemaCache;
+  }
+
   async readFile(folder: string, id: string): Promise<string> {
     const url = `${this.baseUrl}/${folder}/${id}.json`;
     const r = await this.fetcher(url);
     if (!r.ok) throw new Error(`file ${folder}/${id} ${r.status}`);
-    return r.text();
+    return leanTextToEnvelope(await r.text(), await this.getSchema());
   }
 
   async readProjectMeta(): Promise<ProjectMeta> {
@@ -138,18 +187,35 @@ export class FsaDataSource implements DataSource {
     return { folders, files };
   }
 
+  private schemaCache: Promise<LeanSchema | null> | null = null;
+  /** Lazy-load the pack's `_schema.json` (cached). Null when absent. */
+  private getSchema(): Promise<LeanSchema | null> {
+    if (!this.schemaCache) {
+      this.schemaCache = (async () => {
+        try {
+          const fh = await this.rootHandle.getFileHandle('_schema.json');
+          return JSON.parse(await (await fh.getFile()).text()) as LeanSchema;
+        } catch { return null; }
+      })();
+    }
+    return this.schemaCache;
+  }
+
   async readFile(folder: string, id: string): Promise<string> {
     const dir = await this.rootHandle.getDirectoryHandle(folder);
     const fh = await dir.getFileHandle(`${id}.json`);
     const file = await fh.getFile();
-    return file.text();
+    return leanTextToEnvelope(await file.text(), await this.getSchema());
   }
 
   async writeFile(folder: string, id: string, text: string): Promise<void> {
+    // Zero-byte tombstone sentinels must stay empty — don't run them through
+    // the converter (which would emit "{}\n").
+    const out = text.length === 0 ? text : envelopeTextToLean(text, await this.getSchema());
     const dir = await this.rootHandle.getDirectoryHandle(folder, { create: true });
     const fh = await dir.getFileHandle(`${id}.json`, { create: true });
     const w = await (fh as any).createWritable();
-    await w.write(text);
+    await w.write(out);
     await w.close();
   }
 
