@@ -11,6 +11,7 @@ import { IssueDot } from './IssueDot';
 import { useValidationStore } from '../store/validationStore';
 import { DefinitionsTable } from './DefinitionsTable';
 import { RecipeBuilderView, isRecipeFolder } from './RecipeBuilderView';
+import { buildUpgradeChains } from '../upgradeChains';
 
 // Three-pane layout:
 //   left: folder list (one per definition class)
@@ -585,6 +586,19 @@ function DefinitionEditor({
     return [node.name, ...node.parents].join(' → ');
   }, [classNodes, json.class, bareClass]);
 
+  // Upgrade-chain members for the current record's folder — surfaces the
+  // tier siblings (T1/T2/…) as click-to-jump pills above the editor body
+  // so the user always sees the family from inside Definitions too.
+  const definitions = useDefinitionsStore((s) => s.definitions);
+  const tierChain = useMemo(() => {
+    const idx = buildUpgradeChains(definitions, (r) => r.folder === rec.folder);
+    const chainId = idx.byId.get(rec.id);
+    if (!chainId) return [];
+    const members = idx.chains.get(chainId) ?? [];
+    if (members.length < 2) return [];
+    return members.map((m) => ({ key: m.key, id: m.id, tier: m.tier }));
+  }, [definitions, rec.folder, rec.id]);
+
   return (
     <div className="def-editor-inner">
       <div className="def-editor-head">
@@ -630,6 +644,27 @@ function DefinitionEditor({
           Save
         </button>
       </div>
+
+      {tierChain.length > 0 && (
+        <div className="def-tier-chain" role="group" aria-label="Related tiers">
+          <span className="def-tier-chain-label">Tiers:</span>
+          {tierChain.map((m) => {
+            const isCurrent = m.id === rec.id;
+            return (
+              <button
+                key={m.key}
+                type="button"
+                className={`tier-pill ${isCurrent ? 'selected' : ''}`}
+                title={m.id}
+                onClick={() => { if (!isCurrent) onJumpToKey(m.key); }}
+              >
+                {m.tier > 0 ? `T${m.tier}` : 'base'}
+                <span className="def-tier-chain-id"> · {humanizeAssetId(m.id)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div className="def-editor-body">
         <ReferenceViewer

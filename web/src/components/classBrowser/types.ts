@@ -40,4 +40,8 @@ export interface ClassBrowserConfig {
   hasStaticPartner?: boolean;
   newRecordClass: string;
   idTemplate?: (n: number) => string;
+  /** When true, the rail groups rows by upgrade-chain family and renders
+   *  a tier-pill strip per family with an inline + Add-tier button —
+   *  mirrors the Stations / Furniture (Recipes&Loot) rails. */
+  tierGrouping?: boolean;
 }

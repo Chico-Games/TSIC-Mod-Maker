@@ -22,6 +22,7 @@ import { BulkEditDialog } from './BulkEditDialog';
 import type { ClassBrowserConfig } from './types';
 import { DEFAULT_WARNINGS } from './RowWarnings';
 import type { WarningRule, WarningSeverity, WarningCtx } from './types';
+import { buildUpgradeChains, familyKey as nameFamilyKey } from '../../upgradeChains';
 
 interface Props {
   folder: string;
@@ -239,6 +240,98 @@ export function ClassBrowserTab({ folder, config }: Props) {
     { semanticKey: (r) => r.key },
   ) as RankedHit<Row>[];
 
+  // Upgrade-chain index for the current folder. Only computed when the
+  // config opts into tier grouping; the result is cheap to skip otherwise.
+  const chainIndex = useMemo(() => {
+    if (!config.tierGrouping) return null;
+    return buildUpgradeChains(definitions, (rec) => rec.folder === folder);
+  }, [config.tierGrouping, definitions, folder]);
+
+  /** Filtered rows grouped by upgrade-chain family. Each family has its
+   *  members sorted by tier ascending and exposes the best-rank index so
+   *  search matches still bubble to the top. */
+  type FamilyMember = { hit: RankedHit<Row>; tier: number; displayName: string };
+  type FamilyGroup = { familyKey: string; members: FamilyMember[]; bestRank: number };
+  const families = useMemo<FamilyGroup[] | null>(() => {
+    if (!chainIndex) return null;
+    const byKey = new Map<string, FamilyGroup>();
+    const list: FamilyGroup[] = [];
+    filtered.forEach((h, idx) => {
+      const rec = definitions.get(h.item.key);
+      if (!rec) return;
+      const chainId = chainIndex.byId.get(h.item.id);
+      const chain = chainId ? chainIndex.chains.get(chainId) ?? [] : [];
+      const tier = chain.find((m) => m.id === h.item.id)?.tier ?? 0;
+      const fk = chainId ?? nameFamilyKey(h.item.id);
+      const dn = (() => {
+        const v = (rec.json as any)?.properties?.display_name;
+        return v && typeof v === 'object' && typeof v.value === 'string' && v.value
+          ? v.value
+          : humanizeAssetId(h.item.id);
+      })();
+      let fam = byKey.get(fk);
+      if (!fam) {
+        fam = { familyKey: fk, members: [], bestRank: idx };
+        byKey.set(fk, fam);
+        list.push(fam);
+      }
+      fam.members.push({ hit: h, tier, displayName: dn });
+    });
+    list.sort((a, b) => a.bestRank - b.bestRank);
+    for (const fam of list) {
+      fam.members.sort((a, b) => {
+        const at = a.tier || 99;
+        const bt = b.tier || 99;
+        if (at !== bt) return at - bt;
+        return a.displayName.localeCompare(b.displayName);
+      });
+    }
+    return list;
+  }, [chainIndex, filtered, definitions]);
+
+  /** Mint a new tier off the given asset by cloning its class, appending
+   *  `Tier{N+1}` to the id, and creating a FurnitureUpgradeRecipe that
+   *  links the previous tier to the new one. Mirrors the equivalent
+   *  helper in FurnitureSubTab/StationsSubTab. */
+  const onAddUpgradeTier = (topKey: DefinitionsKey) => {
+    const topRec = definitions.get(topKey);
+    if (!topRec) return;
+    const topId = topRec.id;
+    const chainId = chainIndex?.byId.get(topId);
+    const chain = chainId ? chainIndex?.chains.get(chainId) ?? [] : [];
+    const topTier = chain.find((m) => m.id === topId)?.tier ?? 0;
+    const nextTier = (topTier || 0) + 1;
+    let newId = topId;
+    if (/Tier\d+/.test(newId)) {
+      newId = newId.replace(/Tier\d+/, `Tier${nextTier}`);
+    } else {
+      const m = newId.match(/^(.+?)(_[A-Z]{2,3})$/);
+      newId = m ? `${m[1]}Tier${nextTier}${m[2]}` : `${newId}Tier${nextTier}`;
+    }
+    if (findKeyById(newId)) return;
+    const newKey = createDefinitionForClass(config.newRecordClass, newId);
+    if (!newKey) return;
+    const upgradeRecipeId = `RD_${newId.replace(/^FD_/, '').replace(/_[A-Z]{2,3}$/, '')}_CN`;
+    const upgradeKey = createDefinitionForClass('FurnitureUpgradeRecipe', upgradeRecipeId);
+    if (upgradeKey) {
+      updateValueAtPath(upgradeKey, ['properties', 'upgraded_furniture_definition'], {
+        type: 'definition_ref',
+        class: config.newRecordClass,
+        value: newId,
+      });
+      updateValueAtPath(upgradeKey, ['properties', 'upgrade_tier'], {
+        type: 'int',
+        value: nextTier,
+      });
+    }
+    updateValueAtPath(topKey, ['properties', 'upgrade_recipe'], {
+      type: 'definition_ref',
+      class: 'FurnitureUpgradeRecipe',
+      value: upgradeRecipeId,
+    });
+    setSelectedKey(newKey);
+  };
+
   const handleRailClick = (e: React.MouseEvent, key: DefinitionsKey) => {
     if (e.shiftKey && lastClickedKey) {
       const ids = filtered.map((h) => h.item.key);
@@ -288,6 +381,14 @@ export function ClassBrowserTab({ folder, config }: Props) {
         ) : (
           <RailColumn
             filtered={filtered}
+            families={families}
+            onAddTier={onAddUpgradeTier}
+            onDeleteTier={(k) => {
+              const rec = definitions.get(k);
+              if (!rec) return;
+              if (!window.confirm(`Delete ${rec.id}? This will remove the file from disk if it exists.`)) return;
+              void useDefinitionsStore.getState().deleteDefinition(k);
+            }}
             selectedKey={selectedKey}
             setSelectedKey={setSelectedKey}
             selectedKeys={selectedKeys}
@@ -438,8 +539,18 @@ export function ClassBrowserTab({ folder, config }: Props) {
   );
 }
 
+type FamilyMemberView = {
+  hit: RankedHit<{ key: DefinitionsKey; id: string }>;
+  tier: number;
+  displayName: string;
+};
+type FamilyGroupView = { familyKey: string; members: FamilyMemberView[]; bestRank: number };
+
 function RailColumn(props: {
   filtered: any[];
+  families: FamilyGroupView[] | null;
+  onAddTier: (topKey: DefinitionsKey) => void;
+  onDeleteTier: (k: DefinitionsKey) => void;
   selectedKey: DefinitionsKey | null;
   setSelectedKey: (k: DefinitionsKey) => void;
   selectedKeys: Set<DefinitionsKey>;
@@ -462,7 +573,8 @@ function RailColumn(props: {
   onCollapse?: () => void;
 }) {
   const {
-    filtered, selectedKey, setSelectedKey, selectedKeys, handleRailClick,
+    filtered, families, onAddTier, onDeleteTier,
+    selectedKey, setSelectedKey, selectedKeys, handleRailClick,
     setSelectedKeys, setLastClickedKey, setMode, setBulkOpen, duplicateSelected, duplicateOne,
     theme, config, findKeyById,
     createDefinitionForClass, filter, setFilter, jumpToDef, warningsForRow, definitions,
@@ -519,6 +631,21 @@ function RailColumn(props: {
       </div>
       {filtered.length === 0 ? (
         <div className="empty-state-mini">No records.</div>
+      ) : families ? (
+        <div className="rail-body rail-body-families">
+          {families.map((fam) => (
+            <CBFamilyEntry
+              key={fam.familyKey}
+              members={fam.members}
+              selectedKey={selectedKey}
+              theme={theme}
+              onSelect={(k) => setSelectedKey(k)}
+              onAddTier={() => onAddTier(fam.members[fam.members.length - 1].hit.item.key)}
+              onDeleteTier={onDeleteTier}
+              jumpToDef={jumpToDef}
+            />
+          ))}
+        </div>
       ) : (
         <VirtualList
           className="rail-body"
@@ -575,6 +702,91 @@ function RailColumn(props: {
         </div>
       )}
     </aside>
+  );
+}
+
+/** Family-grouped rail entry — used when the folder opts into
+ *  tierGrouping. Mirrors the StationsSubTab / FurnitureSubTab rail
+ *  family entries: a head row that drills into the highest-tier (or
+ *  selected) member, an inline + Add-tier button, and a strip of
+ *  tier pills below for multi-member chains. */
+function CBFamilyEntry({
+  members,
+  selectedKey,
+  theme,
+  onSelect,
+  onAddTier,
+  onDeleteTier,
+  jumpToDef,
+}: {
+  members: FamilyMemberView[];
+  selectedKey: DefinitionsKey | null;
+  theme: { color: string; emoji: string };
+  onSelect: (k: DefinitionsKey) => void;
+  onAddTier: () => void;
+  onDeleteTier: (k: DefinitionsKey) => void;
+  jumpToDef: (id: string) => void;
+}) {
+  const issuesByKey = useValidationStore((s) => s.issuesByKey);
+  const familyIssues = members.flatMap((m) => issuesByKey.get(m.hit.item.key) ?? []);
+  const selectedMember = members.find((m) => m.hit.item.key === selectedKey);
+  const familySelected = !!selectedMember;
+  const isChain = members.length > 1;
+  const familyName = isChain
+    ? (members[0].displayName.replace(/\s*Tier\s*\d+/i, '').trim() || members[0].displayName)
+    : members[0].displayName;
+  const headMember = selectedMember ?? members[0];
+  return (
+    <div
+      className={`rail-family ${familySelected ? 'selected' : ''} ${isChain ? 'is-chain' : 'is-singleton'}`}
+      style={{ borderLeft: `3px solid ${theme.color}` }}
+    >
+      <div className="rail-family-headline">
+        <button
+          className={`rail-family-head ${!isChain && familySelected ? 'selected' : ''}`}
+          onClick={() => onSelect(headMember.hit.item.key)}
+          title={`${headMember.displayName} (${headMember.hit.item.id})\nMiddle-click to open in Definitions`}
+          onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(headMember.hit.item.id); } }}
+          onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+        >
+          <span className="emoji" aria-hidden>{theme.emoji}</span>
+          <span className="label">
+            <HighlightedText text={familyName} ranges={headMember.hit.ranges} />
+          </span>
+          <IssueDot issues={familyIssues} />
+        </button>
+        <button
+          className="rail-inline-add"
+          onClick={(e) => { e.stopPropagation(); onAddTier(); }}
+          title="Add an upgraded tier (mints next asset + linking recipe)"
+        >＋</button>
+      </div>
+      <div className="rail-family-tiers">
+        {members.map((m) => {
+          const tier = m.tier;
+          const label = tier > 0 ? `T${tier}` : 'base';
+          const isSel = selectedKey === m.hit.item.key;
+          return (
+            <span key={m.hit.item.key} className={`tier-pill-wrap ${isSel ? 'selected' : ''}`}>
+              <button
+                className={`tier-pill ${isSel ? 'selected' : ''}`}
+                onClick={() => onSelect(m.hit.item.key)}
+                title={`${m.displayName}\nMiddle-click to open in Definitions`}
+                onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jumpToDef(m.hit.item.id); } }}
+                onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+              >
+                {label}
+              </button>
+              <button
+                className="tier-pill-x"
+                title={`Delete ${m.displayName}`}
+                onClick={(e) => { e.stopPropagation(); onDeleteTier(m.hit.item.key); }}
+              >×</button>
+            </span>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
