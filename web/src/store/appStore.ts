@@ -12,7 +12,7 @@ export type FurnitureSubTab =
   | 'storage' | 'universal-storage'
   | 'crafting-stations' | 'production-stations' | 'plantable'
   | 'elevator' | 'teleporter' | 'death-box' | 'containment-cage' | 'shopping-cart'
-  | 'spawn-points' | 'enemy-spawn-points' | 'interactable-text';
+  | 'spawn-points' | 'enemy-spawn-points' | 'interactable-text' | 'html-game';
 
 export const ITEMS_SUBTAB_FOLDER: Record<ItemsSubTab, string> = {
   'crafting-materials': 'crafting_material_definitions',
@@ -44,6 +44,7 @@ export const FURNITURE_SUBTAB_FOLDER: Record<FurnitureSubTab, string> = {
   'spawn-points': 'spawn_point_definitions',
   'enemy-spawn-points': 'enemy_spawn_point_definitions',
   'interactable-text': 'interactable_text_definitions',
+  'html-game': 'html_game_definitions',
 };
 
 /** Path-anchored selection (an array or a slot inside a definition's

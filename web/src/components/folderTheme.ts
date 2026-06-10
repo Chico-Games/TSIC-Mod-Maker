@@ -12,6 +12,7 @@ const DEFAULT: FolderTheme = { emoji: '📁', color: '#5fb3ff' };
 const THEMES: Record<string, FolderTheme> = {
   ammo_definitions: { emoji: '🔫', color: '#c9a36b' },
   available_recipe_rules_definitions: { emoji: '📜', color: '#b78cff' },
+  biome_definitions: { emoji: '🏔️', color: '#6dc4a0' },
   constructable_item_definitions: { emoji: '🧱', color: '#d4894e' },
   consumable_definitions: { emoji: '🥗', color: '#7bc97c' },
   containment_cage_definitions: { emoji: '🪤', color: '#888c95' },
@@ -28,6 +29,7 @@ const THEMES: Record<string, FolderTheme> = {
   furniture_upgrade_recipe: { emoji: '🔧', color: '#d8b06b' },
   furniture_with_components_definitions: { emoji: '🪟', color: '#a4a07f' },
   glove_definitions: { emoji: '🧤', color: '#e6a4c5' },
+  html_game_definitions: { emoji: '🕹️', color: '#7fbf8f' },
   interactable_text_definitions: { emoji: '💬', color: '#9bb1c8' },
   inventory_rules_definitions: { emoji: '📦', color: '#c0a370' },
   layout_definitions: { emoji: '🗺️', color: '#888c95' },

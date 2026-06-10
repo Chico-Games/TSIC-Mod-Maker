@@ -194,6 +194,15 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
     label: 'Shopping Cart', emoji: t('shopping_cart_definitions'),
     newRecordClass: 'ShoppingCartDefinition', columns: [],
   },
+  biome_definitions: {
+    label: 'Biomes', emoji: t('biome_definitions'),
+    newRecordClass: 'BiomeDefinition',
+    columns: [
+      { key: 'role', label: 'Role', path: ['properties','role','value'], kind: 'string' as const },
+      { key: 'maze_openness', label: 'Open', path: ['properties','maze_openness','value'], kind: 'number', width: 60 },
+      { key: 'loot_mult', label: 'Loot×', path: ['properties','loot_multiplier','value'], kind: 'number', width: 60 },
+    ],
+  },
   spawn_point_definitions: {
     label: 'Spawn Points', emoji: t('spawn_point_definitions'),
     newRecordClass: 'SpawnPointDefinition', columns: [],
@@ -205,5 +214,12 @@ export const CONFIGS: Record<string, ClassBrowserConfig> = {
   interactable_text_definitions: {
     label: 'Interactable Text', emoji: t('interactable_text_definitions'),
     newRecordClass: 'InteractableTextDefinition', columns: [],
+  },
+  html_game_definitions: {
+    label: 'HTML Games', emoji: t('html_game_definitions'),
+    newRecordClass: 'HTMLGameDefinition',
+    columns: [
+      { key: 'path', label: 'HTML Path', path: ['properties', 'game_htmlpath', 'value'], kind: 'string' as const },
+    ],
   },
 };
