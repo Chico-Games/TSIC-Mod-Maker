@@ -21,21 +21,27 @@ test('invalid-json kind on parse failure', () => {
 
 test('missing-field kind for each required key', () => {
   const noId = JSON.stringify({ asset_path: '/Game/X', class: 'C' });
-  const noPath = JSON.stringify({ id: 'X', class: 'C' });
   const noClass = JSON.stringify({ id: 'X', asset_path: '/Game/X' });
   const issues = validateBatch([
     { folder: 'a', name: 'x.json', text: noId },
-    { folder: 'a', name: 'y.json', text: noPath },
     { folder: 'a', name: 'z.json', text: noClass },
   ]);
   const missing = issues.filter((i): i is Extract<StructuralIssue, { kind: 'missing-field' }> =>
     i.kind === 'missing-field',
   );
-  assert.equal(missing.length, 3);
+  assert.equal(missing.length, 2);
   assert.deepEqual(
     missing.map((i) => i.field).sort(),
-    ['asset_path', 'class', 'id'],
+    ['class', 'id'],
   );
+});
+
+test('missing asset_path is allowed (data-only defs have no .uasset)', () => {
+  const noPath = JSON.stringify({ id: 'HK_Accept', class: 'HotkeyDefinition' });
+  const issues = validateBatch([
+    { folder: 'hotkey_definitions', name: 'HK_Accept.json', text: noPath },
+  ]);
+  assert.deepEqual(issues, []);
 });
 
 test('id-mismatch kind when json.id != filename stem', () => {
@@ -72,20 +78,20 @@ test('top-level number is treated as invalid-json', () => {
   assert.equal(issues[0].kind, 'invalid-json');
 });
 
-test('object with no fields yields three missing-field issues', () => {
+test('object with no fields yields two missing-field issues (id + class)', () => {
   const issues = validateBatch([
     { folder: 'a', name: 'empty.json', text: '{}' },
   ]);
-  // No id-mismatch since json.id is absent.
-  assert.equal(issues.length, 3);
+  // No id-mismatch since json.id is absent; asset_path is optional.
+  assert.equal(issues.length, 2);
   for (const i of issues) assert.equal(i.kind, 'missing-field');
 });
 
-test('empty-string fields fail missing-field (not allowed)', () => {
+test('empty-string id/class fail missing-field (asset_path optional)', () => {
   const issues = validateBatch([
     { folder: 'a', name: 'x.json', text: JSON.stringify({ id: '', asset_path: '', class: '' }) },
   ]);
-  assert.equal(issues.length, 3);
+  assert.equal(issues.length, 2);
   for (const i of issues) assert.equal(i.kind, 'missing-field');
 });
 

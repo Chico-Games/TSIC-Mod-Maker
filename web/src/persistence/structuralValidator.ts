@@ -29,7 +29,12 @@ export function validateBatch(files: InputFile[]): StructuralIssue[] {
       continue;
     }
     const r = parsed as Record<string, unknown>;
-    for (const field of ['id', 'asset_path', 'class'] as const) {
+    // `id` and `class` are required. `asset_path` is OPTIONAL: some definition
+    // packs ship hand-authored, data-only defs (e.g. hotkey/input/situation)
+    // that have no backing .uasset and therefore no asset_path. The editor
+    // synthesizes `/Game/Definitions/{folder}/{id}` on save when it's absent,
+    // so a missing asset_path must not block loading.
+    for (const field of ['id', 'class'] as const) {
       if (typeof r[field] !== 'string' || !r[field]) {
         issues.push({ kind: 'missing-field', folder: f.folder, file: f.name, field });
       }
