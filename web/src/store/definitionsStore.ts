@@ -16,6 +16,11 @@ import {
 } from '../persistence/projectsRoot';
 import type { DataSource, AssetCatalogEntry } from '../persistence/dataSource';
 import { HttpDataSource, FsaDataSource } from '../persistence/dataSource';
+import {
+  clearPinnedHandle,
+  getPinnedHandle,
+  setPinnedHandle,
+} from '../persistence/pinnedProject';
 import { useAppSchemaStore } from './appSchemaStore';
 import type { ClassNode } from './appSchemaStore';
 import { useGameplayTagStore } from './gameplayTagStore';
@@ -154,6 +159,9 @@ export interface DefinitionsStore {
   projectsRootHandle: FileSystemDirectoryHandle | null;
   /** Subdirectory listing under projectsRootHandle, refreshed lazily. */
   projectsInRoot: ProjectListing[];
+  /** Display name of the pinned project folder, or null when none is pinned.
+   *  The handle itself lives in IndexedDB (see persistence/pinnedProject). */
+  pinnedProjectName: string | null;
 
   // Actions
   setToast: (t: { kind: 'info' | 'error'; text: string } | null) => void;
@@ -218,6 +226,17 @@ export interface DefinitionsStore {
   refreshProjectsInRoot: () => Promise<void>;
   /** Open the subfolder `folderName` under the projects-root as the current project. */
   openProjectInRoot: (folderName: string) => Promise<void>;
+  /** Open the pinned project folder. Re-prompts for permission (a user gesture).
+   *  When nothing is pinned yet, routes to setPinnedProjectFromPicker(). An
+   *  optional handle skips the IndexedDB read (used right after pinning, when a
+   *  DataCloneError may have prevented persistence). */
+  openPinnedProject: (handle?: FileSystemDirectoryHandle) => Promise<void>;
+  /** Pick a folder via the directory picker, store it as the pin, then open it. */
+  setPinnedProjectFromPicker: () => Promise<void>;
+  /** Forget the pinned folder. */
+  clearPinnedProject: () => Promise<void>;
+  /** Reload the pinned folder's display name into state (no permission prompt). */
+  refreshPinned: () => Promise<void>;
   /** Recursively delete `folderName` from the projects-root and refresh the
    *  listing. Caller is responsible for confirming with the user. */
   deleteProjectInRoot: (folderName: string) => Promise<void>;
@@ -1299,6 +1318,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   recents: [],
   projectsRootHandle: null,
   projectsInRoot: [],
+  pinnedProjectName: null,
   historyPast: [],
   historyFuture: [],
 
@@ -1570,6 +1590,12 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   bootstrap: async () => {
     if (get().bootstrapped) return;
     set({ bootstrapped: true });
+    // Surface the pinned-folder name on the header button immediately (cheap
+    // IndexedDB read, no permission prompt).
+    try {
+      const pinned = await getPinnedHandle();
+      set({ pinnedProjectName: pinned?.name ?? null });
+    } catch { /* noop */ }
     // Test hatch: setting `localStorage.tsic.def.skipBundled.v1 = '1'`
     // suppresses both the saved-handle and the bundled-default auto-loads
     // so the smoke harness can drive the store from a clean state.
@@ -1599,6 +1625,26 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         }
       }
       if (skipAuto) return;
+      // Prefer auto-opening the pinned project — but only if its permission is
+      // still granted. Never prompt during bootstrap; the user clicks the pin
+      // button to grant access again when needed.
+      if (get().autoLoadEnabled) {
+        try {
+          const pinned = await getPinnedHandle();
+          if (pinned) {
+            const anyP = pinned as any;
+            const pStatus = typeof anyP.queryPermission === 'function'
+              ? await anyP.queryPermission({ mode: 'readwrite' })
+              : 'granted';
+            if (pStatus === 'granted') {
+              await get().openPinnedProject(pinned);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('[pinned] bootstrap auto-open failed', e);
+        }
+      }
       // No saved handle (or no permission) — fall back to bundled defaults
       // so the user lands on a working tree immediately.
       if (get().autoLoadEnabled) {
@@ -1989,6 +2035,99 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       await get().refreshRecents();
     } catch (e) {
       console.warn('[recents] could not record openProjectInRoot', e);
+    }
+  },
+
+  refreshPinned: async () => {
+    try {
+      const pinned = await getPinnedHandle();
+      set({ pinnedProjectName: pinned?.name ?? null });
+    } catch (e) {
+      console.warn('[pinned] refresh failed', e);
+    }
+  },
+
+  clearPinnedProject: async () => {
+    try { await clearPinnedHandle(); } catch (e) { console.warn('[pinned] clear failed', e); }
+    set({ pinnedProjectName: null });
+  },
+
+  setPinnedProjectFromPicker: async () => {
+    const w = window as any;
+    if (!w.showDirectoryPicker) {
+      set({
+        toast: {
+          kind: 'error',
+          text: 'This browser lacks the File System Access API. Use Chrome / Edge / Brave.',
+        },
+      });
+      return;
+    }
+    let handle: FileSystemDirectoryHandle;
+    try {
+      handle = await w.showDirectoryPicker({ mode: 'readwrite', id: 'tsic-pinned', startIn: 'documents' });
+    } catch (e) {
+      if ((e as Error)?.name !== 'AbortError') set({ toast: { kind: 'error', text: String(e) } });
+      return;
+    }
+    const ok = await ensurePermission(handle, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
+      return;
+    }
+    try { await setPinnedHandle(handle); } catch (e) {
+      // Non-FSA / DataCloneError: the pin won't survive a reload, but we can
+      // still open it for this session by passing the handle through directly.
+      console.warn('[pinned] could not persist handle', e);
+    }
+    set({ pinnedProjectName: handle.name });
+    await get().openPinnedProject(handle);
+  },
+
+  openPinnedProject: async (override) => {
+    const handle = override ?? await getPinnedHandle();
+    if (!handle) {
+      // Nothing pinned yet — fall through to picking one.
+      await get().setPinnedProjectFromPicker();
+      return;
+    }
+    const ok = await ensurePermission(handle, 'readwrite');
+    if (!ok) {
+      set({ toast: { kind: 'error', text: "Couldn't open pinned folder — pick it again." } });
+      return;
+    }
+    try {
+      const rawMeta = await readProjectMeta(handle);
+      let projectMeta: ProjectMeta;
+      if (rawMeta) {
+        const v = (rawMeta as { schema_version?: number }).schema_version;
+        if (typeof v === 'number' && isFuture(v)) {
+          set({ futureVersionBlock: { foundVersion: v, supportedVersion: SUPPORTED_VERSION } });
+          return;
+        }
+        projectMeta = rawMeta;
+      } else {
+        projectMeta = { schema_version: 1, name: handle.name };
+      }
+      try { await putHandle(HANDLE_KEY, handle); } catch (e) {
+        console.warn('[definitions] could not persist directory handle', e);
+      }
+      set({
+        directoryHandle: handle,
+        projectMeta,
+        dataSource: null,
+        errorText: null,
+        pinnedProjectName: handle.name,
+      });
+      await get().reload();
+      try {
+        await addRecent({ name: projectMeta.name, handleName: handle.name, handle });
+        await get().refreshRecents();
+      } catch (e) {
+        console.warn('[recents] could not record openPinnedProject', e);
+      }
+    } catch (e) {
+      set({ toast: { kind: 'error', text: `Failed to open pinned folder: ${String(e)}` } });
     }
   },
 

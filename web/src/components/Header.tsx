@@ -9,6 +9,7 @@ import { SignInModal } from './modio/SignInModal';
 import { SyncChip } from './modio/SyncChip';
 import { SettingsModal } from './SettingsModal';
 import { SaveAsModal } from './SaveAsModal';
+import { getPinnedPathHint } from '../persistence/pinnedProject';
 
 type MenuItem = {
   label: string;
@@ -166,6 +167,11 @@ export function Header() {
   const openProjectInRoot = useDefinitionsStore((s) => s.openProjectInRoot);
   const refreshProjectsInRoot = useDefinitionsStore((s) => s.refreshProjectsInRoot);
   const deleteProjectInRoot = useDefinitionsStore((s) => s.deleteProjectInRoot);
+  const pinnedProjectName = useDefinitionsStore((s) => s.pinnedProjectName);
+  const openPinnedProject = useDefinitionsStore((s) => s.openPinnedProject);
+  const setPinnedProjectFromPicker = useDefinitionsStore((s) => s.setPinnedProjectFromPicker);
+  const clearPinnedProject = useDefinitionsStore((s) => s.clearPinnedProject);
+  const [pinMenuOpen, setPinMenuOpen] = useState(false);
   useEffect(() => { void refreshRecents(); }, [refreshRecents]);
   useEffect(() => { if (projectsRootHandle) void refreshProjectsInRoot(); }, [projectsRootHandle, refreshProjectsInRoot]);
 
@@ -211,6 +217,43 @@ export function Header() {
       <SemanticChip />
       <div className="spacer" />
       <button onClick={() => setSearchOpen(true)} title="Ctrl+K">⌘K Search</button>
+      <div className="open-project-split">
+        <button
+          onClick={() => void openPinnedProject()}
+          disabled={!fsa}
+          title={
+            pinnedProjectName
+              ? `Open pinned folder: ${pinnedProjectName}`
+              : `Pin a folder for one-click reopen.\nNavigate to: ${getPinnedPathHint()}`
+          }
+        >
+          {pinnedProjectName ? `📌 ${pinnedProjectName}` : '📌 Pin folder…'}
+        </button>
+        {pinnedProjectName && (
+          <button
+            className="open-project-chevron"
+            disabled={!fsa}
+            onClick={() => setPinMenuOpen((v) => !v)}
+            title="Pinned folder options"
+          >▾</button>
+        )}
+        {pinMenuOpen && (
+          <div className="recents-dropdown" onMouseLeave={() => setPinMenuOpen(false)}>
+            <button
+              className="recents-item"
+              onClick={() => { setPinMenuOpen(false); void setPinnedProjectFromPicker(); }}
+            >
+              <span className="recents-name">Change folder…</span>
+            </button>
+            <button
+              className="recents-item"
+              onClick={() => { setPinMenuOpen(false); void clearPinnedProject(); }}
+            >
+              <span className="recents-name">Unpin</span>
+            </button>
+          </div>
+        )}
+      </div>
       <div className="open-project-split">
         <button onClick={() => void openProject()} disabled={!fsa}>📂 Open project</button>
         <button

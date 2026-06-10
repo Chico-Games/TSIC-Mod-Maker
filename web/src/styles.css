@@ -2812,6 +2812,12 @@ body.resizing-col * { cursor: col-resize !important; }
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
+/* Lone button (e.g. the unpinned "Pin folder…" with no chevron) keeps its
+   full rounded corners. */
+.open-project-split > button:first-child:last-child {
+  border-top-right-radius: revert;
+  border-bottom-right-radius: revert;
+}
 .open-project-chevron {
   padding: 0 0.4rem;
   border-top-left-radius: 0;
