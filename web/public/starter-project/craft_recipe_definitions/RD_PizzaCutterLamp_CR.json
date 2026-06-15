@@ -2,95 +2,31 @@
   "id": "RD_PizzaCutterLamp_CR",
   "asset_path": "/Game/Items/Equipment/Weapons/PizzaCutterLamp/Recipes/RD_PizzaCutterLamp_CR",
   "class": "UCraftRecipeDefinition",
-  "parent_classes": [
-    "URecipeDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "recipe_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "input": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "CraftingMaterialDefinition"
+    "recipe_tags": [],
+    "input": [
+      {
+        "key": "ID_ScrapMetal_CM",
+        "value": 3
       },
-      "value_type": {
-        "type": "int"
+      {
+        "key": "ID_ExtensionCord_CM",
+        "value": 2
       },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ScrapMetal_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ExtensionCord_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 2
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_PlasticScrap_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 2
-          }
-        }
-      ]
-    },
-    "output": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "EquippableDefinition"
-      },
-      "value_type": {
-        "type": "int"
-      },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "EquippableDefinition",
-            "value": "ID_PizzaCutterLamp_EQ"
-          },
-          "value": {
-            "type": "int",
-            "value": 1
-          }
-        }
-      ]
-    },
-    "duration": {
-      "type": "float",
-      "value": 4
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "crafting_bench_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    }
+      {
+        "key": "ID_PlasticScrap_CM",
+        "value": 2
+      }
+    ],
+    "output": [
+      {
+        "key": "ID_PizzaCutterLamp_EQ",
+        "value": 1
+      }
+    ],
+    "duration": 4.0,
+    "level": 1,
+    "crafting_bench_tags": []
   }
 }

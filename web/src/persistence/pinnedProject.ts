@@ -14,7 +14,7 @@ const PINNED_HINT_KEY = 'tsic.pinned-project.path-hint';
 /** Default folder we suggest pinning: the game's DefaultProject definition pack.
  *  Shown as a navigation hint in the picker prompt / tooltip. */
 export const DEFAULT_PINNED_PATH_HINT =
-  'C:\\Users\\Administrator\\Documents\\Unreal Projects\\TSIC\\Content\\DefinitionPacks\\DefaultProject';
+  'C:\\Users\\Administrator\\Documents\\Unreal Projects\\TSIC2\\Content\\DefinitionPacks\\DefaultProject';
 
 export async function getPinnedHandle(): Promise<FileSystemDirectoryHandle | null> {
   return getHandle<FileSystemDirectoryHandle>(PINNED_KEY);

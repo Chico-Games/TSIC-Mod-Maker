@@ -2,1662 +2,513 @@
   "id": "LYD_ShowFloorNook",
   "asset_path": "/Game/WorldGeneration/Layouts/ShowFloor/Shared/Nook/Medium/LYD_ShowFloorNook",
   "class": "ULayoutDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "layout_objects": {
-      "type": "array",
-      "element_type": {
-        "type": "struct",
-        "struct_name": "LayoutObject",
-        "fields": {
-          "layout_actor_type": {
-            "type": "enum",
-            "enum_name": "LayoutActorType"
-          },
-          "b_visual_helper": {
-            "type": "bool"
-          },
-          "definition_filter": {
-            "type": "struct",
-            "struct_name": "DefinitionFilter",
-            "fields": {
-              "seed_offset": {
-                "type": "int"
+    "layout_objects": [
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
               },
-              "search_queries": {
-                "type": "array",
-                "element_type": {
-                  "type": "struct",
-                  "struct_name": "ProxySearchTreeQuery",
-                  "fields": {
-                    "search_query": {
-                      "type": "enum",
-                      "enum_name": "SearchQuery"
-                    },
-                    "tags": {
-                      "type": "gameplay_tag_container"
-                    },
-                    "b_not": {
-                      "type": "bool"
-                    }
-                  }
-                }
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
               },
-              "tile_requirements": {
-                "type": "array",
-                "element_type": null
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Table"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
               },
-              "spawn_chance_over": {
-                "type": "float"
-              },
-              "spawn_chance_under": {
-                "type": "float"
-              }
+              "tags": [
+                "Entity.RandomGeneration.Size.Small"
+              ],
+              "b_not": false
             }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "furniture_definition": "FD_FlatscreenTelevisionTV_FC",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067940926234,
+            "w": 0.7071067682804715
           },
-          "furniture_definition": {
-            "type": "definition_ref",
-            "class": "FurnitureWithComponentsDefinition"
+          "translation": {
+            "x": 121.50934245666679,
+            "y": -2.035734613763225,
+            "z": 79.10941089361107
           },
-          "transform": {
-            "type": "struct",
-            "struct_name": "Transform",
-            "fields": {
-              "rotation": {
-                "type": "struct",
-                "struct_name": "Quat",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  },
-                  "w": {
-                    "type": "float"
-                  }
-                }
-              },
-              "translation": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              },
-              "scale3_d": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              }
-            }
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
           }
         }
       },
-      "value": [
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Table"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.Size.Small"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "furniture_definition": {
-              "type": "definition_ref",
-              "class": "FurnitureWithComponentsDefinition",
-              "value": "FD_FlatscreenTelevisionTV_FC"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067940926234
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067682804715
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 121.50934245666679
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -2.035734613763225
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 79.10941089361107
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
         },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
             },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Table"
+              ],
+              "b_not": false
             },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Table"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.Size.Small"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "furniture_definition": {
-              "type": "definition_ref",
-              "class": "DamageableFurnitureDefinition",
-              "value": "FD_TVShelf_DF"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.7071067793179014
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067830551937
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 119.91782697876232
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 62.49999998775505
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.Size.Small"
+              ],
+              "b_not": false
             }
-          }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
         },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Mat"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.Size.Small",
-                            "Entity.RandomGeneration.Size.Medium",
-                            "Entity.RandomGeneration.Size.Large"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -39.446467
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 4.148495999999994
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_INCL_PARENTS: 1>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Paintingposter"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 150
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -131.64292845790402
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 218.9042430541643
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_INCL_PARENTS: 1>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Paintingposter"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 150
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 135.0000017819499
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 215.98043026889178
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_INCL_PARENTS: 1>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Paintingposter"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "furniture_definition": {
-              "type": "definition_ref",
-              "class": "DamageableFurnitureDefinition",
-              "value": "FD_Curtain_3_DF"
-            },
-            "layout_definition": {
-              "type": "definition_ref",
-              "class": "LayoutDefinition",
-              "value": "LYD_Curtains"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 26.340004525609146
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -275.0000002779555
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -5.684341886080801e-13
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-                            "Entity.RandomGeneration.FurnitureCategory.Office"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_INCL_PARENTS: 1>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Light.Wall"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 150
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 5.000001999999995
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 235.98043
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-                            "Entity.RandomGeneration.FurnitureCategory.Office"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_INCL_PARENTS: 1>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Light.Wall"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.9999999999999998
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1.4810628340581542e-8
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -40
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 275.000002
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 155.98043
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "layout_definition": {
-              "type": "definition_ref",
-              "class": "LayoutDefinition",
-              "value": "LYD_NookWalls_Medium"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
+        "furniture_definition": "FD_TVShelf_DF",
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.7071067793179014,
+            "w": 0.7071067830551937
+          },
+          "translation": {
+            "x": 119.91782697876232,
+            "y": 62.49999998775505,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
           }
         }
-      ]
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Layout.Type.Nook",
-        "Tile.Biome.ShowFloor",
-        "Entity.RandomGeneration.Size.Medium"
-      ]
-    }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Mat"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.Size.Large",
+                "Entity.RandomGeneration.Size.Medium",
+                "Entity.RandomGeneration.Size.Small"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -39.446467,
+            "y": 4.148495999999994,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_INCL_PARENTS",
+                "value": 1
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Paintingposter"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": 150.0,
+            "y": -131.64292845790402,
+            "z": 218.9042430541643
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_INCL_PARENTS",
+                "value": 1
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Paintingposter"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": 150.0,
+            "y": 135.0000017819499,
+            "z": 215.98043026889178
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_INCL_PARENTS",
+                "value": 1
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Paintingposter"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "furniture_definition": "FD_Curtain_3_DF",
+        "layout_definition": "LYD_Curtains",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": 26.340004525609146,
+            "y": -275.0000002779555,
+            "z": -5.684341886080801e-13
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+                "Entity.RandomGeneration.FurnitureCategory.Office"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_INCL_PARENTS",
+                "value": 1
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": 150.0,
+            "y": 5.000001999999995,
+            "z": 235.98043
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+                "Entity.RandomGeneration.FurnitureCategory.Office"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_INCL_PARENTS",
+                "value": 1
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.9999999999999998,
+            "w": 1.4810628340581542e-08
+          },
+          "translation": {
+            "x": -40.0,
+            "y": 275.000002,
+            "z": 155.98043
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "layout_definition": "LYD_NookWalls_Medium",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.Size.Medium",
+      "Layout.Type.Nook",
+      "Tile.Biome.ShowFloor"
+    ]
   }
 }

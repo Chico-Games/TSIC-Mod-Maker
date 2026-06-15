@@ -2,37 +2,13 @@
   "id": "ID_Fluorescent_CI",
   "asset_path": "/Game/Furniture/CarPark/Item/ID_Fluorescent_CI",
   "class": "UConstructableItemDefinition",
-  "parent_classes": [
-    "UItemDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "furniture_to_construct": {
-      "type": "definition_ref",
-      "class": "FurnitureWithComponentsDefinition",
-      "value": "FD_Fluorescent_FC"
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Fluorescent Light"
-    },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
-    },
-    "stackable": {
-      "type": "bool",
-      "value": true
-    },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
-    },
-    "static_item_definition": {
-      "type": "definition_ref",
-      "class": "StaticItemDefinition",
-      "value": "FD_Fluorescent_SI"
-    }
+    "furniture_to_construct": "FD_Fluorescent_FC",
+    "display_name": "Fluorescent Light",
+    "description": "Store furniture.",
+    "stackable": true,
+    "weight": 0.10000000149011612,
+    "static_item_definition": "FD_Fluorescent_SI"
   }
 }

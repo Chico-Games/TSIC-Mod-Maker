@@ -2,76 +2,25 @@
   "id": "FD_CeilingLattice",
   "asset_path": "/Game/Furniture/Ceilings/Furniture/FD_CeilingLattice",
   "class": "UFurnitureDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "display_name": {
-      "type": "text",
-      "value": "Ceiling Lattice"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Ceilings/Meshes/SM_Ceiling5.SM_Ceiling5"
-    },
-    "casts_shadow": {
-      "type": "bool",
-      "value": true
-    },
+    "display_name": "Ceiling Lattice",
+    "level": 1,
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/Ceilings/Meshes/SM_Ceiling5.SM_Ceiling5",
+    "casts_shadow": true,
     "collision_profile_name": {
-      "type": "struct",
-      "struct_name": "CollisionProfileName",
-      "value": {
-        "name": {
-          "type": "name",
-          "value": "Furniture"
-        }
-      }
+      "name": "Furniture"
     },
-    "random_material_overrides": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "loot_positions": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 10000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Biome.ShowFloor",
-        "Entity.RandomGeneration.FurnitureType.Ceiling"
-      ]
-    }
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 10000,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureType.Ceiling",
+      "Tile.Biome.ShowFloor"
+    ]
   }
 }

@@ -2,85 +2,34 @@
   "id": "FD_EyeScan",
   "asset_path": "/Game/Furniture/ScientificDevices/Furniture/FD_EyeScan",
   "class": "UFurnitureDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "display_name": {
-      "type": "text",
-      "value": "Palm Scanner"
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/ScientificDevices/Meshes/SM_EyeScan.SM_EyeScan"
-    },
-    "casts_shadow": {
-      "type": "bool",
-      "value": true
-    },
+    "display_name": "Palm Scanner",
+    "level": 1,
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/ScientificDevices/Meshes/SM_EyeScan.SM_EyeScan",
+    "casts_shadow": true,
     "collision_profile_name": {
-      "type": "struct",
-      "struct_name": "CollisionProfileName",
-      "value": {
-        "name": {
-          "type": "name",
-          "value": "Furniture"
-        }
-      }
+      "name": "Furniture"
     },
-    "random_material_overrides": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "loot_positions": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 5000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Biome.SCPBasePower",
-        "Tile.Biome.SCPBaseEntrance",
-        "Tile.Biome.SCPBase",
-        "Tile.Biome.SCPBaseExit",
-        "Entity.RandomGeneration.CanBeRandom",
-        "Entity.RandomGeneration.FurnitureCategory.ScienceLab",
-        "Entity.RandomGeneration.Materials.Metal",
-        "Entity.RandomGeneration.Materials.Electronic",
-        "Entity.RandomGeneration.Size.Small",
-        "Entity.RandomGeneration.FurnitureCategory.Office",
-        "Entity.RandomGeneration.FurnitureType.Scp.ScienceDevice"
-      ]
-    }
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 5000,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Office",
+      "Entity.RandomGeneration.FurnitureCategory.ScienceLab",
+      "Entity.RandomGeneration.FurnitureType.Scp.ScienceDevice",
+      "Entity.RandomGeneration.Materials.Electronic",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Size.Small",
+      "Tile.Biome.SCPBase",
+      "Tile.Biome.SCPBaseEntrance",
+      "Tile.Biome.SCPBaseExit",
+      "Tile.Biome.SCPBasePower"
+    ]
   }
 }

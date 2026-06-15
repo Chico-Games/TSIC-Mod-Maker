@@ -1,36 +1,26 @@
 {
   "id": "ARR_OvenRecipes",
-  "asset_path": "/Game/Furniture/CraftingBenches/Recipes/ARR_OvenRecipes",
+  "asset_path": "/Game/Furniture/Cooking/Oven/Recipes/ARR_OvenRecipes",
   "class": "UAvailableRecipeRulesDefinition",
-  "parent_classes": [
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
     "production_machine_rules": {
-      "type": "struct",
-      "struct_name": "ProductionMachineRules",
-      "value": {
-        "recipes": {
-          "type": "array",
-          "element_type": {
-            "type": "definition_ref",
-            "class": "CraftRecipeDefinition"
-          },
-          "value": [
-            {
-              "type": "definition_ref",
-              "class": "CraftRecipeDefinition",
-              "value": "RD_OvenCookedPotato_CR"
-            },
-            {
-              "type": "definition_ref",
-              "class": "CraftRecipeDefinition",
-              "value": "RD_OvenMarrowBake_CR"
-            }
-          ]
-        }
-      }
+      "recipes": [
+        "RD_BakedPotato_CR",
+        "RD_CaramelizedOnions_CR",
+        "RD_CinnamonRoll_CR",
+        "RD_GrilledVegetables_CR",
+        "RD_HeartyStew_CR",
+        "RD_Meatballs_CR",
+        "RD_Pancakes_CR",
+        "RD_PancakesWithJam_CR",
+        "RD_PastaPrimavera_CR",
+        "RD_Pizza_CR",
+        "RD_Salmon_CR",
+        "RD_ShepherdsPie_CR",
+        "RD_SwedishPancakes_CR",
+        "RD_Waffles_CR"
+      ]
     }
   }
 }

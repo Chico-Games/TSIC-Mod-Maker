@@ -2,3203 +2,961 @@
   "id": "LYD_Gardening_UpDown",
   "asset_path": "/Game/WorldGeneration/Layouts/Gardening/UpDown/LYD_Gardening_UpDown",
   "class": "ULayoutDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "layout_objects": {
-      "type": "array",
-      "element_type": {
-        "type": "struct",
-        "struct_name": "LayoutObject",
-        "fields": {
-          "layout_actor_type": {
-            "type": "enum",
-            "enum_name": "LayoutActorType"
-          },
-          "b_visual_helper": {
-            "type": "bool"
-          },
-          "definition_filter": {
-            "type": "struct",
-            "struct_name": "DefinitionFilter",
-            "fields": {
-              "seed_offset": {
-                "type": "int"
+    "layout_objects": [
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
               },
-              "search_queries": {
-                "type": "array",
-                "element_type": {
-                  "type": "struct",
-                  "struct_name": "ProxySearchTreeQuery",
-                  "fields": {
-                    "search_query": {
-                      "type": "enum",
-                      "enum_name": "SearchQuery"
-                    },
-                    "tags": {
-                      "type": "gameplay_tag_container"
-                    },
-                    "b_not": {
-                      "type": "bool"
-                    }
-                  }
-                }
-              },
-              "tile_requirements": {
-                "type": "array",
-                "element_type": null
-              },
-              "spawn_chance_over": {
-                "type": "float"
-              },
-              "spawn_chance_under": {
-                "type": "float"
-              }
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
             }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
           },
-          "transform": {
-            "type": "struct",
-            "struct_name": "Transform",
-            "fields": {
-              "rotation": {
-                "type": "struct",
-                "struct_name": "Quat",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  },
-                  "w": {
-                    "type": "float"
-                  }
-                }
-              },
-              "translation": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              },
-              "scale3_d": {
-                "type": "struct",
-                "struct_name": "Vector",
-                "fields": {
-                  "x": {
-                    "type": "float"
-                  },
-                  "y": {
-                    "type": "float"
-                  },
-                  "z": {
-                    "type": "float"
-                  }
-                }
-              }
-            }
+          "translation": {
+            "x": -220.47894743699908,
+            "y": -232.12469633734557,
+            "z": -1.000444171950221e-11
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
           }
         }
       },
-      "value": [
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -220.47894743699908
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -232.12469633734557
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -1.000444171950221e-11
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
         },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -421.39878924789843
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -232.1246950759759
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
             }
-          }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
         },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -640.6413288415646
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -232.12469570293567
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 3
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -421.3989197826555
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -644.4872810981223
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 4
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -586.066115041278
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 580.877645598299
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 4
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -1
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1.2167964697110887e-8
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -607.4649140602822
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 251.31198106534993
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 2.2737367544323206e-13
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 2
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067768845225
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067854885726
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 417.4805831242619
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -215.79498430320461
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 2
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067768845225
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067854885726
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 417.48057723469105
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -416.7148263032046
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 2
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067768845225
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067854885726
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 417.48057289922014
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -635.957366303205
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 5
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 2.642664455062118e-9
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.9999999999999999
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 563.5685011400928
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 610.8006734881328
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 5
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.7071067793179014
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067830551937
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 542.535086
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 276.311981
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 17.021052999999995
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -232.124696
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 3
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 17.020922000000013
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -644.487282
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 4
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -10.645145000000014
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 550.67365
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": 4
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Layout.Type.Display",
-                            "Tile.Biome.Gardening"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.7071067750158768
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067873572183
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": -22.97622100000001
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 230.278574
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Sign.Floor"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.7933533218847684
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.6087614529964945
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 38.49860799999999
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -138.49861899999996
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Light.Floor"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-                            "Entity.RandomGeneration.FurnitureCategory.DiningRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.707106754635218
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071068077378762
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 138.498608
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 699.001381
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Sign.Floor"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": -0.7071067633915394
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.7071067989815554
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 300.998608
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 136.50138100000004
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.PROXY_ACTOR: 0>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": {
-                    "type": "struct",
-                    "struct_name": "ProxySearchTreeQuery",
-                    "fields": {
-                      "search_query": {
-                        "type": "enum",
-                        "enum_name": "SearchQuery"
-                      },
-                      "tags": {
-                        "type": "gameplay_tag_container"
-                      },
-                      "b_not": {
-                        "type": "bool"
-                      }
-                    }
-                  },
-                  "value": [
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ALL_EXACT: 4>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureType.Light.Floor"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    },
-                    {
-                      "type": "struct",
-                      "struct_name": "ProxySearchTreeQuery",
-                      "value": {
-                        "search_query": {
-                          "type": "enum",
-                          "enum_name": "SearchQuery",
-                          "value": "<SearchQuery.HAS_ANY_EXACT: 2>"
-                        },
-                        "tags": {
-                          "type": "gameplay_tag_container",
-                          "value": [
-                            "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-                            "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-                            "Entity.RandomGeneration.FurnitureCategory.DiningRoom"
-                          ]
-                        },
-                        "b_not": {
-                          "type": "bool",
-                          "value": false
-                        }
-                      }
-                    }
-                  ]
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.7933533683311204
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 0.6087613924664291
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 300.998608
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": -663.498619
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.ENEMY_SPAWN_POINT: 2>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "enemy_spawn_point_definition": {
-              "type": "definition_ref",
-              "class": "EnemySpawnPointDefinition",
-              "value": "ESP_Gardening"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 51.381054
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0.000001
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0.000099
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "LayoutObject",
-          "value": {
-            "layout_actor_type": {
-              "type": "enum",
-              "enum_name": "LayoutActorType",
-              "value": "<LayoutActorType.LAYOUT: 1>"
-            },
-            "b_visual_helper": {
-              "type": "bool",
-              "value": false
-            },
-            "definition_filter": {
-              "type": "struct",
-              "struct_name": "DefinitionFilter",
-              "value": {
-                "seed_offset": {
-                  "type": "int",
-                  "value": -1
-                },
-                "search_queries": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "tile_requirements": {
-                  "type": "array",
-                  "element_type": null,
-                  "value": []
-                },
-                "spawn_chance_over": {
-                  "type": "float",
-                  "value": 0
-                },
-                "spawn_chance_under": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            },
-            "layout_definition": {
-              "type": "definition_ref",
-              "class": "LayoutDefinition",
-              "value": "LYD_TileBase"
-            },
-            "transform": {
-              "type": "struct",
-              "struct_name": "Transform",
-              "value": {
-                "rotation": {
-                  "type": "struct",
-                  "struct_name": "Quat",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "w": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                },
-                "translation": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 0
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 0
-                    }
-                  }
-                },
-                "scale3_d": {
-                  "type": "struct",
-                  "struct_name": "Vector",
-                  "value": {
-                    "x": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "y": {
-                      "type": "float",
-                      "value": 1
-                    },
-                    "z": {
-                      "type": "float",
-                      "value": 1
-                    }
-                  }
-                }
-              }
-            }
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -421.39878924789843,
+            "y": -232.1246950759759,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
           }
         }
-      ]
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Layer.Floor",
-        "Tile.Biome.Gardening",
-        "Tile.MazeDirection.UpDown",
-        "Layout.Type.Tile"
-      ]
-    }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -640.6413288415646,
+            "y": -232.12469570293567,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 3,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -421.3989197826555,
+            "y": -644.4872810981223,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 4,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -586.066115041278,
+            "y": 580.877645598299,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 4,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -1.0,
+            "w": 1.2167964697110887e-08
+          },
+          "translation": {
+            "x": -607.4649140602822,
+            "y": 251.31198106534993,
+            "z": 2.2737367544323206e-13
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 2,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067768845225,
+            "w": 0.7071067854885726
+          },
+          "translation": {
+            "x": 417.4805831242619,
+            "y": -215.79498430320461,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 2,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067768845225,
+            "w": 0.7071067854885726
+          },
+          "translation": {
+            "x": 417.48057723469105,
+            "y": -416.7148263032046,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 2,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067768845225,
+            "w": 0.7071067854885726
+          },
+          "translation": {
+            "x": 417.48057289922014,
+            "y": -635.957366303205,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 5,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 2.642664455062118e-09,
+            "w": 0.9999999999999999
+          },
+          "translation": {
+            "x": 563.5685011400928,
+            "y": 610.8006734881328,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 5,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.7071067793179014,
+            "w": 0.7071067830551937
+          },
+          "translation": {
+            "x": 542.535086,
+            "y": 276.311981,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 17.021052999999995,
+            "y": -232.124696,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 3,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 17.020922000000013,
+            "y": -644.487282,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 4,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": -10.645145000000014,
+            "y": 550.67365,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 4,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Layout.Type.Display",
+                "Tile.Biome.Gardening"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.7071067750158768,
+            "w": 0.7071067873572183
+          },
+          "translation": {
+            "x": -22.97622100000001,
+            "y": 230.278574,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Sign.Floor"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.7933533218847684,
+            "w": 0.6087614529964945
+          },
+          "translation": {
+            "x": 38.49860799999999,
+            "y": -138.49861899999996,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Floor"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.707106754635218,
+            "w": 0.7071068077378762
+          },
+          "translation": {
+            "x": 138.498608,
+            "y": 699.001381,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Sign.Floor"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": -0.0,
+            "y": 0.0,
+            "z": -0.7071067633915394,
+            "w": 0.7071067989815554
+          },
+          "translation": {
+            "x": 300.998608,
+            "y": 136.50138100000004,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Floor"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": -0.0,
+            "z": 0.7933533683311204,
+            "w": 0.6087613924664291
+          },
+          "translation": {
+            "x": 300.998608,
+            "y": -663.498619,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "ENEMY_SPAWN_POINT",
+          "value": 2
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "enemy_spawn_point_definition": "ESP_Gardening",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 51.381054,
+            "y": 1e-06,
+            "z": 9.9e-05
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0.0,
+          "spawn_chance_under": 1.0
+        },
+        "layout_definition": "LYD_TileBase",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000,
+    "gameplay_tags": [
+      "Layout.Type.Tile",
+      "Tile.Biome.Gardening",
+      "Tile.Layer.Floor",
+      "Tile.MazeDirection.UpDown"
+    ]
   }
 }

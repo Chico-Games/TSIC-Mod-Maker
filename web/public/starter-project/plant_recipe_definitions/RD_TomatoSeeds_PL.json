@@ -2,270 +2,66 @@
   "id": "RD_TomatoSeeds_PL",
   "asset_path": "/Game/Items/Seeds/TomatoSeeds/Recipes/RD_TomatoSeeds_PL",
   "class": "UPlantRecipeDefinition",
-  "parent_classes": [
-    "URecipeDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "grow_stages": {
-      "type": "array",
-      "element_type": {
-        "type": "struct",
-        "struct_name": "PlantGrowStage",
-        "fields": {
-          "mesh": {
-            "type": "soft_asset_ref",
-            "class": "StaticMesh"
-          },
-          "ratio": {
-            "type": "float"
-          },
-          "start_scale": {
-            "type": "struct",
-            "struct_name": "Vector",
-            "fields": {
-              "x": {
-                "type": "float"
-              },
-              "y": {
-                "type": "float"
-              },
-              "z": {
-                "type": "float"
-              }
-            }
-          },
-          "end_scale": {
-            "type": "struct",
-            "struct_name": "Vector",
-            "fields": {
-              "x": {
-                "type": "float"
-              },
-              "y": {
-                "type": "float"
-              },
-              "z": {
-                "type": "float"
-              }
-            }
-          }
-        }
-      },
-      "value": [
-        {
-          "type": "struct",
-          "struct_name": "PlantGrowStage",
-          "value": {
-            "mesh": {
-              "type": "soft_asset_ref",
-              "class": "StaticMesh",
-              "value": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_Starter.SM_Tomatoes_Starter"
-            },
-            "ratio": {
-              "type": "float",
-              "value": 2
-            },
-            "start_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 0.3
-                },
-                "y": {
-                  "type": "float",
-                  "value": 0.3
-                },
-                "z": {
-                  "type": "float",
-                  "value": 0.3
-                }
-              }
-            },
-            "end_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 0.6
-                },
-                "y": {
-                  "type": "float",
-                  "value": 0.6
-                },
-                "z": {
-                  "type": "float",
-                  "value": 0.6
-                }
-              }
-            }
-          }
+    "grow_stages": [
+      {
+        "mesh": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_Starter.SM_Tomatoes_Starter",
+        "ratio": 2.0,
+        "start_scale": {
+          "x": 0.3,
+          "y": 0.3,
+          "z": 0.3
         },
-        {
-          "type": "struct",
-          "struct_name": "PlantGrowStage",
-          "value": {
-            "mesh": {
-              "type": "soft_asset_ref",
-              "class": "StaticMesh",
-              "value": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_Starter.SM_Tomatoes_Starter"
-            },
-            "ratio": {
-              "type": "float",
-              "value": 2
-            },
-            "start_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 0.6
-                },
-                "y": {
-                  "type": "float",
-                  "value": 0.6
-                },
-                "z": {
-                  "type": "float",
-                  "value": 0.6
-                }
-              }
-            },
-            "end_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 1
-                },
-                "y": {
-                  "type": "float",
-                  "value": 1
-                },
-                "z": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            }
-          }
+        "end_scale": {
+          "x": 0.6,
+          "y": 0.6,
+          "z": 0.6
+        }
+      },
+      {
+        "mesh": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_Starter.SM_Tomatoes_Starter",
+        "ratio": 2.0,
+        "start_scale": {
+          "x": 0.6,
+          "y": 0.6,
+          "z": 0.6
         },
-        {
-          "type": "struct",
-          "struct_name": "PlantGrowStage",
-          "value": {
-            "mesh": {
-              "type": "soft_asset_ref",
-              "class": "StaticMesh",
-              "value": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_A.SM_Tomatoes_A"
-            },
-            "ratio": {
-              "type": "float",
-              "value": 1
-            },
-            "start_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 0.8
-                },
-                "y": {
-                  "type": "float",
-                  "value": 0.8
-                },
-                "z": {
-                  "type": "float",
-                  "value": 0.8
-                }
-              }
-            },
-            "end_scale": {
-              "type": "struct",
-              "struct_name": "Vector",
-              "value": {
-                "x": {
-                  "type": "float",
-                  "value": 1
-                },
-                "y": {
-                  "type": "float",
-                  "value": 1
-                },
-                "z": {
-                  "type": "float",
-                  "value": 1
-                }
-              }
-            }
-          }
+        "end_scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
         }
-      ]
-    },
-    "recipe_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "input": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "SeedItemDefinition"
       },
-      "value_type": {
-        "type": "int"
-      },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "SeedItemDefinition",
-            "value": "ID_TomatoSeeds_SD"
-          },
-          "value": {
-            "type": "int",
-            "value": 1
-          }
+      {
+        "mesh": "/Game/Items/Seeds/TomatoSeeds/Meshes/SM_Tomatoes_A.SM_Tomatoes_A",
+        "ratio": 1.0,
+        "start_scale": {
+          "x": 0.8,
+          "y": 0.8,
+          "z": 0.8
+        },
+        "end_scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
         }
-      ]
-    },
-    "output": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "SeedItemDefinition"
-      },
-      "value_type": {
-        "type": "int"
-      },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "SeedItemDefinition",
-            "value": "ID_TomatoSeeds_SD"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        }
-      ]
-    },
-    "duration": {
-      "type": "float",
-      "value": 120
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    }
+      }
+    ],
+    "recipe_tags": [],
+    "input": [
+      {
+        "key": "ID_TomatoSeeds_SD",
+        "value": 1
+      }
+    ],
+    "output": [
+      {
+        "key": "ID_Tomato_CN",
+        "value": 3
+      }
+    ],
+    "duration": 120.0,
+    "level": 1
   }
 }

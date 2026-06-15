@@ -2,37 +2,13 @@
   "id": "ID_VendingMachine_CI",
   "asset_path": "/Game/Furniture/CarPark/Item/ID_VendingMachine_CI",
   "class": "UConstructableItemDefinition",
-  "parent_classes": [
-    "UItemDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "furniture_to_construct": {
-      "type": "definition_ref",
-      "class": "DamageableFurnitureDefinition",
-      "value": "FD_VendingMachine_DF"
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Vending Machine"
-    },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
-    },
-    "stackable": {
-      "type": "bool",
-      "value": true
-    },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
-    },
-    "static_item_definition": {
-      "type": "definition_ref",
-      "class": "StaticItemDefinition",
-      "value": "FD_VendingMachine_SI"
-    }
+    "furniture_to_construct": "FD_VendingMachine_DF",
+    "display_name": "Vending Machine",
+    "description": "Store furniture.",
+    "stackable": true,
+    "weight": 0.10000000149011612,
+    "static_item_definition": "FD_VendingMachine_SI"
   }
 }

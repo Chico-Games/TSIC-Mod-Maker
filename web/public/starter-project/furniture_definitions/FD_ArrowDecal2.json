@@ -2,69 +2,21 @@
   "id": "FD_ArrowDecal2",
   "asset_path": "/Game/Furniture/CarPark/Furniture/FD_ArrowDecal2",
   "class": "UFurnitureDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/CarPark/Meshes/SM_Arrow_01b.SM_Arrow_01b"
-    },
-    "casts_shadow": {
-      "type": "bool",
-      "value": true
-    },
+    "level": 1,
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/CarPark/Meshes/SM_Arrow_01b.SM_Arrow_01b",
+    "casts_shadow": true,
     "collision_profile_name": {
-      "type": "struct",
-      "struct_name": "CollisionProfileName",
-      "value": {
-        "name": {
-          "type": "name",
-          "value": "Furniture"
-        }
-      }
+      "name": "Furniture"
     },
-    "random_material_overrides": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "loot_positions": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 2000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    }
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 2000,
+    "gameplay_tags": []
   }
 }

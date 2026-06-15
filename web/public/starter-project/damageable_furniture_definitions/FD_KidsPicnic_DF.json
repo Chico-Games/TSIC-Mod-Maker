@@ -2,237 +2,173 @@
   "id": "FD_KidsPicnic_DF",
   "asset_path": "/Game/Furniture/Kids/Furniture/FD_KidsPicnic_DF",
   "class": "UDamageableFurnitureDefinition",
-  "parent_classes": [
-    "UFurnitureDefinition",
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "starting_health": {
-      "type": "float",
-      "value": 50
-    },
-    "destructible_collection": {
-      "type": "soft_asset_ref",
-      "class": "GeometryCollection",
-      "value": "/Game/Furniture/Kids/GeometryCollections/GCS_PicnicTableKids.GCS_PicnicTableKids"
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": {
-        "type": "definition_ref",
-        "class": "LootDefinition"
-      },
-      "value": [
-        {
-          "type": "definition_ref",
-          "class": "LootDefinition",
-          "value": "LD_WoodenTableLoot"
-        }
-      ]
-    },
-    "constructable_item_to_grant": {
-      "type": "definition_ref",
-      "class": "ConstructableItemDefinition",
-      "value": "ID_KidsPicnic_CI"
-    },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
-    "collision_box_data": {
-      "type": "soft_asset_ref",
-      "class": "CollisionBoxData",
-      "value": "/Game/Furniture/Kids/Construction/CBD_KidsPicnic_Constructed.CBD_KidsPicnic_Constructed"
-    },
-    "building_base": {
-      "type": "struct",
-      "struct_name": "Transform",
-      "value": {
+    "starting_health": 50,
+    "furniture_armour": 1,
+    "destructible_collection": "/Game/Furniture/Kids/GeometryCollections/GCS_PicnicTableKids.GCS_PicnicTableKids",
+    "destruction_impulse_strength": 0,
+    "loot_dropped_on_death": [
+      "LD_WoodenTableLoot"
+    ],
+    "constructable_item_to_grant": "ID_KidsPicnic_CI",
+    "deconstruction_tier": 0,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.6430679999999716,
+          "y": -0.43168116482630015,
+          "z": 42.72647516550666
+        },
         "rotation": {
-          "type": "struct",
-          "struct_name": "Quat",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 0
-            },
-            "y": {
-              "type": "float",
-              "value": 0
-            },
-            "z": {
-              "type": "float",
-              "value": 0
-            },
-            "w": {
-              "type": "float",
-              "value": 1
-            }
-          }
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
         },
-        "translation": {
-          "type": "struct",
-          "struct_name": "Vector",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 0
-            },
-            "y": {
-              "type": "float",
-              "value": 0
-            },
-            "z": {
-              "type": "float",
-              "value": 0
-            }
-          }
+        "box_size": {
+          "x": 46.37973371559524,
+          "y": 32.82585295337105,
+          "z": 17.970194459522247
+        }
+      },
+      {
+        "offset": {
+          "x": -1.6430679979679153,
+          "y": 50.98478766582547,
+          "z": 17.889967961689713
         },
-        "scale3_d": {
-          "type": "struct",
-          "struct_name": "Vector",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 1
-            },
-            "y": {
-              "type": "float",
-              "value": 1
-            },
-            "z": {
-              "type": "float",
-              "value": 1
-            }
-          }
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 46.379744,
+          "y": 22.263911723905565,
+          "z": 12.495780299957275
+        }
+      },
+      {
+        "offset": {
+          "x": -1.643067999999332,
+          "y": -58.74784575429731,
+          "z": 17.889968223511406
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 46.379744,
+          "y": 22.263904,
+          "z": 12.495776
         }
       }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.585114191016146e-07,
+          "y": -1.420654669459509e-07,
+          "z": 33.68693544479436
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.48315725097466,
+          "y": 41.89806965014648,
+          "z": 40.25008604060966
+        }
+      },
+      {
+        "offset": {
+          "x": -9.947598300641403e-14,
+          "y": 62.95437368167824,
+          "z": 17.942852572105217
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.483168,
+          "y": 25.44638728471279,
+          "z": 22.04807763858318
+        }
+      },
+      {
+        "offset": {
+          "x": -1.1937117960769683e-12,
+          "y": -64.7488124509173,
+          "z": 18.368193207839933
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.483168,
+          "y": 25.4464,
+          "z": 22.048064
+        }
+      }
+    ],
+    "effect_hitboxes": [],
+    "building_base": {
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "translation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale3_d": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
     },
-    "upgrade_recipe": {
-      "type": "definition_ref",
-      "class": "FurnitureUpgradeRecipe",
-      "value": ""
-    },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Kids Picnic Table"
-    },
-    "description": {
-      "type": "text",
-      "value": "A table from the store floor."
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Kids/Meshes/SM_PicnicTableKids.SM_PicnicTableKids"
-    },
-    "casts_shadow": {
-      "type": "bool",
-      "value": true
-    },
+    "construction_category_tag": "",
+    "upgrade_recipe": "RD_KidsPicnic_CN",
+    "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
+    "display_name": "Kids Picnic Table",
+    "description": "A table from the store floor.",
+    "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+      "Entity.RandomGeneration.Materials.Plastic",
+      "Tile.Biome.Kids"
+    ],
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/Kids/Meshes/SM_PicnicTableKids.SM_PicnicTableKids",
+    "casts_shadow": true,
     "collision_profile_name": {
-      "type": "struct",
-      "struct_name": "CollisionProfileName",
-      "value": {
-        "name": {
-          "type": "name",
-          "value": "Furniture"
-        }
-      }
+      "name": "Furniture"
     },
-    "random_material_overrides": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "loot_positions": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 4000
-    },
-    "destruction_impulse_strength": {
-      "type": "float",
-      "value": 0
-    },
-    "drag_angular_damping": {
-      "type": "float",
-      "value": 5
-    },
-    "drag_linear_damping": {
-      "type": "float",
-      "value": 5
-    },
-    "drag_mass": {
-      "type": "float",
-      "value": 1
-    },
-    "drag_max_angular_velocity": {
-      "type": "float",
-      "value": 90
-    },
-    "drag_tier": {
-      "type": "int",
-      "value": 1
-    },
-    "friction": {
-      "type": "float",
-      "value": 0.699999988079071
-    },
-    "furniture_armour": {
-      "type": "int",
-      "value": 1
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Biome.Kids",
-        "ProxyActor.RandomGeneration",
-        "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-        "Entity.RandomGeneration.Materials.Plastic"
-      ]
-    },
-    "release_angular_damping": {
-      "type": "float",
-      "value": 0.05000000074505806
-    },
-    "release_linear_damping": {
-      "type": "float",
-      "value": 0.009999999776482582
-    },
-    "restitution": {
-      "type": "float",
-      "value": 0.30000001192092896
-    }
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 4000
   }
 }

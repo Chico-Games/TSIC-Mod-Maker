@@ -2,277 +2,80 @@
   "id": "FD_Bookcase_ST",
   "asset_path": "/Game/Furniture/Shelves/Furniture/FD_Bookcase_ST",
   "class": "UStorageDefinition",
-  "parent_classes": [
-    "UInteractableFurnitureDefinition",
-    "UFurnitureWithComponentsDefinition",
-    "UDamageableFurnitureDefinition",
-    "UFurnitureDefinition",
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "inventory_rules_definition": {
-      "type": "definition_ref",
-      "class": "InventoryRulesDefinition",
-      "value": "IRD_BookcaseStorage_30"
-    },
-    "gameplay_event_tag": {
-      "type": "gameplay_tag",
-      "value": "UI.GameScreen.Storage"
-    },
-    "layer_name": {
-      "type": "gameplay_tag",
-      "value": "UI.Layer.GameMenu"
-    },
-    "interaction_hold_time": {
-      "type": "float",
-      "value": 0
-    },
-    "interaction_prompt_text": {
-      "type": "text",
-      "value": "Open"
-    },
-    "has_static_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_audio": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_lights": {
-      "type": "bool",
-      "value": false
-    },
-    "has_static_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_on_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "has_toggled_off_vfx": {
-      "type": "bool",
-      "value": false
-    },
-    "starting_health": {
-      "type": "float",
-      "value": 100
-    },
-    "destructible_collection": {
-      "type": "soft_asset_ref",
-      "class": "GeometryCollection",
-      "value": "/Game/Furniture/Shelves/GeometryCollections/GC_SM_Bookcase01_Vol1.GC_SM_Bookcase01_Vol1"
-    },
-    "loot_dropped_on_death": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "deconstruction_tier": {
-      "type": "int",
-      "value": 0
-    },
+    "inventory_rules_definition": "IRD_BookcaseStorage_30",
+    "gameplay_event_tag": "UI.GameScreen.Storage",
+    "layer_name": "UI.Layer.GameMenu",
+    "interaction_hold_time": 0.0,
+    "interaction_prompt_text": "Open",
+    "has_static_audio": false,
+    "has_toggled_on_audio": false,
+    "has_toggled_off_audio": false,
+    "has_static_lights": false,
+    "has_toggled_on_lights": false,
+    "has_toggled_off_lights": false,
+    "has_static_vfx": false,
+    "has_toggled_on_vfx": false,
+    "has_toggled_off_vfx": false,
+    "starting_health": 100.0,
+    "destructible_collection": "/Game/Furniture/Shelves/GeometryCollections/GC_SM_Bookcase01_Vol1.GC_SM_Bookcase01_Vol1",
+    "loot_dropped_on_death": [],
+    "deconstruction_tier": 0,
     "building_base": {
-      "type": "struct",
-      "struct_name": "Transform",
-      "value": {
-        "rotation": {
-          "type": "struct",
-          "struct_name": "Quat",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 0
-            },
-            "y": {
-              "type": "float",
-              "value": 0
-            },
-            "z": {
-              "type": "float",
-              "value": 0
-            },
-            "w": {
-              "type": "float",
-              "value": 1
-            }
-          }
-        },
-        "translation": {
-          "type": "struct",
-          "struct_name": "Vector",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 0
-            },
-            "y": {
-              "type": "float",
-              "value": 0
-            },
-            "z": {
-              "type": "float",
-              "value": 0
-            }
-          }
-        },
-        "scale3_d": {
-          "type": "struct",
-          "struct_name": "Vector",
-          "value": {
-            "x": {
-              "type": "float",
-              "value": 1
-            },
-            "y": {
-              "type": "float",
-              "value": 1
-            },
-            "z": {
-              "type": "float",
-              "value": 1
-            }
-          }
-        }
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "translation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scale3_d": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
       }
     },
-    "is_draggable": {
-      "type": "bool",
-      "value": true
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Bookcase"
-    },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "default_world_gen_gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "meta_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "is_pingable": {
-      "type": "bool",
-      "value": false
-    },
-    "static_mesh": {
-      "type": "soft_asset_ref",
-      "class": "StaticMesh",
-      "value": "/Game/Furniture/Shelves/Meshes/SM_Bookcase01_Vol1.SM_Bookcase01_Vol1"
-    },
-    "casts_shadow": {
-      "type": "bool",
-      "value": true
-    },
+    "is_draggable": true,
+    "display_name": "Bookcase",
+    "description": "Store furniture.",
+    "level": 1,
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/Shelves/Meshes/SM_Bookcase01_Vol1.SM_Bookcase01_Vol1",
+    "casts_shadow": true,
     "collision_profile_name": {
-      "type": "struct",
-      "struct_name": "CollisionProfileName",
-      "value": {
-        "name": {
-          "type": "name",
-          "value": "Furniture"
-        }
-      }
+      "name": "Furniture"
     },
-    "random_material_overrides": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "loot_positions": {
-      "type": "array",
-      "element_type": null,
-      "value": []
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 6000
-    },
-    "destruction_impulse_strength": {
-      "type": "float",
-      "value": 0
-    },
-    "drag_angular_damping": {
-      "type": "float",
-      "value": 5
-    },
-    "drag_linear_damping": {
-      "type": "float",
-      "value": 5
-    },
-    "drag_mass": {
-      "type": "float",
-      "value": 1
-    },
-    "drag_max_angular_velocity": {
-      "type": "float",
-      "value": 90
-    },
-    "drag_tier": {
-      "type": "int",
-      "value": 1
-    },
-    "friction": {
-      "type": "float",
-      "value": 0.699999988079071
-    },
-    "furniture_armour": {
-      "type": "int",
-      "value": 2
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": [
-        "Tile.Biome.ShowFloor",
-        "Entity.RandomGeneration.CanBeRandom",
-        "Entity.RandomGeneration.FurnitureCategory.Office",
-        "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-        "Entity.RandomGeneration.Materials.Metal",
-        "Entity.RandomGeneration.Materials.Wood",
-        "Entity.RandomGeneration.Size.Medium",
-        "Entity.RandomGeneration.FurnitureType.Shelf.Floor"
-      ]
-    },
-    "release_angular_damping": {
-      "type": "float",
-      "value": 0.05000000074505806
-    },
-    "release_linear_damping": {
-      "type": "float",
-      "value": 0.009999999776482582
-    },
-    "restitution": {
-      "type": "float",
-      "value": 0.30000001192092896
-    }
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 6000,
+    "destruction_impulse_strength": 0.0,
+    "drag_angular_damping": 5.0,
+    "drag_linear_damping": 5.0,
+    "drag_mass": 1.0,
+    "drag_max_angular_velocity": 90.0,
+    "drag_tier": 1,
+    "friction": 0.699999988079071,
+    "furniture_armour": 2,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureCategory.Office",
+      "Entity.RandomGeneration.FurnitureType.Shelf.Floor",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.ShowFloor"
+    ],
+    "release_angular_damping": 0.05000000074505806,
+    "release_linear_damping": 0.009999999776482582,
+    "restitution": 0.30000001192092896
   }
 }

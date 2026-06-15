@@ -2,91 +2,19 @@
   "id": "ED_TVHead",
   "asset_path": "/Game/Characters/Enemies/TVHead/ED_TVHead",
   "class": "UEnemyDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "display_name": {
-      "type": "text",
-      "value": "TV Head"
-    },
-    "enemy_class": {
-      "type": "soft_asset_ref",
-      "class": "BlueprintGeneratedClass",
-      "value": "/Game/Characters/Enemies/TVHead/Blueprints/CH_TVHead.CH_TVHead_C"
-    },
-    "death_drop_table": {
-      "type": "array",
-      "element_type": {
-        "type": "struct",
-        "struct_name": "DeathDropEntry",
-        "fields": {
-          "world_item": {
-            "type": "definition_ref",
-            "class": "StaticItemDefinition"
-          },
-          "count": {
-            "type": "int"
-          },
-          "weight": {
-            "type": "int"
-          }
-        }
-      },
-      "value": [
-        {
-          "type": "struct",
-          "struct_name": "DeathDropEntry",
-          "value": {
-            "world_item": {
-              "type": "definition_ref",
-              "class": "StaticItemDefinition",
-              "value": "FD_TVGuide_SI"
-            },
-            "count": {
-              "type": "int",
-              "value": 1
-            },
-            "weight": {
-              "type": "int",
-              "value": 100
-            }
-          }
-        },
-        {
-          "type": "struct",
-          "struct_name": "DeathDropEntry",
-          "value": {
-            "world_item": {
-              "type": "definition_ref",
-              "class": "StaticItemDefinition",
-              "value": "FD_Antenna_SI"
-            },
-            "count": {
-              "type": "int",
-              "value": 1
-            },
-            "weight": {
-              "type": "int",
-              "value": 50
-            }
-          }
-        }
-      ]
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
-    }
+    "gameplay_tags": [],
+    "display_name": "TV Head",
+    "enemy_class": "/Game/Characters/Enemies/TVHead/Blueprints/CH_TVHead.CH_TVHead_C",
+    "death_drop_table": [
+      {
+        "world_item": "FD_TVGuide_SI",
+        "count": 1,
+        "weight": 1
+      }
+    ],
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000
   }
 }

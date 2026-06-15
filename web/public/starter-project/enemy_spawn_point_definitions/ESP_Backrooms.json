@@ -2,104 +2,27 @@
   "id": "ESP_Backrooms",
   "asset_path": "/Game/WorldGeneration/SpawnPoints/Enemies/ESP_Backrooms",
   "class": "UEnemySpawnPointDefinition",
-  "parent_classes": [
-    "UWorldGenObjectDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "enemies_by_difficulty": {
-      "type": "map",
-      "key_type": {
-        "type": "enum",
-        "enum_name": "CurrentStoreDifficulty"
-      },
-      "value_type": {
-        "type": "struct",
-        "struct_name": "EnemyDifficultyTier",
-        "fields": {
-          "enemies_can_spawn": {
-            "type": "array",
-            "element_type": {
-              "type": "struct",
-              "struct_name": "EnemyWeighted",
-              "fields": {
-                "enemy_spawn_parameter": {
-                  "type": "soft_asset_ref",
-                  "class": "EnemySpawnParameters"
-                },
-                "weight": {
-                  "type": "int"
-                }
-              }
+    "enemies_by_difficulty": [
+      {
+        "key": {
+          "name": "EASY",
+          "value": 0
+        },
+        "value": {
+          "enemies_can_spawn": [
+            {
+              "enemy_spawn_parameter": "/Game/Characters/Enemies/MaleStaff/DataAssets/MaleStaffSpawnParameters.MaleStaffSpawnParameters",
+              "weight": 1000
             }
-          }
+          ]
         }
-      },
-      "value": [
-        {
-          "key": {
-            "type": "enum",
-            "enum_name": "CurrentStoreDifficulty",
-            "value": "<CurrentStoreDifficulty.EASY: 0>"
-          },
-          "value": {
-            "type": "struct",
-            "struct_name": "EnemyDifficultyTier",
-            "value": {
-              "enemies_can_spawn": {
-                "type": "array",
-                "element_type": {
-                  "type": "struct",
-                  "struct_name": "EnemyWeighted",
-                  "fields": {
-                    "enemy_spawn_parameter": {
-                      "type": "soft_asset_ref",
-                      "class": "EnemySpawnParameters"
-                    },
-                    "weight": {
-                      "type": "int"
-                    }
-                  }
-                },
-                "value": [
-                  {
-                    "type": "struct",
-                    "struct_name": "EnemyWeighted",
-                    "value": {
-                      "enemy_spawn_parameter": {
-                        "type": "soft_asset_ref",
-                        "class": "EnemySpawnParameters",
-                        "value": "/Game/Characters/Enemies/MaleStaff/DataAssets/MaleStaffSpawnParameters.MaleStaffSpawnParameters"
-                      },
-                      "weight": {
-                        "type": "int",
-                        "value": 1000
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      ]
-    },
-    "accumulate_previous_tiers": {
-      "type": "bool",
-      "value": true
-    },
-    "weighted_chance": {
-      "type": "int",
-      "value": 1000
-    },
-    "world_gen_priority": {
-      "type": "int",
-      "value": 1000
-    },
-    "gameplay_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    }
+      }
+    ],
+    "accumulate_previous_tiers": true,
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000,
+    "gameplay_tags": []
   }
 }

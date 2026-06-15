@@ -1,31 +1,20 @@
 {
   "id": "ARR_MicrowaveRecipes",
-  "asset_path": "/Game/Furniture/CraftingBenches/Recipes/ARR_MicrowaveRecipes",
+  "asset_path": "/Game/Furniture/Cooking/Microwave/Recipes/ARR_MicrowaveRecipes",
   "class": "UAvailableRecipeRulesDefinition",
-  "parent_classes": [
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
     "production_machine_rules": {
-      "type": "struct",
-      "struct_name": "ProductionMachineRules",
-      "value": {
-        "recipes": {
-          "type": "array",
-          "element_type": {
-            "type": "definition_ref",
-            "class": "CraftRecipeDefinition"
-          },
-          "value": [
-            {
-              "type": "definition_ref",
-              "class": "CraftRecipeDefinition",
-              "value": "RD_SCPRations_CR"
-            }
-          ]
-        }
-      }
+      "recipes": [
+        "RD_CookedPasta_CR",
+        "RD_FlatpackMeal_CR",
+        "RD_FrenchFries_CR",
+        "RD_HashBrowns_CR",
+        "RD_HotDog_CR",
+        "RD_InstantNoodleSoup_CR",
+        "RD_MashedPotatoes_CR",
+        "RD_TomatoSauce_CR"
+      ]
     }
   }
 }

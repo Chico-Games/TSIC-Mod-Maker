@@ -2,37 +2,13 @@
   "id": "ID_Bed_Large_CI",
   "asset_path": "/Game/Furniture/Beds/Item/ID_Bed_Large_CI",
   "class": "UConstructableItemDefinition",
-  "parent_classes": [
-    "UItemDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "furniture_to_construct": {
-      "type": "definition_ref",
-      "class": "SpawnPointDefinition",
-      "value": "FD_Bed_Large_SP"
-    },
-    "display_name": {
-      "type": "text",
-      "value": "Double Bed"
-    },
-    "description": {
-      "type": "text",
-      "value": "Store furniture."
-    },
-    "stackable": {
-      "type": "bool",
-      "value": true
-    },
-    "weight": {
-      "type": "float",
-      "value": 0.10000000149011612
-    },
-    "static_item_definition": {
-      "type": "definition_ref",
-      "class": "StaticItemDefinition",
-      "value": "FD_Bed_Large_SI"
-    }
+    "furniture_to_construct": "FD_Bed_Large_SP",
+    "display_name": "Double Bed",
+    "description": "Store furniture.",
+    "stackable": true,
+    "weight": 0.10000000149011612,
+    "static_item_definition": "FD_Bed_Large_SI"
   }
 }

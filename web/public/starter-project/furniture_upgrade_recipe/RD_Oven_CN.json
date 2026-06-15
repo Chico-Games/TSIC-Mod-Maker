@@ -2,94 +2,31 @@
   "id": "RD_Oven_CN",
   "asset_path": "/Game/Furniture/Cooking/Construction/RD_Oven_CN",
   "class": "UFurnitureUpgradeRecipe",
-  "parent_classes": [
-    "URecipeDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "recipe_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "input": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "CraftingMaterialDefinition"
+    "recipe_tags": [],
+    "input": [
+      {
+        "key": "ID_ScrapMetal_CM",
+        "value": 8
       },
-      "value_type": {
-        "type": "int"
+      {
+        "key": "ID_MetalScrews_CM",
+        "value": 3
       },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ScrapMetal_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 8
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_MetalScrews_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ExtensionCord_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_CircuitBoard_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 5
-          }
-        }
-      ]
-    },
-    "output": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "duration": {
-      "type": "float",
-      "value": 2.5
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "upgrade_tier": {
-      "type": "int",
-      "value": 3
-    },
-    "upgraded_furniture_definition": {
-      "type": "definition_ref",
-      "class": "ProductionStationDefinition",
-      "value": "FD_Oven_PS"
-    }
+      {
+        "key": "ID_ExtensionCord_CM",
+        "value": 3
+      },
+      {
+        "key": "ID_CircuitBoard_CM",
+        "value": 5
+      }
+    ],
+    "output": [],
+    "duration": 2.5,
+    "level": 1,
+    "upgrade_tier": 3,
+    "upgraded_furniture_definition": "FD_Oven_PS"
   }
 }

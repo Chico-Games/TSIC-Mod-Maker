@@ -2,106 +2,35 @@
   "id": "RD_WoodenArmorHelmet_CR",
   "asset_path": "/Game/Items/Equipment/Armor/WoodenArmor/Helmet/Recipes/RD_WoodenArmorHelmet_CR",
   "class": "UCraftRecipeDefinition",
-  "parent_classes": [
-    "URecipeDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "recipe_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "input": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "CraftingMaterialDefinition"
+    "recipe_tags": [],
+    "input": [
+      {
+        "key": "ID_WoodenDowel_CM",
+        "value": 8
       },
-      "value_type": {
-        "type": "int"
+      {
+        "key": "ID_PlasticScrap_CM",
+        "value": 4
       },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_WoodenDowel_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 8
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_PlasticScrap_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 4
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_Tape_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 2
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_MetalScrews_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 3
-          }
-        }
-      ]
-    },
-    "output": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "EquippableDefinition"
+      {
+        "key": "ID_Tape_CM",
+        "value": 2
       },
-      "value_type": {
-        "type": "int"
-      },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "EquippableDefinition",
-            "value": "ID_WoodenArmorHelmet_EQ"
-          },
-          "value": {
-            "type": "int",
-            "value": 1
-          }
-        }
-      ]
-    },
-    "duration": {
-      "type": "float",
-      "value": 5
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "crafting_bench_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    }
+      {
+        "key": "ID_MetalScrews_CM",
+        "value": 3
+      }
+    ],
+    "output": [
+      {
+        "key": "ID_WoodenArmorHelmet_EQ",
+        "value": 1
+      }
+    ],
+    "duration": 5.0,
+    "level": 1,
+    "crafting_bench_tags": []
   }
 }

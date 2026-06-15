@@ -2,67 +2,22 @@
   "id": "RD_IndustrialShelf_CN",
   "asset_path": "/Game/Furniture/Shelves/Construction/RD_IndustrialShelf_CN",
   "class": "UFurnitureUpgradeRecipe",
-  "parent_classes": [
-    "URecipeDefinition",
-    "UDataAsset",
-    "UObject"
-  ],
+  "schema_version": 2,
   "properties": {
-    "recipe_tags": {
-      "type": "gameplay_tag_container",
-      "value": []
-    },
-    "input": {
-      "type": "map",
-      "key_type": {
-        "type": "definition_ref",
-        "class": "CraftingMaterialDefinition"
+    "recipe_tags": [],
+    "input": [
+      {
+        "key": "ID_WoodenDowel_CM",
+        "value": 12
       },
-      "value_type": {
-        "type": "int"
-      },
-      "value": [
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_WoodenDowel_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 12
-          }
-        },
-        {
-          "key": {
-            "type": "definition_ref",
-            "class": "CraftingMaterialDefinition",
-            "value": "ID_ScrapMetal_CM"
-          },
-          "value": {
-            "type": "int",
-            "value": 6
-          }
-        }
-      ]
-    },
-    "output": {
-      "type": "map",
-      "key_type": null,
-      "value_type": null,
-      "value": []
-    },
-    "duration": {
-      "type": "float",
-      "value": 4
-    },
-    "level": {
-      "type": "int",
-      "value": 1
-    },
-    "upgrade_tier": {
-      "type": "int",
-      "value": 1
-    }
+      {
+        "key": "ID_ScrapMetal_CM",
+        "value": 6
+      }
+    ],
+    "output": [],
+    "duration": 4.0,
+    "level": 1,
+    "upgrade_tier": 1
   }
 }
