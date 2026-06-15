@@ -1064,6 +1064,16 @@ async function loadFromDataSource(
     // Existing structural validator gate.
     const structuralIssues = validateBatch(rawFiles);
     if (structuralIssues.length > 0) {
+      console.groupCollapsed(
+        `%c[schema] ${structuralIssues.length} structural issue(s) loading "${ds.displayName}"`,
+        'color:#e06c75;font-weight:bold',
+      );
+      for (const i of structuralIssues) {
+        if (i.kind === 'invalid-json') console.error(`invalid-json   ${i.folder}/${i.file}: ${i.error}`);
+        else if (i.kind === 'missing-field') console.warn(`missing-field  ${i.folder}/${i.file}: missing "${i.field}"`);
+        else if (i.kind === 'id-mismatch') console.warn(`id-mismatch    ${i.folder}/${i.file}: json id "${i.json_id}" ≠ file "${i.file_id}"`);
+      }
+      console.groupEnd();
       const proceed = await new Promise<boolean>((resolve) => {
         set({
           loadGate: {
@@ -1124,6 +1134,17 @@ async function loadFromDataSource(
 
     const allDriftIssues = [...driftIssues, ...refIssues];
     if (allDriftIssues.length > 0) {
+      console.groupCollapsed(
+        `%c[schema] ${allDriftIssues.length} schema-drift issue(s) loading "${ds.displayName}"`,
+        'color:#e5c07b;font-weight:bold',
+      );
+      for (const i of allDriftIssues) {
+        if (i.kind === 'unknown-class') console.warn(`unknown-class     ${i.className} in ${i.recordKey}`);
+        else if (i.kind === 'unknown-property') console.warn(`unknown-property  ${i.parentType}.${i.propertyName} in ${i.recordKey}`);
+        else if (i.kind === 'missing-asset-ref') console.warn(`missing-asset-ref ${i.assetClass} at ${i.path} (ref by ${i.recordKey})`);
+        else if (i.kind === 'asset-ref-guid-mismatch') console.warn(`guid-mismatch     ${i.path}: expected ${i.expectedGuid.slice(0, 8)}, found ${i.currentGuid.slice(0, 8)} (ref by ${i.recordKey})`);
+      }
+      console.groupEnd();
       const proceed = await new Promise<boolean>((resolve) => {
         set({
           loadGate: {
