@@ -337,6 +337,20 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayAbility_Spotlight.aim_move_speed_u_u__per_sec": {
+      "tooltip": null,
+      "category": "Spotlight|Movement",
+      "cpp_type": "float",
+      "element_class": null,
+      "clamp_min": 0.0,
+      "clamp_max": null,
+      "ui_min": 0.0,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "GameplayAbility_Spotlight.ability_time_limit": {
       "tooltip": null,
       "category": "Spotlight|Timing",
@@ -449,7 +463,35 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayAbility_Spotlight.b_use_t_v__head_rect_lights": {
+      "tooltip": null,
+      "category": "Spotlight|TVHead",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "GameplayAbility_Spotlight.use_tv_head_rect_lights": {
+      "tooltip": null,
+      "category": "Spotlight|TVHead",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayAbility_Spotlight.use_t_v__head_rect_lights": {
       "tooltip": null,
       "category": "Spotlight|TVHead",
       "cpp_type": "bool",
@@ -659,7 +701,35 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayAbility_Spotlight.t_v__head_anim_instance": {
+      "tooltip": "Cached TVHead AnimInstance reference",
+      "category": null,
+      "cpp_type": "TObjectPtr<UTVHeadAnimInstance>",
+      "element_class": "TVHeadAnimInstance",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "GameplayAbility_Spotlight.tv_head_character": {
+      "tooltip": "Cached TVHead character reference for light control",
+      "category": null,
+      "cpp_type": "TObjectPtr<AScpCharacter_TVHead>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayAbility_Spotlight.t_v__head_character": {
       "tooltip": "Cached TVHead character reference for light control",
       "category": null,
       "cpp_type": "TObjectPtr<AScpCharacter_TVHead>",
@@ -2941,6 +3011,20 @@
       "display_name": null,
       "categories": null
     },
+    "AScpGliderActor.gliding_v_f_x__component": {
+      "tooltip": null,
+      "category": "Components",
+      "cpp_type": "TObjectPtr<UNiagaraComponent>",
+      "element_class": "NiagaraComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "AScpGliderActor.gliding_audio_component": {
       "tooltip": null,
       "category": "Components",
@@ -3137,6 +3221,20 @@
       "display_name": null,
       "categories": null
     },
+    "AScpGliderActor.gliding_trail_v_f_x": {
+      "tooltip": null,
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<UNiagaraSystem>",
+      "element_class": "NiagaraSystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "AScpGliderActor.diving_trail_vfx": {
       "tooltip": null,
       "category": "VFX",
@@ -3151,7 +3249,35 @@
       "display_name": null,
       "categories": null
     },
+    "AScpGliderActor.diving_trail_v_f_x": {
+      "tooltip": null,
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<UNiagaraSystem>",
+      "element_class": "NiagaraSystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "AScpGliderActor.climbing_trail_vfx": {
+      "tooltip": null,
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<UNiagaraSystem>",
+      "element_class": "NiagaraSystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "AScpGliderActor.climbing_trail_v_f_x": {
       "tooltip": null,
       "category": "VFX",
       "cpp_type": "TObjectPtr<UNiagaraSystem>",
@@ -3222,6 +3348,20 @@
       "categories": null
     },
     "AScpParachuteActor.gliding_vfx_component": {
+      "tooltip": null,
+      "category": "Components",
+      "cpp_type": "TObjectPtr<UNiagaraComponent>",
+      "element_class": "NiagaraComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "AScpParachuteActor.gliding_v_f_x__component": {
       "tooltip": null,
       "category": "Components",
       "cpp_type": "TObjectPtr<UNiagaraComponent>",
@@ -3390,6 +3530,20 @@
       "categories": null
     },
     "AScpParachuteActor.gliding_trail_vfx": {
+      "tooltip": null,
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<UNiagaraSystem>",
+      "element_class": "NiagaraSystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "AScpParachuteActor.gliding_trail_v_f_x": {
       "tooltip": null,
       "category": "VFX",
       "cpp_type": "TObjectPtr<UNiagaraSystem>",
@@ -4580,6 +4734,20 @@
       "categories": null
     },
     "GameplayAbility_PlayAnimation.granted_effect_target_as_cs": {
+      "tooltip": "Parallel array: the ASC each handle in GrantedEffectHandles was applied to",
+      "category": null,
+      "cpp_type": "TArray<TWeakObjectPtr<UAbilitySystemComponent>>",
+      "element_class": "AbilitySystemComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayAbility_PlayAnimation.granted_effect_target_a_s__cs": {
       "tooltip": "Parallel array: the ASC each handle in GrantedEffectHandles was applied to",
       "category": null,
       "cpp_type": "TArray<TWeakObjectPtr<UAbilitySystemComponent>>",
@@ -7785,7 +7953,35 @@
       "display_name": null,
       "categories": null
     },
+    "AEnemySpawnerTerminalActor.b_enable_a_i__behavior": {
+      "tooltip": "If true, spawned enemies will have full AI behavior (detection, patrol, combat). If false (default), enemies spawn idle with no AI logic running.",
+      "category": "EnemySpawner",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "AEnemySpawnerTerminalActor.enable_ai_behavior": {
+      "tooltip": "If true, spawned enemies will have full AI behavior (detection, patrol, combat). If false (default), enemies spawn idle with no AI logic running.",
+      "category": "EnemySpawner",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "AEnemySpawnerTerminalActor.enable_a_i__behavior": {
       "tooltip": "If true, spawned enemies will have full AI behavior (detection, patrol, combat). If false (default), enemies spawn idle with no AI logic running.",
       "category": "EnemySpawner",
       "cpp_type": "bool",
@@ -8290,6 +8486,20 @@
       "categories": null
     },
     "ADraggableActor.throw_instigator_asc": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UAbilitySystemComponent>",
+      "element_class": "AbilitySystemComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ADraggableActor.throw_instigator_a_s_c": {
       "tooltip": null,
       "category": null,
       "cpp_type": "TObjectPtr<UAbilitySystemComponent>",
@@ -9647,6 +9857,20 @@
       "display_name": null,
       "categories": null
     },
+    "ExtraShape.g_e": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TSubclassOf<UGameplayEffect>",
+      "element_class": "GameplayEffect",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "FiredShapeActorPair.shape": {
       "tooltip": null,
       "category": null,
@@ -10221,7 +10445,35 @@
       "display_name": null,
       "categories": null
     },
+    "AProjectile.trail_loop_s_f_x": {
+      "tooltip": null,
+      "category": "Projectile|Audio",
+      "cpp_type": "TObjectPtr<USoundBase>",
+      "element_class": "SoundBase",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "AProjectile.hit_sfx": {
+      "tooltip": null,
+      "category": "Projectile|OnHit|Audio",
+      "cpp_type": "TObjectPtr<USoundBase>",
+      "element_class": "SoundBase",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "AProjectile.hit_s_f_x": {
       "tooltip": null,
       "category": "Projectile|OnHit|Audio",
       "cpp_type": "TObjectPtr<USoundBase>",
@@ -10250,6 +10502,20 @@
       "categories": null
     },
     "AProjectile.explosion_vfx": {
+      "tooltip": null,
+      "category": "Projectile|OnHit|VFX",
+      "cpp_type": "TObjectPtr<UNiagaraSystem>",
+      "element_class": "NiagaraSystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "AProjectile.explosion_v_f_x": {
       "tooltip": null,
       "category": "Projectile|OnHit|VFX",
       "cpp_type": "TObjectPtr<UNiagaraSystem>",
@@ -10362,6 +10628,20 @@
       "categories": null
     },
     "AProjectile.trail_vfx_comp": {
+      "tooltip": null,
+      "category": "Components",
+      "cpp_type": "TObjectPtr<UNiagaraComponent>",
+      "element_class": "NiagaraComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "AProjectile.trail_v_f_x__comp": {
       "tooltip": null,
       "category": "Components",
       "cpp_type": "TObjectPtr<UNiagaraComponent>",
@@ -11496,6 +11776,20 @@
       "categories": null
     },
     "ScpAIBrainComponent.cached_asc": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UAbilitySystemComponent>",
+      "element_class": "AbilitySystemComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpAIBrainComponent.cached_a_s_c": {
       "tooltip": null,
       "category": null,
       "cpp_type": "TObjectPtr<UAbilitySystemComponent>",
@@ -13749,6 +14043,20 @@
       "display_name": null,
       "categories": null
     },
+    "EQSConditionInstanceData.e_q_s__query": {
+      "tooltip": "The EQS query to run",
+      "category": "Input",
+      "cpp_type": "TObjectPtr<UEnvQuery>",
+      "element_class": "EnvQuery",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "EQSConditionInstanceData.query_params": {
       "tooltip": "Custom query parameters for the EQS query",
       "category": "Input",
@@ -14449,6 +14757,20 @@
       "display_name": null,
       "categories": null
     },
+    "MovementProfile.jump_z__velocity": {
+      "tooltip": "Jump Z velocity",
+      "category": null,
+      "cpp_type": "float",
+      "element_class": null,
+      "clamp_min": 0.0,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "MovementProfile.air_control": {
       "tooltip": "Air control when jumping/falling",
       "category": null,
@@ -14590,6 +14912,20 @@
       "categories": null
     },
     "StateTreeEnemySchema.ai_controller_class": {
+      "tooltip": "AIController class the StateTree is expected to run on. Allows to bind to specific Actor class' properties.",
+      "category": "Defaults",
+      "cpp_type": "TSubclassOf<AScpBotController>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "StateTreeEnemySchema.a_i__controller_class": {
       "tooltip": "AIController class the StateTree is expected to run on. Allows to bind to specific Actor class' properties.",
       "category": "Defaults",
       "cpp_type": "TSubclassOf<AScpBotController>",
@@ -15555,6 +15891,20 @@
       "display_name": null,
       "categories": null
     },
+    "RotateToTargetInstanceData.a_i__controller": {
+      "tooltip": "AI Controller that will perform the rotation",
+      "category": "Context",
+      "cpp_type": "TObjectPtr<AAIController>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "RotateToTargetInstanceData.target_actor": {
       "tooltip": "Target actor to rotate towards (used when TargetType is Actor)",
       "category": "Parameter",
@@ -16060,6 +16410,20 @@
       "categories": null
     },
     "RunEQSTaskInstanceData.eqs_query": {
+      "tooltip": "The EQS query to run",
+      "category": "Input",
+      "cpp_type": "TObjectPtr<UEnvQuery>",
+      "element_class": "EnvQuery",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "RunEQSTaskInstanceData.e_q_s__query": {
       "tooltip": "The EQS query to run",
       "category": "Input",
       "cpp_type": "TObjectPtr<UEnvQuery>",
@@ -17249,6 +17613,20 @@
       "display_name": null,
       "categories": null
     },
+    "AnimNotify_Hitbox.anim_notify_i_d": {
+      "tooltip": "Custom ID for this anim notify instance",
+      "category": "Hitbox",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "AnimNotify_Hitbox.b_show_debug_visualization": {
       "tooltip": "Whether to show debug visualization in editor",
       "category": "Debug",
@@ -17348,6 +17726,20 @@
       "categories": null
     },
     "AnimNotifyState_Hitbox.anim_notify_id": {
+      "tooltip": "Custom ID for this specific notify instance (useful for distinguishing multiple hitboxes in same animation)",
+      "category": "Messaging",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": 0,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "AnimNotifyState_Hitbox.anim_notify_i_d": {
       "tooltip": "Custom ID for this specific notify instance (useful for distinguishing multiple hitboxes in same animation)",
       "category": "Messaging",
       "cpp_type": "int32",
@@ -17530,6 +17922,20 @@
       "categories": null
     },
     "AnimNotifyState_SpawnForDuration.anim_notify_id": {
+      "tooltip": "Custom ID for this specific notify instance (useful for distinguishing multiple spawns in same animation)",
+      "category": "Identification",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": 0,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "AnimNotifyState_SpawnForDuration.anim_notify_i_d": {
       "tooltip": "Custom ID for this specific notify instance (useful for distinguishing multiple spawns in same animation)",
       "category": "Identification",
       "cpp_type": "int32",
@@ -18355,6 +18761,20 @@
       "display_name": null,
       "categories": null
     },
+    "CheatPlayerInfo.e_o_s__display_name": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "CheatPlayerInfo.b_is_online": {
       "tooltip": null,
       "category": null,
@@ -18705,7 +19125,35 @@
       "display_name": null,
       "categories": null
     },
+    "SaveScreenshotComponent.b_show_u_i": {
+      "tooltip": "Whether to show UI in screenshots",
+      "category": "Screenshot",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "SaveScreenshotComponent.show_ui": {
+      "tooltip": "Whether to show UI in screenshots",
+      "category": "Screenshot",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "SaveScreenshotComponent.show_u_i": {
       "tooltip": "Whether to show UI in screenshots",
       "category": "Screenshot",
       "cpp_type": "bool",
@@ -19237,6 +19685,20 @@
       "display_name": null,
       "categories": null
     },
+    "InteractionControllerComponent.current_u_i__helper": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TOptional<FEntityEntry>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "InteractionControllerComponent.current_helper": {
       "tooltip": null,
       "category": null,
@@ -19294,6 +19756,20 @@
       "categories": null
     },
     "ScreenEffect.mid": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UMaterialInstanceDynamic>",
+      "element_class": "MaterialInstanceDynamic",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScreenEffect.m_i_d": {
       "tooltip": null,
       "category": null,
       "cpp_type": "TObjectPtr<UMaterialInstanceDynamic>",
@@ -19447,6 +19923,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScreenEffectManagerComponent.a_s_c": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UAbilitySystemComponent>",
+      "element_class": "AbilitySystemComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScreenEffectManagerComponent.effect_root": {
       "tooltip": null,
       "category": null,
@@ -19573,6 +20063,20 @@
       "display_name": null,
       "categories": null
     },
+    "AInGamePlayerController.detection_h_u_d__component": {
+      "tooltip": "Detection indicator component.",
+      "category": "UI",
+      "cpp_type": "TObjectPtr<UDetectionHUDComponent>",
+      "element_class": "DetectionHUDComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "APlayerControllerBase.mod_handshake": {
       "tooltip": null,
       "category": "Modding",
@@ -19616,6 +20120,20 @@
       "categories": null
     },
     "AScpBotController.ai_brain_component": {
+      "tooltip": "AI Brain component for centralized decision-making",
+      "category": "AI",
+      "cpp_type": "TObjectPtr<UScpAIBrainComponent>",
+      "element_class": "ScpAIBrainComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "AScpBotController.a_i__brain_component": {
       "tooltip": "AI Brain component for centralized decision-making",
       "category": "AI",
       "cpp_type": "TObjectPtr<UScpAIBrainComponent>",
@@ -20217,7 +20735,35 @@
       "display_name": null,
       "categories": null
     },
+    "BiomeDefinition.floor_l_s_p": {
+      "tooltip": null,
+      "category": "Loot",
+      "cpp_type": "TSoftObjectPtr<ULootSpawnPointDefinition>",
+      "element_class": "LootSpawnPointDefinition",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "BiomeDefinition.furniture_lsp": {
+      "tooltip": null,
+      "category": "Loot",
+      "cpp_type": "TSoftObjectPtr<ULootSpawnPointDefinition>",
+      "element_class": "LootSpawnPointDefinition",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "BiomeDefinition.furniture_l_s_p": {
       "tooltip": null,
       "category": "Loot",
       "cpp_type": "TSoftObjectPtr<ULootSpawnPointDefinition>",
@@ -22261,6 +22807,20 @@
       "display_name": null,
       "categories": null
     },
+    "VFXConfig.v_f_x__transform": {
+      "tooltip": "Transform offset relative to the entity.",
+      "category": "VFX",
+      "cpp_type": "FTransform",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "VFXConfig.b_attach_to_entity": {
       "tooltip": "Whether to attach the spawned VFX to the owning entity.",
       "category": "VFX",
@@ -22569,7 +23129,35 @@
       "display_name": null,
       "categories": null
     },
+    "FurnitureWithComponentsDefinition.b_has_static_v_f_x": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "FurnitureWithComponentsDefinition.has_static_vfx": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "FurnitureWithComponentsDefinition.has_static_v_f_x": {
       "tooltip": null,
       "category": "Components|VFX",
       "cpp_type": "bool",
@@ -22597,7 +23185,35 @@
       "display_name": null,
       "categories": null
     },
+    "FurnitureWithComponentsDefinition.static_v_f_x": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "FVFXConfig",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": "bHasStaticVFX",
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "FurnitureWithComponentsDefinition.b_has_toggled_on_vfx": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "FurnitureWithComponentsDefinition.b_has_toggled_on_v_f_x": {
       "tooltip": null,
       "category": "Components|VFX",
       "cpp_type": "bool",
@@ -22625,7 +23241,35 @@
       "display_name": null,
       "categories": null
     },
+    "FurnitureWithComponentsDefinition.has_toggled_on_v_f_x": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "FurnitureWithComponentsDefinition.toggled_on_vfx": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "FVFXConfig",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": "bHasToggledOnVFX",
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "FurnitureWithComponentsDefinition.toggled_on_v_f_x": {
       "tooltip": null,
       "category": "Components|VFX",
       "cpp_type": "FVFXConfig",
@@ -22653,7 +23297,35 @@
       "display_name": null,
       "categories": null
     },
+    "FurnitureWithComponentsDefinition.b_has_toggled_off_v_f_x": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "FurnitureWithComponentsDefinition.has_toggled_off_vfx": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "FurnitureWithComponentsDefinition.has_toggled_off_v_f_x": {
       "tooltip": null,
       "category": "Components|VFX",
       "cpp_type": "bool",
@@ -22681,7 +23353,35 @@
       "display_name": null,
       "categories": null
     },
+    "FurnitureWithComponentsDefinition.toggled_off_v_f_x": {
+      "tooltip": null,
+      "category": "Components|VFX",
+      "cpp_type": "FVFXConfig",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": "bHasToggledOffVFX",
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "HTMLGameDefinition.game_html_path": {
+      "tooltip": "Relative path to the game's HTML entry file within the WebUI content root.",
+      "category": "HTML Game",
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "HTMLGameDefinition.game_h_t_m_l__path": {
       "tooltip": "Relative path to the game's HTML entry file within the WebUI content root.",
       "category": "HTML Game",
       "cpp_type": "FString",
@@ -25467,6 +26167,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScpGameData.fallback_surface_v_f_x__data": {
+      "tooltip": "Fallback surface VFX data used when a gameplay cue has no SurfaceVFXData set.",
+      "category": "Fallbacks|Surface Response",
+      "cpp_type": "TObjectPtr<USurfaceVFXData>",
+      "element_class": "SurfaceVFXData",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "ScpGameData.menu_input_actions": {
       "tooltip": "Maps menu input actions to screen tags. Single source of truth used by both the menu ability (to determine which screen to open) and menu widgets (to register swap/toggle bindings in menu mode).",
       "category": "UI|Menu",
@@ -25901,6 +26615,20 @@
       "display_name": null,
       "categories": null
     },
+    "UpgradeRecipeDefinition.upgrade_text_i_d": {
+      "tooltip": "Text ID for localization of the upgrade name and description.",
+      "category": "Upgrade",
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "UpgradeRecipeDefinition.extra_rewards": {
       "tooltip": "Additional reward items given when this upgrade is purchased (optional).",
       "category": "Upgrade",
@@ -26321,7 +27049,35 @@
       "display_name": null,
       "categories": null
     },
+    "CircleDebugProfile.y__axis": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FVector",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "CircleDebugProfile.z_axis": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FVector",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "CircleDebugProfile.z__axis": {
       "tooltip": null,
       "category": null,
       "cpp_type": "FVector",
@@ -27021,6 +27777,20 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayCueNotify_FurnitureDamageImpact.surface_v_f_x__data": {
+      "tooltip": "Surface VFX data for impact effects. Falls back to ScpGameData::FallbackSurfaceVFXData if null.",
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<USurfaceVFXData>",
+      "element_class": "SurfaceVFXData",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "GameplayCueNotify_Impact.surface_audio_data": {
       "tooltip": "Surface audio data for impact sounds. Falls back to ScpGameData::FallbackSurfaceAudioData if null.",
       "category": "Audio",
@@ -27036,6 +27806,20 @@
       "categories": null
     },
     "GameplayCueNotify_Impact.surface_vfx_data": {
+      "tooltip": "Surface VFX data for impact effects. Falls back to ScpGameData::FallbackSurfaceVFXData if null.",
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<USurfaceVFXData>",
+      "element_class": "SurfaceVFXData",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayCueNotify_Impact.surface_v_f_x__data": {
       "tooltip": "Surface VFX data for impact effects. Falls back to ScpGameData::FallbackSurfaceVFXData if null.",
       "category": "VFX",
       "cpp_type": "TObjectPtr<USurfaceVFXData>",
@@ -27190,6 +27974,20 @@
       "categories": null
     },
     "GameplayCueNotify_SurfaceVFX.surface_vfx_data": {
+      "tooltip": "Surface VFX data asset. Falls back to ScpGameData::FallbackSurfaceVFXData if null.",
+      "category": "VFX",
+      "cpp_type": "TObjectPtr<USurfaceVFXData>",
+      "element_class": "SurfaceVFXData",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayCueNotify_SurfaceVFX.surface_v_f_x__data": {
       "tooltip": "Surface VFX data asset. Falls back to ScpGameData::FallbackSurfaceVFXData if null.",
       "category": "VFX",
       "cpp_type": "TObjectPtr<USurfaceVFXData>",
@@ -30227,6 +31025,20 @@
       "display_name": null,
       "categories": null
     },
+    "PlayersGameStateComponent.f_o_w__texture": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UTexture2D>",
+      "element_class": "Texture2D",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "PlayersGameStateComponent.player_color_palette": {
       "tooltip": null,
       "category": null,
@@ -30269,6 +31081,20 @@
       "display_name": null,
       "categories": null
     },
+    "POIGameStateComponent.dynamic_p_o__is": {
+      "tooltip": "Dynamic POIs that can be added/removed during gameplay",
+      "category": "POI",
+      "cpp_type": "TArray<FPointOfInterest>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "POIGameStateComponent.static_po_is": {
       "tooltip": "POIs extracted from world generation (static)",
       "category": "POI",
@@ -30283,7 +31109,35 @@
       "display_name": null,
       "categories": null
     },
+    "POIGameStateComponent.static_p_o__is": {
+      "tooltip": "POIs extracted from world generation (static)",
+      "category": "POI",
+      "cpp_type": "TArray<FPointOfInterest>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "POIGameStateComponent.next_dynamic_poiid": {
+      "tooltip": "Next unique POI ID for dynamic POIs",
+      "category": "POI",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "POIGameStateComponent.next_dynamic_p_o_i_i_d": {
       "tooltip": "Next unique POI ID for dynamic POIs",
       "category": "POI",
       "cpp_type": "int32",
@@ -31025,6 +31879,20 @@
       "display_name": null,
       "categories": null
     },
+    "WorldGenerationManager.on_chunk_l_o__ds_changed": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FOnChunkLODsChanged",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "WorldGenerationManager.world_generation_settings_data": {
       "tooltip": null,
       "category": null,
@@ -31040,6 +31908,20 @@
       "categories": null
     },
     "WorldGenerationManager.rle_world_data": {
+      "tooltip": "Compressed world data for network transmission (replicated ONCE at startup) IMPORTANT: This is IMMUTABLE after initial load from JSON. Never modify after setting. This is the SINGLE SOURCE OF TRUTH for: - World size (RLEWorldData.WorldSize) - Maze generation seed (RLEWorldData.MazeGenerationSeed) - All layer data (biomes, height, difficulty, hazards)",
+      "category": null,
+      "cpp_type": "FRLEGeneratedWorld",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "WorldGenerationManager.r_l_e__world_data": {
       "tooltip": "Compressed world data for network transmission (replicated ONCE at startup) IMPORTANT: This is IMMUTABLE after initial load from JSON. Never modify after setting. This is the SINGLE SOURCE OF TRUTH for: - World size (RLEWorldData.WorldSize) - Maze generation seed (RLEWorldData.MazeGenerationSeed) - All layer data (biomes, height, difficulty, hazards)",
       "category": null,
       "cpp_type": "FRLEGeneratedWorld",
@@ -31263,6 +32145,20 @@
       "display_name": null,
       "categories": null
     },
+    "ReplicatedMapIconData.icon_i_d": {
+      "tooltip": null,
+      "category": "Map Icon",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ReplicatedMapIconData.b_is_visible": {
       "tooltip": null,
       "category": "Map Icon",
@@ -31362,6 +32258,20 @@
       "categories": null
     },
     "MapIconGameStateComponent.next_icon_id": {
+      "tooltip": null,
+      "category": "Map Icon GameState",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "MapIconGameStateComponent.next_icon_i_d": {
       "tooltip": null,
       "category": "Map Icon GameState",
       "cpp_type": "int32",
@@ -35211,6 +36121,20 @@
       "display_name": null,
       "categories": null
     },
+    "AScpCharacter.a_i__perception_stimuli_source": {
+      "tooltip": "AI perception stimuli source component - makes this character detectable by AI perception systems",
+      "category": "SCP|AI Perception",
+      "cpp_type": "TObjectPtr<UAIPerceptionStimuliSourceComponent>",
+      "element_class": "AIPerceptionStimuliSourceComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "AScpCharacter.navigation_invoker_component": {
       "tooltip": "Navigation invoker component - generates navigation mesh around this character",
       "category": "SCP|Navigation",
@@ -35240,6 +36164,20 @@
       "categories": null
     },
     "AScpCharacter.my_team_id": {
+      "tooltip": "Team ID for this character",
+      "category": null,
+      "cpp_type": "FGenericTeamId",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "AScpCharacter.my_team_i_d": {
       "tooltip": "Team ID for this character",
       "category": null,
       "cpp_type": "FGenericTeamId",
@@ -35785,7 +36723,35 @@
       "display_name": null,
       "categories": null
     },
+    "PlayerProgressionID.player_i_d": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "PlayerProgressionID.playthrough_id": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "PlayerProgressionID.playthrough_i_d": {
       "tooltip": null,
       "category": null,
       "cpp_type": "int32",
@@ -37157,6 +38123,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScpSaveGameMeta.player_p_o_v__binary_texture": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TArray<uint8>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpSaveGameMeta.cached_world_data": {
       "tooltip": null,
       "category": null,
@@ -37535,7 +38515,35 @@
       "display_name": null,
       "categories": null
     },
+    "ScpGameUserSettings.b_h_d_r": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpGameUserSettings.hdr": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpGameUserSettings.h_d_r": {
       "tooltip": null,
       "category": null,
       "cpp_type": "bool",
@@ -37661,6 +38669,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScpGameUserSettings.s_f_x__volume": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "float",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpGameUserSettings.b_subtitles_enabled": {
       "tooltip": null,
       "category": null,
@@ -37717,7 +38739,35 @@
       "display_name": null,
       "categories": null
     },
+    "ScpGameUserSettings.b_invert_y__axis": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpGameUserSettings.invert_y_axis": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpGameUserSettings.invert_y__axis": {
       "tooltip": null,
       "category": null,
       "cpp_type": "bool",
@@ -38011,6 +39061,20 @@
       "display_name": null,
       "categories": null
     },
+    "TestingWorldSettings.b_override_chunk_l_o_d": {
+      "tooltip": "Override LOD distances to reduce chunk generation radius",
+      "category": "Chunks",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "TestingWorldSettings.override_chunk_lod": {
       "tooltip": "Override LOD distances to reduce chunk generation radius",
       "category": "Chunks",
@@ -38025,7 +39089,35 @@
       "display_name": null,
       "categories": null
     },
+    "TestingWorldSettings.override_chunk_l_o_d": {
+      "tooltip": "Override LOD distances to reduce chunk generation radius",
+      "category": "Chunks",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "TestingWorldSettings.chunk_lod_distance_multiplier": {
+      "tooltip": "Multiplier on all LOD MaxDistance values (0.25 = quarter distance)",
+      "category": "Chunks",
+      "cpp_type": "float",
+      "element_class": null,
+      "clamp_min": 0.1,
+      "clamp_max": 1.0,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": "bOverrideChunkLOD",
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "TestingWorldSettings.chunk_l_o_d__distance_multiplier": {
       "tooltip": "Multiplier on all LOD MaxDistance values (0.25 = quarter distance)",
       "category": "Chunks",
       "cpp_type": "float",
@@ -38907,7 +39999,35 @@
       "display_name": null,
       "categories": null
     },
+    "WorldLayoutInfo.b_is_json_r_l_e__world": {
+      "tooltip": "Whether this is a JSON-RLE world file (true) or PNG-based folder structure (false)",
+      "category": "World Layout",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "WorldLayoutInfo.is_json_rle_world": {
+      "tooltip": "Whether this is a JSON-RLE world file (true) or PNG-based folder structure (false)",
+      "category": "World Layout",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "WorldLayoutInfo.is_json_r_l_e__world": {
       "tooltip": "Whether this is a JSON-RLE world file (true) or PNG-based folder structure (false)",
       "category": "World Layout",
       "cpp_type": "bool",
@@ -40685,6 +41805,20 @@
       "display_name": null,
       "categories": null
     },
+    "IntercomTriggerEvent.player_i_d": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FPlayerProgressionID",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "IntercomTriggerEvent.progression_type": {
       "tooltip": null,
       "category": null,
@@ -40713,6 +41847,20 @@
       "display_name": null,
       "categories": null
     },
+    "IntercomTriggerEvent.entity_i_d": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "IntercomTriggerEvent.biome_tag": {
       "tooltip": null,
       "category": null,
@@ -40728,6 +41876,20 @@
       "categories": null
     },
     "IntercomAnnouncementData.announcement_id": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "IntercomAnnouncementData.announcement_i_d": {
       "tooltip": null,
       "category": null,
       "cpp_type": "FString",
@@ -40868,6 +42030,20 @@
       "categories": null
     },
     "IntercomAnnouncementData.trigger_on_entity_i_ds": {
+      "tooltip": null,
+      "category": "Progression Triggers",
+      "cpp_type": "TArray<int32>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "IntercomAnnouncementData.trigger_on_entity_i__ds": {
       "tooltip": null,
       "category": "Progression Triggers",
       "cpp_type": "TArray<int32>",
@@ -41749,6 +42925,20 @@
       "display_name": null,
       "categories": null
     },
+    "PointOfInterest.p_o_i__type": {
+      "tooltip": "Type of POI for icon display",
+      "category": "POI",
+      "cpp_type": "EMapIconType",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "PointOfInterest.display_name": {
       "tooltip": "Display name for tooltips",
       "category": "POI",
@@ -41819,6 +43009,20 @@
       "display_name": null,
       "categories": null
     },
+    "PointOfInterest.p_o_i_i_d": {
+      "tooltip": "Unique identifier",
+      "category": "POI",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "PointOfInterest.b_always_visible": {
       "tooltip": "Whether this POI should always be visible regardless of zoom",
       "category": "POI",
@@ -41875,7 +43079,35 @@
       "display_name": null,
       "categories": null
     },
+    "POIGroup.grouped_p_o__is": {
+      "tooltip": "POIs in this group",
+      "category": "POI Group",
+      "cpp_type": "TArray<FPointOfInterest>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "POIGroup.representative_poi": {
+      "tooltip": "Representative POI to display for the group",
+      "category": "POI Group",
+      "cpp_type": "FPointOfInterest",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "POIGroup.representative_p_o_i": {
       "tooltip": "Representative POI to display for the group",
       "category": "POI Group",
       "cpp_type": "FPointOfInterest",
@@ -41904,6 +43136,20 @@
       "categories": null
     },
     "POIGroup.group_id": {
+      "tooltip": "Unique group identifier",
+      "category": "POI Group",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "POIGroup.group_i_d": {
       "tooltip": "Unique group identifier",
       "category": "POI Group",
       "cpp_type": "int32",
@@ -42267,6 +43513,20 @@
       "display_name": null,
       "categories": null
     },
+    "HitboxOverlapMessage.montage_instance_i_d": {
+      "tooltip": "Unique ID of the montage instance that triggered this overlap",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "HitboxOverlapMessage.animation_section_name": {
       "tooltip": "Current section name of the animation that triggered this overlap",
       "category": null,
@@ -42282,6 +43542,20 @@
       "categories": null
     },
     "HitboxOverlapMessage.anim_notify_id": {
+      "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "HitboxOverlapMessage.anim_notify_i_d": {
       "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
       "category": null,
       "cpp_type": "int32",
@@ -42365,6 +43639,20 @@
       "display_name": null,
       "categories": null
     },
+    "HitboxEndMessage.montage_instance_i_d": {
+      "tooltip": "Unique ID of the montage instance",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "HitboxEndMessage.animation_section_name": {
       "tooltip": "Current animation section name",
       "category": null,
@@ -42380,6 +43668,20 @@
       "categories": null
     },
     "HitboxEndMessage.anim_notify_id": {
+      "tooltip": "Anim notify instance ID for correlation",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "HitboxEndMessage.anim_notify_i_d": {
       "tooltip": "Anim notify instance ID for correlation",
       "category": null,
       "cpp_type": "int32",
@@ -42603,6 +43905,20 @@
       "display_name": null,
       "categories": null
     },
+    "SpawnActorMessage.montage_instance_i_d": {
+      "tooltip": "Unique ID of the montage instance that triggered this spawn/destroy",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "SpawnActorMessage.animation_section_name": {
       "tooltip": "Current section name of the animation that triggered this spawn/destroy",
       "category": null,
@@ -42618,6 +43934,20 @@
       "categories": null
     },
     "SpawnActorMessage.anim_notify_id": {
+      "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "SpawnActorMessage.anim_notify_i_d": {
       "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
       "category": null,
       "cpp_type": "int32",
@@ -42715,6 +44045,20 @@
       "display_name": null,
       "categories": null
     },
+    "SpawnMeshMessage.montage_instance_i_d": {
+      "tooltip": "Unique ID of the montage instance that triggered this spawn/destroy",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "SpawnMeshMessage.animation_section_name": {
       "tooltip": "Current section name of the animation that triggered this spawn/destroy",
       "category": null,
@@ -42730,6 +44074,20 @@
       "categories": null
     },
     "SpawnMeshMessage.anim_notify_id": {
+      "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
+      "category": null,
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "SpawnMeshMessage.anim_notify_i_d": {
       "tooltip": "Custom ID for this specific anim notify instance (set in animation blueprint)",
       "category": null,
       "cpp_type": "int32",
@@ -44269,7 +45627,35 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayEffectsToApply.b_apply_x_p__gain_multiplier": {
+      "tooltip": null,
+      "category": "Utility",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "GameplayEffectsToApply.apply_xp_gain_multiplier": {
+      "tooltip": null,
+      "category": "Utility",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayEffectsToApply.apply_x_p__gain_multiplier": {
       "tooltip": null,
       "category": "Utility",
       "cpp_type": "bool",
@@ -44297,7 +45683,35 @@
       "display_name": null,
       "categories": null
     },
+    "GameplayEffectsToApply.x_p__gain_multiplier": {
+      "tooltip": null,
+      "category": "Utility",
+      "cpp_type": "float",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": "bApplyXPGainMultiplier",
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
     "GameplayEffectsToApply.f_gameplay_effect_with_modifiers": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TArray<FGameplayEffectWithModifier>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditDefaultsOnly",
+      "display_name": null,
+      "categories": null
+    },
+    "GameplayEffectsToApply.f__gameplay_effect_with_modifiers": {
       "tooltip": null,
       "category": null,
       "cpp_type": "TArray<FGameplayEffectWithModifier>",
@@ -45278,6 +46692,20 @@
       "categories": null
     },
     "UInt16.u_int16": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "uint16",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "UInt16.u__int16": {
       "tooltip": null,
       "category": null,
       "cpp_type": "uint16",
@@ -46677,7 +48105,35 @@
       "display_name": null,
       "categories": null
     },
+    "TileLODConfiguration.b_use_tile_l_o_d": {
+      "tooltip": "Enable tile LOD system",
+      "category": "Tile LOD",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "TileLODConfiguration.use_tile_lod": {
+      "tooltip": "Enable tile LOD system",
+      "category": "Tile LOD",
+      "cpp_type": "bool",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "TileLODConfiguration.use_tile_l_o_d": {
       "tooltip": "Enable tile LOD system",
       "category": "Tile LOD",
       "cpp_type": "bool",
@@ -46706,6 +48162,20 @@
       "categories": null
     },
     "ChunkSettings.entity_i_ds_reserved_per_tile": {
+      "tooltip": "Entity IDs reserved per tile",
+      "category": "Chunks",
+      "cpp_type": "int32",
+      "element_class": null,
+      "clamp_min": 512,
+      "clamp_max": 4096,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "ChunkSettings.entity_i__ds_reserved_per_tile": {
       "tooltip": "Entity IDs reserved per tile",
       "category": "Chunks",
       "cpp_type": "int32",
@@ -47210,6 +48680,20 @@
       "categories": null
     },
     "WorldGenerationSettings.tile_lod_config": {
+      "tooltip": null,
+      "category": "LOD",
+      "cpp_type": "FTileLODConfiguration",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "WorldGenerationSettings.tile_l_o_d__config": {
       "tooltip": null,
       "category": "LOD",
       "cpp_type": "FTileLODConfiguration",
@@ -48833,6 +50317,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScpUIDirectorSubsystem.web_u_i": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TObjectPtr<UTSICWebUISubsystem>",
+      "element_class": "TSICWebUISubsystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpUICmdInputModeTag.tag": {
       "tooltip": "Tag string in dotted form, e.g. \"InputMode.Menu.Map\".",
       "category": null,
@@ -48987,7 +50485,35 @@
       "display_name": null,
       "categories": null
     },
+    "ScpUIInputBridgeSubsystem.e_i": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TWeakObjectPtr<UEnhancedInputLocalPlayerSubsystem>",
+      "element_class": "EnhancedInputLocalPlayerSubsystem",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
     "ScpUIInputBridgeSubsystem.eic": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "TWeakObjectPtr<UEnhancedInputComponent>",
+      "element_class": "EnhancedInputComponent",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpUIInputBridgeSubsystem.e_i_c": {
       "tooltip": null,
       "category": null,
       "cpp_type": "TWeakObjectPtr<UEnhancedInputComponent>",
@@ -52053,6 +53579,20 @@
       "display_name": null,
       "categories": null
     },
+    "ScpUIHtmlGameOpened.game_h_t_m_l__path": {
+      "tooltip": null,
+      "category": null,
+      "cpp_type": "FString",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "ScpUILoreText.heading": {
       "tooltip": null,
       "category": null,
@@ -53313,7 +54853,35 @@
       "display_name": null,
       "categories": null
     },
+    "ScpUIMapTileGrid.biome_r_l_e": {
+      "tooltip": "Biome layer (Floor) RLE \u2014 row-major (North-major, then East), tile order matches HeightRLE.",
+      "category": null,
+      "cpp_type": "TArray<FRLEEntry>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "ScpUIMapTileGrid.height_rle": {
+      "tooltip": "Height channel RLE; same tile order as BiomeRLE.",
+      "category": null,
+      "cpp_type": "TArray<FRLEEntry>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "ScpUIMapTileGrid.height_r_l_e": {
       "tooltip": "Height channel RLE; same tile order as BiomeRLE.",
       "category": null,
       "cpp_type": "TArray<FRLEEntry>",
