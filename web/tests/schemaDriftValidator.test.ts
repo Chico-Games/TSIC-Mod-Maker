@@ -309,3 +309,50 @@ test('validateAssetRefs: no issue when catalog is empty (attempted but no entrie
   const issues = validateAssetRefs(defs, catalogs, {});
   assert.deepEqual(issues, []);
 });
+
+test('validateAssetRefs: case-insensitive path match (UE FName) — no false missing-asset-ref', () => {
+  // Regression (real data, TSIC2): the record references the asset with a
+  // lower-case object name (`SM_bed.SM_bed`) while the catalog records the
+  // authored casing (`SM_bed.SM_Bed`). UE object paths are case-insensitive
+  // (the asset name is an FName), so these reference the same asset and must
+  // NOT be flagged as missing. Fails with a case-sensitive `e.path === path`.
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['spawn_point_definitions/FD_KidsBed_SP', mkAssetRec('FD_KidsBed_SP' as DefinitionsKey, {
+      static_mesh: {
+        type: 'soft_asset_ref', class: 'StaticMesh',
+        value: '/Game/Furniture/Kids/Meshes/SM_bed.SM_bed',
+      },
+      destructible_collection: {
+        type: 'soft_asset_ref', class: 'GeometryCollection',
+        value: '/Game/Furniture/Kids/GeometryCollections/GCS_bed.GCS_bed',
+      },
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>([
+    ['StaticMesh', [{
+      path: '/Game/Furniture/Kids/Meshes/SM_bed.SM_Bed',
+      name: 'SM_Bed', folder: '/Game/Furniture/Kids/Meshes', package_guid: '',
+    }]],
+    ['GeometryCollection', [{
+      path: '/Game/Furniture/Kids/GeometryCollections/GCS_bed.GCS_Bed',
+      name: 'GCS_Bed', folder: '/Game/Furniture/Kids/GeometryCollections', package_guid: '',
+    }]],
+  ]);
+  const issues = validateAssetRefs(defs, catalogs, {});
+  assert.deepEqual(issues, []);
+});
+
+test('validateAssetRefs: genuinely-missing path still flagged (fix is not "match anything")', () => {
+  // Guard against the case-insensitive fix masking real misses: a path that
+  // differs by more than case must still be reported.
+  const defs = new Map<DefinitionsKey, DefinitionRecord>([
+    ['FD_X', mkAssetRec('FD_X' as DefinitionsKey, {
+      static_mesh: { type: 'soft_asset_ref', class: 'StaticMesh', value: '/Game/Furniture/SM_chair.SM_chair' },
+    })],
+  ]);
+  const catalogs = new Map<string, AssetCatalogEntry[]>([['StaticMesh',
+    [{ path: '/Game/Furniture/SM_bed.SM_Bed', name: 'SM_Bed', folder: '/Game/Furniture', package_guid: '' }]]]);
+  const issues = validateAssetRefs(defs, catalogs, {});
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'missing-asset-ref');
+});

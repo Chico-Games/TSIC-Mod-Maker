@@ -113,7 +113,13 @@ export function validateAssetRefs(
       // stores blueprint assets under derived class names, not their base).
       if (!entries || entries.length === 0) continue;
 
-      const entry = entries.find((e) => e.path === path);
+      // UE object paths are case-insensitive (the package path is a filesystem
+      // path and the asset name is an FName), so `SM_bed.SM_bed` and
+      // `SM_bed.SM_Bed` reference the same asset. Compare case-insensitively so
+      // a mere case difference between the ref and the catalog isn't flagged as
+      // missing/drift.
+      const lowerPath = path.toLowerCase();
+      const entry = entries.find((e) => e.path.toLowerCase() === lowerPath);
       if (!entry) {
         out.push({ recordKey: key, kind: 'missing-asset-ref', path, assetClass: cls });
         continue;
