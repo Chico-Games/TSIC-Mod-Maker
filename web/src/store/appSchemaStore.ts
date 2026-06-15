@@ -182,7 +182,13 @@ export const useAppSchemaStore = create<AppSchemaStore>((set, get) => ({
       const baseUrl = (import.meta as any).env?.BASE_URL ?? '/';
       const hUrl = `${baseUrl}schema/class-hierarchy.json`;
       const pUrl = `${baseUrl}schema/property-meta.json`;
-      const [hResp, pResp] = await Promise.all([doFetch(hUrl), doFetch(pUrl)]);
+      // `no-store`: the bundled schema can change under a running deploy
+      // (e.g. after a refresh-schema). Serving a stale cached copy makes the
+      // editor flag valid records as schema drift, so always re-fetch.
+      const [hResp, pResp] = await Promise.all([
+        doFetch(hUrl, { cache: 'no-store' }),
+        doFetch(pUrl, { cache: 'no-store' }),
+      ]);
       if (!hResp.ok) throw new Error(`class-hierarchy ${hResp.status}`);
       if (!pResp.ok) throw new Error(`property-meta ${pResp.status}`);
       const hierarchy = JSON.parse(await hResp.text());
