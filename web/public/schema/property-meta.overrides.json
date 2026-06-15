@@ -1,0 +1,62 @@
+{
+  "_comment": "Editor-side property metadata for Blueprint-defined properties that exist on runtime BP subclasses but have NO C++ UPROPERTY anywhere in Source/, so the header scanner (Tools/Export/scan_property_meta.py) cannot see them. refresh-schema.mjs merges these into property-meta.json after the scan, so they survive refreshes and don't show as schema drift. Keys are Class.snake_property (bare class name, no U/F prefix). Entry shape matches the scanner's output.",
+  "schema_version": 2,
+  "properties": {
+    "ContainmentCageDefinition.screen_widget_class_override": {
+      "tooltip": "Blueprint-defined: widget class shown for this cage's screen (overrides the default).",
+      "category": "UI",
+      "cpp_type": "TSoftClassPtr<UUserWidget>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpGameData.default_lore_screen_widget_class": {
+      "tooltip": "Blueprint-defined: default widget class for lore/interaction screens.",
+      "category": "UI",
+      "cpp_type": "TSoftClassPtr<UUserWidget>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "ScpGameData.default_screen_widget_map": {
+      "tooltip": "Blueprint-defined: maps a definition class to its default screen widget class.",
+      "category": "UI",
+      "cpp_type": "TMap<TSoftClassPtr<UObject>, TSoftClassPtr<UUserWidget>>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    },
+    "UniversalStorageDefinition.setup_widget_class": {
+      "tooltip": "Blueprint-defined: widget class for the universal-storage setup screen.",
+      "category": "UI",
+      "cpp_type": "TSoftClassPtr<UUserWidget>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": null,
+      "display_name": null,
+      "categories": null
+    }
+  }
+}

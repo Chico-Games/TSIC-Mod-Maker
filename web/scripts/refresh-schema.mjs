@@ -113,6 +113,23 @@ if (propertyMetaSrc) {
   copyFileSync(propertyMetaSrc, join(WEB_SCHEMA, 'property-meta.json'));
   log(`   wrote property-meta.json (from ${propertyMetaSrc.includes('test-output') ? 'header scan' : 'pack'})`);
 }
+// Merge editor-side overrides: Blueprint-defined properties that have no C++
+// UPROPERTY anywhere in Source/, so the header scanner can't see them. Without
+// this they show as schema drift even though the data is valid. Existing
+// scanner keys always win; overrides only fill genuine gaps.
+const OVERRIDES = join(WEB_SCHEMA, 'property-meta.overrides.json');
+if (existsSync(OVERRIDES)) {
+  const base = readJSON(join(WEB_SCHEMA, 'property-meta.json'));
+  base.properties = base.properties || {};
+  let merged = 0;
+  for (const [k, v] of Object.entries(readJSON(OVERRIDES).properties || {})) {
+    if (!base.properties[k]) { base.properties[k] = v; merged++; }
+  }
+  if (merged) {
+    writeJSON(join(WEB_SCHEMA, 'property-meta.json'), base);
+    log(`   merged ${merged} Blueprint-only override(s) from property-meta.overrides.json`);
+  }
+}
 const propertyMeta = readJSON(join(WEB_SCHEMA, 'property-meta.json'));
 const pmKeys = new Set(Object.keys(propertyMeta.properties || {}));
 
