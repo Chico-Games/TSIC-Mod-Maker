@@ -13,6 +13,12 @@ import { StructRows } from './StructRows';
 import { TransformEditor } from './TransformEditor';
 import { TagPicker } from './pickers/TagPicker';
 import { AssetRefPicker } from './pickers/AssetRefPicker';
+import { VirtualBlocks } from './VirtualBlocks';
+
+/** Above this many rows in a single property group, the grid switches from a
+ *  flat render to VirtualBlocks windowing. Small lists (the overwhelming
+ *  majority) keep their exact previous DOM/layout. */
+const PROP_WINDOW_THRESHOLD = 30;
 
 // Schema-aware editor for typed-envelope values produced by the UE exporter.
 // Every property value is `{ type: "...", value: ..., ...extras }` — see
@@ -1434,6 +1440,21 @@ export function TypedPropertiesEditor({
     </div>
   );
 
+  // Window a single group's key list once it gets large; below the
+  // threshold render flat so common records keep their exact prior layout.
+  // gap=6 mirrors `.def-group { gap: 6px }` from the flat path.
+  const renderKeyList = (keys: string[]) =>
+    keys.length > PROP_WINDOW_THRESHOLD ? (
+      <VirtualBlocks
+        items={keys}
+        keyOf={(k) => k}
+        gap={6}
+        renderItem={(k) => renderField(k)}
+      />
+    ) : (
+      keys.map(renderField)
+    );
+
   return (
     <div className="def-properties">
       {visible.length === 0 && allKeys.length === 0 && (
@@ -1445,7 +1466,7 @@ export function TypedPropertiesEditor({
       {pinnedKeys.length > 0 && (
         <div className="def-group def-group-pinned">
           <div className="def-group-head">Pinned</div>
-          {pinnedKeys.map(renderField)}
+          {renderKeyList(pinnedKeys)}
         </div>
       )}
       {groups.map((g) => (
@@ -1453,7 +1474,7 @@ export function TypedPropertiesEditor({
           {g.label && groupBy !== 'default' && (
             <div className="def-group-head">{g.label}</div>
           )}
-          {g.keys.map(renderField)}
+          {renderKeyList(g.keys)}
         </div>
       ))}
       {hiddenCount > 0 && (
