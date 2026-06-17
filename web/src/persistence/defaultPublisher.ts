@@ -1,5 +1,6 @@
 import type { DefaultProject, DefaultProjectMeta } from './defaultProject';
 import type { DefinitionRecord, DefinitionsKey } from '../store/definitionsStore';
+import { FsaDataSource } from './dataSource';
 
 function canonicalTextOf(json: any): string {
   return JSON.stringify(json, null, 2) + '\n';
@@ -38,11 +39,14 @@ export async function publishAsNewDefaultVersion(
     throw new Error('Target folder does not look like a default project (no manifest.json).');
   }
 
-  // 1) Write every record in the working set as canonical text.
+  // 1) Write every record in the working set. The editor's working set holds
+  //    typed envelopes; route writes through FsaDataSource.writeFile so they're
+  //    translated back to lean via the target pack's _schema.json and disk stays
+  //    byte-identical to what the game reads. (No schema → passes through.)
+  const tds = new FsaDataSource(target);
   const folderToIds = new Map<string, Set<string>>();
   for (const rec of working.values()) {
-    const text = canonicalTextOf(rec.json);
-    await writeFile(target, rec.folder, `${rec.id}.json`, text);
+    await tds.writeFile(rec.folder, rec.id, canonicalTextOf(rec.json));
     if (!folderToIds.has(rec.folder)) folderToIds.set(rec.folder, new Set());
     folderToIds.get(rec.folder)!.add(rec.id);
   }

@@ -59,6 +59,12 @@ export interface DataSource {
   readonly displayName: string;
   readManifest(): Promise<DataSourceManifest>;
   readFile(folder: string, id: string): Promise<string>;
+  /** Convert an already-in-memory lean file's text to envelope form using
+   *  this pack's `_schema.json`. No-op for packs without a schema (legacy
+   *  envelope packs). Lets the loader reuse texts it already fetched (the
+   *  Default Project preload) without losing the lean→envelope translation
+   *  that `readFile` would otherwise apply. */
+  toEnvelopeText(text: string): Promise<string>;
   writeFile?(folder: string, id: string, text: string): Promise<void>;
   deleteFile?(folder: string, id: string): Promise<void>;
   renameFile?(fromFolder: string, fromId: string, toFolder: string, toId: string): Promise<void>;
@@ -125,6 +131,10 @@ export class HttpDataSource implements DataSource {
     return leanTextToEnvelope(await r.text(), await this.getSchema());
   }
 
+  async toEnvelopeText(text: string): Promise<string> {
+    return leanTextToEnvelope(text, await this.getSchema());
+  }
+
   async readProjectMeta(): Promise<ProjectMeta> {
     return { schema_version: 2, name: 'Default Project' };
   }
@@ -155,6 +165,29 @@ export class HttpDataSource implements DataSource {
 
 const PROJECT_META_FILE = 'project.json';
 
+// Top-level directories that are never definition folders. When the editor is
+// pointed at a real UE project root (or this repo), siblings like `node_modules`
+// or `Saved` hold arbitrary JSON that has no `id`/`class` and would otherwise
+// flood the load gate with bogus "structurally invalid" reports. Definition
+// folders are lowercase_snake_case content dirs; these are build/tooling/VCS
+// artifacts. Matched case-insensitively (UE capitalizes; node_modules doesn't).
+// Dot-prefixed dirs are handled separately in readManifest.
+const IGNORED_FOLDERS = new Set([
+  'node_modules',
+  'intermediate',
+  'saved',
+  'scripts',
+  'binaries',
+  'deriveddatacache',
+  'content',
+  'config',
+  'source',
+  'plugins',
+  'build',
+  'dist',
+  'coverage',
+]);
+
 /** FSA-backed read/write DataSource. Wraps a FileSystemDirectoryHandle. */
 export class FsaDataSource implements DataSource {
   readonly kind = 'fsa' as const;
@@ -171,6 +204,7 @@ export class FsaDataSource implements DataSource {
     for await (const [name, entry] of this.rootHandle.entries()) {
       if ((entry as any).kind !== 'directory') continue;
       if (name.startsWith('.')) continue;
+      if (IGNORED_FOLDERS.has(name.toLowerCase())) continue;
       folders.push(name);
       const ids: string[] = [];
       // @ts-ignore
@@ -206,6 +240,10 @@ export class FsaDataSource implements DataSource {
     const fh = await dir.getFileHandle(`${id}.json`);
     const file = await fh.getFile();
     return leanTextToEnvelope(await file.text(), await this.getSchema());
+  }
+
+  async toEnvelopeText(text: string): Promise<string> {
+    return leanTextToEnvelope(text, await this.getSchema());
   }
 
   async writeFile(folder: string, id: string, text: string): Promise<void> {

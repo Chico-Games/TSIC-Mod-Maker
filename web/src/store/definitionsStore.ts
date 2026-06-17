@@ -21,6 +21,11 @@ import {
   getPinnedHandle,
   setPinnedHandle,
 } from '../persistence/pinnedProject';
+import {
+  getLastOpened,
+  setLastOpenedFsa,
+  setLastOpenedStarter,
+} from '../persistence/lastOpenedProject';
 import { useAppSchemaStore } from './appSchemaStore';
 import type { ClassNode } from './appSchemaStore';
 import { useGameplayTagStore } from './gameplayTagStore';
@@ -996,14 +1001,20 @@ async function loadFromDataSource(
       for (const f of manifest.files) {
         for (const id of f.ids) {
           const k = key(f.folder, id);
-          const text = preloadedTexts.get(k);
-          if (text === undefined) continue;
-          if (text.length === 0) {
+          const leanText = preloadedTexts.get(k);
+          if (leanText === undefined) continue;
+          if (leanText.length === 0) {
             defs.set(k, {
               folder: f.folder, id, json: null, originalText: '', diskId: id, diskFolder: f.folder,
             });
             continue;
           }
+          // The preloaded texts are the raw on-disk (lean) form. readFile would
+          // have translated them to typed envelopes via the pack's _schema.json;
+          // since we're skipping readFile, apply the same translation here so the
+          // working set matches the folder-open path. Without this, lean values
+          // reach the editor raw and render as unknown(?).
+          const text = await ds.toEnvelopeText(leanText);
           rawFiles.push({ folder: f.folder, name: `${id}.json`, text });
           try {
             const json = JSON.parse(text);
@@ -1248,6 +1259,12 @@ async function loadFromDataSource(
       historyFuture: [],
       toast: { kind: 'info', text: `Loaded ${defs.size} definitions across ${folders.length} folders.` },
     });
+
+    // Remember a successfully-loaded folder project as the last-opened one so
+    // it reopens by default next launch. (The Default/Starter project marks
+    // itself via openStarterProject — bootstrap's bundled-defaults fallback
+    // must NOT count as an explicit open, so we don't mark it here.)
+    if (ds.kind === 'fsa') setLastOpenedFsa(ds.displayName);
 
     // Reverse-ref index.
     const idx = buildReferencedByIndex(get().definitions);
@@ -1646,10 +1663,13 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         }
       }
       if (skipAuto) return;
-      // Prefer auto-opening the pinned project — but only if its permission is
-      // still granted. Never prompt during bootstrap; the user clicks the pin
-      // button to grant access again when needed.
-      if (get().autoLoadEnabled) {
+      // The pinned project is only the default on a genuine first launch (the
+      // user has never opened anything). Once they've opened any project — a
+      // folder OR the Default/Starter — "open the last project" takes over, so
+      // we fall through to the bundled defaults below instead of the pin.
+      // Auto-open the pin only if its permission is still granted; never prompt
+      // during bootstrap (the user clicks the pin button to re-grant access).
+      if (get().autoLoadEnabled && getLastOpened() === null) {
         try {
           const pinned = await getPinnedHandle();
           if (pinned) {
@@ -1703,6 +1723,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
 
   openStarterProject: async () => {
     await get().loadDefaultProject();
+    // Explicit user choice — remember it so it reopens by default next launch.
+    setLastOpenedStarter();
   },
 
   loadDefaultProject: async () => {
