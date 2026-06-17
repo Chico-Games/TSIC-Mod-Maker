@@ -1,5 +1,6 @@
 import type { ProxySearchTreeQuery } from '../types';
 import { parseSearchQuery } from '../types';
+import { tagStrings } from './searchTree';
 
 /** Returns true if `candidate` is `parent` or a dotted descendant. */
 function isOrChild(candidate: string, parent: string): boolean {
@@ -14,9 +15,9 @@ function targetHasTag(targetTags: string[], query: string, inclParents: boolean)
 
 /** Port of FProxySearchTreeQuery::QueryTags. */
 export function queryMatches(q: ProxySearchTreeQuery, targetTags: string[]): boolean {
-  const mode = parseSearchQuery(q.value.search_query.value);
-  const queryTags = q.value.tags.value;
-  const bNot = q.value.b_not.value;
+  const mode = parseSearchQuery(q.value.search_query?.value);
+  const queryTags = tagStrings(q.value.tags);
+  const bNot = !!q.value.b_not?.value;
 
   let raw: boolean;
   switch (mode) {

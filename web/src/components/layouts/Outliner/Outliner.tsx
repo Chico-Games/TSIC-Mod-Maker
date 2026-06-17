@@ -4,6 +4,7 @@ import { useDefinitionsStore } from '../../../store/definitionsStore';
 import { useAssetCatalogStore } from '../../../store/assetCatalogStore';
 import { useValidationStore } from '../../../store/validationStore';
 import { OutlinerRow } from './OutlinerRow';
+import { tagStrings } from '../resolver/searchTree';
 
 const EMPTY: never[] = [];
 
@@ -30,7 +31,7 @@ export function Outliner() {
   const layoutRec = definitions.get(layoutKey);
   const tileTags = tileTagsOverride.length > 0
     ? tileTagsOverride
-    : (layoutRec?.json?.properties?.gameplay_tags?.value as string[] | undefined) ?? [];
+    : tagStrings(layoutRec?.json?.properties?.gameplay_tags);
   const resolved = resolveLayout(layoutKey, seed, tileTags);
 
   return (

@@ -16,6 +16,21 @@ export type SearchTree = {
   allDefIds: string[];
 };
 
+/** Pull plain tag strings out of a gameplay-tags property envelope. Handles
+ *  both the `gameplay_tag_container` shape (`value: string[]`) and the generic
+ *  array-of-typed-strings shape the lean→envelope converter falls back to when
+ *  `_schema.json` carries no entry for the property (e.g. `gameplay_tags` on
+ *  ULayoutDefinition → `value: Array<{ type:'string', value:string }>`).
+ *  Without this, tag string ops (`.startsWith`, `.includes`) crash on the
+ *  envelope objects. */
+export function tagStrings(env: any): string[] {
+  const v = env?.value;
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((x) => (typeof x === 'string' ? x : x && typeof x === 'object' ? x.value : null))
+    .filter((s): s is string => typeof s === 'string');
+}
+
 /** Build a search tree of every definition whose `class` matches `klass`
  *  OR whose `parent_classes` list contains `klass`. Bare and U-prefixed names
  *  both match. Pulls `gameplay_tags` off each. */
@@ -32,8 +47,7 @@ export function buildSearchTree(
     const parents = (rec.json?.parent_classes as string[] | undefined) ?? [];
     const matches = recClass === target || parents.some((p) => norm(p) === target);
     if (!matches) continue;
-    const tagsEnv = rec.json?.properties?.gameplay_tags;
-    const tags = (tagsEnv?.value as string[] | undefined) ?? [];
+    const tags = tagStrings(rec.json?.properties?.gameplay_tags);
     allDefs.push({ id: rec.id, tags, json: rec.json });
   }
   return { klass, allDefs, allDefIds: allDefs.map((d) => d.id) };

@@ -86,13 +86,31 @@ export type LayoutObject = {
   };
 };
 
+/** Coerce an enum field's `.value` to its bare member-name string, tolerating
+ *  the shapes the lean→envelope converter produces when `_schema.json` doesn't
+ *  fully type a nested struct field (e.g. ProxySearchTreeQuery.search_query):
+ *   - proper enum envelope value → a plain string ("PROXY_ACTOR")
+ *   - struct-wrapped lean enum    → { name: { value: "HAS_ALL_EXACT" }, value: {…} }
+ *   - bare lean enum dual format  → { name: "HAS_ALL_EXACT", value: 4 }
+ *  Without this the resolver's `.toUpperCase()` crashes on the object form. */
+export function coerceEnumString(raw: any): string {
+  if (typeof raw === 'string') return raw;
+  if (raw && typeof raw === 'object') {
+    const n = raw.name;
+    if (typeof n === 'string') return n;
+    if (n && typeof n === 'object' && typeof n.value === 'string') return n.value;
+    if (typeof raw.value === 'string') return raw.value;
+  }
+  return '';
+}
+
 /** Parsed enum value: the JSON shows enum values in any of several forms:
  *  - Python repr from the asset exporter: `"<ELayoutActorType.PROXY_ACTOR: 0>"`
  *  - Bare UPPER_SNAKE: `"PROXY_ACTOR"`
  *  - C++ PascalCase from the dropdown: `"ProxyActor"`
  *  Normalize by stripping non-alphanumerics + uppercasing, then substring-match. */
-export function parseLayoutActorType(raw: string): ELayoutActorType {
-  const c = (raw ?? '').toUpperCase().replace(/[^A-Z]/g, '');
+export function parseLayoutActorType(raw: unknown): ELayoutActorType {
+  const c = coerceEnumString(raw).toUpperCase().replace(/[^A-Z]/g, '');
   if (c.includes('PROXYACTOR')) return 'ProxyActor';
   if (c.includes('ENEMYSPAWN')) return 'EnemySpawnPoint';
   if (c.includes('LOOTSPAWN')) return 'LootSpawnPoint';
@@ -104,9 +122,9 @@ export function parseLayoutActorType(raw: string): ELayoutActorType {
 /** Same normalization for ESearchQuery — the JSON dumps emit the Python
  *  repr form `"<SearchQuery.HAS_ALL_EXACT: 4>"`, which doesn't match the
  *  PascalCase union directly. Strip non-alphanumerics and substring-match. */
-export function parseSearchQuery(raw: string | undefined | null): ESearchQuery {
-  if (!raw) return 'None';
-  const c = raw.toUpperCase().replace(/[^A-Z]/g, '');
+export function parseSearchQuery(raw: unknown): ESearchQuery {
+  const c = coerceEnumString(raw).toUpperCase().replace(/[^A-Z]/g, '');
+  if (!c) return 'None';
   if (c.includes('HASANYINCLPARENTS')) return 'HasAnyInclParents';
   if (c.includes('HASALLINCLPARENTS')) return 'HasAllInclParents';
   if (c.includes('HASANYEXACT')) return 'HasAnyExact';

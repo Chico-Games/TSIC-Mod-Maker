@@ -4,6 +4,7 @@ import { useDefinitionsStore } from '../../store/definitionsStore';
 import { useValidationStore } from '../../store/validationStore';
 import { TagPicker } from '../pickers/TagPicker';
 import { LayoutPicker } from './LayoutPicker';
+import { tagStrings } from './resolver/searchTree';
 
 function defaultLayoutObject(actorType: string) {
   return {
@@ -76,7 +77,7 @@ export function Toolbar() {
       .map((d) => ({
         key: `${d.folder}/${d.id}`,
         label: d.id,
-        tags: (d.json?.properties?.gameplay_tags?.value as string[] | undefined) ?? [],
+        tags: tagStrings(d.json?.properties?.gameplay_tags),
         issueCount: issuesByKey.get(`${d.folder}/${d.id}`)?.length ?? 0,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));

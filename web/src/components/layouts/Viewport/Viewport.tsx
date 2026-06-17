@@ -8,6 +8,7 @@ import { useAssetCatalogStore } from '../../../store/assetCatalogStore';
 import { LayoutObjectMesh } from './LayoutObjectMesh';
 import { SelectionGizmo } from './SelectionGizmo';
 import { UnrealCameraControls } from './UnrealCameraControls';
+import { tagStrings } from '../resolver/searchTree';
 
 class ViewportErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
@@ -51,7 +52,7 @@ export function Viewport() {
   const layoutRec = definitions.get(layoutKey);
   const tileTags = tileTagsOverride.length > 0
     ? tileTagsOverride
-    : (layoutRec?.json?.properties?.gameplay_tags?.value as string[] | undefined) ?? [];
+    : tagStrings(layoutRec?.json?.properties?.gameplay_tags);
   const resolved = resolveLayout(layoutKey, seed, tileTags);
 
   return (
