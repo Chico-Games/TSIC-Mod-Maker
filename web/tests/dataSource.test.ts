@@ -122,6 +122,22 @@ test('FsaDataSource: readManifest skips dot-files', async () => {
   ]);
 });
 
+test('FsaDataSource: readManifest skips build/tooling folders (case-insensitive)', async () => {
+  const root = mockDir({
+    damageable_furniture_definitions: mockDir({ 'A.json': mockFile('{"id":"A","class":"X"}') }),
+    node_modules: mockDir({ '.package-lock.json': mockFile('{}') }),
+    Intermediate: mockDir({ 'TargetInfo.json': mockFile('{}') }),
+    Saved: mockDir({ 'audio_game.json': mockFile('[]') }),
+    Scripts: mockDir({ 'map-data.json': mockFile('{}') }),
+  });
+  const ds = new FsaDataSource(root);
+  const m = await ds.readManifest();
+  assert.deepEqual(m.folders, ['damageable_furniture_definitions']);
+  assert.deepEqual(m.files, [
+    { folder: 'damageable_furniture_definitions', ids: ['A'] },
+  ]);
+});
+
 test('FsaDataSource: readFile returns file text', async () => {
   const root = mockDir({
     items: mockDir({ 'A.json': mockFile('hello') }),

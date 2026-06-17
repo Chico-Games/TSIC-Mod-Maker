@@ -241,11 +241,20 @@ for (const folder of listDefFolders(PACK_DIR)) {
 for (const dot of ['.gameplay-tags.json', '.asset-refs.json']) {
   if (existsSync(join(PACK_DIR, dot))) copyFileSync(join(PACK_DIR, dot), join(WEB_STARTER, dot));
 }
+// _schema.json — REQUIRED by the editor's lean⇆envelope converter. Without it
+// the HTTP/FSA DataSource has no schema, leanTextToEnvelope no-ops, and every
+// property loads as a raw value (rendered as "unknown(?)"). It is NOT a
+// dotfile, so the dot-loop above never caught it.
+if (existsSync(join(PACK_DIR, '_schema.json'))) {
+  copyFileSync(join(PACK_DIR, '_schema.json'), join(WEB_STARTER, '_schema.json'));
+} else {
+  warn('pack has no _schema.json — editor will load lean values raw (unknown(?))');
+}
 if (existsSync(join(PACK_DIR, '.assets'))) cpSync(join(PACK_DIR, '.assets'), join(WEB_STARTER, '.assets'), { recursive: true });
 // Restore default.json (or seed one so DefaultProjectMeta has a value).
 if (defaultJson != null) writeFileSync(join(WEB_STARTER, 'default.json'), defaultJson);
 else writeJSON(join(WEB_STARTER, 'default.json'), { schema_version: 1, version: 0, label: 'Default Project', published_at: new Date(0).toISOString() });
-log(`   packed ${fileCount} files across ${folderCount} folders (+ manifest, tags, asset-refs, .assets, default.json)`);
+log(`   packed ${fileCount} files across ${folderCount} folders (+ manifest, _schema, tags, asset-refs, .assets, default.json)`);
 
 // ── 5. drift self-check over the packed starter-project ─────────────────────
 log('5) drift self-check');

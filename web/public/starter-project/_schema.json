@@ -1,0 +1,4314 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-05-15T17:00:00.949066+00:00",
+  "git_rev": "b9ff8cfd5",
+  "classes": {
+    "UAmmoDefinition": {
+      "parents": [
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        }
+      }
+    },
+    "UAvailableRecipeRulesDefinition": {
+      "parents": [
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "production_machine_rules": {
+          "kind": "struct",
+          "name": "ProductionMachineRules"
+        }
+      }
+    },
+    "UBiomeDefinition": {
+      "parents": [
+        "UPrimaryDataAsset",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "biome_tag_name": {
+          "kind": "name"
+        },
+        "biome_tag": {
+          "kind": "gameplay_tag"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "role": {
+          "kind": "enum",
+          "name": "EBiomeRole"
+        },
+        "owning_mod_id": {
+          "kind": "name"
+        },
+        "map_color": {
+          "kind": "struct",
+          "name": "LinearColor"
+        },
+        "rotation_height_colors": {
+          "kind": "struct",
+          "name": "RotationHeightDirectionColorArr"
+        },
+        "maze_openness": {
+          "kind": "float"
+        },
+        "is_maze_border": {
+          "kind": "bool"
+        },
+        "direction_tags": {
+          "kind": "struct",
+          "name": "GameplayTagArray"
+        },
+        "vertical_direction_tags": {
+          "kind": "struct",
+          "name": "GameplayTagArray"
+        },
+        "loot_rarity": {
+          "kind": "struct",
+          "name": "LootRarityMaps"
+        },
+        "loot_multiplier": {
+          "kind": "float"
+        },
+        "floor_lsp": {
+          "kind": "definition_ref",
+          "class": "LootSpawnPointDefinition"
+        },
+        "furniture_lsp": {
+          "kind": "definition_ref",
+          "class": "LootSpawnPointDefinition"
+        },
+        "layouts": {
+          "kind": "array",
+          "element": {
+            "kind": "soft_object",
+            "class": "LayoutDefinition"
+          }
+        },
+        "environmental_effects": {
+          "kind": "array",
+          "element": {
+            "kind": "soft_class",
+            "class": "GameplayEffect"
+          }
+        },
+        "ambient_audio": {
+          "kind": "struct",
+          "name": "AmbientAudioConfig"
+        }
+      }
+    },
+    "UConstructableItemDefinition": {
+      "parents": [
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "furniture_to_construct": {
+          "kind": "object",
+          "class": "const UDamageableFurnitureDefinition"
+        },
+        "placement_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UConsumableDefinition": {
+      "parents": [
+        "UEquippableDefinition",
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "equipment_actors_and_meshes": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "EquipmentActorsMeshes"
+          }
+        },
+        "equipped_layer_class": {
+          "kind": "class",
+          "class": "AnimInstance"
+        },
+        "ability_sets_to_grant": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "const UScpAbilitySet"
+          }
+        },
+        "effects_to_apply": {
+          "kind": "struct",
+          "name": "GameplayEffectsToApply"
+        },
+        "has_durability": {
+          "kind": "bool"
+        },
+        "has_ammo": {
+          "kind": "bool"
+        },
+        "ammo_definition": {
+          "kind": "object",
+          "class": "const UAmmoDefinition"
+        },
+        "max_ammo": {
+          "kind": "int"
+        },
+        "equip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "unequip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "duration": {
+          "kind": "float"
+        },
+        "consume_animation_override": {
+          "kind": "object",
+          "class": "AnimMontage"
+        },
+        "requires_consumption_slot": {
+          "kind": "bool"
+        },
+        "consumption_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UContainmentCageDefinition": {
+      "parents": [
+        "UProductionStationDefinition",
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "available_recipe_rules_definition": {
+          "kind": "definition_ref",
+          "class": "AvailableRecipeRulesDefinition"
+        },
+        "max_recipes": {
+          "kind": "int"
+        },
+        "recipe_added_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_removed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_completed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UCraftRecipeDefinition": {
+      "parents": [
+        "URecipeDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "recipe_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "input": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "output": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "duration": {
+          "kind": "float"
+        },
+        "level": {
+          "kind": "int"
+        }
+      }
+    },
+    "UCraftingMaterialDefinition": {
+      "parents": [
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        }
+      }
+    },
+    "UCraftingStationDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "available_recipe_rules_definition": {
+          "kind": "definition_ref",
+          "class": "AvailableRecipeRulesDefinition"
+        },
+        "craft_success_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "craft_fail_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UDamageableFurnitureDefinition": {
+      "parents": [
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        }
+      }
+    },
+    "UDeathBoxDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        }
+      }
+    },
+    "UElevatorDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "floor_offset": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "left_door_closed_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "right_door_closed_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "left_door_open_offset": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "right_door_open_offset": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "doorway_volume_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "doorway_volume_extent": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "interior_volume_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "interior_volume_extent": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "call_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "blocked_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "door_open_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "door_close_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "moving_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "arrived_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "door_moving_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "cab_mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
+        },
+        "door_mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
+        }
+      }
+    },
+    "UEnemyDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "enemy_class": {
+          "kind": "soft_class",
+          "class": "AScpCharacter"
+        },
+        "enemy_thumbnail": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "death_drop_table": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "DeathDropEntry"
+          }
+        }
+      }
+    },
+    "UEnemySpawnPointDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "enemies_by_difficulty": {
+          "kind": "map",
+          "key": {
+            "kind": "enum",
+            "name": "ECurrentStoreDifficulty"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "EnemyDifficultyTier"
+          }
+        },
+        "accumulate_previous_tiers": {
+          "kind": "bool"
+        }
+      }
+    },
+    "UEquippableDefinition": {
+      "parents": [
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "equipment_actors_and_meshes": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "EquipmentActorsMeshes"
+          }
+        },
+        "equipped_layer_class": {
+          "kind": "class",
+          "class": "AnimInstance"
+        },
+        "ability_sets_to_grant": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "const UScpAbilitySet"
+          }
+        },
+        "effects_to_apply": {
+          "kind": "struct",
+          "name": "GameplayEffectsToApply"
+        },
+        "has_durability": {
+          "kind": "bool"
+        },
+        "has_ammo": {
+          "kind": "bool"
+        },
+        "ammo_definition": {
+          "kind": "object",
+          "class": "const UAmmoDefinition"
+        },
+        "max_ammo": {
+          "kind": "int"
+        },
+        "equip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "unequip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UFurnitureDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        }
+      }
+    },
+    "UFurnitureUpgradeRecipe": {
+      "parents": [
+        "URecipeDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "recipe_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "input": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "output": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "duration": {
+          "kind": "float"
+        },
+        "level": {
+          "kind": "int"
+        }
+      }
+    },
+    "UFurnitureWithComponentsDefinition": {
+      "parents": [
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        }
+      }
+    },
+    "UGloveDefinition": {
+      "parents": [
+        "UEquippableDefinition",
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "equipment_actors_and_meshes": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "EquipmentActorsMeshes"
+          }
+        },
+        "equipped_layer_class": {
+          "kind": "class",
+          "class": "AnimInstance"
+        },
+        "ability_sets_to_grant": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "const UScpAbilitySet"
+          }
+        },
+        "effects_to_apply": {
+          "kind": "struct",
+          "name": "GameplayEffectsToApply"
+        },
+        "has_durability": {
+          "kind": "bool"
+        },
+        "has_ammo": {
+          "kind": "bool"
+        },
+        "ammo_definition": {
+          "kind": "object",
+          "class": "const UAmmoDefinition"
+        },
+        "max_ammo": {
+          "kind": "int"
+        },
+        "equip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "unequip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UInteractableTextDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "style_data": {
+          "kind": "soft_object",
+          "class": "InteractableTextStyleData"
+        }
+      }
+    },
+    "UInventoryRulesDefinition": {
+      "parents": [
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "inventory_rules": {
+          "kind": "struct",
+          "name": "InventoryRules"
+        }
+      }
+    },
+    "ULayoutDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "layout_objects": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "LayoutObject"
+          }
+        }
+      }
+    },
+    "ULootDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "items_to_drop": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "ItemToDrop"
+          }
+        }
+      }
+    },
+    "ULootSpawnPointDefinition": {
+      "parents": [
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "loot_by_difficulty": {
+          "kind": "map",
+          "key": {
+            "kind": "enum",
+            "name": "ECurrentStoreDifficulty"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "LootDifficultyTier"
+          }
+        },
+        "accumulate_previous_tiers": {
+          "kind": "bool"
+        },
+        "source_type": {
+          "kind": "enum",
+          "name": "ELootSource"
+        }
+      }
+    },
+    "UPlantRecipeDefinition": {
+      "parents": [
+        "URecipeDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "recipe_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "input": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "output": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          },
+          "value": {
+            "kind": "int"
+          }
+        },
+        "duration": {
+          "kind": "float"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "grow_stages": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "PlantGrowStage"
+          }
+        }
+      }
+    },
+    "UPlantableDefinition": {
+      "parents": [
+        "UProductionStationDefinition",
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "available_recipe_rules_definition": {
+          "kind": "definition_ref",
+          "class": "AvailableRecipeRulesDefinition"
+        },
+        "max_recipes": {
+          "kind": "int"
+        },
+        "recipe_added_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_removed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_completed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UProductionStationDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "available_recipe_rules_definition": {
+          "kind": "definition_ref",
+          "class": "AvailableRecipeRulesDefinition"
+        },
+        "max_recipes": {
+          "kind": "int"
+        },
+        "recipe_added_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_removed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "recipe_completed_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UScpGameData": {
+      "parents": [
+        "UPrimaryDataAsset",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "front_end_map": {
+          "kind": "soft_object",
+          "class": "World"
+        },
+        "dynamic_tag_gameplay_effect": {
+          "kind": "soft_class",
+          "class": "GameplayEffect"
+        },
+        "class_to_soft_blueprint_map": {
+          "kind": "map",
+          "key": {
+            "kind": "class",
+            "class": "Object"
+          },
+          "value": {
+            "kind": "soft_class",
+            "class": "Object"
+          }
+        },
+        "class_to_hard_blueprint_map": {
+          "kind": "map",
+          "key": {
+            "kind": "class",
+            "class": "Object"
+          },
+          "value": {
+            "kind": "class",
+            "class": "Object"
+          }
+        },
+        "icon_asset_map": {
+          "kind": "map",
+          "key": {
+            "kind": "enum",
+            "name": "EMapIconType"
+          },
+          "value": {
+            "kind": "object",
+            "class": "Texture2D"
+          }
+        },
+        "ghost_material": {
+          "kind": "object",
+          "class": "MaterialInterface"
+        },
+        "post_process_stencil_material": {
+          "kind": "object",
+          "class": "MaterialInterface"
+        },
+        "ambient_audio_settings": {
+          "kind": "definition_ref",
+          "class": "AmbientAudioSettings"
+        },
+        "fallback_static_mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
+        },
+        "fallback_item_thumbnail": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "undiscovered_recipe_icon": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "fallback_enemy_thumbnail": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "fallback_achievement_icon": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "fallback_interactable_text_open_sound": {
+          "kind": "soft_object",
+          "class": "SoundBase"
+        },
+        "fallback_interactable_text_close_sound": {
+          "kind": "soft_object",
+          "class": "SoundBase"
+        },
+        "fallback_interactable_text_passive_sound": {
+          "kind": "soft_object",
+          "class": "SoundBase"
+        },
+        "fallback_interactable_text_background_image": {
+          "kind": "soft_object",
+          "class": "Texture2D"
+        },
+        "default_lore_screen_widget_class": {
+          "kind": "class",
+          "class": "InteractableTextScreenWidget"
+        },
+        "death_box_definition": {
+          "kind": "definition_ref",
+          "class": "FurnitureDefinition"
+        },
+        "item_pickup_visual_actor_class": {
+          "kind": "class",
+          "class": "AItemPickupVisualActor"
+        },
+        "default_item_pickup_sounds": {
+          "kind": "struct",
+          "name": "ItemPickupSounds"
+        },
+        "default_footstep_cue_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "default_furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "fallback_surface_audio_data": {
+          "kind": "object",
+          "class": "SurfaceAudioData"
+        },
+        "fallback_surface_vfx_data": {
+          "kind": "object",
+          "class": "SurfaceVFXData"
+        },
+        "menu_input_actions": {
+          "kind": "map",
+          "key": {
+            "kind": "object",
+            "class": "InputAction"
+          },
+          "value": {
+            "kind": "gameplay_tag"
+          }
+        },
+        "default_text_material": {
+          "kind": "object",
+          "class": "MaterialInterface"
+        },
+        "consume_ability_set": {
+          "kind": "object",
+          "class": "const UScpAbilitySet"
+        },
+        "default_screen_widget_map": {
+          "kind": "map",
+          "key": {
+            "kind": "class",
+            "class": "InteractableFurnitureDefinition"
+          },
+          "value": {
+            "kind": "soft_class",
+            "class": "CommonActivatableWidget"
+          }
+        },
+        "enemy_class_to_captured_item_map": {
+          "kind": "map",
+          "key": {
+            "kind": "class",
+            "class": "APawn"
+          },
+          "value": {
+            "kind": "object",
+            "class": "const UItemDefinition"
+          }
+        },
+        "research_credit_tier1": {
+          "kind": "object",
+          "class": "const UItemDefinition"
+        },
+        "research_credit_tier2": {
+          "kind": "object",
+          "class": "const UItemDefinition"
+        },
+        "research_credit_tier3": {
+          "kind": "object",
+          "class": "const UItemDefinition"
+        }
+      }
+    },
+    "USeedItemDefinition": {
+      "parents": [
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "plantable_definition": {
+          "kind": "object",
+          "class": "const UPlantableDefinition"
+        }
+      }
+    },
+    "UShoppingCartDefinition": {
+      "parents": [
+        "UStorageDefinition",
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "inventory_rules_definition": {
+          "kind": "definition_ref",
+          "class": "InventoryRulesDefinition"
+        }
+      }
+    },
+    "USpawnPointDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "allow_multiple_users": {
+          "kind": "bool"
+        },
+        "spawn_location_offset": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "spawn_point_set_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UStaticItemDefinition": {
+      "parents": [
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "item_definition": {
+          "kind": "object",
+          "class": "const UItemDefinition"
+        },
+        "loot_mesh_size": {
+          "kind": "enum",
+          "name": "ELootMeshSize"
+        },
+        "pickup_start_sound_override": {
+          "kind": "soft_object",
+          "class": "SoundBase"
+        },
+        "pickup_end_sound_override": {
+          "kind": "soft_object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UStorageDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "inventory_rules_definition": {
+          "kind": "definition_ref",
+          "class": "InventoryRulesDefinition"
+        }
+      }
+    },
+    "UTeleporterDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "teleport_offset": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "teleport_depart_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "teleport_arrive_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        }
+      }
+    },
+    "UToggleableFurnitureDefinition": {
+      "parents": [
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "starts_toggled_on": {
+          "kind": "bool"
+        },
+        "toggle_on_cue_tag": {
+          "kind": "gameplay_tag"
+        },
+        "toggle_off_cue_tag": {
+          "kind": "gameplay_tag"
+        }
+      }
+    },
+    "UTrapItemDefinition": {
+      "parents": [
+        "UEquippableDefinition",
+        "UItemDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "stackable": {
+          "kind": "bool"
+        },
+        "weight": {
+          "kind": "float"
+        },
+        "static_item_definition": {
+          "kind": "object",
+          "class": "const UStaticItemDefinition"
+        },
+        "equipment_actors_and_meshes": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "EquipmentActorsMeshes"
+          }
+        },
+        "equipped_layer_class": {
+          "kind": "class",
+          "class": "AnimInstance"
+        },
+        "ability_sets_to_grant": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "const UScpAbilitySet"
+          }
+        },
+        "effects_to_apply": {
+          "kind": "struct",
+          "name": "GameplayEffectsToApply"
+        },
+        "has_durability": {
+          "kind": "bool"
+        },
+        "has_ammo": {
+          "kind": "bool"
+        },
+        "ammo_definition": {
+          "kind": "object",
+          "class": "const UAmmoDefinition"
+        },
+        "max_ammo": {
+          "kind": "int"
+        },
+        "equip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "unequip_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "projectile_class": {
+          "kind": "class",
+          "class": "ATrapProjectile"
+        },
+        "initial_velocity": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "capturable_enemy_classes": {
+          "kind": "array",
+          "element": {
+            "kind": "class",
+            "class": "APawn"
+          }
+        }
+      }
+    },
+    "UUniversalStorageDefinition": {
+      "parents": [
+        "UStorageDefinition",
+        "UInteractableFurnitureDefinition",
+        "UFurnitureWithComponentsDefinition",
+        "UDamageableFurnitureDefinition",
+        "UFurnitureDefinition",
+        "UWorldGenObjectDefinition",
+        "UDataAsset",
+        "UObject"
+      ],
+      "properties": {
+        "weighted_chance": {
+          "kind": "int"
+        },
+        "world_gen_priority": {
+          "kind": "int"
+        },
+        "display_name": {
+          "kind": "text"
+        },
+        "description": {
+          "kind": "text"
+        },
+        "level": {
+          "kind": "int"
+        },
+        "default_world_gen_gameplay_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "meta_tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "is_pingable": {
+          "kind": "bool"
+        },
+        "static_mesh": {
+          "kind": "soft_object",
+          "class": "StaticMesh"
+        },
+        "casts_shadow": {
+          "kind": "bool"
+        },
+        "collision_profile_name": {
+          "kind": "struct",
+          "name": "CollisionProfileName"
+        },
+        "random_material_overrides": {
+          "kind": "map",
+          "key": {
+            "kind": "int"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "MaterialOverridePool"
+          }
+        },
+        "loot_positions": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "FurnitureLootPosition"
+          }
+        },
+        "starting_health": {
+          "kind": "float"
+        },
+        "furniture_shake_data": {
+          "kind": "object",
+          "class": "FurnitureShakeData"
+        },
+        "destructible_collection": {
+          "kind": "soft_object",
+          "class": "GeometryCollection"
+        },
+        "loot_dropped_on_death": {
+          "kind": "array",
+          "element": {
+            "kind": "object",
+            "class": "LootDefinition"
+          }
+        },
+        "death_sound": {
+          "kind": "object",
+          "class": "SoundBase"
+        },
+        "death_effect": {
+          "kind": "object",
+          "class": "NiagaraSystem"
+        },
+        "constructable_item_to_grant": {
+          "kind": "object",
+          "class": "const UConstructableItemDefinition"
+        },
+        "deconstruction_tier": {
+          "kind": "int"
+        },
+        "collision_box_data": {
+          "kind": "object",
+          "class": "CollisionBoxData"
+        },
+        "building_base": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "upgrade_recipe": {
+          "kind": "object",
+          "class": "const UFurnitureUpgradeRecipe"
+        },
+        "is_draggable": {
+          "kind": "bool"
+        },
+        "has_static_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_on_audio": {
+          "kind": "bool"
+        },
+        "has_toggled_off_audio": {
+          "kind": "bool"
+        },
+        "has_static_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_on_lights": {
+          "kind": "bool"
+        },
+        "has_toggled_off_lights": {
+          "kind": "bool"
+        },
+        "has_static_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_on_vfx": {
+          "kind": "bool"
+        },
+        "has_toggled_off_vfx": {
+          "kind": "bool"
+        },
+        "entity_helper_class": {
+          "kind": "class",
+          "class": "AEntityHelper"
+        },
+        "gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        },
+        "screen_widget_class_override": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "layer_name": {
+          "kind": "gameplay_tag"
+        },
+        "interaction_option_data": {
+          "kind": "object",
+          "class": "DefaultInteractionOptionData"
+        },
+        "interaction_hold_time": {
+          "kind": "float"
+        },
+        "interaction_prompt_text": {
+          "kind": "text"
+        },
+        "inventory_rules_definition": {
+          "kind": "definition_ref",
+          "class": "InventoryRulesDefinition"
+        },
+        "setup_widget_class": {
+          "kind": "soft_class",
+          "class": "CommonActivatableWidget"
+        },
+        "setup_gameplay_event_tag": {
+          "kind": "gameplay_tag"
+        }
+      }
+    }
+  },
+  "structs": {
+    "AmbientAudioConfig": {
+      "fields": {
+        "volume": {
+          "kind": "float"
+        },
+        "fade_in_duration": {
+          "kind": "float"
+        },
+        "fade_out_duration": {
+          "kind": "float"
+        }
+      }
+    },
+    "CollisionProfileName": {
+      "fields": {
+        "name": {
+          "kind": "name"
+        }
+      }
+    },
+    "Color": {
+      "fields": {
+        "b": {
+          "kind": "int"
+        },
+        "g": {
+          "kind": "int"
+        },
+        "r": {
+          "kind": "int"
+        },
+        "a": {
+          "kind": "int"
+        }
+      }
+    },
+    "ColorArr": {
+      "fields": {}
+    },
+    "DeathDropEntry": {
+      "fields": {
+        "world_item": {
+          "kind": "object",
+          "class": "Package"
+        },
+        "count": {
+          "kind": "int"
+        },
+        "weight": {
+          "kind": "int"
+        }
+      }
+    },
+    "DefinitionFilter": {
+      "fields": {
+        "seed_offset": {
+          "kind": "int"
+        },
+        "spawn_chance_over": {
+          "kind": "float"
+        },
+        "spawn_chance_under": {
+          "kind": "float"
+        }
+      }
+    },
+    "DirectionColorArr": {
+      "fields": {}
+    },
+    "EnemyDifficultyTier": {
+      "fields": {}
+    },
+    "EnemyWeighted": {
+      "fields": {
+        "enemy_spawn_parameter": {
+          "kind": "object",
+          "class": "EnemySpawnParameters"
+        },
+        "weight": {
+          "kind": "int"
+        }
+      }
+    },
+    "EquipmentActorsMeshes": {
+      "fields": {
+        "mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
+        },
+        "attach_socket": {
+          "kind": "name"
+        },
+        "attach_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        }
+      }
+    },
+    "EquipmentInputMappingConfig": {
+      "fields": {
+        "b_local_player_only": {
+          "kind": "bool"
+        }
+      }
+    },
+    "FurnitureLootPosition": {
+      "fields": {
+        "local_transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "weight": {
+          "kind": "int"
+        }
+      }
+    },
+    "GameplayEffectsToApply": {
+      "fields": {
+        "b_apply_heal_per_second": {
+          "kind": "bool"
+        },
+        "heal_per_second": {
+          "kind": "float"
+        },
+        "b_apply_instant_heal": {
+          "kind": "bool"
+        },
+        "instant_heal": {
+          "kind": "float"
+        },
+        "b_apply_max_health_increase": {
+          "kind": "bool"
+        },
+        "max_health_increase": {
+          "kind": "float"
+        },
+        "b_apply_flat_armour_increase": {
+          "kind": "bool"
+        },
+        "flat_armour_increase": {
+          "kind": "float"
+        },
+        "b_apply_flat_speed_increase": {
+          "kind": "bool"
+        },
+        "flat_speed_increase": {
+          "kind": "float"
+        },
+        "b_apply_max_stamina_increase": {
+          "kind": "bool"
+        },
+        "max_stamina_increase": {
+          "kind": "float"
+        },
+        "b_apply_stamina_regen_per_second": {
+          "kind": "bool"
+        },
+        "stamina_regen_per_second": {
+          "kind": "float"
+        },
+        "b_apply_stamina_regen_delay_reduction": {
+          "kind": "bool"
+        },
+        "stamina_regen_delay_reduction": {
+          "kind": "float"
+        },
+        "b_apply_percentage_damage_increase": {
+          "kind": "bool"
+        },
+        "percentage_damage_increase": {
+          "kind": "float"
+        },
+        "b_apply_flat_damage_increase": {
+          "kind": "bool"
+        },
+        "flat_damage_increase": {
+          "kind": "float"
+        },
+        "b_apply_life_steal_percentage": {
+          "kind": "bool"
+        },
+        "life_steal_percentage": {
+          "kind": "float"
+        },
+        "b_apply_flat_satiation": {
+          "kind": "bool"
+        },
+        "flat_satiation": {
+          "kind": "float"
+        },
+        "b_apply_satiation_per_second": {
+          "kind": "bool"
+        },
+        "satiation_per_second": {
+          "kind": "float"
+        },
+        "b_apply_radiation_immunity": {
+          "kind": "bool"
+        },
+        "radiation_immunity": {
+          "kind": "bool"
+        },
+        "b_apply_cold_immunity": {
+          "kind": "bool"
+        },
+        "cold_immunity": {
+          "kind": "bool"
+        },
+        "b_apply_heat_immunity": {
+          "kind": "bool"
+        },
+        "heat_immunity": {
+          "kind": "bool"
+        },
+        "b_apply_water_breathing": {
+          "kind": "bool"
+        },
+        "water_breathing": {
+          "kind": "bool"
+        },
+        "b_apply_carry_capacity_increase": {
+          "kind": "bool"
+        },
+        "carry_capacity_increase": {
+          "kind": "float"
+        },
+        "b_apply_tool_durability_multiplier": {
+          "kind": "bool"
+        },
+        "tool_durability_multiplier": {
+          "kind": "float"
+        },
+        "b_apply_xp_gain_multiplier": {
+          "kind": "bool"
+        },
+        "xp_gain_multiplier": {
+          "kind": "float"
+        },
+        "input_mapping_config": {
+          "kind": "struct",
+          "name": "EquipmentInputMappingConfig"
+        }
+      }
+    },
+    "GameplayTagArray": {
+      "fields": {}
+    },
+    "HeightDirectionColorArr": {
+      "fields": {}
+    },
+    "InventoryRules": {
+      "fields": {
+        "can_add_items": {
+          "kind": "bool"
+        },
+        "can_remove_items": {
+          "kind": "bool"
+        },
+        "capacity": {
+          "kind": "float"
+        },
+        "b_can_exceed_capacity": {
+          "kind": "bool"
+        }
+      }
+    },
+    "ItemPickupSounds": {
+      "fields": {}
+    },
+    "ItemToDrop": {
+      "fields": {
+        "item_to_drop": {
+          "kind": "object",
+          "class": "CraftingMaterialDefinition"
+        },
+        "count": {
+          "kind": "int"
+        },
+        "chance_to_drop": {
+          "kind": "float"
+        }
+      }
+    },
+    "LayoutObject": {
+      "fields": {
+        "layout_actor_type": {
+          "kind": "enum",
+          "name": "LayoutActorType"
+        },
+        "b_visual_helper": {
+          "kind": "bool"
+        },
+        "definition_filter": {
+          "kind": "struct",
+          "name": "DefinitionFilter"
+        },
+        "furniture_definition": {
+          "kind": "object",
+          "class": "ToggleableFurnitureDefinition"
+        },
+        "transform": {
+          "kind": "struct",
+          "name": "Transform"
+        },
+        "layout_definition": {
+          "kind": "object",
+          "class": "LayoutDefinition"
+        },
+        "enemy_spawn_point_definition": {
+          "kind": "object",
+          "class": "EnemySpawnPointDefinition"
+        },
+        "loot_spawn_point_definition": {
+          "kind": "object",
+          "class": "LootSpawnPointDefinition"
+        }
+      }
+    },
+    "LinearColor": {
+      "fields": {
+        "r": {
+          "kind": "float"
+        },
+        "g": {
+          "kind": "float"
+        },
+        "b": {
+          "kind": "float"
+        },
+        "a": {
+          "kind": "float"
+        }
+      }
+    },
+    "LootDifficultyTier": {
+      "fields": {
+        "spawn_chance": {
+          "kind": "float"
+        }
+      }
+    },
+    "LootItem": {
+      "fields": {
+        "item_entity": {
+          "kind": "object",
+          "class": "Package"
+        },
+        "count": {
+          "kind": "int"
+        },
+        "weight": {
+          "kind": "int"
+        }
+      }
+    },
+    "LootRarityMaps": {
+      "fields": {}
+    },
+    "MaterialOverridePool": {
+      "fields": {}
+    },
+    "PlantGrowStage": {
+      "fields": {
+        "mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
+        },
+        "ratio": {
+          "kind": "float"
+        },
+        "start_scale": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "end_scale": {
+          "kind": "struct",
+          "name": "Vector"
+        }
+      }
+    },
+    "ProductionMachineRules": {
+      "fields": {}
+    },
+    "ProxySearchTreeQuery": {
+      "fields": {
+        "search_query": {
+          "kind": "enum",
+          "name": "SearchQuery"
+        },
+        "tags": {
+          "kind": "gameplay_tag_container"
+        },
+        "b_not": {
+          "kind": "bool"
+        }
+      }
+    },
+    "Quat": {
+      "fields": {
+        "x": {
+          "kind": "float"
+        },
+        "y": {
+          "kind": "float"
+        },
+        "z": {
+          "kind": "float"
+        },
+        "w": {
+          "kind": "float"
+        }
+      }
+    },
+    "RotationHeightDirectionColorArr": {
+      "fields": {}
+    },
+    "Transform": {
+      "fields": {
+        "rotation": {
+          "kind": "struct",
+          "name": "Quat"
+        },
+        "translation": {
+          "kind": "struct",
+          "name": "Vector"
+        },
+        "scale3_d": {
+          "kind": "struct",
+          "name": "Vector"
+        }
+      }
+    },
+    "Vector": {
+      "fields": {
+        "x": {
+          "kind": "float"
+        },
+        "y": {
+          "kind": "float"
+        },
+        "z": {
+          "kind": "float"
+        }
+      }
+    }
+  },
+  "enums": {
+    "BiomeRole": {
+      "members": [
+        {
+          "name": "ENVIRONMENTAL",
+          "value": 0
+        },
+        {
+          "name": "STRUCTURAL",
+          "value": 1
+        },
+        {
+          "name": "POI",
+          "value": 2
+        },
+        {
+          "name": "SKY",
+          "value": 3
+        },
+        {
+          "name": "SPAWN",
+          "value": 4
+        }
+      ]
+    },
+    "CurrentStoreDifficulty": {
+      "members": [
+        {
+          "name": "EASY",
+          "value": 0
+        },
+        {
+          "name": "NORMAL",
+          "value": 1
+        },
+        {
+          "name": "HARD",
+          "value": 2
+        },
+        {
+          "name": "NIGHTMARE",
+          "value": 3
+        },
+        {
+          "name": "APOCALYPSE",
+          "value": 4
+        }
+      ]
+    },
+    "EBiomeRole": {
+      "members": []
+    },
+    "ECurrentStoreDifficulty": {
+      "members": []
+    },
+    "ELootMeshSize": {
+      "members": []
+    },
+    "ELootSource": {
+      "members": []
+    },
+    "EMapIconType": {
+      "members": []
+    },
+    "LayoutActorType": {
+      "members": [
+        {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        {
+          "name": "ENEMY_SPAWN_POINT",
+          "value": 2
+        },
+        {
+          "name": "LOOT_SPAWN_POINT",
+          "value": 3
+        },
+        {
+          "name": "VISUAL_HELPER",
+          "value": 4
+        }
+      ]
+    },
+    "LootMeshSize": {
+      "members": [
+        {
+          "name": "SMALL",
+          "value": 0
+        },
+        {
+          "name": "MEDIUM",
+          "value": 1
+        },
+        {
+          "name": "LARGE",
+          "value": 2
+        }
+      ]
+    },
+    "LootSource": {
+      "members": [
+        {
+          "name": "FLOOR",
+          "value": 0
+        },
+        {
+          "name": "FURNITURE",
+          "value": 1
+        },
+        {
+          "name": "CONTAINER",
+          "value": 2
+        },
+        {
+          "name": "ENEMY_DROP",
+          "value": 3
+        }
+      ]
+    },
+    "MazeTileDirections": {
+      "members": [
+        {
+          "name": "NONE",
+          "value": 0
+        },
+        {
+          "name": "UP",
+          "value": 1
+        },
+        {
+          "name": "UP_RIGHT",
+          "value": 2
+        },
+        {
+          "name": "UP_DOWN",
+          "value": 3
+        },
+        {
+          "name": "UP_RIGHT_DOWN",
+          "value": 4
+        },
+        {
+          "name": "ALL",
+          "value": 5
+        }
+      ]
+    },
+    "SearchQuery": {
+      "members": [
+        {
+          "name": "NONE",
+          "value": 0
+        },
+        {
+          "name": "HAS_ANY_INCL_PARENTS",
+          "value": 1
+        },
+        {
+          "name": "HAS_ANY_EXACT",
+          "value": 2
+        },
+        {
+          "name": "HAS_ALL_INCL_PARENTS",
+          "value": 3
+        },
+        {
+          "name": "HAS_ALL_EXACT",
+          "value": 4
+        }
+      ]
+    }
+  }
+}

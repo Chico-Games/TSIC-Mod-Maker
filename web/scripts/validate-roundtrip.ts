@@ -7,9 +7,11 @@ import {
   envelopePropsToLean,
   type LeanSchema,
 } from '../src/persistence/leanEnvelope.ts';
+import { PACK_DIR } from '../tests/packDir.ts';
 
-const PACK = process.argv[2]
-  || 'C:/Users/Administrator/Documents/Unreal Projects/TSIC/Content/DefinitionPacks/DefaultProject';
+// Canonical pack dir comes from tests/packDir.ts (single source of truth);
+// an explicit CLI arg still overrides it.
+const PACK = process.argv[2] || PACK_DIR;
 
 const schema = JSON.parse(readFileSync(join(PACK, '_schema.json'), 'utf8')) as LeanSchema;
 

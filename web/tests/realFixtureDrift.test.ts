@@ -1,15 +1,34 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { resolve } from '../src/components/layouts/resolver/resolver';
+import {
+  isLeanProperties,
+  leanPropsToEnvelope,
+  type LeanSchema,
+} from '../src/persistence/leanEnvelope';
+import { PACK_DIR, PACK_AVAILABLE } from './packDir';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT = join(__dirname, '..', 'public', 'starter-project');
+// Reads the canonical exported pack (see packDir.ts).
+const PROJECT = PACK_DIR;
+const skip = !PACK_AVAILABLE && `pack not found at ${PROJECT}`;
+
+// The pack ships LEAN (raw values). The editor renders typed envelopes,
+// converting at the DataSource boundary via the pack's `_schema.json`. These
+// drift checks assert the envelope shape the UI sees, so they convert the same
+// way the app does — reading the lean files raw would make every `.value` /
+// `struct_name` lookup undefined.
+const SCHEMA: LeanSchema = PACK_AVAILABLE
+  ? JSON.parse(readFileSync(join(PROJECT, '_schema.json'), 'utf-8'))
+  : { classes: {}, structs: {}, enums: {} };
 
 function loadJson(p: string): any {
-  return JSON.parse(readFileSync(p, 'utf-8'));
+  const json = JSON.parse(readFileSync(p, 'utf-8'));
+  if (json && typeof json.class === 'string' && isLeanProperties(json.properties)) {
+    json.properties = leanPropsToEnvelope(json.properties, json.class, SCHEMA);
+  }
+  return json;
 }
 
 function loadAllDefinitions(): Map<string, { id: string; json: any }> {
@@ -35,7 +54,7 @@ function loadAllDefinitions(): Map<string, { id: string; json: any }> {
 // not mesh bounds.
 const noopCatalog = () => null;
 
-test('transform envelope uses scale3_d (snake_case of Scale3D with digit-boundary)', () => {
+test('transform envelope uses scale3_d (snake_case of Scale3D with digit-boundary)', { skip }, () => {
   const layout = loadJson(join(PROJECT, 'layout_definitions', 'LYD_Bathroom_All.json'));
   const objects = layout.properties.layout_objects.value as any[];
   assert.ok(objects.length > 0, 'bathroom layout has objects');
@@ -46,7 +65,7 @@ test('transform envelope uses scale3_d (snake_case of Scale3D with digit-boundar
   }
 });
 
-test('transform rotation is exported as Quat (x/y/z/w), not Rotator', () => {
+test('transform rotation is exported as Quat (x/y/z/w), not Rotator', { skip }, () => {
   const layout = loadJson(join(PROJECT, 'layout_definitions', 'LYD_Bathroom_All.json'));
   const objects = layout.properties.layout_objects.value as any[];
   for (const lo of objects) {
@@ -57,7 +76,7 @@ test('transform rotation is exported as Quat (x/y/z/w), not Rotator', () => {
   }
 });
 
-test('furniture records carry parent_classes including UFurnitureDefinition', () => {
+test('furniture records carry parent_classes including UFurnitureDefinition', { skip }, () => {
   const chair = loadJson(join(PROJECT, 'damageable_furniture_definitions', 'FD_Chair_DF.json'));
   assert.equal(chair.class, 'UDamageableFurnitureDefinition');
   assert.ok(Array.isArray(chair.parent_classes), 'chair has parent_classes');
@@ -67,7 +86,7 @@ test('furniture records carry parent_classes including UFurnitureDefinition', ()
   );
 });
 
-test('resolver finds matches for a tag-based search against real furniture catalog', () => {
+test('resolver finds matches for a tag-based search against real furniture catalog', { skip }, () => {
   const defs = loadAllDefinitions();
   // Build a layout_object that searches for furniture with the Furniture.Chair tag.
   // (Most chair furniture defs carry this tag — found in the real data.)
@@ -118,7 +137,7 @@ test('resolver finds matches for a tag-based search against real furniture catal
   assert.notEqual(r.status.kind, 'no-matches', `resolver returned no-matches: ${JSON.stringify(r.status)}`);
 });
 
-test('every real LYD has Quat rotations (no Rotator leakage)', () => {
+test('every real LYD has Quat rotations (no Rotator leakage)', { skip }, () => {
   const layoutDir = join(PROJECT, 'layout_definitions');
   let count = 0;
   let mismatches = 0;
@@ -137,7 +156,7 @@ test('every real LYD has Quat rotations (no Rotator leakage)', () => {
   assert.equal(mismatches, 0, `${mismatches}/${count} LayoutObjects have non-Quat rotations`);
 });
 
-test('layout typed-shape: scale3_d on every LayoutObject across all real LYD files', () => {
+test('layout typed-shape: scale3_d on every LayoutObject across all real LYD files', { skip }, () => {
   const layoutDir = join(PROJECT, 'layout_definitions');
   let count = 0;
   let mismatches = 0;

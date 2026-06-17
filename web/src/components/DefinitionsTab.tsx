@@ -12,6 +12,7 @@ import { useValidationStore } from '../store/validationStore';
 import { DefinitionsTable } from './DefinitionsTable';
 import { RecipeBuilderView, isRecipeFolder } from './RecipeBuilderView';
 import { buildUpgradeChains } from '../upgradeChains';
+import { useRefAdapter } from './useRefAdapter';
 
 // Three-pane layout:
 //   left: folder list (one per definition class)
@@ -51,6 +52,7 @@ export function DefinitionsTab() {
     findItemStaticOrphans,
     outgoingReferences,
     incomingReferences,
+    referencedBy,
   } = useDefinitionsStore();
 
   const classNodes = useAppSchemaStore((s) => s.classNodes);
@@ -60,6 +62,31 @@ export function DefinitionsTab() {
   const getEnumMembers = useAppSchemaStore((s) => s.getEnumMembers);
   const pinnedProperties = useAppSchemaStore((s) => s.pinnedProperties);
   const togglePinnedProperty = useAppSchemaStore((s) => s.togglePinnedProperty);
+
+  // Single identity-stable adapter shared by the form editor and the
+  // multi-select table. Default navigate (no onJumpToId) selects the
+  // target's folder + record, matching the previous inline behaviour.
+  const refAdapter = useRefAdapter();
+
+  // Incoming references via the maintained `referencedByIndex` — an O(1)
+  // lookup + a small map, instead of `incomingReferences`'s full walk of
+  // every loaded asset's property tree on each render.
+  const buildIncoming = (k: string) => {
+    const rec = definitions.get(k);
+    if (!rec) return [];
+    return referencedBy(rec.id)
+      .map((r) => {
+        const owner = definitions.get(r.ownerKey);
+        return {
+          sourceKey: r.ownerKey,
+          sourceFolder: r.ownerFolder,
+          sourceId: owner?.id ?? r.ownerKey,
+          refClass: '',
+          refPath: r.path.join('.'),
+        };
+      })
+      .sort((a, b) => a.sourceId.localeCompare(b.sourceId) || a.refPath.localeCompare(b.refPath));
+  };
 
   const [globalQuery, setGlobalQuery] = useState('');
   const [showValidation, setShowValidation] = useState(false);
@@ -369,33 +396,7 @@ export function DefinitionsTab() {
                 return (
                   <DefinitionsTable
                     records={records}
-                    refAdapter={{
-                      options: (className) => assetsOfClass(className),
-                      resolves: (assetId) => findKeyById(assetId) != null,
-                      navigate: (assetId) => {
-                        const k = findKeyById(assetId);
-                        if (!k) return;
-                        const rec = definitions.get(k);
-                        if (!rec) return;
-                        selectFolder(rec.folder);
-                        selectDefinition(k);
-                      },
-                      createNew: (className, id) => {
-                        if (!className || !id) return null;
-                        const k = createDefinitionForClass(className, id);
-                        if (!k) return null;
-                        return id;
-                      },
-                      lookupContainerType: (path, slot) => lookupContainerType(path, slot),
-                      getPropertyMeta: (parent, propName) => getPropertyMeta(parent, propName),
-                      lookupArrayElementClass: (parent, propName) => lookupArrayElementClass(parent, propName),
-                      getEnumMembers: (enumName) => getEnumMembers(enumName),
-                      folderForId: (assetId) => {
-                        const k = findKeyById(assetId);
-                        if (!k) return null;
-                        return definitions.get(k)?.folder ?? null;
-                      },
-                    }}
+                    refAdapter={refAdapter}
                     pinAdapter={{
                       isPinned: (name) => pinnedProperties.has(name),
                       toggle: (name) => togglePinnedProperty(name),
@@ -423,40 +424,14 @@ export function DefinitionsTab() {
                   toggle: (name) => togglePinnedProperty(name),
                 }}
                 outgoing={outgoingReferences(selectedKey!)}
-                incoming={incomingReferences(selectedKey!)}
+                incoming={buildIncoming(selectedKey!)}
                 onJumpToKey={(k) => {
                   const rec = definitions.get(k);
                   if (!rec) return;
                   selectFolder(rec.folder);
                   selectDefinition(k);
                 }}
-                refAdapter={{
-                  options: (className) => assetsOfClass(className),
-                  resolves: (assetId) => findKeyById(assetId) != null,
-                  navigate: (assetId) => {
-                    const k = findKeyById(assetId);
-                    if (!k) return;
-                    const rec = definitions.get(k);
-                    if (!rec) return;
-                    selectFolder(rec.folder);
-                    selectDefinition(k);
-                  },
-                  createNew: (className, id) => {
-                    if (!className || !id) return null;
-                    const k = createDefinitionForClass(className, id);
-                    if (!k) return null;
-                    return id;
-                  },
-                  lookupContainerType: (path, slot) => lookupContainerType(path, slot),
-                  getPropertyMeta: (parent, propName) => getPropertyMeta(parent, propName),
-                  lookupArrayElementClass: (parent, propName) => lookupArrayElementClass(parent, propName),
-                  getEnumMembers: (enumName) => getEnumMembers(enumName),
-                  folderForId: (assetId) => {
-                    const k = findKeyById(assetId);
-                    if (!k) return null;
-                    return definitions.get(k)?.folder ?? null;
-                  },
-                }}
+                refAdapter={refAdapter}
                 onRename={(bareName) => renameAsset(selectedKey!, bareName)}
                 pairKey={findItemStaticPair(selectedKey!)}
                 partnerRec={(() => {
