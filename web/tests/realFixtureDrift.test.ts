@@ -76,13 +76,20 @@ test('transform rotation is exported as Quat (x/y/z/w), not Rotator', { skip }, 
   }
 });
 
-test('furniture records carry parent_classes including UFurnitureDefinition', { skip }, () => {
+test('class-hierarchy sidecar chains furniture classes up to UFurnitureDefinition', { skip }, () => {
   const chair = loadJson(join(PROJECT, 'damageable_furniture_definitions', 'FD_Chair_DF.json'));
   assert.equal(chair.class, 'UDamageableFurnitureDefinition');
-  assert.ok(Array.isArray(chair.parent_classes), 'chair has parent_classes');
+
+  // parent_classes are NOT denormalized onto each record — the inheritance chain
+  // lives in the .class-hierarchy.json sidecar (the editor's source of truth, see
+  // buildClassNodes in definitionsStore). Assert the chain there, not inline.
+  const hierarchy = JSON.parse(readFileSync(join(PROJECT, '.class-hierarchy.json'), 'utf-8'));
+  const entry = hierarchy.classes?.[chair.class];
+  assert.ok(entry, `class-hierarchy sidecar missing entry for ${chair.class}`);
+  assert.ok(Array.isArray(entry.parents), `${chair.class} entry should have parents[]`);
   assert.ok(
-    chair.parent_classes.includes('UFurnitureDefinition'),
-    `chair.parent_classes should include UFurnitureDefinition (got: ${chair.parent_classes.join(',')})`,
+    entry.parents.includes('UFurnitureDefinition'),
+    `${chair.class}.parents should include UFurnitureDefinition (got: ${entry.parents.join(',')})`,
   );
 });
 
