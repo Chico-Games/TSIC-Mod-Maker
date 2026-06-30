@@ -4,7 +4,29 @@
   "class": "UEquippableDefinition",
   "schema_version": 2,
   "properties": {
-    "equipment_actors_and_meshes": [],
+    "equipment_actors_and_meshes": [
+      {
+        "attach_socket": "hand_r",
+        "attach_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
     "ability_sets_to_grant": [
       null
     ],
@@ -49,12 +71,7 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": [],
-      "input_mapping_config": {
-        "input_mapping_contexts_to_add": [],
-        "input_mapping_contexts_to_remove": [],
-        "b_local_player_only": true
-      }
+      "f_gameplay_effect_with_modifiers": []
     },
     "has_durability": true,
     "has_ammo": true,

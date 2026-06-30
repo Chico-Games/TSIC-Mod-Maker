@@ -6,23 +6,19 @@
   "properties": {
     "front_end_map": "/Game/Core/Maps/L_MainMenu.L_MainMenu",
     "class_to_soft_blueprint_map": [],
-    "class_to_hard_blueprint_map": [
-      {
-        "key": "/Script/TSIC.CostWidget",
-        "value": "/Game/UI/Widgets/Selection/W_Cost.W_Cost_C"
-      }
-    ],
+    "class_to_hard_blueprint_map": [],
     "icon_asset_map": [],
     "ghost_material": "/Game/Furniture/Shared/Materials/ConstructionGhost/M_ConstructionGhost.M_ConstructionGhost",
     "post_process_stencil_material": "/Game/Fab/HandDrawingDemo/Materials/MI_Draw2.MI_Draw2",
     "fallback_static_mesh": "/Game/Items/CraftingMaterials/Cardboard/Meshes/SM_CartonBox2_05.SM_CartonBox2_05",
     "fallback_item_thumbnail": "/Game/Items/CraftingMaterials/Cardboard/Textures/T_Thumb_SM_CartonBox2_05.T_Thumb_SM_CartonBox2_05",
-    "default_lore_screen_widget_class": "/Game/UI/Widgets/Interaction/W_InteractableText_CustomerNote.W_InteractableText_CustomerNote_C",
     "death_box_definition": "FD_DeathBox_DB",
     "item_pickup_visual_actor_class": "/Game/Items/Shared/BP_ItemPickupVisual.BP_ItemPickupVisual_C",
     "default_item_pickup_sounds": {},
     "default_footstep_cue_tags": [],
     "default_furniture_shake_data": "/Game/Furniture/Shared/FurnitureShake/DA_DefaultFurnitureShake.DA_DefaultFurnitureShake",
+    "fallback_surface_audio_data": "/Game/Shared/GameplayCues/DA_FallbackSurfaceAudio.DA_FallbackSurfaceAudio",
+    "fallback_surface_vfx_data": "/Game/Shared/GameplayCues/DA_FallbackSurfaceVFX.DA_FallbackSurfaceVFX",
     "menu_input_actions": [
       {
         "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenInventoryMenu.IA_OpenInventoryMenu",
@@ -35,43 +31,17 @@
       {
         "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenCraftingMenu.IA_OpenCraftingMenu",
         "value": "UI.GameScreen.Crafting"
+      },
+      {
+        "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenChat.IA_OpenChat",
+        "value": "UI.GameScreen.Chat"
+      },
+      {
+        "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_CheatMenu.IA_CheatMenu",
+        "value": "UI.GameScreen.CheatMenu"
       }
     ],
-    "consume_ability_set": "AS_Consume",
-    "default_screen_widget_map": [
-      {
-        "key": "/Script/TSIC.CraftingStationDefinition",
-        "value": "/Game/UI/Widgets/Crafting/W_CraftingScreen.W_CraftingScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.ProductionStationDefinition",
-        "value": "/Game/UI/Widgets/Production/W_ProductionScreen.W_ProductionScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.StorageDefinition",
-        "value": "/Game/UI/Widgets/Inventory/W_StorageScreen.W_StorageScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.TeleporterDefinition",
-        "value": "/Game/UI/Widgets/Teleporter/W_TeleporterScreen.W_TeleporterScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.BossSummonerDefinition",
-        "value": "/Game/UI/Widgets/BossSummoner/W_BossSummoner.W_BossSummoner_C"
-      },
-      {
-        "key": "/Script/TSIC.LootableDefinition",
-        "value": "/Game/UI/Widgets/Inventory/W_StorageScreen.W_StorageScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.UniversalStorageDefinition",
-        "value": "/Game/UI/Widgets/UniversalStorage/W_UniversalStorageSetupScreen.W_UniversalStorageSetupScreen_C"
-      },
-      {
-        "key": "/Script/TSIC.InteractableTextDefinition",
-        "value": "/Game/UI/Widgets/Interaction/W_InteractableText_CustomerNote.W_InteractableText_CustomerNote_C"
-      }
-    ],
+    "consume_ability_set": "/Game/Characters/Customer/Abilities/AS_Consume.AS_Consume",
     "enemy_class_to_captured_item_map": [
       {
         "key": "/Game/Characters/Enemies/TVHead/Blueprints/CH_TVHead.CH_TVHead_C",

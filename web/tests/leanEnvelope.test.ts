@@ -6,6 +6,7 @@ import {
   leanPropsToEnvelope,
   envelopePropsToLean,
   isLeanProperties,
+  kindToSkeleton,
   type LeanSchema,
 } from '../src/persistence/leanEnvelope';
 
@@ -69,6 +70,35 @@ test('map with enum keys round-trips', () => {
   const env = leanToEnvelope(lean, schema.classes.UItemDefinition.properties.rates, schema);
   assert.equal(env.type, 'map');
   assert.deepEqual(envelopeToLean(env, schema), lean);
+});
+
+test('struct skeleton carries its schema fields (drives "+ Add" on struct arrays)', () => {
+  // The element_type skeleton on an array-of-structs must expand the struct's
+  // fields, or appending a new element seeds an empty `{type:'struct'}` that
+  // renders as "(empty struct) · 0 fields".
+  const env = leanToEnvelope([], schema.classes.UItemDefinition.properties.tiers, schema);
+  const el = env.element_type;
+  assert.equal(el.type, 'struct');
+  assert.equal(el.struct_name, 'Tier');
+  assert.deepEqual(Object.keys(el.fields ?? {}).sort(), ['label', 'level']);
+  assert.equal(el.fields.level.type, 'int');
+  assert.equal(el.fields.label.type, 'name');
+});
+
+test('kindToSkeleton tolerates self-referential structs', () => {
+  // A struct that contains itself must not recurse forever; the cycle slot
+  // keeps a bare struct skeleton (no `fields`).
+  const recursive: LeanSchema = {
+    classes: {},
+    enums: {},
+    structs: {
+      Node: { fields: { value: { kind: 'int' }, child: { kind: 'struct', name: 'Node' } } },
+    },
+  };
+  const skel = kindToSkeleton({ kind: 'struct', name: 'Node' }, recursive);
+  assert.equal(skel.fields.value.type, 'int');
+  assert.equal(skel.fields.child.type, 'struct');
+  assert.equal(skel.fields.child.fields, undefined); // cycle stopped here
 });
 
 test('null nested slot is preserved', () => {

@@ -4,9 +4,33 @@
   "class": "UEquippableDefinition",
   "schema_version": 2,
   "properties": {
-    "equipment_actors_and_meshes": [],
+    "equipment_actors_and_meshes": [
+      {
+        "mesh": "/Game/Items/Equipment/Weapons/PizzaCutterLamp/Meshes/pizza_cutter_lamp.pizza_cutter_lamp",
+        "attach_socket": "hand_r",
+        "attach_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "equipped_layer_class": "/Game/Items/Equipment/Weapons/SledgeHammer/Blueprints/ABP_SledgeHammer.ABP_SledgeHammer_C",
     "ability_sets_to_grant": [
-      "AS_PizzaCutterLamp"
+      "/Game/Items/Equipment/Weapons/PizzaCutterLamp/Abilities/AS_PizzaCutterLamp.AS_PizzaCutterLamp"
     ],
     "effects_to_apply": {
       "b_apply_heal_per_second": false,
@@ -49,12 +73,7 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": [],
-      "input_mapping_config": {
-        "input_mapping_contexts_to_add": [],
-        "input_mapping_contexts_to_remove": [],
-        "b_local_player_only": true
-      }
+      "f_gameplay_effect_with_modifiers": []
     },
     "has_durability": true,
     "has_ammo": false,

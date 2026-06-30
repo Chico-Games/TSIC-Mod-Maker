@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-05-15T17:00:00.949066+00:00",
-  "git_rev": "b9ff8cfd5",
+  "generated_at": "2026-06-18T14:05:04.833697+00:00",
+  "git_rev": "60d7ed3db",
   "classes": {
     "UAmmoDefinition": {
       "parents": [
@@ -23,8 +23,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         }
       }
     },
@@ -58,7 +58,7 @@
         },
         "role": {
           "kind": "enum",
-          "name": "EBiomeRole"
+          "name": "BiomeRole"
         },
         "owning_mod_id": {
           "kind": "name"
@@ -66,6 +66,12 @@
         "map_color": {
           "kind": "struct",
           "name": "LinearColor"
+        },
+        "hides_maze_walls": {
+          "kind": "bool"
+        },
+        "renders_as_wall_block": {
+          "kind": "bool"
         },
         "rotation_height_colors": {
           "kind": "struct",
@@ -140,12 +146,12 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "furniture_to_construct": {
-          "kind": "object",
-          "class": "const UDamageableFurnitureDefinition"
+          "kind": "definition_ref",
+          "class": "DamageableFurnitureDefinition"
         },
         "placement_sound": {
           "kind": "object",
@@ -174,8 +180,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "equipment_actors_and_meshes": {
           "kind": "array",
@@ -192,7 +198,7 @@
           "kind": "array",
           "element": {
             "kind": "object",
-            "class": "const UScpAbilitySet"
+            "class": "ScpAbilitySet"
           }
         },
         "effects_to_apply": {
@@ -206,8 +212,8 @@
           "kind": "bool"
         },
         "ammo_definition": {
-          "kind": "object",
-          "class": "const UAmmoDefinition"
+          "kind": "definition_ref",
+          "class": "AmmoDefinition"
         },
         "max_ammo": {
           "kind": "int"
@@ -327,8 +333,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -342,8 +348,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -381,10 +387,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -434,7 +436,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -444,7 +446,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -478,8 +480,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         }
       }
     },
@@ -573,8 +575,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -588,8 +590,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -627,10 +629,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -746,8 +744,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -761,8 +759,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -859,8 +857,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -874,8 +872,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -913,10 +911,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -1023,8 +1017,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -1038,8 +1032,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -1077,10 +1071,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -1202,6 +1192,17 @@
             "kind": "struct",
             "name": "DeathDropEntry"
           }
+        },
+        "death_montage": {
+          "kind": "soft_object",
+          "class": "AnimMontage"
+        },
+        "dissolve_effect": {
+          "kind": "soft_object",
+          "class": "NiagaraSystem"
+        },
+        "ragdoll_pelvis_bone": {
+          "kind": "name"
         }
       }
     },
@@ -1222,7 +1223,7 @@
           "kind": "map",
           "key": {
             "kind": "enum",
-            "name": "ECurrentStoreDifficulty"
+            "name": "CurrentStoreDifficulty"
           },
           "value": {
             "kind": "struct",
@@ -1254,8 +1255,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "equipment_actors_and_meshes": {
           "kind": "array",
@@ -1272,7 +1273,7 @@
           "kind": "array",
           "element": {
             "kind": "object",
-            "class": "const UScpAbilitySet"
+            "class": "ScpAbilitySet"
           }
         },
         "effects_to_apply": {
@@ -1286,8 +1287,8 @@
           "kind": "bool"
         },
         "ammo_definition": {
-          "kind": "object",
-          "class": "const UAmmoDefinition"
+          "kind": "definition_ref",
+          "class": "AmmoDefinition"
         },
         "max_ammo": {
           "kind": "int"
@@ -1377,7 +1378,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -1387,7 +1388,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -1489,8 +1490,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -1504,8 +1505,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -1560,8 +1561,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "equipment_actors_and_meshes": {
           "kind": "array",
@@ -1578,7 +1579,7 @@
           "kind": "array",
           "element": {
             "kind": "object",
-            "class": "const UScpAbilitySet"
+            "class": "ScpAbilitySet"
           }
         },
         "effects_to_apply": {
@@ -1592,8 +1593,8 @@
           "kind": "bool"
         },
         "ammo_definition": {
-          "kind": "object",
-          "class": "const UAmmoDefinition"
+          "kind": "definition_ref",
+          "class": "AmmoDefinition"
         },
         "max_ammo": {
           "kind": "int"
@@ -1698,8 +1699,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -1713,8 +1714,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -1752,10 +1753,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -1849,7 +1846,7 @@
           "kind": "map",
           "key": {
             "kind": "enum",
-            "name": "ECurrentStoreDifficulty"
+            "name": "CurrentStoreDifficulty"
           },
           "value": {
             "kind": "struct",
@@ -1861,7 +1858,7 @@
         },
         "source_type": {
           "kind": "enum",
-          "name": "ELootSource"
+          "name": "LootSource"
         }
       }
     },
@@ -1879,7 +1876,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -1889,7 +1886,7 @@
           "kind": "map",
           "key": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           },
           "value": {
             "kind": "int"
@@ -2001,8 +1998,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -2016,8 +2013,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -2055,10 +2052,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -2184,8 +2177,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -2199,8 +2192,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -2238,10 +2231,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -2318,7 +2307,7 @@
           "kind": "map",
           "key": {
             "kind": "enum",
-            "name": "EMapIconType"
+            "name": "MapIconType"
           },
           "value": {
             "kind": "object",
@@ -2334,7 +2323,7 @@
           "class": "MaterialInterface"
         },
         "ambient_audio_settings": {
-          "kind": "definition_ref",
+          "kind": "soft_object",
           "class": "AmbientAudioSettings"
         },
         "fallback_static_mesh": {
@@ -2373,10 +2362,6 @@
           "kind": "soft_object",
           "class": "Texture2D"
         },
-        "default_lore_screen_widget_class": {
-          "kind": "class",
-          "class": "InteractableTextScreenWidget"
-        },
         "death_box_definition": {
           "kind": "definition_ref",
           "class": "FurnitureDefinition"
@@ -2414,24 +2399,17 @@
             "kind": "gameplay_tag"
           }
         },
+        "input_icon_registry": {
+          "kind": "object",
+          "class": "ScpInputIconRegistry"
+        },
         "default_text_material": {
           "kind": "object",
           "class": "MaterialInterface"
         },
         "consume_ability_set": {
           "kind": "object",
-          "class": "const UScpAbilitySet"
-        },
-        "default_screen_widget_map": {
-          "kind": "map",
-          "key": {
-            "kind": "class",
-            "class": "InteractableFurnitureDefinition"
-          },
-          "value": {
-            "kind": "soft_class",
-            "class": "CommonActivatableWidget"
-          }
+          "class": "ScpAbilitySet"
         },
         "enemy_class_to_captured_item_map": {
           "kind": "map",
@@ -2441,20 +2419,20 @@
           },
           "value": {
             "kind": "object",
-            "class": "const UItemDefinition"
+            "class": "ItemDefinition"
           }
         },
         "research_credit_tier1": {
-          "kind": "object",
-          "class": "const UItemDefinition"
+          "kind": "definition_ref",
+          "class": "ItemDefinition"
         },
         "research_credit_tier2": {
-          "kind": "object",
-          "class": "const UItemDefinition"
+          "kind": "definition_ref",
+          "class": "ItemDefinition"
         },
         "research_credit_tier3": {
-          "kind": "object",
-          "class": "const UItemDefinition"
+          "kind": "definition_ref",
+          "class": "ItemDefinition"
         }
       }
     },
@@ -2478,12 +2456,12 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "plantable_definition": {
-          "kind": "object",
-          "class": "const UPlantableDefinition"
+          "kind": "definition_ref",
+          "class": "PlantableDefinition"
         }
       }
     },
@@ -2578,8 +2556,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -2593,8 +2571,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -2632,10 +2610,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -2746,8 +2720,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -2761,8 +2735,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -2800,10 +2774,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -2892,12 +2862,12 @@
           }
         },
         "item_definition": {
-          "kind": "object",
-          "class": "const UItemDefinition"
+          "kind": "definition_ref",
+          "class": "ItemDefinition"
         },
         "loot_mesh_size": {
           "kind": "enum",
-          "name": "ELootMeshSize"
+          "name": "LootMeshSize"
         },
         "pickup_start_sound_override": {
           "kind": "soft_object",
@@ -2999,8 +2969,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -3014,8 +2984,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -3053,10 +3023,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -3167,8 +3133,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -3182,8 +3148,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -3221,10 +3187,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -3343,8 +3305,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -3358,8 +3320,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -3397,10 +3359,6 @@
         },
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
-        },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "layer_name": {
           "kind": "gameplay_tag"
@@ -3447,8 +3405,8 @@
           "kind": "float"
         },
         "static_item_definition": {
-          "kind": "object",
-          "class": "const UStaticItemDefinition"
+          "kind": "definition_ref",
+          "class": "StaticItemDefinition"
         },
         "equipment_actors_and_meshes": {
           "kind": "array",
@@ -3465,7 +3423,7 @@
           "kind": "array",
           "element": {
             "kind": "object",
-            "class": "const UScpAbilitySet"
+            "class": "ScpAbilitySet"
           }
         },
         "effects_to_apply": {
@@ -3479,8 +3437,8 @@
           "kind": "bool"
         },
         "ammo_definition": {
-          "kind": "object",
-          "class": "const UAmmoDefinition"
+          "kind": "definition_ref",
+          "class": "AmmoDefinition"
         },
         "max_ammo": {
           "kind": "int"
@@ -3601,8 +3559,8 @@
           "class": "NiagaraSystem"
         },
         "constructable_item_to_grant": {
-          "kind": "object",
-          "class": "const UConstructableItemDefinition"
+          "kind": "definition_ref",
+          "class": "ConstructableItemDefinition"
         },
         "deconstruction_tier": {
           "kind": "int"
@@ -3616,8 +3574,8 @@
           "name": "Transform"
         },
         "upgrade_recipe": {
-          "kind": "object",
-          "class": "const UFurnitureUpgradeRecipe"
+          "kind": "definition_ref",
+          "class": "FurnitureUpgradeRecipe"
         },
         "is_draggable": {
           "kind": "bool"
@@ -3656,10 +3614,6 @@
         "gameplay_event_tag": {
           "kind": "gameplay_tag"
         },
-        "screen_widget_class_override": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
-        },
         "layer_name": {
           "kind": "gameplay_tag"
         },
@@ -3676,10 +3630,6 @@
         "inventory_rules_definition": {
           "kind": "definition_ref",
           "class": "InventoryRulesDefinition"
-        },
-        "setup_widget_class": {
-          "kind": "soft_class",
-          "class": "CommonActivatableWidget"
         },
         "setup_gameplay_event_tag": {
           "kind": "gameplay_tag"
@@ -3729,10 +3679,6 @@
     },
     "DeathDropEntry": {
       "fields": {
-        "world_item": {
-          "kind": "object",
-          "class": "Package"
-        },
         "count": {
           "kind": "int"
         },
@@ -3773,23 +3719,16 @@
     },
     "EquipmentActorsMeshes": {
       "fields": {
-        "mesh": {
-          "kind": "object",
-          "class": "StaticMesh"
-        },
         "attach_socket": {
           "kind": "name"
         },
         "attach_transform": {
           "kind": "struct",
           "name": "Transform"
-        }
-      }
-    },
-    "EquipmentInputMappingConfig": {
-      "fields": {
-        "b_local_player_only": {
-          "kind": "bool"
+        },
+        "mesh": {
+          "kind": "object",
+          "class": "StaticMesh"
         }
       }
     },
@@ -3925,10 +3864,6 @@
         },
         "xp_gain_multiplier": {
           "kind": "float"
-        },
-        "input_mapping_config": {
-          "kind": "struct",
-          "name": "EquipmentInputMappingConfig"
         }
       }
     },
@@ -3986,7 +3921,7 @@
         },
         "furniture_definition": {
           "kind": "object",
-          "class": "ToggleableFurnitureDefinition"
+          "class": "FurnitureDefinition"
         },
         "transform": {
           "kind": "struct",
@@ -4031,10 +3966,6 @@
     },
     "LootItem": {
       "fields": {
-        "item_entity": {
-          "kind": "object",
-          "class": "Package"
-        },
         "count": {
           "kind": "int"
         },
@@ -4183,21 +4114,6 @@
         }
       ]
     },
-    "EBiomeRole": {
-      "members": []
-    },
-    "ECurrentStoreDifficulty": {
-      "members": []
-    },
-    "ELootMeshSize": {
-      "members": []
-    },
-    "ELootSource": {
-      "members": []
-    },
-    "EMapIconType": {
-      "members": []
-    },
     "LayoutActorType": {
       "members": [
         {
@@ -4255,6 +4171,70 @@
         {
           "name": "ENEMY_DROP",
           "value": 3
+        }
+      ]
+    },
+    "MapIconType": {
+      "members": [
+        {
+          "name": "NONE",
+          "value": 0
+        },
+        {
+          "name": "PLAYER",
+          "value": 1
+        },
+        {
+          "name": "DEATH_BOX",
+          "value": 2
+        },
+        {
+          "name": "SPAWN_POINT",
+          "value": 3
+        },
+        {
+          "name": "BOSS_SUMMONER",
+          "value": 4
+        },
+        {
+          "name": "FAST_TRAVEL",
+          "value": 5
+        },
+        {
+          "name": "LANDMARK",
+          "value": 6
+        },
+        {
+          "name": "RESOURCE",
+          "value": 7
+        },
+        {
+          "name": "ENEMY",
+          "value": 8
+        },
+        {
+          "name": "SETTLEMENT",
+          "value": 9
+        },
+        {
+          "name": "DUNGEON",
+          "value": 10
+        },
+        {
+          "name": "SHRINE",
+          "value": 11
+        },
+        {
+          "name": "WORKSHOP",
+          "value": 12
+        },
+        {
+          "name": "GROUPED_PO_IS",
+          "value": 13
+        },
+        {
+          "name": "CUSTOM",
+          "value": 14
         }
       ]
     },

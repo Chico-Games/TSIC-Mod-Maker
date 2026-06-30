@@ -54,8 +54,20 @@ function kindForProperty(
 
 /** Build an empty-container / new-element skeleton envelope from a kind. Mirrors
  *  the `element_type` / `key_type` shapes the old exporter emitted, so the
- *  editor's "+ Add" seeding works identically. */
-export function kindToSkeleton(kind: SchemaKind | null | undefined): any {
+ *  editor's "+ Add" seeding works identically.
+ *
+ *  When `schema` is supplied, struct skeletons carry a recursive `fields` map
+ *  (built from `schema.structs[name].fields`). This is what lets the editor
+ *  materialise a fully-fielded blank struct when a struct is appended to an
+ *  array/set/map or when an empty struct slot is edited — without it, a
+ *  freshly-added `{type:'struct'}` has no `value` keys and renders as
+ *  "(empty struct) · 0 fields". `seen` guards against self-referential structs
+ *  recursing forever. */
+export function kindToSkeleton(
+  kind: SchemaKind | null | undefined,
+  schema?: LeanSchema,
+  seen?: Set<string>,
+): any {
   if (!kind) return null;
   switch (kind.kind) {
     case 'bool': case 'int': case 'float': case 'string':
@@ -64,12 +76,31 @@ export function kindToSkeleton(kind: SchemaKind | null | undefined): any {
       return { type: kind.kind };
     case 'enum':
       return { type: 'enum', enum_name: kind.name };
-    case 'struct':
-      return { type: 'struct', struct_name: kind.name };
+    case 'struct': {
+      const out: any = { type: 'struct', struct_name: kind.name };
+      const def = schema && kind.name ? schema.structs[kind.name] : undefined;
+      // Expand the struct's fields once per type along a given branch; if the
+      // type recurses into itself, stop at the cycle (the nested slot keeps a
+      // bare `{type:'struct'}` skeleton, expanded lazily on demand).
+      if (def && !seen?.has(kind.name!)) {
+        const nextSeen = new Set(seen);
+        nextSeen.add(kind.name!);
+        const fields: Record<string, any> = {};
+        for (const [fk, fkind] of Object.entries(def.fields)) {
+          fields[fk] = kindToSkeleton(fkind, schema, nextSeen);
+        }
+        out.fields = fields;
+      }
+      return out;
+    }
     case 'array': case 'set':
-      return { type: 'array', element_type: kindToSkeleton(kind.element) };
+      return { type: 'array', element_type: kindToSkeleton(kind.element, schema, seen) };
     case 'map':
-      return { type: 'map', key_type: kindToSkeleton(kind.key), value_type: kindToSkeleton(kind.value) };
+      return {
+        type: 'map',
+        key_type: kindToSkeleton(kind.key, schema, seen),
+        value_type: kindToSkeleton(kind.value, schema, seen),
+      };
     case 'definition_ref':
       return { type: 'definition_ref', class: bareClass(kind.class) };
     case 'object': case 'soft_object': case 'class': case 'soft_class':
@@ -129,7 +160,7 @@ export function leanToEnvelope(value: any, kind: SchemaKind | null, schema: Lean
   // Null placeholder (exporter emits null for omitted nested slots) — preserve
   // it inside a typed envelope so positional round-trip is exact.
   if (value === null || value === undefined) {
-    const skel = kindToSkeleton(kind) ?? { type: 'string' };
+    const skel = kindToSkeleton(kind, schema) ?? { type: 'string' };
     return { ...skel, value: null };
   }
 
@@ -156,14 +187,14 @@ export function leanToEnvelope(value: any, kind: SchemaKind | null, schema: Lean
     case 'array': case 'set': {
       const el = kind.element ?? null;
       const arr = Array.isArray(value) ? value : [];
-      return { type: 'array', element_type: kindToSkeleton(el), value: arr.map((v) => leanToEnvelope(v, el, schema)) };
+      return { type: 'array', element_type: kindToSkeleton(el, schema), value: arr.map((v) => leanToEnvelope(v, el, schema)) };
     }
     case 'map': {
       const entries = Array.isArray(value) ? value : [];
       return {
         type: 'map',
-        key_type: kindToSkeleton(kind.key),
-        value_type: kindToSkeleton(kind.value),
+        key_type: kindToSkeleton(kind.key, schema),
+        value_type: kindToSkeleton(kind.value, schema),
         value: entries.map((e: any) => ({
           key: leanToEnvelope(e?.key, kind.key ?? null, schema),
           value: leanToEnvelope(e?.value, kind.value ?? null, schema),
