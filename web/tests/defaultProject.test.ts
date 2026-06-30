@@ -146,4 +146,80 @@ test('loadDefaultProjectFromFsa reads manifest, default.json, and JSONs from dis
   assert.equal(d.meta.version, 7);
   assert.equal(d.records.size, 1);
   assert.equal(d.records.get('items/A').id, 'A');
+  assert.equal(d.modIdentity, undefined); // editor convention has no mod.json
+});
+
+import { parseModIdentity } from '../src/persistence/defaultProject';
+
+test('parseModIdentity reads id/displayName/version; defaults displayName to id', () => {
+  assert.deepEqual(
+    parseModIdentity({ id: 'a.b', displayName: 'A B', version: '1.2.3' }),
+    { id: 'a.b', displayName: 'A B', version: '1.2.3' },
+  );
+  assert.equal(parseModIdentity({ id: 'a.b' })?.displayName, 'a.b');
+  assert.equal(parseModIdentity({ id: 'a.b', version: 5 })?.version, '5'); // coerced to string
+  assert.equal(parseModIdentity({}), null);
+  assert.equal(parseModIdentity(null), null);
+});
+
+test('loadDefaultProjectFromFsa directory-scans a default-project (dotted manifest + mod.json)', async () => {
+  const fsa = makeFakeFsa({
+    // dotted asset-index manifest — intentionally OMITS situation_definitions
+    '.manifest.json': JSON.stringify({
+      schema_version: 2, generated_at: 'x',
+      assets: { damageable_furniture_definitions: { FD_Chair_DF: '/Game/Furniture/FD_Chair_DF' } },
+    }),
+    'mod.json': JSON.stringify({ id: 'com.chicogames.default', displayName: 'TSIC Base Game', version: '0.1.0' }),
+    'default.json': JSON.stringify({ schema_version: 1, version: 3 }),
+    'damageable_furniture_definitions/FD_Chair_DF.json':
+      '{"id":"FD_Chair_DF","class":"UDamageableFurnitureDefinition"}\n',
+    // data-only def folder — absent from .manifest.json assets, must STILL load via scan
+    'situation_definitions/SIT_Combat.json': '{"id":"SIT_Combat"}\n',
+    // dotted sidecar dir must be skipped entirely
+    '.assets/Class.json': '{"class":"X"}\n',
+  });
+  const d = await loadDefaultProjectFromFsa(fsa);
+  // scanned both def folders, including the data-only one the manifest omits
+  assert.equal(d.records.size, 2);
+  assert.ok(d.records.get('situation_definitions/SIT_Combat'), 'data-only def loaded via directory scan');
+  assert.ok(d.records.get('damageable_furniture_definitions/FD_Chair_DF'));
+  assert.equal(d.records.get('.assets/Class'), undefined, '.assets sidecar dir skipped');
+  // mod identity carried separately from the integer publish counter
+  assert.equal(d.modIdentity?.id, 'com.chicogames.default');
+  assert.equal(d.modIdentity?.version, '0.1.0'); // semver string, untouched
+  assert.equal(d.meta.version, 3); // editor publish counter from default.json
+});
+
+// ── Real-data acceptance: scan the actual exported pack via an fs→FSA shim ────
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join as pjoin } from 'node:path';
+import { PACK_DIR, PACK_AVAILABLE } from './packDir';
+
+/** Minimal FileSystemDirectoryHandle backed by a real on-disk folder. */
+function fsaFromDisk(dirPath: string): any {
+  return {
+    kind: 'directory',
+    name: dirPath,
+    async getFileHandle(name: string) {
+      const p = pjoin(dirPath, name);
+      if (!existsSync(p)) { const e: any = new Error('NotFoundError'); e.name = 'NotFoundError'; throw e; }
+      return { kind: 'file', async getFile() { return { async text() { return readFileSync(p, 'utf-8'); } } as any; } };
+    },
+    async getDirectoryHandle(name: string) { return fsaFromDisk(pjoin(dirPath, name)); },
+    async *entries() {
+      for (const d of readdirSync(dirPath, { withFileTypes: true })) {
+        yield [d.name, { kind: d.isDirectory() ? 'directory' : 'file' }];
+      }
+    },
+  };
+}
+
+test('loadDefaultProjectFromFsa loads a REAL default-project incl. data-only defs', { skip: !PACK_AVAILABLE && `pack not found at ${PACK_DIR}` }, async () => {
+  const d = await loadDefaultProjectFromFsa(fsaFromDisk(PACK_DIR));
+  assert.ok(d.records.size > 100, `expected many records, got ${d.records.size}`);
+  // categories that .manifest.json omits must still load via the directory scan
+  const keys = [...d.records.keys()];
+  assert.ok(keys.some((k) => k.startsWith('hotkey_definitions/')), 'data-only hotkey_definitions loaded');
+  // a dotted sidecar dir must NOT have been scanned as definitions
+  assert.ok(!keys.some((k) => k.startsWith('.assets/')), '.assets sidecar dir skipped');
 });
