@@ -4,57 +4,87 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 73.0,
+    "starting_health": 73,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/SCPBase/GeometryCollections/GCS_ServerSmall.GCS_ServerSmall",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_SCPServerLoot"
     ],
     "constructable_item_to_grant": "ID_Server_2_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/SCPBase/Construction/CBD_Server_2_Constructed.CBD_Server_2_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 1e-06,
+          "y": -2.703050228092252e-08,
+          "z": 118.76211581686655
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 39.4277864185524,
+          "y": 32.31606520764733,
+          "z": 92.12415987093222
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 2.0000017621459846e-06,
+          "y": -0.6635260395397563,
+          "z": 114.15333582354182
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 53.31025392465591,
+          "y": 48.47663121644402,
+          "z": 121.82300686320997
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_SCPServer_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Lab Server",
     "description": "Store furniture.",
     "level": 1,
-    "default_world_gen_gameplay_tags": [],
-    "meta_tags": [],
-    "is_pingable": false,
-    "static_mesh": "/Game/Furniture/SCPBase/Meshes/SM_ServerSmall.SM_ServerSmall",
-    "casts_shadow": true,
-    "collision_profile_name": {
-      "name": "Furniture"
-    },
-    "random_material_overrides": [],
-    "loot_positions": [],
-    "weighted_chance": 1000,
-    "world_gen_priority": 5000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
     "gameplay_tags": [
       "Entity.RandomGeneration.CanBeRandom",
       "Entity.RandomGeneration.FurnitureCategory.Office",
@@ -68,8 +98,17 @@
       "Tile.Biome.SCPBaseExit",
       "Tile.Biome.SCPBasePower"
     ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/SCPBase/Meshes/SM_ServerSmall.SM_ServerSmall",
+    "casts_shadow": true,
+    "collision_profile_name": {
+      "name": "Furniture"
+    },
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 5000
   }
 }

@@ -4,35 +4,86 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 220.0,
+    "starting_health": 220,
+    "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/CarPark/GeometryCollections/GCS_AirConLarge_01a.GCS_AirConLarge_01a",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_Aircon"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/CarPark/Construction/CBD_Aircon_Constructed.CBD_Aircon_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 94.24701887369156
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 84.47999882698059,
+          "y": 32,
+          "z": 64.95999926328659
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -2.5502206568717156e-08,
+          "y": 0,
+          "z": 95.15377788951368
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 115.64996287226677,
+          "y": 62.39999932050705,
+          "z": 96.8080237666145
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": false,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Aircon",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,18 +95,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 3,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

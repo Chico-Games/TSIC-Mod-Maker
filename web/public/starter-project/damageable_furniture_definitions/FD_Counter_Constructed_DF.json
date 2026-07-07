@@ -4,35 +4,111 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 200.0,
+    "starting_health": 200,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Counters/GeometryCollections/GCS_Cabinet_Basin.GCS_Cabinet_Basin",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_CountersLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Counters/Construction/CBD_Counter_Constructed.CBD_Counter_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.1368683772161603e-13,
+          "y": -7.238281703985966,
+          "z": 37.720795127331336
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 24.817749936985017,
+          "y": 73.43513976950914,
+          "z": 25.827319061495842
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.115569,
+          "y": -5.796924722841698,
+          "z": 41.408875365372644
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.48648721247646,
+          "y": 86.58410063716865,
+          "z": 44.746420748291015
+        }
+      },
+      {
+        "offset": {
+          "x": -13.19702447187213,
+          "y": -2.2814783184969816,
+          "z": 97.50165721890134
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 13.796158250801923,
+          "y": 5.049807669530722,
+          "z": 23.02052279670906
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 80,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Counter",
     "description": "A store counter.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Kitchen",
+      "Entity.RandomGeneration.FurnitureType.Counter",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.Restaurant",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,26 +120,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 80.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.Kitchen",
-      "Entity.RandomGeneration.FurnitureType.Counter",
-      "Entity.RandomGeneration.Materials.Metal",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Medium",
-      "Tile.Biome.Restaurant",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

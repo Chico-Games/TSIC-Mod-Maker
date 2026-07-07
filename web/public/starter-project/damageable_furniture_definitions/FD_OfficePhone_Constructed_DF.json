@@ -4,35 +4,91 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 150.0,
+    "starting_health": 150,
+    "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/Electronics/GeometryCollections/GCS_Phone.GCS_Phone",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_ElectronicsLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Electronics/Construction/CBD_OfficePhone_Constructed.CBD_OfficePhone_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 2.5687467700306597,
+          "y": -5.554399294580136,
+          "z": 2.9088819841738296
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 9.999999922536354
+        },
+        "box_size": {
+          "x": 6.413408,
+          "y": 8.01485852768898,
+          "z": 1.1228546819893719
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 2.429323978278343,
+          "y": -4.19213626000862,
+          "z": 4.427458883448345
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 12.558540658473014,
+          "y": 12.903192870039703,
+          "z": 6.34777191650939
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 0,
+    "drag_mass": 10,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Phone",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Office",
+      "Entity.RandomGeneration.Materials.Electronic",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Tile.Biome.SCPBase"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,23 +100,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 10.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 3,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.Office",
-      "Entity.RandomGeneration.Materials.Electronic",
-      "Entity.RandomGeneration.Materials.Metal",
-      "Tile.Biome.SCPBase"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

@@ -4,35 +4,143 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 120.0,
+    "starting_health": 120,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Chairs/GeometryCollections/GCS_LivingRoomChair1.GCS_LivingRoomChair1",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WoodenFabricChairLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Chairs/Construction/CBD_Chair_20_Constructed.CBD_Chair_20_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -6.847380591423757e-07,
+          "y": 3.1838789999999966,
+          "z": 42.325129744095015
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 20.034624,
+          "y": 17.27632,
+          "z": 0.37168034270453454
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.11556899855250366,
+          "y": 1.8076027756428017,
+          "z": 45.327730787366114
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 36.17803413091564,
+          "y": 30.893340849941374,
+          "z": 12.174273992943764
+        }
+      },
+      {
+        "offset": {
+          "x": -0.115569,
+          "y": -28.060085036045102,
+          "z": 60.23829068891904
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -34.9999997288773
+        },
+        "box_size": {
+          "x": 34.03838342742729,
+          "y": 8.208928,
+          "z": 23.55069069149971
+        }
+      },
+      {
+        "offset": {
+          "x": -25.74679414801537,
+          "y": 1.8076028403974627,
+          "z": 16.915196996063656
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 6.550448760650632,
+          "y": 43.06481461228752,
+          "z": 17.942821710512163
+        }
+      },
+      {
+        "offset": {
+          "x": 28.832838324073506,
+          "y": 1.8076029999999716,
+          "z": 16.915196836294733
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 6.550464,
+          "y": 43.0648,
+          "z": 17.942816
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 0,
+    "drag_mass": 20,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Chair",
     "description": "Seating furniture from the store.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureType.Chair",
+      "Entity.RandomGeneration.Materials.Fabric",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,24 +152,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 20.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-      "Entity.RandomGeneration.FurnitureType.Chair",
-      "Entity.RandomGeneration.Materials.Fabric",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

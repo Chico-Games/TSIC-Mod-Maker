@@ -4,37 +4,95 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 33.0,
+    "starting_health": 33,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/WareHouse/GeometryCollections/GCS_CartonBoxPack03.GCS_CartonBoxPack03",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WarehouseCardboardBoxLoot"
     ],
     "constructable_item_to_grant": "ID_WarehouseBox_9_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/WareHouse/Construction/CBD_WarehouseBox_9_Constructed.CBD_WarehouseBox_9_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0,
+          "y": -1.200841237054266,
+          "z": 49.6745223379592
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 53.76,
+          "y": 46.08,
+          "z": 32.01018419265747
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.9882788752174378,
+          "y": 0.29586154169082635,
+          "z": 64.3211848156128
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 65.29513595708465,
+          "y": 59.14928002861023,
+          "z": 65.57017596423722
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_WarehouseWoodenBox_CN",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Cardboard Boxes",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Warehouse",
+      "Entity.RandomGeneration.FurnitureType.Box",
+      "Entity.RandomGeneration.Materials.Cardboard",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.Warehouse"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,25 +104,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 5000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureCategory.Warehouse",
-      "Entity.RandomGeneration.FurnitureType.Box",
-      "Entity.RandomGeneration.Materials.Cardboard",
-      "Entity.RandomGeneration.Size.Medium",
-      "Tile.Biome.Warehouse"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 5000
   }
 }

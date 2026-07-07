@@ -4,35 +4,205 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 220.0,
+    "starting_health": 220,
+    "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/CarPark/GeometryCollections/GCS_HeightBarrier_01a.GCS_HeightBarrier_01a",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_ParkingHeightBarrier"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/CarPark/Construction/CBD_ParkingHeightBarrier_Constructed.CBD_ParkingHeightBarrier_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.19070577710202663,
+          "y": -6.821210263296962e-13,
+          "z": 304.8945177167418
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 193.53626334111595,
+          "y": 2.243199949932098,
+          "z": 3.159063428933706
+        }
+      },
+      {
+        "offset": {
+          "x": 0.059923414832816935,
+          "y": 204.45099755592489,
+          "z": 158.34882472168732
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 4.736260220008859,
+          "y": 1.6031999642372132,
+          "z": 123.47906931063844
+        }
+      },
+      {
+        "offset": {
+          "x": 0.6325765653760327,
+          "y": -204.24112590690288,
+          "z": 158.34882494622929
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 3.136256,
+          "y": 1.6031999642372132,
+          "z": 123.479072
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.190706,
+          "y": 0,
+          "z": 304.50943038325835
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 214.65023611446,
+          "y": 7.363199885559084,
+          "z": 6.999071914169312
+        }
+      },
+      {
+        "offset": {
+          "x": 0.059923486305003326,
+          "y": 204.45099755592489,
+          "z": 151.09918194241524
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 6.976255949932099,
+          "y": 7.363199871253968,
+          "z": 152.59907134911728
+        }
+      },
+      {
+        "offset": {
+          "x": 0.059923486305003326,
+          "y": 204.45099755592489,
+          "z": 16.159489711362852
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 17.668804140883445,
+          "y": 17.603199771118163,
+          "z": 18.971623307082183
+        }
+      },
+      {
+        "offset": {
+          "x": 0.25587055604534314,
+          "y": -204.24112590690288,
+          "z": 151.09917666742518
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 6.976256,
+          "y": 7.3632,
+          "z": 152.599072
+        }
+      },
+      {
+        "offset": {
+          "x": -0.0976843276578252,
+          "y": -204.2411259069029,
+          "z": 16.159487572762483
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 18.9488,
+          "y": 17.6032,
+          "z": 18.971616
+        }
+      },
+      {
+        "offset": {
+          "x": -0.1907061418249269,
+          "y": 0,
+          "z": 274.9924411136861
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282671,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 179.44006532024383,
+          "y": 4.799975444773957,
+          "z": 6.999072
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": false,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Parking Height Barrier",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,18 +214,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 3,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

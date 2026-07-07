@@ -4,7 +4,31 @@
   "class": "UEquippableDefinition",
   "schema_version": 2,
   "properties": {
-    "equipment_actors_and_meshes": [],
+    "equipment_actors_and_meshes": [
+      {
+        "mesh": "/Game/Items/Equipment/Weapons/Flamethrower/Meshes/SM_Flamethrower.SM_Flamethrower",
+        "attach_socket": "hand_r_weapon",
+        "attach_transform": {
+          "rotation": {
+            "x": -0.486773,
+            "y": 0.388422,
+            "z": -0.755137,
+            "w": -0.204816
+          },
+          "translation": {
+            "x": -0.1863,
+            "y": 6.9763,
+            "z": -10.7376
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "equipped_layer_class": "/Game/Items/Equipment/Weapons/Flamethrower/Blueprints/ABP_Flamethrower.ABP_Flamethrower_C",
     "ability_sets_to_grant": [
       "/Game/Items/Equipment/Weapons/Flamethrower/Abilities/AS_Flamethrower.AS_Flamethrower"
     ],
@@ -49,10 +73,16 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": []
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
     },
     "has_durability": true,
     "has_ammo": true,
+    "ammo_definition": "ID_Fuel_AM",
     "max_ammo": 100,
     "display_name": "Flamethrower",
     "description": "Unleashes a stream of fire that burns enemies. Area damage with fuel consumption. Max ammo: 100 fuel units.",

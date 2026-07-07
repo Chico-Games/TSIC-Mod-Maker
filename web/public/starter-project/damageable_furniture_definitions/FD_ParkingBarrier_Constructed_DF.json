@@ -4,35 +4,120 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 180.0,
+    "starting_health": 180,
+    "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/CarPark/GeometryCollections/GCS_ParkingBarrier_01a.GCS_ParkingBarrier_01a",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_ParkingBarrier"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/CarPark/Construction/CBD_ParkingBarrier_Constructed.CBD_ParkingBarrier_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.39003972420943805,
+          "y": 0.938405,
+          "z": 55.540632269277296
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 11.015799317210913,
+          "y": 12.155351200103759,
+          "z": 49.66282685160637
+        }
+      },
+      {
+        "offset": {
+          "x": -19.474927027740478,
+          "y": -113.11257047173501,
+          "z": 94.063829889328
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 0.45580823603439313,
+          "y": 119.99535758958817,
+          "z": 3.9028170228157038
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.13602841311454772,
+          "y": -0.09980402175617176,
+          "z": 54.79363976603699
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 16.640000894069672,
+          "y": 20.80000034332275,
+          "z": 57.28000102281571
+        }
+      },
+      {
+        "offset": {
+          "x": -19.545262864944462,
+          "y": -113.26722852979088,
+          "z": 94.15622205771447
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 4.160000278949738,
+          "y": 132.79999749660493,
+          "z": 6.720001130104066
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": false,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Parking Barrier",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,18 +129,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 3,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

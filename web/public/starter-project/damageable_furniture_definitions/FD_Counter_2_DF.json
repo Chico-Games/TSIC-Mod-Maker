@@ -4,37 +4,97 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 67.0,
+    "starting_health": 67,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Counters/GeometryCollections/GCS_Cabinet_Stove.GCS_Cabinet_Stove",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_CountersLoot"
     ],
     "constructable_item_to_grant": "ID_Counter_2_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Counters/Construction/CBD_Counter_2_Constructed.CBD_Counter_2_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 3.7452778656188444e-08,
+          "y": -4.160274866797275,
+          "z": 37.72079613203713
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 89.99999930282745,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 23.219397077331543,
+          "y": 93.27669204243279,
+          "z": 25.827328
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.1155690540610472,
+          "y": -1.354019257930167,
+          "z": 41.40887481391798
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -89.99999930282733,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.486496,
+          "y": 105.81111611466027,
+          "z": 44.746432
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_Counters_CN",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Counter",
     "description": "A store counter.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Kitchen",
+      "Entity.RandomGeneration.FurnitureType.Counter",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.Restaurant",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,27 +106,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 7000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureCategory.Kitchen",
-      "Entity.RandomGeneration.FurnitureType.Counter",
-      "Entity.RandomGeneration.Materials.Metal",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Medium",
-      "Tile.Biome.Restaurant",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 7000
   }
 }

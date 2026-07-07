@@ -4,37 +4,178 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 43.0,
+    "starting_health": 43,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Televisions/GeometryCollections/GCS_TV_Shelf.GCS_TV_Shelf",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_TelevisionStandLoot"
     ],
     "constructable_item_to_grant": "ID_TVShelf_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Televisions/Construction/CBD_TVShelf_Constructed.CBD_TVShelf_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 69.97418533857756,
+          "y": 4.475845505112403,
+          "z": 36.89659806019522
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 210.52869515214115,
+          "y": 14.921274688094854,
+          "z": 32
+        }
+      },
+      {
+        "offset": {
+          "x": 220.381540896358,
+          "y": 16.626236787089926,
+          "z": 126.76585449018623
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 51.56968543742752,
+          "y": 7.908016357212066,
+          "z": 52.51908949017525
+        }
+      },
+      {
+        "offset": {
+          "x": -92.61241549506127,
+          "y": 16.626236999999943,
+          "z": 126.76585350186727
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 51.569696,
+          "y": 7.908032,
+          "z": 52.519104
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -89.19988111848852,
+          "y": 5.637675322421572,
+          "z": 97.3088203244491
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 78.37529363203794,
+          "y": 24.628095265012234,
+          "z": 99.92401772737503
+        }
+      },
+      {
+        "offset": {
+          "x": 226.2274608648171,
+          "y": 5.637674999999943,
+          "z": 97.30882290830357
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 78.375296,
+          "y": 24.628096,
+          "z": 99.924032
+        }
+      },
+      {
+        "offset": {
+          "x": 69.4716527691936,
+          "y": 5.6376750000011935,
+          "z": 37.70523923604638
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 83.81400159334756,
+          "y": 24.628096,
+          "z": 44.245484170610425
+        }
+      },
+      {
+        "offset": {
+          "x": 69.47165105064448,
+          "y": 16.115761314095955,
+          "z": 193.7284041856704
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 83.814016,
+          "y": 15.593062718107461,
+          "z": 3.748926208374023
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_TelevisionStand_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "TV Shelf",
     "description": "A store shelving unit for storage.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureType.Shelf.Floor",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,23 +187,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 6000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-      "Entity.RandomGeneration.FurnitureType.Shelf.Floor",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 6000
   }
 }

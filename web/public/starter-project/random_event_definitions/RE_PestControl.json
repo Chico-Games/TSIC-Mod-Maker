@@ -1,0 +1,26 @@
+{
+  "id": "RE_PestControl",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Pest Control",
+    "event_tag": "Event.Random.PestControl",
+    "light_config": {
+      "intensity": 0.8,
+      "color": { "r": 0.85, "g": 1.0, "b": 0.6, "a": 1.0 },
+      "temperature": 5600.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.PestControl",
+    "ambient_audio_tag": "Ambient.Event.PestControl",
+    "enemy_event_type": {
+      "name": "EliteSpawn",
+      "value": 3
+    },
+    "enemy_spawn_params": "GardenerSpawnParameters",
+    "enemy_spawn_delay": 15.0,
+    "duration": 300.0,
+    "weight": 0.8
+  }
+}

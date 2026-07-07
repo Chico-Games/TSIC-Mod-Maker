@@ -1,0 +1,26 @@
+{
+  "id": "RE_SignalStorm",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Signal Storm",
+    "event_tag": "Event.Random.SignalStorm",
+    "light_config": {
+      "intensity": 0.5,
+      "color": { "r": 0.7, "g": 0.85, "b": 1.0, "a": 1.0 },
+      "temperature": 9000.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.SignalStorm",
+    "ambient_audio_tag": "Ambient.Event.SignalStorm",
+    "enemy_event_type": {
+      "name": "EnemyRaid",
+      "value": 1
+    },
+    "enemy_spawn_params": "TVHeadSpawnParameters",
+    "enemy_spawn_delay": 8.0,
+    "duration": 240.0,
+    "weight": 1.2
+  }
+}

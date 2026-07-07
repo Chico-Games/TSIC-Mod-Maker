@@ -4,37 +4,197 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 43.0,
+    "starting_health": 43,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Mannequins/GeometryCollections/GCS_SittingMannequin.GCS_SittingMannequin",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_MannequinLoot"
     ],
     "constructable_item_to_grant": "ID_Mannequin_2_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Mannequins/Construction/CBD_Mannequin_2_Constructed.CBD_Mannequin_2_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -2.786568923953844,
+          "y": -3.7731885813452153,
+          "z": 53.753096008696346
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 89.99999934155926
+        },
+        "box_size": {
+          "x": 13.724403610700607,
+          "y": 0.732256,
+          "z": 21.7627003297081
+        }
+      },
+      {
+        "offset": {
+          "x": -2.7865689999999006,
+          "y": -24.312445839113877,
+          "z": 92.19364817063253
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 179.99999830282746
+        },
+        "box_size": {
+          "x": 17.884088528505323,
+          "y": 0.732256,
+          "z": 21.762688
+        }
+      },
+      {
+        "offset": {
+          "x": -0.7890882946031539,
+          "y": -15.319517665746092,
+          "z": 127.13000546735286
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 209.99999776760896
+        },
+        "box_size": {
+          "x": 4.873996480955839,
+          "y": 0.732256,
+          "z": 10.207188267505646
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -4.655769850595043,
+          "y": 17.581770152880964,
+          "z": 25.171089135994855
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 25.927912338577272,
+          "y": 8.964546230274202,
+          "z": 27.62189700502968
+        }
+      },
+      {
+        "offset": {
+          "x": -4.655770004574925,
+          "y": 35.15516467537742,
+          "z": 4.969731194740266
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 25.927904,
+          "y": 8.964544,
+          "z": 7.154962165578841
+        }
+      },
+      {
+        "offset": {
+          "x": -1.9028002769266834,
+          "y": -6.849203292847317,
+          "z": 53.43585599295381
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 21.77178140492821,
+          "y": 32.37172705110932,
+          "z": 11.641837747249483
+        }
+      },
+      {
+        "offset": {
+          "x": -0.8531817976603335,
+          "y": -23.932195417399367,
+          "z": 92.5862116880952
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 31.682105203584673,
+          "y": 14.673567802536013,
+          "z": 28.294430517076492
+        }
+      },
+      {
+        "offset": {
+          "x": -1.3671517891976457,
+          "y": -19.014312781619097,
+          "z": 131.72289913455268
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 10.763341685251238,
+          "y": 14.673568,
+          "z": 14.065568542782188
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_Mannequin_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Mannequin",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureType.Mannequin",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Tile.Biome.Restaurant",
+      "Tile.Biome.ShowFloor",
+      "Tile.Biome.Warehouse"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,25 +206,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 4000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureType.Mannequin",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Tile.Biome.Restaurant",
-      "Tile.Biome.ShowFloor",
-      "Tile.Biome.Warehouse"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 4000
   }
 }

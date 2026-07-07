@@ -4,35 +4,211 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 130.0,
+    "starting_health": 130,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Tables/GeometryCollections/GCS_Eyes_Lounge__CoffeeTable.GCS_Eyes_Lounge__CoffeeTable",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WoodenTableLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Tables/Construction/CBD_Table_6_Constructed.CBD_Table_6_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -9.663866507025887e-08,
+          "y": -5.485355814016657e-08,
+          "z": 48.98740101567515
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 29.642550188778884,
+          "y": 25.266144,
+          "z": 0.256
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -3.1418849744113686e-08,
+          "y": 3.129396830559017e-07,
+          "z": 49.02294111026277
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 38.61667704555035,
+          "y": 39.66826484739399,
+          "z": 2.2442636801776885
+        }
+      },
+      {
+        "offset": {
+          "x": 1.3177540998574595,
+          "y": -31.297604931136544,
+          "z": 23.282766846703687
+        },
+        "rotation": {
+          "pitch": 0.056934,
+          "yaw": 0.43190500000000026,
+          "roll": 9.981211845072787
+        },
+        "box_size": {
+          "x": 3.412608,
+          "y": 4.139808,
+          "z": 25.52848
+        }
+      },
+      {
+        "offset": {
+          "x": 32.34326578386251,
+          "y": -0.5440470349289557,
+          "z": 22.70751446683721
+        },
+        "rotation": {
+          "pitch": 10.056933379286225,
+          "yaw": 0.42859160024682313,
+          "roll": -0.019081099762046146
+        },
+        "box_size": {
+          "x": 3.412608,
+          "y": 4.139808,
+          "z": 25.52848
+        }
+      },
+      {
+        "offset": {
+          "x": -31.827253812690653,
+          "y": -0.9001082995570858,
+          "z": 22.75662798932667
+        },
+        "rotation": {
+          "pitch": -9.943065758774235,
+          "yaw": 0.43521760396959147,
+          "roll": -0.019074314712161283
+        },
+        "box_size": {
+          "x": 3.412608,
+          "y": 4.139808,
+          "z": 25.52848
+        }
+      },
+      {
+        "offset": {
+          "x": -0.31484489818237543,
+          "y": 32.848315696898794,
+          "z": 21.513259916932665
+        },
+        "rotation": {
+          "pitch": 0.05693337950021515,
+          "yaw": 0.4319058331082969,
+          "roll": -10.018787436854222
+        },
+        "box_size": {
+          "x": 3.412611919057846,
+          "y": 4.139814323091507,
+          "z": 25.52848
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 49.022941
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 19.999999845072697,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 38.616672,
+          "y": 39.668256,
+          "z": 2.244256
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 49.022941
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 44.999999651413724,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 38.616672,
+          "y": 39.668256,
+          "z": 2.244256
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 49.022941
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 69.99999945775468,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 38.616672,
+          "y": 39.668256,
+          "z": 2.244256
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 60,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Table",
     "description": "A table from the store floor.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureType.Table",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Small",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,24 +220,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 60.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-      "Entity.RandomGeneration.FurnitureType.Table",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Small",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

@@ -1,0 +1,26 @@
+{
+  "id": "RE_GraveyardShift",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Graveyard Shift",
+    "event_tag": "Event.Random.GraveyardShift",
+    "light_config": {
+      "intensity": 0.15,
+      "color": { "r": 0.6, "g": 0.7, "b": 1.0, "a": 1.0 },
+      "temperature": 10000.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.GraveyardShift",
+    "ambient_audio_tag": "Ambient.Event.GraveyardShift",
+    "enemy_event_type": {
+      "name": "EliteSpawn",
+      "value": 3
+    },
+    "enemy_spawn_params": "BoneHeadSpawnParameters",
+    "enemy_spawn_delay": 20.0,
+    "duration": 300.0,
+    "weight": 0.4
+  }
+}

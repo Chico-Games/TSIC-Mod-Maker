@@ -4,35 +4,158 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 150.0,
+    "starting_health": 150,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Kids/GeometryCollections/GCS_PicnicTableKids.GCS_PicnicTableKids",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WoodenTableLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Kids/Construction/CBD_KidsPicnic_Constructed.CBD_KidsPicnic_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.6430679999999716,
+          "y": -0.43168116482630015,
+          "z": 42.72647516550666
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 46.37973371559524,
+          "y": 32.82585295337105,
+          "z": 17.970194459522247
+        }
+      },
+      {
+        "offset": {
+          "x": -1.6430679979679153,
+          "y": 50.98478766582547,
+          "z": 17.889967961689713
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 46.379744,
+          "y": 22.263911723905565,
+          "z": 12.495780299957275
+        }
+      },
+      {
+        "offset": {
+          "x": -1.643067999999332,
+          "y": -58.74784575429731,
+          "z": 17.889968223511406
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 46.379744,
+          "y": 22.263904,
+          "z": 12.495776
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.585114191016146e-07,
+          "y": -1.420654669459509e-07,
+          "z": 33.68693544479436
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.48315725097466,
+          "y": 41.89806965014648,
+          "z": 40.25008604060966
+        }
+      },
+      {
+        "offset": {
+          "x": -9.947598300641403e-14,
+          "y": 62.95437368167824,
+          "z": 17.942852572105217
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.483168,
+          "y": 25.44638728471279,
+          "z": 22.04807763858318
+        }
+      },
+      {
+        "offset": {
+          "x": -1.1937117960769683e-12,
+          "y": -64.7488124509173,
+          "z": 18.368193207839933
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 73.483168,
+          "y": 25.4464,
+          "z": 22.048064
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 15,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Kids Picnic Table",
     "description": "A table from the store floor.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+      "Entity.RandomGeneration.Materials.Plastic",
+      "Tile.Biome.Kids"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,23 +167,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 15.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-      "Entity.RandomGeneration.Materials.Plastic",
-      "ProxyActor.RandomGeneration",
-      "Tile.Biome.Kids"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

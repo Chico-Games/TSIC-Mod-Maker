@@ -4,37 +4,147 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 50.0,
+    "starting_health": 50,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Sofas/GeometryCollections/GCS_OldHouse_2PSofa.GCS_OldHouse_2PSofa",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_BigSofaLoot"
     ],
     "constructable_item_to_grant": "ID_Sofa_9_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Sofas/Construction/CBD_Sofa_9_Constructed.CBD_Sofa_9_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1e-06,
+          "y": 0,
+          "z": 33.213366
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 92.737952,
+          "y": 31.020544,
+          "z": 4.598816
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -96.09684237644068,
+          "y": 0.5543310786136031,
+          "z": 56.687514232136614
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 15.82048,
+          "y": 40.43611164566705,
+          "z": 21.964323755214693
+        }
+      },
+      {
+        "offset": {
+          "x": -0.07429468357314684,
+          "y": -30.673210426918356,
+          "z": 66.03966256056765
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 95.009984,
+          "y": 11.586816,
+          "z": 19.731144052936553
+        }
+      },
+      {
+        "offset": {
+          "x": 0.283403,
+          "y": -0.07566,
+          "z": 23.405091
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 109.92203278108597,
+          "y": 42.36298302038217,
+          "z": 25.166848
+        }
+      },
+      {
+        "offset": {
+          "x": 94.68873751765011,
+          "y": 0.5543309999999858,
+          "z": 56.68751945210493
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 15.82048,
+          "y": 40.436096,
+          "z": 21.96432
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_BigSofa_CN",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Sofa",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureType.Sofa",
+      "Entity.RandomGeneration.Materials.Fabric",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,26 +156,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 6000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-      "Entity.RandomGeneration.FurnitureType.Sofa",
-      "Entity.RandomGeneration.Materials.Fabric",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Medium",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 6000
   }
 }

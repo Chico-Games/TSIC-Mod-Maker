@@ -4,37 +4,129 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 43.0,
+    "starting_health": 43,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Tables/GeometryCollections/GCS_Table02.GCS_Table02",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WoodenTableLoot"
     ],
     "constructable_item_to_grant": "ID_Table_10_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Tables/Construction/CBD_Table_10_Constructed.CBD_Table_10_Constructed",
+    "blocking_collision_boxes": [],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 68.41663660931832,
+          "y": -51.828335547039444,
+          "z": 43.932806
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 35.488466346059326,
+          "y": 50.927326674552916,
+          "z": 56.003524055350056
+        }
+      },
+      {
+        "offset": {
+          "x": -25.447060500304055,
+          "y": -142.69216211787162,
+          "z": 43.93280599999994
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 49.76183861325264,
+          "y": 34.91337853126812,
+          "z": 56.00352
+        }
+      },
+      {
+        "offset": {
+          "x": 26.81368802862196,
+          "y": -65.84539676819566,
+          "z": 43.932806000000056
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 19.999999845072885,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 35.48848,
+          "y": 55.4167308455019,
+          "z": 56.00352
+        }
+      },
+      {
+        "offset": {
+          "x": -7.104984455669779,
+          "y": -97.65084870265451,
+          "z": 43.932806
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 54.99999957395023,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 41.055984271864894,
+          "y": 50.927328,
+          "z": 56.00352
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_WoodenTable_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Table",
     "description": "A table from the store floor.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Office",
+      "Entity.RandomGeneration.FurnitureCategory.ScienceLab",
+      "Entity.RandomGeneration.FurnitureType.Table",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Large",
+      "Tile.Biome.SCPBase"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,26 +138,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 6000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureCategory.Office",
-      "Entity.RandomGeneration.FurnitureCategory.ScienceLab",
-      "Entity.RandomGeneration.FurnitureType.Table",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Large",
-      "Tile.Biome.SCPBase"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 6000
   }
 }

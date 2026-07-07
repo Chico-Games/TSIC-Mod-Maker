@@ -4,35 +4,143 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 100.0,
+    "starting_health": 100,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Tables/GeometryCollections/GCS_Living_sofa_Table.GCS_Living_sofa_Table",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_WoodenTableLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Tables/Construction/CBD_Table_8_Constructed.CBD_Table_8_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0,
+          "y": 0.4421610514653209,
+          "z": 19.14469326526789
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 39.999999690145465,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 18.003407555200575,
+          "y": 15.229112172657013,
+          "z": 13.888253409969092
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -4.1763894608262706e-08,
+          "y": 0.44216094035519976,
+          "z": 20.897996329233287
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -35,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.368288,
+          "y": 33.368288,
+          "z": 19.77360324453655
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0.442161,
+          "z": 20.897996
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": -10.000000193659188,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.368288,
+          "y": 33.368288,
+          "z": 19.7736
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0.442161,
+          "z": 20.897996
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 9.999999651413592,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.368288,
+          "y": 33.368288,
+          "z": 19.7736
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": 0.442161,
+          "z": 20.897996
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 34.99999945775446,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 33.368288,
+          "y": 33.368288,
+          "z": 19.7736
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 60,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Table",
     "description": "A table from the store floor.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+      "Entity.RandomGeneration.FurnitureType.Table",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Small",
+      "Tile.Biome.ShowFloor"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,24 +152,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 60.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
-      "Entity.RandomGeneration.FurnitureType.Table",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Small",
-      "Tile.Biome.ShowFloor"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

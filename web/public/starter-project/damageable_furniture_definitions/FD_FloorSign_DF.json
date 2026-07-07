@@ -4,57 +4,121 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 60.0,
+    "starting_health": 60,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Signs/GeometryCollections/GCS_FloorSign.GCS_FloorSign",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_MetalFloorSignsLoots"
     ],
     "constructable_item_to_grant": "ID_FloorSign_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Signs/Construction/CBD_FloorSign_Constructed.CBD_FloorSign_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.1550449999998722,
+          "y": -1.4664840404047537,
+          "z": 2.4424979597067935
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 19.016484634984494,
+          "y": 9.447389351079941,
+          "z": 0.33727450318288277
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.43848195145238533,
+          "y": 0.2876262694948144,
+          "z": 2.1662042166658466
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 29.81052330167389,
+          "y": 28.4219704506104,
+          "z": 3.992862136129375
+        }
+      },
+      {
+        "offset": {
+          "x": -0.43848200000007104,
+          "y": -0.0053790593684221455,
+          "z": 55.42741661120945
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 4.272038561406614,
+          "y": 3.450207261237143,
+          "z": 57.67967264572525
+        }
+      },
+      {
+        "offset": {
+          "x": -0.43848199999967313,
+          "y": -0.00537888172433521,
+          "z": 137.96569800582802
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 3.632044233257294,
+          "y": 18.273726559336662,
+          "z": 27.2656567301008
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_MetalFloorSigns_CN",
     "is_draggable": true,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Sign",
     "description": "Store furniture.",
     "level": 1,
-    "default_world_gen_gameplay_tags": [],
-    "meta_tags": [],
-    "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Signs/Meshes/SM_FloorSign.SM_FloorSign",
-    "casts_shadow": true,
-    "collision_profile_name": {
-      "name": "Furniture"
-    },
-    "random_material_overrides": [],
-    "loot_positions": [],
-    "weighted_chance": 1000,
-    "world_gen_priority": 3000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
     "gameplay_tags": [
       "Entity.RandomGeneration.CanBeRandom",
       "Entity.RandomGeneration.FurnitureCategory.Bedroom",
@@ -66,8 +130,17 @@
       "Entity.RandomGeneration.Size.Medium",
       "Tile.Biome.ShowFloor"
     ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/Signs/Meshes/SM_FloorSign.SM_FloorSign",
+    "casts_shadow": true,
+    "collision_profile_name": {
+      "name": "Furniture"
+    },
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 3000
   }
 }

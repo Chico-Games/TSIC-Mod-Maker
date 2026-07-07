@@ -4,37 +4,88 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 30.0,
+    "starting_health": 30,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Bathroom/GeometryCollections/GCS_Toilet_Paper.GCS_Toilet_Paper",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_ToiletPaperLoot"
     ],
     "constructable_item_to_grant": "ID_ToiletPaper_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Bathroom/Construction/CBD_ToiletPaper_Constructed.CBD_ToiletPaper_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 11.79956436429623,
+          "y": 9.044536170285747,
+          "z": -7.340473473504971e-08
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 6.352443980785846,
+          "y": 3.4754542236339745,
+          "z": 4.342049508144379
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 10.003727227449417,
+          "y": 7.8643604181706905,
+          "z": -5.302790999412537
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 15.020160429153442,
+          "y": 8.328352314712525,
+          "z": 12.447264643730165
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_ToiletPaper_CN",
     "is_draggable": true,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Toilet Paper",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,18 +97,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 2000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 2000
   }
 }

@@ -13,8 +13,40 @@
         "value": {
           "enemies_can_spawn": [
             {
-              "enemy_spawn_parameter": "/Game/Characters/Enemies/MaleStaff/DataAssets/MaleStaffSpawnParameters.MaleStaffSpawnParameters",
-              "weight": 1000
+              "enemy_spawn_parameter": "GardenerSpawnParameters",
+              "weight": 700
+            },
+            {
+              "enemy_spawn_parameter": "MaleStaffSpawnParameters",
+              "weight": 300
+            }
+          ]
+        }
+      },
+      {
+        "key": {
+          "name": "NORMAL",
+          "value": 1
+        },
+        "value": {
+          "enemies_can_spawn": [
+            {
+              "enemy_spawn_parameter": "HeavyStaffSpawnParameters",
+              "weight": 350
+            }
+          ]
+        }
+      },
+      {
+        "key": {
+          "name": "HARD",
+          "value": 2
+        },
+        "value": {
+          "enemies_can_spawn": [
+            {
+              "enemy_spawn_parameter": "BoneHeadSpawnParameters",
+              "weight": 300
             }
           ]
         }

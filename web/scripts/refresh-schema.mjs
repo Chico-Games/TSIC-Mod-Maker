@@ -213,14 +213,31 @@ if (existsSync(join(WEB_STARTER, 'default.json'))) {
 }
 if (existsSync(WEB_STARTER)) rmSync(WEB_STARTER, { recursive: true, force: true });
 mkdirSync(WEB_STARTER, { recursive: true });
-let folderCount = 0, fileCount = 0;
+// A pack directory can hold non-definition data folders (e.g. `maps/`, whose
+// files are tilemaps: { metadata, layers, color_mappings, format_info }). Those
+// are NOT UDataAsset records and carry no `id`/`class`, so the editor's
+// structural validator (id + class REQUIRED; asset_path optional) would gate on
+// them at load. Pack ONLY genuine definition records — a JSON object with a
+// non-empty string `id` and `class`. This keeps the generator robust to new
+// non-definition folders appearing in the source mod.
+const isDefinitionFile = (p) => {
+  let j; try { j = readJSON(p); } catch { return false; }
+  return j && typeof j === 'object' && typeof j.id === 'string' && j.id
+    && typeof j.class === 'string' && j.class;
+};
+let folderCount = 0, fileCount = 0, skippedNonDef = 0;
+const skippedFolders = [];
 for (const folder of listDefFolders(PACK_DIR)) {
-  const names = listJsonFiles(join(PACK_DIR, folder));
+  const all = listJsonFiles(join(PACK_DIR, folder));
+  const names = all.filter((n) => isDefinitionFile(join(PACK_DIR, folder, n)));
+  const dropped = all.length - names.length;
+  if (dropped > 0) { skippedNonDef += dropped; if (names.length === 0) skippedFolders.push(`${folder} (${dropped})`); }
   if (names.length === 0) continue;
   mkdirSync(join(WEB_STARTER, folder), { recursive: true });
   for (const name of names) { copyFileSync(join(PACK_DIR, folder, name), join(WEB_STARTER, folder, name)); fileCount++; }
   folderCount++;
 }
+if (skippedNonDef > 0) log(`   skipped ${skippedNonDef} non-definition file(s) (no id/class)${skippedFolders.length ? `; folders excluded: ${skippedFolders.join(', ')}` : ''}`);
 // manifest.json — GENERATED in the shape the HTTP loader expects
 // ({folders, files:[{folder, ids}]}). The pack's raw .manifest.json has a
 // different shape ({assets, asset_catalogs, ...}); copying it verbatim breaks

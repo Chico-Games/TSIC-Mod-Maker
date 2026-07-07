@@ -5,65 +5,324 @@
   "schema_version": 2,
   "properties": {
     "starts_toggled_on": true,
-    "interaction_hold_time": 0.0,
+    "toggle_on_cue_tag": "",
+    "toggle_off_cue_tag": "",
+    "gameplay_event_tag": "",
+    "layer_name": "",
+    "interaction_hold_time": 0,
+    "interaction_prompt_text": "",
     "has_static_audio": false,
+    "static_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_toggled_on_audio": false,
+    "toggled_on_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_toggled_off_audio": false,
+    "toggled_off_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_static_lights": false,
+    "static_light": {
+      "light_datas": []
+    },
     "has_toggled_on_lights": false,
+    "toggled_on_light": {
+      "light_datas": []
+    },
     "has_toggled_off_lights": false,
-    "has_static_vfx": false,
-    "has_toggled_on_vfx": false,
-    "has_toggled_off_vfx": false,
-    "starting_health": 180.0,
+    "toggled_off_light": {
+      "light_datas": []
+    },
+    "has_static_v_f_x": false,
+    "static_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "has_toggled_on_v_f_x": false,
+    "toggled_on_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "has_toggled_off_v_f_x": false,
+    "toggled_off_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "starting_health": 180,
+    "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/Lights/GeometryCollections/GCS_Lamp_002.GCS_Lamp_002",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_MetalLampLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Lights/Construction/CBD_WallLight_2_Constructed.CBD_WallLight_2_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.0522565252664684,
+          "y": 36.399393029470765,
+          "z": -29.463764316460015
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -14.999999883804549
+        },
+        "box_size": {
+          "x": 2.922016896921158,
+          "y": 2.4181424802913667,
+          "z": 6.017984
+        }
+      },
+      {
+        "offset": {
+          "x": -0.052257038087899055,
+          "y": 12.866219672031864,
+          "z": 0.203223749144226
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -89.99999941902297
+        },
+        "box_size": {
+          "x": 0.7097253888819219,
+          "y": 0.40640066308403,
+          "z": 11.48688617065811
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.12598214581520467,
+          "y": 0.7965363272035733,
+          "z": 0.4496954874707506
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 7.343360919841768,
+          "y": 1.787632656384945,
+          "z": 6.0855827460656755
+        }
+      },
+      {
+        "offset": {
+          "x": 0.12598303327421442,
+          "y": 34.34105880706487,
+          "z": -27.637357475903737
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 18.268025816128254,
+          "y": 18.296645023105622,
+          "z": 11.57214560815695
+        }
+      },
+      {
+        "offset": {
+          "x": 0.125983,
+          "y": 31.05959471190156,
+          "z": -9.869073759279555
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -29.999999767609097
+        },
+        "box_size": {
+          "x": 5.790276334220888,
+          "y": 5.2143827887916565,
+          "z": 11.57216
+        }
+      },
+      {
+        "offset": {
+          "x": 0.12598300000000356,
+          "y": 14.0547491830673,
+          "z": 0.6440026118480429
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -89.99999953521848
+        },
+        "box_size": {
+          "x": 2.7714430864305495,
+          "y": 1.8305577182464603,
+          "z": 11.57216
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": false,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Wall Light",
     "description": "Store furniture.",
     "level": 1,
-    "default_world_gen_gameplay_tags": [],
-    "meta_tags": [],
-    "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Lights/Meshes/SM_Lamp_002.SM_Lamp_002",
-    "casts_shadow": true,
-    "collision_profile_name": {
-      "name": "Furniture"
-    },
-    "random_material_overrides": [],
-    "loot_positions": [],
-    "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 3,
     "gameplay_tags": [
       "Entity.RandomGeneration.FurnitureCategory.Bedroom",
       "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
@@ -76,8 +335,17 @@
       "Entity.RandomGeneration.Size.Medium",
       "Tile.Biome.ShowFloor"
     ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/Lights/Meshes/SM_Lamp_002.SM_Lamp_002",
+    "casts_shadow": true,
+    "collision_profile_name": {
+      "name": "Furniture"
+    },
+    "random_material_overrides": [],
+    "loot_positions": [],
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000
   }
 }

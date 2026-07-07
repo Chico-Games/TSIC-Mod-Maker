@@ -4,37 +4,105 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 73.0,
+    "starting_health": 73,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/CarPark/GeometryCollections/GCS_TarpaulinSim_01a.GCS_TarpaulinSim_01a",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_Car"
     ],
     "constructable_item_to_grant": "ID_Car_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/CarPark/Construction/CBD_Car_Constructed.CBD_Car_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.9698269682066893e-07,
+          "y": -28.000000715255737,
+          "z": 58.07111607606373
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 66.66193101587677,
+          "y": 108.59128642859841,
+          "z": 30.685152035762783
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 46.071116
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 104.56806990323781,
+          "y": 233.711296,
+          "z": 50.525152
+        }
+      },
+      {
+        "offset": {
+          "x": 0,
+          "y": -40.14013159275055,
+          "z": 114.07111850339508
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 89.11262130184292,
+          "y": 131.6312982816658,
+          "z": 22.365152629425047
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_Car_CN",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Car",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,18 +114,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 5000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 5000
   }
 }

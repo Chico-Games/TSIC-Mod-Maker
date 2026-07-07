@@ -4,37 +4,180 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 43.0,
+    "starting_health": 43,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Mannequins/GeometryCollections/GCS_HurtMannequin.GCS_HurtMannequin",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_MannequinLoot"
     ],
     "constructable_item_to_grant": "ID_Mannequin_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Mannequins/Construction/CBD_Mannequin_Constructed.CBD_Mannequin_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -2.426109643147568,
+          "y": -3.4697870619242046,
+          "z": 28.29583569188689
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 4.9999999612681725
+        },
+        "box_size": {
+          "x": 4.466944,
+          "y": 0.7322473574376103,
+          "z": 23.362611056930547
+        }
+      },
+      {
+        "offset": {
+          "x": -2.4261100000000018,
+          "y": -4.914573372676246,
+          "z": 81.34099335642736
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": -24.99999976760904
+        },
+        "box_size": {
+          "x": 4.466944,
+          "y": 0.732256,
+          "z": 23.362624
+        }
+      },
+      {
+        "offset": {
+          "x": -2.4261089232912085,
+          "y": 10.108186307686521,
+          "z": 115.48253493660283
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 49.99999941902268
+        },
+        "box_size": {
+          "x": 4.466944,
+          "y": 0.732256,
+          "z": 23.362624
+        }
+      },
+      {
+        "offset": {
+          "x": 0.9108948622265594,
+          "y": 32.44889264226664,
+          "z": 122.49246423039081
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 49.999999
+        },
+        "box_size": {
+          "x": 4.466944,
+          "y": 0.732256,
+          "z": 23.362624
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -3.377638790880155e-08,
+          "y": -1.3522601324316401,
+          "z": 50.434140758467755
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 22.727151095867157,
+          "y": 20.780259162187576,
+          "z": 52.474504858255386
+        }
+      },
+      {
+        "offset": {
+          "x": -2.7687902814932386e-07,
+          "y": 12.086643942581043,
+          "z": 117.7758066846266
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 49.9999996126819
+        },
+        "box_size": {
+          "x": 22.727136,
+          "y": 14.553836524139108,
+          "z": 26.513651736565592
+        }
+      },
+      {
+        "offset": {
+          "x": 0.29348160410979496,
+          "y": 50.48609239137912,
+          "z": 131.5970956198855
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 59.999999922536375
+        },
+        "box_size": {
+          "x": 9.222776337467195,
+          "y": 10.596936114071847,
+          "z": 10.910097413028716
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_Mannequin_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Mannequin",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureType.Mannequin",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Tile.Biome.Restaurant",
+      "Tile.Biome.ShowFloor",
+      "Tile.Biome.Warehouse"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,25 +189,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 4000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureType.Mannequin",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Tile.Biome.Restaurant",
-      "Tile.Biome.ShowFloor",
-      "Tile.Biome.Warehouse"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 4000
   }
 }

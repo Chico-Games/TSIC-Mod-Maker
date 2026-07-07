@@ -4,37 +4,88 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 60.0,
+    "starting_health": 60,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Vents/GeometryCollections/GCS_VentCorner.GCS_VentCorner",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_VentLoot"
     ],
     "constructable_item_to_grant": "ID_Vent_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Vents/Construction/CBD_Vent_Constructed.CBD_Vent_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -4.817857158285904,
+          "y": -4.4784340765294335,
+          "z": 1.5332062094964591
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 11.756699328158376,
+          "y": 11.577014467297253,
+          "z": 15.347359506073502
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.22215933410641675,
+          "y": -0.07878426237166947,
+          "z": 0.7531883402901656
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 29.603731586500174,
+          "y": 29.364531479211806,
+          "z": 27.156258019719957
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_Vent_CN",
     "is_draggable": false,
+    "drag_tier": 0,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Vent",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,18 +97,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 5000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 0,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 5000
   }
 }

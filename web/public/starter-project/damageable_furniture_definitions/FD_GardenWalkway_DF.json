@@ -4,37 +4,161 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 50.0,
+    "starting_health": 50,
+    "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Gardening/GeometryCollections/GCS_CurveWalkWay.GCS_CurveWalkWay",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_GardenWalkwayLoot"
     ],
     "constructable_item_to_grant": "ID_GardenWalkway_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Gardening/Construction/CBD_GardenWalkway_Constructed.CBD_GardenWalkway_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 67.54467663366364,
+          "y": -0.2372109685860906,
+          "z": 101.2974488628401
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 0.32,
+          "y": 26.640448,
+          "z": 95.796544
+        }
+      },
+      {
+        "offset": {
+          "x": -66.9672003600707,
+          "y": -0.23721099999988632,
+          "z": 101.29744999872264
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 0.32,
+          "y": 26.640432358291626,
+          "z": 95.796544
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 65.87123416447528,
+          "y": -0.237211,
+          "z": 101.2974490111177
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 7.251393831840517,
+          "y": 39.13839623382378,
+          "z": 107.06919917166329
+        }
+      },
+      {
+        "offset": {
+          "x": -64.73083899322143,
+          "y": -0.23721099999997158,
+          "z": 101.29744904308194
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 7.251392,
+          "y": 39.1384,
+          "z": 107.069184
+        }
+      },
+      {
+        "offset": {
+          "x": -32.58287225902995,
+          "y": -0.23721099999994316,
+          "z": 238.72239777973698
+        },
+        "rotation": {
+          "pitch": -54.99999957394995,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 14.717092402855872,
+          "y": 39.1384,
+          "z": 54.05584352682496
+        }
+      },
+      {
+        "offset": {
+          "x": 35.268306028406045,
+          "y": -0.23721099999999867,
+          "z": 236.4360481529188
+        },
+        "rotation": {
+          "pitch": -50.00000030985305,
+          "yaw": 180,
+          "roll": 180
+        },
+        "box_size": {
+          "x": 14.717088,
+          "y": 39.1384,
+          "z": 48.135333612051014
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_GardenWalkway_CN",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Garden Arch",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Garden",
+      "Entity.RandomGeneration.Materials.Wood",
+      "Entity.RandomGeneration.Size.Small",
+      "Tile.Biome.Gardening"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,23 +170,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 4000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 1,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.Garden",
-      "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Small",
-      "Tile.Biome.Gardening"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 4000
   }
 }

@@ -4,37 +4,112 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 67.0,
+    "starting_health": 67,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Serving/GeometryCollections/GCS_33_Mesh_033.GCS_33_Mesh_033",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_ServingCounterLoot"
     ],
     "constructable_item_to_grant": "ID_ServingCounter_8_CI",
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Serving/Construction/CBD_ServingCounter_8_Constructed.CBD_ServingCounter_8_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.155045,
+          "y": -13.630679,
+          "z": 40.397954
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 28.903328,
+          "y": 18.351968,
+          "z": 32
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.441385,
+          "y": -11.310744,
+          "z": 42.99497
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 37.5416,
+          "y": 37.116128,
+          "z": 45.207072
+        }
+      },
+      {
+        "offset": {
+          "x": 0.441387,
+          "y": 35.119565,
+          "z": 79.097705
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 37.5416,
+          "y": 11.811232,
+          "z": 6.5712
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "upgrade_recipe": "RD_ServingCounter_CN",
     "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Counter",
     "description": "A store counter.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Cafeteria",
+      "Entity.RandomGeneration.FurnitureType.Counter",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Materials.Plastic",
+      "Tile.Biome.Restaurant"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -46,25 +121,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 7000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 2,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.CanBeRandom",
-      "Entity.RandomGeneration.FurnitureCategory.Cafeteria",
-      "Entity.RandomGeneration.FurnitureType.Counter",
-      "Entity.RandomGeneration.Materials.Metal",
-      "Entity.RandomGeneration.Materials.Plastic",
-      "Tile.Biome.Restaurant"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 7000
   }
 }

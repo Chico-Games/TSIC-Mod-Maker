@@ -4,35 +4,158 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 170.0,
+    "starting_health": 170,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Kids/GeometryCollections/GCS_House_1.GCS_House_1",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_KidsPlasticToyLoot"
     ],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Kids/Construction/CBD_KidsHouse_Constructed.CBD_KidsHouse_Constructed",
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -1.6430678350126824,
+          "y": -0.43168099999981524,
+          "z": 48.30514395625666
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 32.599270711160656,
+          "y": 46.252384,
+          "z": 42.38349122026253
+        }
+      },
+      {
+        "offset": {
+          "x": -61.03207340949037,
+          "y": -39.534736687173066,
+          "z": 32.65576879468152
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 22.480251597629426,
+          "y": 16.527848072823524,
+          "z": 21.112492234075546
+        }
+      },
+      {
+        "offset": {
+          "x": 56.88282246683427,
+          "y": 33.148858555912526,
+          "z": 13.435900190431887
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 34.99999972887726,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 11.144046553808213,
+          "y": 16.52784,
+          "z": 13.367043294351102
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.3163442644072241,
+          "y": -0.8020627725755198,
+          "z": 72.66184503351329
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 48.90081977212179,
+          "y": 66.72775462273216,
+          "z": 75.93817533525086
+        }
+      },
+      {
+        "offset": {
+          "x": -70.24062635437892,
+          "y": -40.042143180614374,
+          "z": 28.89689149795683
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 24.057262777162315,
+          "y": 23.359079340440275,
+          "z": 32.13643896553947
+        }
+      },
+      {
+        "offset": {
+          "x": 60.109247966131505,
+          "y": 22.549853379598666,
+          "z": 15.471329638698727
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 30.475944014210583,
+          "y": 36.56956234595489,
+          "z": 16.9325619541585
+        }
+      }
+    ],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 15,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Plastic Play House",
     "description": "Store furniture.",
     "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+      "Entity.RandomGeneration.Materials.Plastic",
+      "Tile.Biome.Kids"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -44,23 +167,6 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 15.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Entity.RandomGeneration.FurnitureCategory.Bedroom",
-      "Entity.RandomGeneration.Materials.Plastic",
-      "ProxyActor.RandomGeneration",
-      "Tile.Biome.Kids"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 1000
   }
 }

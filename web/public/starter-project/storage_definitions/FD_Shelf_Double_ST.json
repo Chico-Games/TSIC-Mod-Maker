@@ -5,46 +5,220 @@
   "schema_version": 2,
   "properties": {
     "inventory_rules_definition": "IRD_ShelfStorage_115",
+    "entity_helper_class": "/Script/TSIC.StorageHelper",
     "gameplay_event_tag": "UI.GameScreen.Storage",
     "layer_name": "UI.Layer.GameMenu",
-    "interaction_hold_time": 0.0,
+    "interaction_hold_time": 0,
     "interaction_prompt_text": "Open",
     "has_static_audio": false,
+    "static_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_toggled_on_audio": false,
+    "toggled_on_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_toggled_off_audio": false,
+    "toggled_off_audio": {
+      "volume_multiplier": 1,
+      "pitch_multiplier": 1,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "audio_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "attenuation_distance": 1000,
+      "fade_in_time": 0,
+      "fade_out_time": 0
+    },
     "has_static_lights": false,
+    "static_light": {
+      "light_datas": []
+    },
     "has_toggled_on_lights": false,
+    "toggled_on_light": {
+      "light_datas": []
+    },
     "has_toggled_off_lights": false,
-    "has_static_vfx": false,
-    "has_toggled_on_vfx": false,
-    "has_toggled_off_vfx": false,
-    "starting_health": 100.0,
+    "toggled_off_light": {
+      "light_datas": []
+    },
+    "has_static_v_f_x": false,
+    "static_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "has_toggled_on_v_f_x": false,
+    "toggled_on_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "has_toggled_off_v_f_x": false,
+    "toggled_off_v_f_x": {
+      "v_f_x_transform": {
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "translation": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "scale3_d": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "b_attach_to_entity": true,
+      "attach_socket_name": "None"
+    },
+    "starting_health": 100,
+    "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Shelves/GeometryCollections/GC_SM_Bookcase01_Vol1.GC_SM_Bookcase01_Vol1",
+    "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [],
     "deconstruction_tier": 0,
-    "collision_box_data": "/Game/Furniture/Shelves/Furniture/CB_FD_Shelf_Double_ST.CB_FD_Shelf_Double_ST",
+    "blocking_collision_boxes": [],
+    "support_collision_boxes": [],
+    "effect_hitboxes": [],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
+    "construction_category_tag": "",
     "is_draggable": true,
+    "drag_tier": 1,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 5,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
     "display_name": "Industrial Double Shelf",
     "description": "An extra-wide industrial shelving unit. Stores up to 115 items.",
     "level": 1,
+    "gameplay_tags": [
+      "Tile.Biome.LostAndFound"
+    ],
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
@@ -58,8 +232,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": 0.0,
-            "y": -0.0,
+            "x": 0,
+            "y": -0,
             "z": 0.17364817633547436,
             "w": 0.9848077532469797
           },
@@ -69,9 +243,9 @@
             "z": 14.220706058648236
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -79,8 +253,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": -0.0,
-            "y": 0.0,
+            "x": -0,
+            "y": 0,
             "z": -0.1736481763354744,
             "w": 0.9848077532469797
           },
@@ -90,9 +264,9 @@
             "z": 14.022760027860253
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -100,8 +274,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": 0.0,
-            "y": -0.0,
+            "x": 0,
+            "y": -0,
             "z": 0.0871557420742326,
             "w": 0.9961946981506625
           },
@@ -111,9 +285,9 @@
             "z": 14.02275975712823
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -121,8 +295,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": -0.0,
-            "y": 0.0,
+            "x": -0,
+            "y": 0,
             "z": -0.1736481763354744,
             "w": 0.9848077532469797
           },
@@ -132,9 +306,9 @@
             "z": 14.022760079198514
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -142,8 +316,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": -0.0,
-            "y": 0.0,
+            "x": -0,
+            "y": 0,
             "z": -0.9999999999999999,
             "w": 1.2167962920754048e-08
           },
@@ -153,9 +327,9 @@
             "z": 59.704008159393965
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -174,9 +348,9 @@
             "z": 59.70400879802681
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -184,8 +358,8 @@
       {
         "local_transform": {
           "rotation": {
-            "x": 0.0,
-            "y": -0.0,
+            "x": 0,
+            "y": -0,
             "z": 0.9396926217107282,
             "w": 0.3420201407847474
           },
@@ -195,9 +369,9 @@
             "z": 59.70400941186563
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -205,10 +379,10 @@
       {
         "local_transform": {
           "rotation": {
-            "x": -0.0,
-            "y": 0.0,
-            "z": -1.0,
-            "w": 0.0
+            "x": -0,
+            "y": 0,
+            "z": -1,
+            "w": 0
           },
           "translation": {
             "x": -25.125768,
@@ -216,9 +390,9 @@
             "z": 59.704009
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -237,9 +411,9 @@
             "z": 105.70583534311027
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -258,9 +432,9 @@
             "z": 105.7058352087258
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -279,9 +453,9 @@
             "z": 105.7058351994166
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
@@ -300,29 +474,15 @@
             "z": 105.70583478995997
           },
           "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         "weight": 1000
       }
     ],
     "weighted_chance": 1000,
-    "world_gen_priority": 6000,
-    "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
-    "drag_tier": 1,
-    "friction": 0.699999988079071,
-    "furniture_armour": 2,
-    "gameplay_tags": [
-      "Tile.Biome.LostAndFound"
-    ],
-    "release_angular_damping": 0.05000000074505806,
-    "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "world_gen_priority": 6000
   }
 }

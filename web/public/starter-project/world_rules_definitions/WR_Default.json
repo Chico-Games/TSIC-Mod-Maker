@@ -1,0 +1,58 @@
+{
+  "id": "WR_Default",
+  "class": "WorldRulesDefinition",
+  "schema_version": 2,
+  "properties": {
+    "day_sections": [
+      {
+        "key": "Gameplay.DaySection.Day",
+        "value": {
+          "duration": 1260.0
+        }
+      },
+      {
+        "key": "Gameplay.DaySection.Night",
+        "value": {
+          "duration": 540.0
+        }
+      }
+    ],
+    "day_light_config": {
+      "intensity": 1.0,
+      "color": { "r": 1.0, "g": 0.95, "b": 0.8, "a": 1.0 },
+      "temperature": 5500.0,
+      "b_enabled": true
+    },
+    "night_light_config": {
+      "intensity": 0.0,
+      "color": { "r": 0.8, "g": 0.9, "b": 1.0, "a": 1.0 },
+      "temperature": 4000.0,
+      "b_enabled": true
+    },
+    "off_light_config": {
+      "intensity": 0.0,
+      "color": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 },
+      "temperature": 6500.0,
+      "b_enabled": false
+    },
+    "transition_flash_config": {
+      "intensity": 3.0,
+      "color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+      "temperature": 6500.0,
+      "b_enabled": true
+    },
+    "transition_flash_duration": 0.15,
+    "default_respawn_delay": 5.0,
+    "tombstone_lifetime": 300.0,
+    "max_tombstones_per_player": 3,
+    "respawn_protection_duration": 10.0,
+    "event_roll_interval": 2760.0,
+    "event_chance": 0.2,
+    "loot_multipliers": {
+      "random_loot_global_mul": 1.0,
+      "enemy_drop_global_mul": 1.0,
+      "source_mul": [],
+      "item_type_mul": []
+    }
+  }
+}
