@@ -268,6 +268,30 @@ if (existsSync(join(PACK_DIR, '_schema.json'))) {
   warn('pack has no _schema.json — editor will load lean values raw (unknown(?))');
 }
 if (existsSync(join(PACK_DIR, '.assets'))) cpSync(join(PACK_DIR, '.assets'), join(WEB_STARTER, '.assets'), { recursive: true });
+// Merge asset-catalog overrides: entries for assets that shipped defs reference
+// but the exporter's asset-registry walk left out of .assets/<Class>.json.
+// Without these, the runtime asset-ref drift check raises a spurious
+// `missing-asset-ref` load-gate on the pristine default project. Existing
+// entries win (case-insensitive path match); overrides only fill gaps. See
+// property-meta.overrides.json for the parallel property-side mechanism.
+const CATALOG_OVERRIDES = join(WEB_SCHEMA, 'asset-catalog.overrides.json');
+if (existsSync(CATALOG_OVERRIDES)) {
+  const assetsDir = join(WEB_STARTER, '.assets');
+  mkdirSync(assetsDir, { recursive: true });
+  let mergedEntries = 0;
+  for (const [cls, entries] of Object.entries(readJSON(CATALOG_OVERRIDES).catalogs || {})) {
+    const file = join(assetsDir, `${cls}.json`);
+    const cat = existsSync(file) ? readJSON(file) : { schema_version: 1, class: cls, entries: [] };
+    cat.entries = Array.isArray(cat.entries) ? cat.entries : [];
+    const have = new Set(cat.entries.map((e) => String(e.path).toLowerCase()));
+    for (const e of entries) {
+      if (have.has(String(e.path).toLowerCase())) continue;
+      cat.entries.push(e); have.add(String(e.path).toLowerCase()); mergedEntries++;
+    }
+    writeJSON(file, cat);
+  }
+  if (mergedEntries) log(`   merged ${mergedEntries} asset-catalog override entr${mergedEntries === 1 ? 'y' : 'ies'} from asset-catalog.overrides.json`);
+}
 // Restore default.json (or seed one so DefaultProjectMeta has a value).
 if (defaultJson != null) writeFileSync(join(WEB_STARTER, 'default.json'), defaultJson);
 else writeJSON(join(WEB_STARTER, 'default.json'), { schema_version: 1, version: 0, label: 'Default Project', published_at: new Date(0).toISOString() });

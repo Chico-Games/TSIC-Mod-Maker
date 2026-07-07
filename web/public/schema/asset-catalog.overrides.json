@@ -1,0 +1,20 @@
+{
+  "_comment": "Editor-side asset-catalog entries for assets that shipped definitions reference but the game exporter's asset-registry walk omitted from .assets/<Class>.json. refresh-schema.mjs merges these into the packed starter-project/.assets/<Class>.json AFTER copying the pack's catalogs, so a known-good default definition doesn't raise a spurious `missing-asset-ref` drift gate on load. Existing catalog entries always win (matched case-insensitively by `path`); overrides only fill genuine gaps. Paths are taken verbatim from the referencing definition's own asset reference (real UE object paths); package_guid is left empty exactly like the many real catalog entries whose guid the exporter didn't capture (the validator skips guid checks when either side is empty). This is a safety-net for an upstream exporter gap in tsic-default-mod@beta — the proper fix is for the exporter to catalog these meshes (or for the defs to drop the dangling refs); see the unification plan's §9.",
+  "schema_version": 1,
+  "catalogs": {
+    "StaticMesh": [
+      {
+        "path": "/Game/Items/Equipment/Weapons/ArmClub/Meshes/SM_ArmClub.SM_ArmClub",
+        "name": "SM_ArmClub",
+        "folder": "/Game/Items/Equipment/Weapons/ArmClub/Meshes",
+        "package_guid": ""
+      },
+      {
+        "path": "/Game/Items/Equipment/Weapons/PotMace/Meshes/SM_PotMace.SM_PotMace",
+        "name": "SM_PotMace",
+        "folder": "/Game/Items/Equipment/Weapons/PotMace/Meshes",
+        "package_guid": ""
+      }
+    ]
+  }
+}
