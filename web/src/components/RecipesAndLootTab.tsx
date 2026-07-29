@@ -1,7 +1,7 @@
 import { useAppStore, type RecipesSubTab } from '../store/appStore';
 import { StationsSubTab } from './StationsSubTab';
 import { FurnitureSubTab } from './FurnitureSubTab';
-import { TechTreeSubTab } from './TechTreeSubTab';
+import { TechTreeSubTab } from './techtree/TechTreeSubTab';
 import { EnemiesSubTab } from './EnemiesSubTab';
 import { BiomeSubTab } from './BiomeSubTab';
 

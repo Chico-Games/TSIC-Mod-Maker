@@ -251,9 +251,21 @@ export function StationsSubTab() {
     if (!selectedArr) return [];
     const arr: any = selectedArr.json?.properties?.production_machine_rules?.value?.recipes;
     if (!arr || arr.type !== 'array' || !Array.isArray(arr.value)) return [];
+    // Resilient element extraction: depending on the pack's schema coverage the
+    // recipe entries arrive as `definition_ref` envelopes (well-typed schema),
+    // `{type:'string'}` envelopes / bare strings (schema-gap fallback — the
+    // exporter ships `ProductionMachineRules` with empty `fields`), or
+    // `soft_asset_ref`. All of them carry the recipe id, so read it from any
+    // shape rather than only recognising `definition_ref`.
     return (arr.value as any[])
-      .filter((e: any) => e && typeof e === 'object' && e.type === 'definition_ref')
-      .map((e: any) => ({ class: String(e.class ?? ''), value: String(e.value ?? '') }));
+      .map((e: any): RecipeRef | null => {
+        if (typeof e === 'string') return e ? { class: '', value: e } : null;
+        if (e && typeof e === 'object' && typeof e.value === 'string' && e.value) {
+          return { class: String(e.class ?? ''), value: e.value };
+        }
+        return null;
+      })
+      .filter((r): r is RecipeRef => !!r);
   }, [selectedArr]);
 
   type ResolvedRecipeRef = { class: string; value: string; key: DefinitionsKey };

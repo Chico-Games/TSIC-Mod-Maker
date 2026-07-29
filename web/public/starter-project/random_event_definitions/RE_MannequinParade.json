@@ -1,0 +1,26 @@
+{
+  "id": "RE_MannequinParade",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Mannequin Parade",
+    "event_tag": "Event.Random.MannequinParade",
+    "light_config": {
+      "intensity": 0.25,
+      "color": { "r": 0.9, "g": 0.85, "b": 0.8, "a": 1.0 },
+      "temperature": 4500.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.MannequinParade",
+    "ambient_audio_tag": "Ambient.Event.MannequinParade",
+    "enemy_event_type": {
+      "name": "EnemyRaid",
+      "value": 1
+    },
+    "enemy_spawn_params": "LivingMannequinSpawnParameters",
+    "enemy_spawn_delay": 10.0,
+    "duration": 240.0,
+    "weight": 1.0
+  }
+}

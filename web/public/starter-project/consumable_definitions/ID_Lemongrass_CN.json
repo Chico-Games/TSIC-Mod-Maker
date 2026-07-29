@@ -4,7 +4,7 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 45.0,
+    "duration": 300.0,
     "requires_consumption_slot": true,
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
@@ -17,14 +17,14 @@
       "max_health_increase": 0.0,
       "b_apply_flat_armour_increase": false,
       "flat_armour_increase": 0.0,
-      "b_apply_flat_speed_increase": true,
-      "flat_speed_increase": 50.0,
+      "b_apply_flat_speed_increase": false,
+      "flat_speed_increase": 0.0,
       "b_apply_max_stamina_increase": false,
       "max_stamina_increase": 0.0,
       "b_apply_stamina_regen_per_second": true,
-      "stamina_regen_per_second": 1.0,
-      "b_apply_stamina_regen_delay_reduction": false,
-      "stamina_regen_delay_reduction": 0.0,
+      "stamina_regen_per_second": 1.5,
+      "b_apply_stamina_regen_delay_reduction": true,
+      "stamina_regen_delay_reduction": 0.2,
       "b_apply_percentage_damage_increase": false,
       "percentage_damage_increase": 0.0,
       "b_apply_flat_damage_increase": false,
@@ -49,17 +49,23 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": []
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
     },
     "has_durability": false,
     "has_ammo": false,
     "max_ammo": 0,
-    "display_name": "Coffee",
-    "description": "Hot cafeteria coffee. Increases movement speed and stamina regeneration. The caffeine kick lasts 45 seconds.",
+    "display_name": "Lemongrass",
+    "description": "A stalk of fragrant lemongrass. Steeps into something steadying.",
     "stackable": true,
     "weight": 0.10000000149011612,
-    "static_item_definition": "FD_Coffee_SI",
+    "static_item_definition": "FD_Lemongrass_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

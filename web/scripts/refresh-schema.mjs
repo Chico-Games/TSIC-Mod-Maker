@@ -109,9 +109,15 @@ if (DO_SCAN && existsSync(SCANNER)) {
 if (!propertyMetaSrc && existsSync(join(PACK_DIR, '.property-meta.json'))) {
   propertyMetaSrc = join(PACK_DIR, '.property-meta.json');
 }
+// Where property-meta came from decides how to read any drift at step 5, so
+// remember it. (A count comparison here would be useless: the bundle always
+// carries the merged overrides too, so the pack sidecar is legitimately
+// "smaller" on every run.)
+let propertyMetaFromPack = false;
 if (propertyMetaSrc) {
+  propertyMetaFromPack = !propertyMetaSrc.includes('test-output');
   copyFileSync(propertyMetaSrc, join(WEB_SCHEMA, 'property-meta.json'));
-  log(`   wrote property-meta.json (from ${propertyMetaSrc.includes('test-output') ? 'header scan' : 'pack'})`);
+  log(`   wrote property-meta.json (from ${propertyMetaFromPack ? 'pack' : 'header scan'})`);
 }
 // Merge editor-side overrides: Blueprint-defined properties that have no C++
 // UPROPERTY anywhere in Source/, so the header scanner can't see them. Without
@@ -132,6 +138,12 @@ if (existsSync(OVERRIDES)) {
 }
 const propertyMeta = readJSON(join(WEB_SCHEMA, 'property-meta.json'));
 const pmKeys = new Set(Object.keys(propertyMeta.properties || {}));
+
+// Pack-level inheritance directives read off `properties` by the game's
+// DefinitionPackSubsystem and stripped before deserialization. Not properties of
+// any class, so never scannable — mirrors PACK_DIRECTIVE_PROPS in
+// src/persistence/schemaDriftValidator.ts (keep the two in sync).
+const PACK_DIRECTIVE_PROPS = new Set(['extends', 'abstract']);
 
 // ── header parent map (for self-healing the hierarchy) ──────────────────────
 function buildHeaderParentMap() {
@@ -182,6 +194,28 @@ for (const folder of listDefFolders(PACK_DIR)) {
     e.count++; dataClasses.set(full, e);
   }
 }
+// Merge editor-side parent chains BEFORE the self-heal below, so a class with an
+// override gets its real family chain instead of the degraded [UDataAsset,
+// UObject] fallback. Precedence: pack > overrides > self-heal.
+const HIERARCHY_OVERRIDES = join(WEB_SCHEMA, 'class-hierarchy.overrides.json');
+if (existsSync(HIERARCHY_OVERRIDES)) {
+  let applied = 0;
+  for (const [full, o] of Object.entries(readJSON(HIERARCHY_OVERRIDES).classes || {})) {
+    if (hierarchy.classes[full]) continue;      // exporter data wins
+    if (!dataClasses.has(full)) continue;       // don't add classes the pack never uses
+    const { folder, count } = dataClasses.get(full);
+    hierarchy.classes[full] = {
+      folder,
+      instance_count: count,
+      parents: o.parents,
+      family_root: o.family_root || full,
+    };
+    applied++;
+    log(`   + override class ${full} (parents: ${o.parents.join(' → ')})`);
+  }
+  if (applied) log(`   applied ${applied} class-hierarchy override(s) from class-hierarchy.overrides.json`);
+}
+
 const parentMap = buildHeaderParentMap();
 let healed = 0;
 for (const [full, { folder, count }] of dataClasses) {
@@ -213,14 +247,31 @@ if (existsSync(join(WEB_STARTER, 'default.json'))) {
 }
 if (existsSync(WEB_STARTER)) rmSync(WEB_STARTER, { recursive: true, force: true });
 mkdirSync(WEB_STARTER, { recursive: true });
-let folderCount = 0, fileCount = 0;
+// A pack directory can hold non-definition data folders (e.g. `maps/`, whose
+// files are tilemaps: { metadata, layers, color_mappings, format_info }). Those
+// are NOT UDataAsset records and carry no `id`/`class`, so the editor's
+// structural validator (id + class REQUIRED; asset_path optional) would gate on
+// them at load. Pack ONLY genuine definition records — a JSON object with a
+// non-empty string `id` and `class`. This keeps the generator robust to new
+// non-definition folders appearing in the source mod.
+const isDefinitionFile = (p) => {
+  let j; try { j = readJSON(p); } catch { return false; }
+  return j && typeof j === 'object' && typeof j.id === 'string' && j.id
+    && typeof j.class === 'string' && j.class;
+};
+let folderCount = 0, fileCount = 0, skippedNonDef = 0;
+const skippedFolders = [];
 for (const folder of listDefFolders(PACK_DIR)) {
-  const names = listJsonFiles(join(PACK_DIR, folder));
+  const all = listJsonFiles(join(PACK_DIR, folder));
+  const names = all.filter((n) => isDefinitionFile(join(PACK_DIR, folder, n)));
+  const dropped = all.length - names.length;
+  if (dropped > 0) { skippedNonDef += dropped; if (names.length === 0) skippedFolders.push(`${folder} (${dropped})`); }
   if (names.length === 0) continue;
   mkdirSync(join(WEB_STARTER, folder), { recursive: true });
   for (const name of names) { copyFileSync(join(PACK_DIR, folder, name), join(WEB_STARTER, folder, name)); fileCount++; }
   folderCount++;
 }
+if (skippedNonDef > 0) log(`   skipped ${skippedNonDef} non-definition file(s) (no id/class)${skippedFolders.length ? `; folders excluded: ${skippedFolders.join(', ')}` : ''}`);
 // manifest.json — GENERATED in the shape the HTTP loader expects
 // ({folders, files:[{folder, ids}]}). The pack's raw .manifest.json has a
 // different shape ({assets, asset_catalogs, ...}); copying it verbatim breaks
@@ -251,6 +302,30 @@ if (existsSync(join(PACK_DIR, '_schema.json'))) {
   warn('pack has no _schema.json — editor will load lean values raw (unknown(?))');
 }
 if (existsSync(join(PACK_DIR, '.assets'))) cpSync(join(PACK_DIR, '.assets'), join(WEB_STARTER, '.assets'), { recursive: true });
+// Merge asset-catalog overrides: entries for assets that shipped defs reference
+// but the exporter's asset-registry walk left out of .assets/<Class>.json.
+// Without these, the runtime asset-ref drift check raises a spurious
+// `missing-asset-ref` load-gate on the pristine default project. Existing
+// entries win (case-insensitive path match); overrides only fill gaps. See
+// property-meta.overrides.json for the parallel property-side mechanism.
+const CATALOG_OVERRIDES = join(WEB_SCHEMA, 'asset-catalog.overrides.json');
+if (existsSync(CATALOG_OVERRIDES)) {
+  const assetsDir = join(WEB_STARTER, '.assets');
+  mkdirSync(assetsDir, { recursive: true });
+  let mergedEntries = 0;
+  for (const [cls, entries] of Object.entries(readJSON(CATALOG_OVERRIDES).catalogs || {})) {
+    const file = join(assetsDir, `${cls}.json`);
+    const cat = existsSync(file) ? readJSON(file) : { schema_version: 1, class: cls, entries: [] };
+    cat.entries = Array.isArray(cat.entries) ? cat.entries : [];
+    const have = new Set(cat.entries.map((e) => String(e.path).toLowerCase()));
+    for (const e of entries) {
+      if (have.has(String(e.path).toLowerCase())) continue;
+      cat.entries.push(e); have.add(String(e.path).toLowerCase()); mergedEntries++;
+    }
+    writeJSON(file, cat);
+  }
+  if (mergedEntries) log(`   merged ${mergedEntries} asset-catalog override entr${mergedEntries === 1 ? 'y' : 'ies'} from asset-catalog.overrides.json`);
+}
 // Restore default.json (or seed one so DefaultProjectMeta has a value).
 if (defaultJson != null) writeFileSync(join(WEB_STARTER, 'default.json'), defaultJson);
 else writeJSON(join(WEB_STARTER, 'default.json'), { schema_version: 1, version: 0, label: 'Default Project', published_at: new Date(0).toISOString() });
@@ -276,6 +351,7 @@ for (const folder of listDefFolders(WEB_STARTER)) {
     if (!props || typeof props !== 'object') continue;
     const bc = chainOf(full).map(bare);
     for (const p of Object.keys(props)) {
+      if (PACK_DIRECTIVE_PROPS.has(p)) continue;
       if (!bc.some((cc) => pmKeys.has(`${cc}.${p}`))) {
         const k = `${bare(full)}.${p}`;
         unknownProp[k] = (unknownProp[k] || 0) + 1;
@@ -297,6 +373,20 @@ if (nUC === 0 && nUP === 0 && structural.length === 0) {
     log(`   DRIFT: ${nUC} unknown-class, ${nUP} unknown-property:`);
     for (const [k, v] of Object.entries(unknownClass)) log(`     unknown-class ${k} (${v})`);
     for (const [k, v] of Object.entries(unknownProp)) log(`     unknown-property ${k} (${v})`);
+    // Most drift is a stale pack sidecar, not a real authoring error — this pack
+    // ships .property-meta.json from whenever the export last ran, and the mod's
+    // data keeps moving. Say so here rather than warning on every run, since
+    // this is the point where we actually know drift exists.
+    if (nUP && propertyMetaFromPack) {
+      log('');
+      log('   property-meta.json came from the pack, not a header scan. If these');
+      log('   properties do exist in TSIC C++ today, the pack sidecar is stale:');
+      log('     - re-run without --no-scan to scan local TSIC headers, or');
+      log('     - regenerate it upstream (Tools/Export/scan_property_meta.py) and');
+      log('       commit it to tsic-default-mod.');
+      log('   If they live only on an unmerged TSIC branch or are parsed from raw');
+      log('   JSON, they belong in schema/property-meta.overrides.json instead.');
+    }
   }
   console.error('\n⚠ Issues remain. If drift: re-run the in-editor game export. If structural: the pack has files missing id/asset_path/class.');
   process.exit(2);

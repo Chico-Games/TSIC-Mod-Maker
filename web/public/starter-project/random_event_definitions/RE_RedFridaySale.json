@@ -1,0 +1,26 @@
+{
+  "id": "RE_RedFridaySale",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Red Friday Sale",
+    "event_tag": "Event.Random.RedFridaySale",
+    "light_config": {
+      "intensity": 0.9,
+      "color": { "r": 1.0, "g": 0.25, "b": 0.2, "a": 1.0 },
+      "temperature": 3200.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.RedFridaySale",
+    "ambient_audio_tag": "Ambient.Event.RedFridaySale",
+    "enemy_event_type": {
+      "name": "EnemyHorde",
+      "value": 2
+    },
+    "enemy_spawn_params": "MaleStaffSpawnParameters",
+    "enemy_spawn_delay": 12.0,
+    "duration": 300.0,
+    "weight": 1.0
+  }
+}

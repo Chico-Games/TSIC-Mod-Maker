@@ -267,7 +267,14 @@ export function FurnitureSubTab() {
               </div>
               {lootEntries.length === 0 && <div className="muted">No loot tables.</div>}
               {lootEntries.map((entry, i) => {
-                const refValue = entry?.type === 'definition_ref' && typeof entry.value === 'string' ? entry.value : '';
+                // Loot refs ship as `soft_asset_ref` in real data (and can be a
+                // `{type:'string'}` / bare string under schema gaps), not only
+                // `definition_ref`. Read the id from any of those shapes so the
+                // disclosure caret can resolve + expand the linked LootDefinition.
+                const refValue =
+                  typeof entry === 'string' ? entry
+                    : (entry && typeof entry === 'object' && typeof entry.value === 'string') ? entry.value
+                      : '';
                 const lootKey = refValue ? findKeyById(refValue) : null;
                 const lootRec = lootKey ? definitions.get(lootKey) : null;
                 const canExpand = !!lootRec;

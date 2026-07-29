@@ -104,6 +104,17 @@ export interface DefinitionsStore {
   /** True once we've attempted to auto-load on app start (whether it
    *  succeeded or not). Used to avoid double-loads. */
   bootstrapped: boolean;
+  /** Bumped every time the user opens or creates a project. Async loads that
+   *  started earlier compare against it and decline to apply their result, so a
+   *  slow bootstrap can no longer land on top of a project the user made while
+   *  it was still running. */
+  userProjectEpoch: number;
+  /** True once bootstrap() has finished, however it finished — including the
+   *  paths that load nothing at all. The boot spinner keys off this: it used to
+   *  wait for definitions to appear, so a bootstrap that legitimately ended
+   *  empty (no saved project, no pin, defaults declined or unreachable) left a
+   *  full-screen "Loading project…" overlay swallowing every click forever. */
+  bootstrapDone: boolean;
   /** Whether the user has opted into auto-loading on startup. */
   autoLoadEnabled: boolean;
 
@@ -955,6 +966,23 @@ function serializeDefinition(rec: DefinitionRecord): string {
   return JSON.stringify(rec.json, null, 2) + '\n';
 }
 
+/** Build a `key → LEAN file text` map for the working set, using the source
+ *  pack's `_schema.json` (via `ds.toLeanText`). These are the bytes that would
+ *  hit disk. Overlay diffing feeds this to `computeOverlay` so the working side
+ *  and the (already-lean) default side are compared in the SAME representation;
+ *  otherwise every record with properties looks like an override. */
+async function buildWorkingLeanTexts(
+  ds: DataSource,
+  working: Map<DefinitionsKey, DefinitionRecord>,
+): Promise<Map<DefinitionsKey, string>> {
+  const out = new Map<DefinitionsKey, string>();
+  for (const [k, rec] of working) {
+    if (!rec.json) continue; // null-json tombstone placeholders have no lean text
+    out.set(k, await ds.toLeanText(serializeDefinition(rec)));
+  }
+  return out;
+}
+
 /** Read project.json from a directory handle, returns null when absent. */
 async function readProjectMeta(
   handle: FileSystemDirectoryHandle,
@@ -1334,6 +1362,8 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   dataSource: null,
   projectMeta: null,
   bootstrapped: false,
+  bootstrapDone: false,
+  userProjectEpoch: 0,
   autoLoadEnabled: loadAutoLoadFlag(),
 
   definitions: new Map(),
@@ -1462,6 +1492,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   setFilter: (q) => set({ filter: q }),
 
   openProject: async () => {
+    set({ userProjectEpoch: get().userProjectEpoch + 1 });
     const w = window as any;
     if (!w.showDirectoryPicker) {
       set({
@@ -1502,8 +1533,14 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       } else {
         projectMeta = { schema_version: 1, name: handle.name };
       }
+      // dataSource MUST be cleared alongside the new handle. reload() prefers an
+      // existing dataSource over the directoryHandle, so leaving the previous
+      // one in place makes it re-read the OLD source — the Default Project —
+      // and the project just opened/created silently reverts, taking the
+      // directory handle the authoring toolbar depends on with it.
       set({
         directoryHandle: handle,
+        dataSource: null,
         projectMeta,
         errorText: null,
       });
@@ -1528,6 +1565,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   createProject: async ({ handle, name, seedFromBundled = true }) => {
+    set({ userProjectEpoch: get().userProjectEpoch + 1 });
     const ok = await ensurePermission(handle, 'readwrite');
     if (!ok) {
       set({ toast: { kind: 'error', text: 'Permission denied for that directory.' } });
@@ -1591,8 +1629,14 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       console.warn('[definitions] could not persist directory handle', e);
     }
 
+      // dataSource MUST be cleared alongside the new handle. reload() prefers an
+      // existing dataSource over the directoryHandle, so leaving the previous
+      // one in place makes it re-read the OLD source — the Default Project —
+      // and the project just opened/created silently reverts, taking the
+      // directory handle the authoring toolbar depends on with it.
     set({
       directoryHandle: handle,
+      dataSource: null,
       projectMeta: meta,
       errorText: null,
     });
@@ -1628,6 +1672,11 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   bootstrap: async () => {
     if (get().bootstrapped) return;
     set({ bootstrapped: true });
+    // Snapshot before any await. createProject/openProject bump this the moment
+    // they start — well before they have a directory handle to check for — so
+    // this is the only signal that catches "the user acted while we were
+    // reading IndexedDB".
+    const epochAtStart = get().userProjectEpoch;
     // Surface the pinned-folder name on the header button immediately (cheap
     // IndexedDB read, no permission prompt).
     try {
@@ -1669,7 +1718,9 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       // we fall through to the bundled defaults below instead of the pin.
       // Auto-open the pin only if its permission is still granted; never prompt
       // during bootstrap (the user clicks the pin button to re-grant access).
-      if (get().autoLoadEnabled && getLastOpened() === null) {
+      if (get().autoLoadEnabled && getLastOpened() === null
+        && get().directoryHandle == null
+        && get().userProjectEpoch === epochAtStart) {
         try {
           const pinned = await getPinnedHandle();
           if (pinned) {
@@ -1688,7 +1739,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       }
       // No saved handle (or no permission) — fall back to bundled defaults
       // so the user lands on a working tree immediately.
-      if (get().autoLoadEnabled) {
+      //
+      // Unless the user got there first. Everything above this point awaits
+      // IndexedDB and permission queries, which is ample time to click
+      // "New project" or "Open project"; the fallback would then replace the
+      // project they just made with the Default Project — and
+      // loadDefaultProject() deletes the saved handle on the way, so the
+      // authoring toolbar (gated on having a directory handle) never appears
+      // again. That made a freshly-created project impossible to author into.
+      if (get().autoLoadEnabled
+        && get().directoryHandle == null
+        && get().userProjectEpoch === epochAtStart) {
         await get().loadBundledDefaults();
       }
     } catch (e) {
@@ -1728,6 +1789,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
   },
 
   loadDefaultProject: async () => {
+    const epochAtEntry = get().userProjectEpoch;
     try { await deleteHandle(HANDLE_KEY); } catch { /* ignore */ }
     let def: import('../persistence/defaultProject').DefaultProject | null = null;
     let ds: import('../persistence/dataSource').DataSource | null = null;
@@ -1751,7 +1813,15 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
       def = await loadDefaultProjectFromHttp(`${trimmed}/starter-project`);
       ds = new HttpDataSource(`${trimmed}/starter-project`);
     }
+    // The default tree is always worth keeping around (it is the overlay base
+    // and the packing catalog), but making it the WORKING SET is only correct
+    // if the user has not opened or created something in the meantime. This
+    // load is slow — HTTP or FSA — and bootstrap fires it concurrently with the
+    // user's very first clicks.
     set({ defaultProject: def, tombstones: new Set<DefinitionsKey>() });
+    if (get().userProjectEpoch !== epochAtEntry) {
+      return;
+    }
     // The DefaultProject load already pulled every record's canonical text
     // into memory — pass it through so loadFromDataSource doesn't re-fetch.
     await loadFromDataSource(set, get, ds!, def.texts);
@@ -1878,7 +1948,15 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
           }
         }
       } else {
-        const { overrides, additions, tombstones: computedTombs } = computeOverlay(defaultProject, definitions);
+        // Diff in LEAN (bytes-on-disk) form: the default's texts are lean, so
+        // convert each working record to lean too before comparing. Without
+        // this the envelope working text never matches and computeOverlay flags
+        // ALL 2201 records as overrides → Save-As writes the whole tree.
+        const sourceDs = get().dataSource;
+        const workingLean = sourceDs
+          ? await buildWorkingLeanTexts(sourceDs, definitions)
+          : undefined;
+        const { overrides, additions, tombstones: computedTombs } = computeOverlay(defaultProject, definitions, workingLean);
 
         // Merge store tombstones (from prior deletes) with computed tombstones.
         const mergedTombstones = new Set<DefinitionsKey>([...computedTombs, ...storeTombstones]);
@@ -2490,16 +2568,19 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     // Task C: v1 → v2 migration on first saveAllDirty.
     if ((get().projectMeta?.schema_version ?? 1) < 2 && dataSource.kind === 'fsa' && get().defaultProject) {
       const def = get().defaultProject!;
-      const diff = computeOverlay(def, get().definitions);
+      // Diff and the identical-file check must both compare LEAN-vs-LEAN
+      // (def.texts is lean). Convert the working set to lean once, reuse below.
+      const workingLean = await buildWorkingLeanTexts(dataSource, get().definitions);
+      const diff = computeOverlay(def, get().definitions, workingLean);
       // Delete files that are identical to the default (redundant in overlay format).
       for (const [k, rec] of get().definitions) {
         if (diff.overrides.has(k)) continue;
         if (diff.additions.has(k)) continue;
         if (diff.tombstones.has(k)) continue;
-        // Unchanged from default — only delete if bytes match exactly.
+        // Unchanged from default — only delete if the lean bytes match exactly.
         const defText = def.texts.get(k);
-        const recText = JSON.stringify(rec.json, null, 2) + '\n';
-        if (defText === undefined || defText !== recText) continue;
+        const recText = workingLean.get(k) ?? (rec.json ? JSON.stringify(rec.json, null, 2) + '\n' : undefined);
+        if (defText === undefined || recText === undefined || defText !== recText) continue;
         const slash = k.indexOf('/');
         const folder = k.slice(0, slash);
         const id = k.slice(slash + 1);

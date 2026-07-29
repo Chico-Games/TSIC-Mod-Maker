@@ -27,6 +27,28 @@ export interface LeanSchema {
   enums: Record<string, { members: Array<{ name: string; value: number }> }>;
 }
 
+/** Patch known gaps in an exporter-produced `_schema.json` before it drives
+ *  conversion. The Unreal exporter currently emits several structs with an
+ *  empty `fields:{}` map (it can't see certain reflected members), which makes
+ *  their inner values fall back to raw-inferred envelopes — e.g. a station's
+ *  `production_machine_rules.recipes` list, which then renders as untyped
+ *  strings instead of recipe references. Until the exporter is fixed and the
+ *  pack re-exported, fill the CONFIRMED gaps here. Mutates and returns `schema`.
+ *  Only fills fields the export left ABSENT — never overwrites real metadata. */
+export function applyLeanSchemaOverrides(schema: LeanSchema): LeanSchema {
+  const pmr = schema?.structs?.ProductionMachineRules;
+  if (pmr && pmr.fields && !pmr.fields.recipes) {
+    // ARR recipe lists ship as a bare `["RD_…", …]` string array. They are real
+    // recipe definitions in the store, so type them as definition_refs; the
+    // round-trip stays byte-stable (a definition_ref serialises back to its id).
+    pmr.fields.recipes = {
+      kind: 'array',
+      element: { kind: 'definition_ref', class: 'UCraftRecipeDefinition' },
+    };
+  }
+  return schema;
+}
+
 /** `const UFoo` / `UFoo` → `Foo` ; `AActor` → `AActor`. Mirrors the editor's
  *  bare-name convention for definition_ref class matching. */
 function bareClass(raw: string | undefined): string {

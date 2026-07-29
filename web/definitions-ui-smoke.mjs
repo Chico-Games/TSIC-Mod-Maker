@@ -23,8 +23,36 @@
 //   - Whitelisted-items dropdown is populated from .property-meta when the
 //     loaded data has no element_type to sniff
 
+// STATUS 2026-07-28 — this smoke was dead from its first assertion for a long
+// time and nothing downstream of it had run. Repaired up to and including the
+// number-field checks; everything from the `definition_ref` section onward is
+// still stale and WILL fail.
+//
+// What broke it, in order:
+//   1. The preview server was orphaned on failure (process.exit() skips the
+//      `finally`, and killing a shell child does not kill vite). The orphan
+//      held --strictPort, so the next run was served the STALE build and failed
+//      for an invented reason. Fixed via ./smoke-server.mjs.
+//   2. A full-screen #tsic-boot overlay swallowed every click when bootstrap
+//      finished with nothing loaded. Fixed in main.tsx/App.tsx (bootstrapDone).
+//   3. "Pick a Definitions root" empty state and its "Pick directory" button
+//      are gone; opening a project moved to the header.
+//   4. A picked project is now an OVERLAY on the Default Project, not a
+//      replacement, so exact folder/file counts and "first item is X" no
+//      longer hold.
+//   5. Schema (clamps, tooltips) comes from the bundled public/schema/, not
+//      from a .property-meta.json sidecar in the picked tree.
+//
+// STILL TO DO: the definition_ref section below drives a SearchableSelect
+// dropdown (.ss-root/.ss-trigger/.ss-popover) plus its "+ New …" inline-create
+// flow. That editor is now a drag-and-drop slot (DefRefSlot / .def-ref-slot,
+// with defRefWrite.ts) — a feature replacement, not a selector change, and it
+// is mid-refactor in the working tree. Rewrite that section against the slot UI
+// once the refactor settles.
+
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
+import { autoStopOnExit } from './smoke-server.mjs';
 
 const PORT = 4234;
 
@@ -34,6 +62,7 @@ function startServer() {
     stdio: ['ignore', 'pipe', 'pipe'],
     shell: true,
   });
+  autoStopOnExit(proc);
   return proc;
 }
 
@@ -98,9 +127,10 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     });
 
     await page.addInitScript(() => {
-      // Suppress bundled-defaults auto-load so the test starts from an
-      // empty store and drives loading via the mocked directory picker.
-      try { localStorage.setItem('tsic.def.skipBundled.v1', '1'); } catch {}
+      // The working set is an OVERLAY on the Default Project, so the base
+      // tree has to load for an opened project to compose at all — the old
+      // `tsic.def.skipBundled.v1` hatch would leave the picker with nothing
+      // to overlay onto. The test asserts the union instead.
       function ref(cls, value) { return { type: 'definition_ref', class: cls, value }; }
       function int(v) { return { type: 'int', value: v }; }
       function flt(v) { return { type: 'float', value: v }; }
@@ -414,23 +444,63 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await page.goto(`http://localhost:${PORT}/`);
     await page.waitForSelector('.header .file-info');
     await page.getByRole('button', { name: 'Definitions' }).click();
-    await page.waitForSelector('.def-empty-state h2:has-text("Pick a Definitions root")');
-    console.log('OK: Definitions tab empty state visible');
-
-    await page.locator('button.primary:has-text("Pick directory")').click();
     await page.waitForSelector('.def-grid');
+    await page.waitForFunction(
+      () => document.querySelectorAll('.def-folders li').length > 0,
+      undefined,
+      { timeout: 30000 },
+    );
+    const baseFolders = await page.locator('.def-folders li').allTextContents();
+    console.log(`OK: Default Project loaded (${baseFolders.length} folders) before any project is opened`);
+
+    // Two things moved since this smoke was written and both broke it:
+    //
+    //   - There is no "Pick a Definitions root" empty state any more. With no
+    //     directory handle the tab renders an empty `.def-grid`, and picking a
+    //     folder moved to the header's "Open project".
+    //   - A picked project is an OVERLAY on the Default Project, not a
+    //     replacement (composeWorkingSet). So the folder list is the union:
+    //     asserting an exact count of 7 can never hold again.
+    //
+    // What still has to be true is that every folder the picked tree ships is
+    // present, and that `layout_*` is filtered out of the type rail.
+    const MOCK_FOLDERS = [
+      'Ammo Definitions',
+      'Crafting Material Definitions',
+      'Consumable Definitions',
+      'Craft Recipe Definitions',
+      'Crafting Station Definitions',
+      'Containment Cage Definitions',
+      'Inventory Rules Definitions',
+    ];
+
+    await page.getByRole('button', { name: /Open project/ }).click();
+    await page.waitForFunction(
+      (names) => {
+        const shown = Array.from(document.querySelectorAll('.def-folders li'))
+          .map((li) => li.textContent || '');
+        return names.every((n) => shown.some((s) => s.includes(n)));
+      },
+      MOCK_FOLDERS,
+      { timeout: 30000 },
+    );
     await page.waitForTimeout(400);
 
-    // 7 folders expected (ammo, crafting_material, consumable, craft_recipe,
-    // crafting_station, containment_cage, inventory_rules). layout_* must
-    // be skipped; the dotfile sidecars hidden too.
     const folderCount = await page.locator('.def-folders li').count();
-    if (folderCount !== 7) throw new Error(`expected 7 folders (layout excluded), got ${folderCount}`);
-    console.log(`OK: loaded folder count = ${folderCount} (layout_* skipped)`);
+    console.log(`OK: picked tree overlaid onto the default project (${folderCount} folders total)`);
+    for (const name of MOCK_FOLDERS) {
+      const hits = await page.locator('.def-folders li', { hasText: name }).count();
+      if (hits === 0) throw new Error(`folder "${name}" from the picked tree is missing`);
+    }
+    console.log(`OK: all ${MOCK_FOLDERS.length} folders from the picked tree are listed`);
 
+    // `layout_definitions` used to be filtered out of this rail. It is now
+    // part of the Default Project and the Definitions tab is authoritative for
+    // every folder, so its presence is expected. What must still hold is that
+    // overlaying a tree that also carries layouts does not DUPLICATE the entry.
     const layoutFolderHits = await page.locator('.def-folders li', { hasText: 'Layout' }).count();
-    if (layoutFolderHits > 0) throw new Error(`layout folder leaked into UI`);
-    console.log('OK: layout_definitions absent from folder list');
+    if (layoutFolderHits > 1) throw new Error(`layout folder duplicated by the overlay (${layoutFolderHits} entries)`);
+    console.log(`OK: layout_definitions appears exactly ${layoutFolderHits} time(s) — overlay did not duplicate it`);
 
     // Folder rows carry an emoji span + the def-folder-color CSS variable.
     const consumableFolder = page.locator('.def-folders li', { hasText: 'Consumable Definitions' });
@@ -458,9 +528,13 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     // inserts spaces at camelCase boundaries, so the visible label
     // is "Baked Potato".
     await consumableFolder.click();
-    const fileNameText = await page.locator('.def-files .def-file-name').first().textContent();
-    if (fileNameText !== 'Baked Potato') {
-      throw new Error(`expected humanized filename "Baked Potato", got "${fileNameText}"`);
+    // The folder now holds the Default Project's consumables as well as the
+    // picked tree's, so the fixture is no longer first in the list — assert it
+    // is PRESENT and humanized rather than that it happens to sort first.
+    const bakedPotato = page.locator('.def-files .def-file-name', { hasText: 'Baked Potato' });
+    if ((await bakedPotato.count()) === 0) {
+      const shown = await page.locator('.def-files .def-file-name').allTextContents();
+      throw new Error(`humanized "Baked Potato" missing from the file list; got ${JSON.stringify(shown.slice(0, 10))}`);
     }
     await page.locator('.def-files li', { hasText: 'Baked Potato' }).click();
     await page.waitForSelector('.def-editor-head .def-name-input');
@@ -553,17 +627,21 @@ async function pickInCombobox(page, ssRoot, value, { filter = '' } = {}) {
     await dnInput.fill('Baked Potato Edited');
     await page.waitForTimeout(150);
 
-    // NumberSlider — Weight has clamp_min=0/clamp_max=10 in property-meta,
-    // so it should render a slider input alongside the number input.
+    // Clamp bounds now come from the BUNDLED schema (`public/schema/
+    // property-meta.json`), not from a `.property-meta.json` sidecar in the
+    // picked tree — so the fixture can no longer invent clamps for Weight, and
+    // the real schema declares none on any ItemDefinition property. The number
+    // field therefore renders unbounded, and that is the correct behaviour to
+    // pin: a slider here would mean bounds appeared from nowhere.
     const weightField = page.locator('.def-field-row', { hasText: 'Weight' }).first();
     const weightSlider = weightField.locator('input[type="range"]');
-    if (!(await weightSlider.count())) {
-      throw new Error('NumberSlider did not render for Weight (clamp meta present)');
+    if (await weightSlider.count()) {
+      throw new Error('Weight rendered a bounded slider, but the bundled schema declares no clamps for it');
     }
-    const weightNumberInput = weightField.locator('.ns-number');
+    const weightNumberInput = weightField.locator('input[type="number"]').first();
     await weightNumberInput.fill('5');
     await page.waitForTimeout(150);
-    console.log('OK: NumberSlider rendered for clamp-bounded float');
+    console.log('OK: unbounded number field for a float with no clamps in the bundled schema');
 
     // definition_ref combobox — Static Item Definition. Open + filter.
     const refRow = page.locator('.def-field', { hasText: 'Static Item Definition' }).first();

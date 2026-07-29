@@ -1,0 +1,26 @@
+{
+  "id": "RE_SecuritySweep",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Security Sweep",
+    "event_tag": "Event.Random.SecuritySweep",
+    "light_config": {
+      "intensity": 0.7,
+      "color": { "r": 1.0, "g": 0.85, "b": 0.55, "a": 1.0 },
+      "temperature": 3800.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.SecuritySweep",
+    "ambient_audio_tag": "Ambient.Event.SecuritySweep",
+    "enemy_event_type": {
+      "name": "EliteSpawn",
+      "value": 3
+    },
+    "enemy_spawn_params": "HeavyStaffSpawnParameters",
+    "enemy_spawn_delay": 15.0,
+    "duration": 300.0,
+    "weight": 0.7
+  }
+}

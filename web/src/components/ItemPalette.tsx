@@ -181,11 +181,15 @@ export function ItemPalette({ folders, title, autoFolders, onCollapse }: Props) 
           add(id, qty || 1);
         }
       }
-      // Furniture upgrade: upgraded_furniture_definition is also a "use".
+      // Furniture upgrade: upgraded_furniture_definition is also a "use". Real
+      // data ships it as a `{type:'string'}` envelope (schema gap), and it may
+      // also appear as a definition_ref/soft_asset_ref or bare string — accept
+      // the id from any of those shapes.
       const upRef: any = props.upgraded_furniture_definition;
-      if (upRef?.type === 'definition_ref' && typeof upRef.value === 'string') {
-        add(String(upRef.value), 1);
-      }
+      const upVal = typeof upRef === 'string' ? upRef
+        : (upRef && typeof upRef === 'object' && typeof upRef.value === 'string') ? upRef.value
+          : '';
+      if (upVal) add(upVal, 1);
     }
     return m;
   }, [definitions]);

@@ -10,6 +10,15 @@ export type DriftIssue =
 
 const MAX_ISSUES = 200;
 
+/** Pack-level inheritance directives, not class properties. The game's
+ *  DefinitionPackSubsystem reads these off the `properties` object to merge a
+ *  definition onto its parent, then strips them before the class deserializes
+ *  (`extends` = id of a same-class parent to merge onto; `abstract` = merge
+ *  source only, never instantiated). They can appear on ANY definition class,
+ *  so no class ever declares them as a UPROPERTY and the header scanner can
+ *  never see them — treat them as reserved, like the envelope fields. */
+const PACK_DIRECTIVE_PROPS = new Set(['extends', 'abstract']);
+
 /** Strip a leading "U" from a class name. The schema uses "UItemDefinition";
  *  property keys drop the prefix ("ItemDefinition.id"). */
 function bareName(className: string): string {
@@ -60,6 +69,7 @@ export function validateSchemaDrift(
 
     const chain = parentChain(fullName, classNodes).map(bareName);
     for (const propName of Object.keys(props)) {
+      if (PACK_DIRECTIVE_PROPS.has(propName)) continue;
       const found = chain.some((c) => propertyMeta.has(`${c}.${propName}`));
       if (!found) {
         if (!push({

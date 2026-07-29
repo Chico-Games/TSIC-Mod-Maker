@@ -87,6 +87,12 @@ export interface ComputedOverlay {
 export function computeOverlay(
   def: DefaultProject,
   working: Map<DefinitionsKey, DefinitionRecord>,
+  /** Working-record → LEAN file text (the bytes that hit disk). `def.texts` is
+   *  already lean, so passing this makes the changed-ness test a lean-vs-lean
+   *  comparison. WITHOUT it the working side is canonicalised ENVELOPE text,
+   *  which never equals the lean default and flags every record as an override.
+   *  Callers with a schema-bearing DataSource must always pass it. */
+  workingLeanTexts?: Map<DefinitionsKey, string>,
 ): ComputedOverlay {
   const overrides = new Map<DefinitionsKey, any>();
   const additions = new Map<DefinitionsKey, any>();
@@ -94,7 +100,7 @@ export function computeOverlay(
 
   for (const [k, rec] of working) {
     const defText = def.texts.get(k);
-    const recText = canonicalTextOf(rec.json);
+    const recText = workingLeanTexts?.get(k) ?? canonicalTextOf(rec.json);
     if (defText === undefined) {
       additions.set(k, rec.json);
     } else if (defText !== recText) {

@@ -17,12 +17,50 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 200.0,
-    "destructible_collection": "/Game/Furniture/CraftingBenches/GeometryCollections/GCS_CraftingTableTierOne.GCS_CraftingTableTierOne",
+    "destructible_collection": "/Game/INDUSTRIAL/VOL4_Consoles/Meshes/GeometryCollections/GCS_Consoles_Industrial_13a.GCS_Consoles_Industrial_13a",
     "loot_dropped_on_death": [
       "LD_CraftingBenchTierOneLoot"
     ],
     "constructable_item_to_grant": "ID_ArmorBenchTier4_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 139.9927,
+          "y": 52.74,
+          "z": 101.2615
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 101.1707,
+          "y": 38.4247,
+          "z": 66.4585
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 139.9927,
+          "y": 52.74,
+          "z": 100.2391
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 144.5295,
+          "y": 54.8924,
+          "z": 102.2439
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -41,15 +79,15 @@
         "z": 1.0
       }
     },
-    "upgrade_recipe": "RD_TierOneCraftingTable_CN",
+    "upgrade_recipe": null,
     "is_draggable": true,
     "display_name": "Master Armor Forge",
     "description": "Master armor forge. Create the finest armor with maximum protection and special properties.",
-    "level": 1,
+    "level": 3,
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/CraftingBenches/Meshes/SM_CraftingTableTierOne.SM_CraftingTableTierOne",
+    "static_mesh": "/Game/INDUSTRIAL/VOL4_Consoles/Meshes/LP/SM_Consoles_Industrial_13a.SM_Consoles_Industrial_13a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -59,7 +97,7 @@
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,
@@ -69,6 +107,7 @@
     "gameplay_tags": [],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "available_recipe_rules_definition": "ARR_ArmorBenchTier4Recipes"
   }
 }

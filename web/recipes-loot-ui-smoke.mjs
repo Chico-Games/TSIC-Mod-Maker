@@ -40,6 +40,7 @@
 
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
+import { autoStopOnExit } from './smoke-server.mjs';
 
 const PORT = 4235;
 
@@ -49,6 +50,7 @@ function startServer() {
     stdio: ['ignore', 'pipe', 'pipe'],
     shell: true,
   });
+  autoStopOnExit(proc);
   return proc;
 }
 
@@ -220,8 +222,13 @@ async function waitForServer(url, timeoutMs = 15000) {
               production_machine_rules: {
                 type: 'struct', struct_name: 'ProductionMachineRules',
                 value: {
-                  recipes: arrayOf(ref('CraftRecipeDefinition', null), [
-                    ref('CraftRecipeDefinition', 'RD_Hammer_CR'),
+                  // Bug 1 regression: simulate the exporter's schema gap where
+                  // ProductionMachineRules.fields is empty, so recipe elements
+                  // arrive as {type:'string'} envelopes instead of definition_ref.
+                  // The Stations pane must still resolve + render them (the
+                  // t2Recipes === 1 assertion below is the guard).
+                  recipes: arrayOf({ type: 'string' }, [
+                    { type: 'string', value: 'RD_Hammer_CR' },
                   ]),
                 },
               },
@@ -298,8 +305,12 @@ async function waitForServer(url, timeoutMs = 15000) {
             class: 'UDamageableFurnitureDefinition', parent_classes: ['UFurnitureDefinition', 'UDataAsset', 'UObject'],
             properties: {
               display_name: txt('Aircon'), starting_health: flt(50.0),
-              loot_dropped_on_death: arrayOf(ref('LootDefinition', null), [
-                ref('LootDefinition', 'LD_Aircon'),
+              // Bug 2 regression: real death-loot refs are soft_asset_ref, not
+              // definition_ref. The DefRefSlot must render the resolved name and
+              // FurnitureSubTab's caret resolution must accept soft_asset_ref
+              // (the caret-enabled + inline-editor assertions below are the guard).
+              loot_dropped_on_death: arrayOf({ type: 'soft_asset_ref', class: 'LootDefinition' }, [
+                { type: 'soft_asset_ref', class: 'LootDefinition', value: 'LD_Aircon' },
               ]),
               upgrade_recipe: ref('FurnitureUpgradeRecipe', 'RD_Aircon_CN'),
             },
@@ -640,6 +651,14 @@ async function waitForServer(url, timeoutMs = 15000) {
     //    different furniture and back, confirm the change persisted.
     const aircon = page.locator('.furniture-pane');
     const firstLoot = aircon.locator('.loot-entry').first();
+    // Bug 2: the loot ref is a soft_asset_ref — its DefRefSlot must resolve to
+    // the LootDefinition's name, not show the empty "pick LootDefinition"
+    // placeholder. (Before the fix the slot recognized only definition_ref.)
+    const lootSlotLabel = (await firstLoot.locator('.def-ref-slot .ss-trigger').first().textContent()) ?? '';
+    if (/pick\s/i.test(lootSlotLabel) || !lootSlotLabel.trim()) {
+      throw new Error(`soft_asset_ref loot slot did not resolve; trigger showed "${lootSlotLabel}"`);
+    }
+    console.log(`OK: soft_asset_ref loot slot resolved to "${lootSlotLabel.trim()}"`);
     const caret = firstLoot.locator('.death-loot-caret');
     if ((await caret.count()) !== 1) throw new Error('expected one disclosure caret per loot entry');
     if (await caret.getAttribute('disabled') !== null) throw new Error('caret should be enabled when ref resolves');

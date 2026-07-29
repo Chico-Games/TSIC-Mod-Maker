@@ -4,7 +4,32 @@
   "class": "UEquippableDefinition",
   "schema_version": 2,
   "properties": {
-    "equipment_actors_and_meshes": [],
+    "thumbnail": "mod:icons/id_hammer_eq",
+    "equipment_actors_and_meshes": [
+      {
+        "mesh": "/Game/Items/Equipment/Weapons/Hammer/Meshes/SM_Hammer.SM_Hammer",
+        "attach_socket": "hand_r_weapon",
+        "attach_transform": {
+          "rotation": {
+            "x": 0.02281808,
+            "y": -0.05214446,
+            "z": 0.54120679,
+            "w": 0.83896097
+          },
+          "translation": {
+            "x": -12.915831,
+            "y": 2.338934,
+            "z": 17.343106
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "equipped_layer_class": "/Game/Items/Equipment/Weapons/Hammer/Blueprints/ABP_Hammer.ABP_Hammer_C",
     "ability_sets_to_grant": [
       "/Game/Items/Equipment/Weapons/Hammer/Abilities/AS_Hammer.AS_Hammer"
     ],
@@ -49,7 +74,12 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": []
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
     },
     "has_durability": true,
     "has_ammo": false,

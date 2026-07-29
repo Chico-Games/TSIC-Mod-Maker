@@ -4,15 +4,16 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 1200.0,
+    "duration": 60.0,
     "requires_consumption_slot": true,
+    "consumption_sound": "/Game/Characters/Customer/Audio/Cues/SC_Medical.SC_Medical",
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
-      "b_apply_heal_per_second": false,
-      "heal_per_second": 0.0,
-      "b_apply_instant_heal": false,
-      "instant_heal": 0.0,
+      "b_apply_heal_per_second": true,
+      "heal_per_second": 0.6,
+      "b_apply_instant_heal": true,
+      "instant_heal": 12.0,
       "b_apply_max_health_increase": false,
       "max_health_increase": 0.0,
       "b_apply_flat_armour_increase": false,
@@ -49,17 +50,24 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": []
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
     },
     "has_durability": false,
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Bandage",
-    "description": "Medical bandages for treating wounds.",
+    "description": "Medical bandages for treating wounds. Stops the bleeding and keeps it stopped.",
+    "thumbnail": "/Game/Items/Consumables/Medical/Bandage/Textures/T_Thumb_SM_Bandage.T_Thumb_SM_Bandage",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_Bandage_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

@@ -10,7 +10,10 @@
       "y": 0.0,
       "z": 200.0
     },
-    "capturable_enemy_classes": [],
+    "capturable_enemy_classes": [
+      "/Game/Characters/Enemies/MaleStaff/Blueprints/CH_MaleStaff.CH_MaleStaff_C",
+      "/Game/Characters/Enemies/Janitor/Blueprints/CH_Janitor.CH_Janitor_C"
+    ],
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [
       "/Game/Items/Equipment/Traps/BasicTrap/AS_ThrowTrap.AS_ThrowTrap"
@@ -56,14 +59,33 @@
       "tool_durability_multiplier": 0.0,
       "b_apply_xp_gain_multiplier": false,
       "xp_gain_multiplier": 0.0,
-      "f_gameplay_effect_with_modifiers": []
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
     },
     "has_durability": false,
     "has_ammo": false,
     "max_ammo": 0,
     "stackable": true,
     "weight": 0.10000000149011612,
+    "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
+    "item_category_tag": "Entity.Inventory.Item.Category.Tool",
     "capture_radius": 300.0,
-    "deployed_lifetime_seconds": 60.0
+    "deployed_lifetime_seconds": 60.0,
+    "capture_glow_material": "/Game/Items/Equipment/Traps/BasicTrap/Materials/M_TrapCaptureGlow.M_TrapCaptureGlow",
+    "capture_glow_mesh_unit_radius": 50.0,
+    "capture_glow_color": {
+      "r": 0.15,
+      "g": 0.95,
+      "b": 0.6,
+      "a": 1.0
+    },
+    "capture_glow_opacity": 0.05,
+    "max_stack_size": 10,
+    "display_name": "Basic Trap",
+    "description": "A sprung snare baited with fresh produce. Captures common staff."
   }
 }

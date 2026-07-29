@@ -1,0 +1,26 @@
+{
+  "id": "RE_NightShift",
+  "class": "RandomEventDefinition",
+  "schema_version": 2,
+  "properties": {
+    "display_name": "Night Shift",
+    "event_tag": "Event.Random.NightShift",
+    "light_config": {
+      "intensity": 0.4,
+      "color": { "r": 0.75, "g": 1.0, "b": 0.8, "a": 1.0 },
+      "temperature": 5000.0,
+      "b_enabled": true
+    },
+    "b_flash_on_start": true,
+    "intercom_announcement_tag": "Intercom.Event.NightShift",
+    "ambient_audio_tag": "Ambient.Event.NightShift",
+    "enemy_event_type": {
+      "name": "EnemyRaid",
+      "value": 1
+    },
+    "enemy_spawn_params": "JanitorSpawnParameters",
+    "enemy_spawn_delay": 10.0,
+    "duration": 240.0,
+    "weight": 1.0
+  }
+}

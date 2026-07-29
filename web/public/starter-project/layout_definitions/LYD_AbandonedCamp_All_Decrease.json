@@ -4,11 +4,22 @@
   "class": "ULayoutDefinition",
   "schema_version": 2,
   "properties": {
+    "gameplay_tags": [
+      "Layout.Type.Tile",
+      "Tile.Biome.AbandonedCamp",
+      "Tile.HandlesHeight.Decrease",
+      "Tile.Layer.Floor",
+      "Tile.MazeDirection.All",
+      "Tile.MazeDirection.Up",
+      "Tile.MazeDirection.UpDown",
+      "Tile.MazeDirection.UpRight",
+      "Tile.MazeDirection.UpRightDown"
+    ],
     "layout_objects": [
       {
         "layout_actor_type": {
-          "name": "LAYOUT",
-          "value": 1
+          "name": "ENEMY_SPAWN_POINT",
+          "value": 2
         },
         "b_visual_helper": false,
         "definition_filter": {
@@ -18,7 +29,7 @@
           "spawn_chance_over": 0.0,
           "spawn_chance_under": 1.0
         },
-        "layout_definition": "LYD_Floor_Decrease",
+        "enemy_spawn_point_definition": "ESP_ShowFloor",
         "transform": {
           "rotation": {
             "x": 0.0,
@@ -37,20 +48,516 @@
             "z": 1.0
           }
         }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "layout_definition": "LYD_Floor_Decrease",
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Mattress_DF",
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "translation": {
+            "x": 10,
+            "y": -32,
+            "z": 9.999999736010068e-05
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": -0.7071067811865476,
+            "z": 0,
+            "w": 0.7071067811865477
+          },
+          "translation": {
+            "x": 225,
+            "y": -94,
+            "z": 89.99999999999977
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Fridge_2_DF",
+        "transform": {
+          "rotation": {
+            "x": -0,
+            "y": 0,
+            "z": -0.6427876030015404,
+            "w": 0.7660444487283582
+          },
+          "translation": {
+            "x": 165,
+            "y": 86,
+            "z": -2.2737367544323206e-13
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": -0.7071067811865475,
+            "y": -6.170670815138831e-09,
+            "z": -0.7071067811865476,
+            "w": 6.170670815138832e-09
+          },
+          "translation": {
+            "x": 115,
+            "y": -4,
+            "z": 89.99999999999977
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Fridge_2_DF",
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "translation": {
+            "x": -48.684286338655795,
+            "y": 251.16820928373602,
+            "z": 2.2737367544323206e-13
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": -0.5416752164532712,
+            "y": -0.4545194823990517,
+            "z": -0.5416752164532713,
+            "w": 0.45451948239905177
+          },
+          "translation": {
+            "x": -5.733998127976392,
+            "y": 119.29948431090382,
+            "z": 90
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": 0.45451947767204287,
+            "y": -0.5416752204197026,
+            "z": 0.4545194776720429,
+            "w": 0.5416752204197027
+          },
+          "translation": {
+            "x": 102,
+            "y": 212,
+            "z": 90
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Fridge_2_DF",
+        "transform": {
+          "rotation": {
+            "x": -2.5139224917781625e-16,
+            "y": 2.209437031808534e-16,
+            "z": -0.9999999999999999,
+            "w": 8.726640582549448e-09
+          },
+          "translation": {
+            "x": 72.68428667731149,
+            "y": -235.16821356747187,
+            "z": 2.1316282072803006e-13
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": 0.45451948239905055,
+            "y": -0.5416752164532722,
+            "z": 0.4545194823990506,
+            "w": 0.5416752164532723
+          },
+          "translation": {
+            "x": -7.26599974404715,
+            "y": -200.2994866218076,
+            "z": 89.99999999999983
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LAYOUT",
+          "value": 1
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.Size.Medium",
+                "Layout.Type.Nook",
+                "Tile.Biome.ShowFloor"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": -0,
+            "y": 0,
+            "z": -0.9999999999999999,
+            "w": 8.726646355709176e-09
+          },
+          "translation": {
+            "x": -218,
+            "y": 12,
+            "z": 0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": -1,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "furniture_definition": "FD_Table_2_DF",
+        "transform": {
+          "rotation": {
+            "x": -0.12278780396897286,
+            "y": -0.696364240320019,
+            "z": -0.12278780396897288,
+            "w": 0.6963642403200191
+          },
+          "translation": {
+            "x": 206,
+            "y": -211,
+            "z": 90
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LOOT_SPAWN_POINT",
+          "value": 3
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 20,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "loot_spawn_point_definition": "LSP_AbandonedCamp_Floor",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 425.0,
+            "y": 425.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LOOT_SPAWN_POINT",
+          "value": 3
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 19,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "loot_spawn_point_definition": "LSP_AbandonedCamp_Floor",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -425.0,
+            "y": 450.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "LOOT_SPAWN_POINT",
+          "value": 3
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 21,
+          "search_queries": [],
+          "tile_requirements": [],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "loot_spawn_point_definition": "LSP_AbandonedCamp_Floor",
+        "transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -425.0,
+            "y": -425.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
       }
     ],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000,
-    "gameplay_tags": [
-      "Layout.Type.Tile",
-      "Tile.Biome.AbandonedCamp",
-      "Tile.HandlesHeight.Decrease",
-      "Tile.Layer.Floor",
-      "Tile.MazeDirection.All",
-      "Tile.MazeDirection.Up",
-      "Tile.MazeDirection.UpDown",
-      "Tile.MazeDirection.UpRight",
-      "Tile.MazeDirection.UpRightDown"
-    ]
+    "world_gen_priority": 1000
   }
 }

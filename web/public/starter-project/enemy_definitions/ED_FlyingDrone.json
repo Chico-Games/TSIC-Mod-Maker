@@ -7,15 +7,47 @@
     "gameplay_tags": [],
     "display_name": "Flying Drone",
     "death_drop_table": [
-      {
-        "count": 1,
-        "weight": 1
-      }
+      { "world_item": "FD_DroneMotor_SI", "count": 1, "weight": 1 },
+      { "world_item": "FD_CircuitBoard_SI", "count": 1, "weight": 1 }
     ],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
-    "blend_duration_override": 0.0,
-    "dissolve_duration": 2.0,
-    "ragdoll_hold_duration": 4.0
+    "variants": [
+      {
+        "key": { "name": "EASY", "value": 1 },
+        "value": {
+          "damage_multiplier": 1.0,
+          "death_drop_table": [
+            { "world_item": "FD_DroneMotor_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_CircuitBoard_SI", "count": 1, "weight": 1 },
+            { "world_item": "FD_PlasticScrap_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "MEDIUM", "value": 2 },
+        "value": {
+          "damage_multiplier": 2.0,
+          "death_drop_table": [
+            { "world_item": "FD_DroneMotor_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_CircuitBoard_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_ExtensionCord_SI", "count": 1, "weight": 1 },
+            { "world_item": "FD_PlasticScrap_SI", "count": 2, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "HARD", "value": 3 },
+        "value": {
+          "damage_multiplier": 3.0,
+          "death_drop_table": [
+            { "world_item": "FD_DroneMotor_SI", "count": 3, "weight": 2 },
+            { "world_item": "FD_CircuitBoard_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_ExtensionCord_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_Lightbulb_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      }
+    ]
   }
 }

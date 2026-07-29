@@ -134,7 +134,13 @@ export function App() {
 
   // Bootstrap: load saved handle or fall back to bundled defaults.
   useEffect(() => {
-    void useDefinitionsStore.getState().bootstrap();
+    // Flag completion here rather than inside bootstrap(): it has several
+    // early returns, and the boot spinner has to come down on every one of
+    // them, including the ones that load nothing.
+    void useDefinitionsStore
+      .getState()
+      .bootstrap()
+      .finally(() => useDefinitionsStore.setState({ bootstrapDone: true }));
     // Boot the mod.io store as well: probes any stored token + lazy-loads
     // the starter catalog for diffing.
     void useModIoStore.getState().bootstrap();

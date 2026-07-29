@@ -316,8 +316,17 @@ function buildActions(
       // 2. Try to load sidecar for the current data source.
       await get().loadSidecar();
       // 3. Lazily build the starter catalog from the already-loaded DefaultProject.
+      //
+      // Only when nothing else is open. `loadDefaultProject()` does not just
+      // read the default tree — it makes it the WORKING SET and deletes the
+      // saved directory handle. This bootstrap races the user: probeMe() and
+      // loadSidecar() take seconds, and anyone who created or opened a project
+      // in that window had it silently replaced by the Default Project, losing
+      // the handle the authoring toolbar is gated on. `packCurrent()` builds
+      // the catalog on demand anyway, so deferring costs nothing.
       const cfg = get().cfg;
-      if (cfg && !get().starterCatalog) {
+      const hasOwnProject = useDefinitionsStore.getState().directoryHandle != null;
+      if (cfg && !hasOwnProject && !get().starterCatalog) {
         try {
           const def = useDefinitionsStore.getState().defaultProject
             ?? (await (async () => {
@@ -509,7 +518,18 @@ function buildActions(
         const starter = get().starterCatalog ?? new Map();
         const defs = useDefinitionsStore.getState().definitions;
         const editorVersion = '0.2.0';
-        const pack = await buildDeltaZip(defs.values(), starter, { editorVersion, baseSource: 'default-project' });
+        // The game installs to Mods/<name_id>/ and reads identity out of the
+        // packed mod.json, so the id has to be the mod.io slug. Before the mod
+        // is bound there is no slug yet; the installer backfills from the
+        // listing in that case.
+        const sc = get().sidecar;
+        const pack = await buildDeltaZip(defs.values(), starter, {
+          editorVersion,
+          baseSource: 'default-project',
+          modId: sc?.name_id ?? undefined,
+          displayName: sc?.draft.name || undefined,
+          version: sc?.draft.next_version || undefined,
+        });
         set({ lastPack: pack });
         recomputeSync();
       } catch (e) {

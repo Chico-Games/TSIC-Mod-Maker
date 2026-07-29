@@ -1,0 +1,56 @@
+{
+  "id": "ID_PrecisionCrossbow_EQ",
+  "asset_path": "/Game/Items/Equipment/Weapons/PrecisionCrossbow/ID_PrecisionCrossbow_EQ",
+  "class": "UEquippableDefinition",
+  "schema_version": 2,
+  "properties": {
+    "equipment_actors_and_meshes": [
+      {
+        "skeletal_mesh": "/Game/Items/Equipment/Weapons/Crossbow/Meshes/SKM_Crossbow.SKM_Crossbow",
+        "attach_socket": "hand_l_weapon",
+        "attach_transform": {
+          "rotation": {
+            "x": -0.668721,
+            "y": -0.406194,
+            "z": 0.053857,
+            "w": 0.620418
+          },
+          "translation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      }
+    ],
+    "equipped_layer_class": "/Game/Items/Equipment/Weapons/Crossbow/Animations/Blueprints/ABP_Crossbow_Locomotion.ABP_Crossbow_Locomotion_C",
+    "ability_sets_to_grant": [
+      "/Game/Items/Equipment/Weapons/Crossbow/Abilities/AS_Crossbow.AS_Crossbow"
+    ],
+    "effects_to_apply": {
+      "b_apply_percentage_damage_increase": true,
+      "percentage_damage_increase": 0.25,
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
+    },
+    "has_durability": true,
+    "has_ammo": true,
+    "ammo_definition": "ID_Pencil_AM",
+    "max_ammo": 3,
+    "display_name": "Precision Crossbow",
+    "description": "A crossbow re-sighted against TV Head signal transcripts. Holds three bolts and knows where the static comes from.",
+    "stackable": false,
+    "weight": 0.10000000149011612,
+    "static_item_definition": "FD_PrecisionCrossbow_SI",
+    "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
+    "item_category_tag": "Entity.Inventory.Item.Category.Weapon"
+  }
+}

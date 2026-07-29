@@ -9,7 +9,16 @@
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
-    "has_toggled_on_audio": false,
+    "has_toggled_on_audio": true,
+    "toggled_on_audio": {
+      "sound": "/Game/Shared/Audio/Hums/SW_Hum_Machine.SW_Hum_Machine",
+      "volume_multiplier": 0.35,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "attenuation_distance": 700.0,
+      "fade_in_time": 0.5,
+      "fade_out_time": 0.8
+    },
     "has_toggled_off_audio": false,
     "has_static_lights": false,
     "has_toggled_on_lights": false,
@@ -20,7 +29,45 @@
     "starting_health": 33.0,
     "loot_dropped_on_death": [],
     "constructable_item_to_grant": "ID_SewingMachine_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.718,
+          "y": -24.1419,
+          "z": 28.8705
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 15.0151,
+          "y": 26.1264,
+          "z": 23.0971
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.718,
+          "y": -24.1419,
+          "z": 28.2782
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 21.4502,
+          "y": 37.3235,
+          "z": 29.6117
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -56,8 +103,9 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
+    "destructible_collection": "/Game/Furniture/SewingMachine/GeometryCollections/GCS_SewingMachine.GCS_SewingMachine",
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,
@@ -67,6 +115,7 @@
     "gameplay_tags": [],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "available_recipe_rules_definition": "ARR_SewingMachineRecipes"
   }
 }
