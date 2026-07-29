@@ -1,7 +1,49 @@
 {
-  "_comment": "Editor-side property metadata for properties the header scanner (Tools/Export/scan_property_meta.py) cannot see, in three flavours: (a) Blueprint-defined properties that exist on runtime BP subclasses with NO C++ UPROPERTY anywhere in Source/; (b) JSON-compiled properties whose owning class declares no UPROPERTY at all and instead parses the raw `properties` object at load (the AI2 ScpBehavior/ScpSkill/ScpPerception definitions); (c) properties whose UPROPERTY exists only on an unmerged TSIC branch while tsic-default-mod already ships data using them. Pack-level directives (`extends`, `abstract`) do NOT belong here — they are class-agnostic and are skipped by PACK_DIRECTIVE_PROPS in src/persistence/schemaDriftValidator.ts. refresh-schema.mjs merges these into property-meta.json after the scan, so they survive refreshes and don't show as schema drift; scanner keys always win, so an entry becomes an inert no-op once the scanner can see the property. Keys are Class.snake_property (bare class name, no U/F prefix); bools get both the b_-prefixed and bare spellings the scanner emits. Entry shape matches the scanner's output. Leave clamp_min/clamp_max null unless the C++ really declares them — they drive live editor bounds.",
+  "_comment": "Editor-side property metadata for properties the header scanner (Tools/Export/scan_property_meta.py) cannot see, in three flavours: (a) Blueprint-defined properties that exist on runtime BP subclasses with NO C++ UPROPERTY anywhere in Source/; (b) JSON-compiled properties whose owning class declares no UPROPERTY at all and instead parses the raw `properties` object at load (the AI2 ScpBehavior/ScpSkill/ScpPerception definitions); (c) properties whose UPROPERTY exists only on an unmerged TSIC branch while tsic-default-mod already ships data using them — this is structural, not temporary: the mod's `beta` data deliberately tracks several in-flight game branches at once (metahuman, qa/farming), so a full re-export from TSIC main can never cover them and this file is their correct home until those branches land. Pack-level directives (`extends`, `abstract`) do NOT belong here — they are class-agnostic and are skipped by PACK_DIRECTIVE_PROPS in src/persistence/schemaDriftValidator.ts. refresh-schema.mjs merges these into property-meta.json after the scan, so they survive refreshes and don't show as schema drift; scanner keys always win, so an entry becomes an inert no-op once the scanner can see the property. Keys are Class.snake_property (bare class name, no U/F prefix); bools get both the b_-prefixed and bare spellings the scanner emits. Entry shape matches the scanner's output. Leave clamp_min/clamp_max null unless the C++ really declares them — they drive live editor bounds.",
   "schema_version": 2,
   "properties": {
+    "PlantableDefinition.plant_slot_offsets": {
+      "tooltip": "Local-space position of each plant slot (pot base). One entry per unit of queue capacity; the last entry repeats if the queue outgrows the array.",
+      "category": "Planting",
+      "cpp_type": "TArray<FVector>",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "PlantableDefinition.plant_root_offset": {
+      "tooltip": "Offset from a slot position to where the plant mesh roots (the dirt line).",
+      "category": "Planting",
+      "cpp_type": "FVector",
+      "element_class": null,
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
+    "PlantableDefinition.slot_pot_mesh": {
+      "tooltip": "Optional pot mesh rendered at every slot position, for planters whose own mesh doesn't model the pots (wheelbarrow tray, hydroponics shelf).",
+      "category": "Planting",
+      "cpp_type": "TSoftObjectPtr<UStaticMesh>",
+      "element_class": "StaticMesh",
+      "clamp_min": null,
+      "clamp_max": null,
+      "ui_min": null,
+      "ui_max": null,
+      "edit_condition": null,
+      "edit_spec": "EditAnywhere",
+      "display_name": null,
+      "categories": null
+    },
     "ScpBehaviorDefinition.roots": {
       "tooltip": "JSON-only: ordered root-state when-lists, first match top-to-bottom wins. Compiled to FScpCompiledBehavior::RootEntries by ScpAi2::CompileBehaviorJson (ScpBehaviorGraph.cpp:757); UScpBehaviorDefinition declares no UPROPERTY for it.",
       "category": "Behavior",

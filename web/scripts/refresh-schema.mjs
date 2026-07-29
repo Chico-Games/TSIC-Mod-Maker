@@ -109,24 +109,15 @@ if (DO_SCAN && existsSync(SCANNER)) {
 if (!propertyMetaSrc && existsSync(join(PACK_DIR, '.property-meta.json'))) {
   propertyMetaSrc = join(PACK_DIR, '.property-meta.json');
 }
+// Where property-meta came from decides how to read any drift at step 5, so
+// remember it. (A count comparison here would be useless: the bundle always
+// carries the merged overrides too, so the pack sidecar is legitimately
+// "smaller" on every run.)
+let propertyMetaFromPack = false;
 if (propertyMetaSrc) {
-  // The pack's committed .property-meta.json is a generated sidecar and goes stale
-  // whenever the mod's data outruns its last regeneration — data gains properties
-  // the sidecar never learned about, and every one shows up as drift. That is
-  // silent unless we compare, because the fallback simply overwrites. Warn (don't
-  // block: a genuine upstream removal legitimately shrinks the count).
-  const fromPack = !propertyMetaSrc.includes('test-output');
-  if (fromPack && existsSync(join(WEB_SCHEMA, 'property-meta.json'))) {
-    const nOld = Object.keys(readJSON(join(WEB_SCHEMA, 'property-meta.json')).properties || {}).length;
-    const nNew = Object.keys(readJSON(propertyMetaSrc).properties || {}).length;
-    if (nNew < nOld) {
-      warn(`pack sidecar has FEWER properties than the current bundle (${nNew} vs ${nOld}) — it is probably stale.`);
-      warn(`  Regenerate it upstream (TSIC/Tools/Export/scan_property_meta.py, commit to tsic-default-mod),`);
-      warn(`  or re-run without --no-scan to scan the local TSIC headers directly.`);
-    }
-  }
+  propertyMetaFromPack = !propertyMetaSrc.includes('test-output');
   copyFileSync(propertyMetaSrc, join(WEB_SCHEMA, 'property-meta.json'));
-  log(`   wrote property-meta.json (from ${fromPack ? 'pack' : 'header scan'})`);
+  log(`   wrote property-meta.json (from ${propertyMetaFromPack ? 'pack' : 'header scan'})`);
 }
 // Merge editor-side overrides: Blueprint-defined properties that have no C++
 // UPROPERTY anywhere in Source/, so the header scanner can't see them. Without
@@ -382,6 +373,20 @@ if (nUC === 0 && nUP === 0 && structural.length === 0) {
     log(`   DRIFT: ${nUC} unknown-class, ${nUP} unknown-property:`);
     for (const [k, v] of Object.entries(unknownClass)) log(`     unknown-class ${k} (${v})`);
     for (const [k, v] of Object.entries(unknownProp)) log(`     unknown-property ${k} (${v})`);
+    // Most drift is a stale pack sidecar, not a real authoring error — this pack
+    // ships .property-meta.json from whenever the export last ran, and the mod's
+    // data keeps moving. Say so here rather than warning on every run, since
+    // this is the point where we actually know drift exists.
+    if (nUP && propertyMetaFromPack) {
+      log('');
+      log('   property-meta.json came from the pack, not a header scan. If these');
+      log('   properties do exist in TSIC C++ today, the pack sidecar is stale:');
+      log('     - re-run without --no-scan to scan local TSIC headers, or');
+      log('     - regenerate it upstream (Tools/Export/scan_property_meta.py) and');
+      log('       commit it to tsic-default-mod.');
+      log('   If they live only on an unmerged TSIC branch or are parsed from raw');
+      log('   JSON, they belong in schema/property-meta.overrides.json instead.');
+    }
   }
   console.error('\n⚠ Issues remain. If drift: re-run the in-editor game export. If structural: the pack has files missing id/asset_path/class.');
   process.exit(2);
