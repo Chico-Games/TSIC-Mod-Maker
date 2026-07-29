@@ -17,7 +17,11 @@ function removeBootSpinner() {
 const unsubBoot = useDefinitionsStore.subscribe((s, prev) => {
   const definitionsReady = !s.loading && s.definitions.size > 0;
   const gateOpen = Boolean(s.loadGate || s.restoreDraftPrompt || s.futureVersionBlock);
-  if (definitionsReady || gateOpen) {
+  // A bootstrap that ends with nothing loaded is a legitimate state — no saved
+  // project, no pin, defaults declined. Waiting on definitions alone left the
+  // overlay up over a working app, eating every click.
+  const bootFinished = s.bootstrapDone && !s.loading;
+  if (definitionsReady || gateOpen || bootFinished) {
     removeBootSpinner();
     unsubBoot();
   }

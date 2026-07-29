@@ -39,6 +39,26 @@ export interface PackOptions {
   baseSource: string;
   /** Editor version label written into mod.json. */
   editorVersion: string;
+  /** Mod identity the GAME requires (FScpModDiscovery::ReadModMetadata reads
+   *  `id`/`displayName`/`version` out of mod.json and refuses the mod without
+   *  the first and third). The installer unpacks to `Mods/<mod.io name_id>/`,
+   *  so `modId` should be that slug. Omitted only when the project has not
+   *  been bound to a mod.io mod yet, in which case the installer fills them in
+   *  from the mod.io listing at install time. */
+  modId?: string;
+  displayName?: string;
+  version?: string;
+}
+
+/** Slug that satisfies the game's ScpMod::IsSafeModId (lowercase alphanumerics,
+ *  dot, dash, underscore) so a locally-derived id can never make a mod
+ *  un-installable. */
+export function toSafeModId(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64);
 }
 
 /** Build a delta ZIP: only records that differ from the starter catalog are
@@ -80,7 +100,18 @@ export async function buildDeltaZip(
     entries.push({ path: `${rec.folder}/${rec.id}.json`, data });
   }
 
+  // The game reads this same file: `id` and `version` are mandatory for
+  // FScpModDiscovery to accept the mod at all, and a mod it cannot read is
+  // installed-but-invisible. They sit alongside the editor's own build
+  // provenance rather than in a nested block so the file is exactly the
+  // hand-authored mod.json format a modder would otherwise write by hand.
+  const identity: Record<string, string> = {};
+  if (opts.modId) identity.id = toSafeModId(opts.modId);
+  if (opts.displayName) identity.displayName = opts.displayName;
+  if (opts.version) identity.version = opts.version;
+
   const manifest = {
+    ...identity,
     schema_version: 1,
     generated_by: 'tsic-definition-editor',
     generated_at: new Date().toISOString(),

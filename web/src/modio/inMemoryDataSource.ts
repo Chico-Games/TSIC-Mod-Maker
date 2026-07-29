@@ -53,6 +53,7 @@ export class InMemoryDataSource implements DataSource {
   // Mod ZIPs carry no `_schema.json`, so there's nothing to translate — the
   // stored text is already what the loader should ingest. Mirrors readFile.
   async toEnvelopeText(text: string): Promise<string> { return text; }
+  async toLeanText(text: string): Promise<string> { return text; }
 
   async readProjectMeta(): Promise<ProjectMeta | null> {
     return this.projectMeta;

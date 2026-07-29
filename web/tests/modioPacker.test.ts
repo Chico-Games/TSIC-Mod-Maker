@@ -79,3 +79,46 @@ test('defaultCatalogFromLoaded converts a DefaultProject to a StarterCatalog', (
   const catalog = defaultCatalogFromLoaded(def);
   assert.equal(catalog.get('items/A'), '{\n  "id": "A"\n}\n');
 });
+
+test('packer: mod.json carries the identity the game requires', async () => {
+  // FScpModDiscovery::ReadModMetadata refuses a mod whose mod.json has no
+  // `id` or no `version`. A published mod missing them installs and then never
+  // appears in game, so the packer has to write them.
+  const records: DefinitionRecord[] = [rec('items', 'C', { id: 'C', val: 3 })];
+  const out = await buildDeltaZip(records, new Map(), {
+    editorVersion: '0.0.0',
+    baseSource: 'default-project',
+    modId: 'My Cool Mod',
+    displayName: 'My Cool Mod',
+    version: '1.2.3',
+  });
+
+  const entries = await readZipAsync(await out.blob.arrayBuffer());
+  const manifest = JSON.parse(
+    new TextDecoder().decode(entries!.find((e) => e.path === 'mod.json')!.data),
+  );
+
+  // Slugged, because the id doubles as the on-disk folder name and the game
+  // rejects anything outside [a-z0-9._-].
+  assert.equal(manifest.id, 'my-cool-mod');
+  assert.equal(manifest.displayName, 'My Cool Mod');
+  assert.equal(manifest.version, '1.2.3');
+  // The editor's own build provenance still rides along.
+  assert.equal(manifest.generated_by, 'tsic-definition-editor');
+  assert.equal(manifest.files.length, 1);
+});
+
+test('packer: identity is omitted, not faked, when the project is unbound', async () => {
+  // No mod.io slug exists before the mod is created, and inventing one here
+  // would disagree with the folder the installer actually unpacks to.
+  const out = await buildDeltaZip([rec('items', 'C', { id: 'C', val: 3 })], new Map(), {
+    editorVersion: '0.0.0',
+    baseSource: 'default-project',
+  });
+  const entries = await readZipAsync(await out.blob.arrayBuffer());
+  const manifest = JSON.parse(
+    new TextDecoder().decode(entries!.find((e) => e.path === 'mod.json')!.data),
+  );
+  assert.equal('id' in manifest, false);
+  assert.equal('version' in manifest, false);
+});

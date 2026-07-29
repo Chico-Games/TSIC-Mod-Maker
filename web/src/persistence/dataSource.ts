@@ -1,5 +1,6 @@
 import type { ProjectMeta } from '../store/definitionsStore';
 import {
+  applyLeanSchemaOverrides,
   envelopePropsToLean,
   isLeanProperties,
   leanPropsToEnvelope,
@@ -65,6 +66,12 @@ export interface DataSource {
    *  Default Project preload) without losing the lean→envelope translation
    *  that `readFile` would otherwise apply. */
   toEnvelopeText(text: string): Promise<string>;
+  /** Convert an in-memory envelope file's text back to lean form (the bytes
+   *  that hit disk) using this pack's `_schema.json`. Mirror of
+   *  `toEnvelopeText`; no-op for packs without a schema. Overlay diffing uses
+   *  this so it can compare the working set's lean text against the default's
+   *  (already lean) text — same representation on both sides. */
+  toLeanText(text: string): Promise<string>;
   writeFile?(folder: string, id: string, text: string): Promise<void>;
   deleteFile?(folder: string, id: string): Promise<void>;
   renameFile?(fromFolder: string, fromId: string, toFolder: string, toId: string): Promise<void>;
@@ -117,7 +124,7 @@ export class HttpDataSource implements DataSource {
         try {
           const r = await this.fetcher(`${this.baseUrl}/_schema.json`);
           if (!r.ok) return null;
-          return JSON.parse(await r.text()) as LeanSchema;
+          return applyLeanSchemaOverrides(JSON.parse(await r.text()) as LeanSchema);
         } catch { return null; }
       })();
     }
@@ -133,6 +140,10 @@ export class HttpDataSource implements DataSource {
 
   async toEnvelopeText(text: string): Promise<string> {
     return leanTextToEnvelope(text, await this.getSchema());
+  }
+
+  async toLeanText(text: string): Promise<string> {
+    return envelopeTextToLean(text, await this.getSchema());
   }
 
   async readProjectMeta(): Promise<ProjectMeta> {
@@ -228,7 +239,7 @@ export class FsaDataSource implements DataSource {
       this.schemaCache = (async () => {
         try {
           const fh = await this.rootHandle.getFileHandle('_schema.json');
-          return JSON.parse(await (await fh.getFile()).text()) as LeanSchema;
+          return applyLeanSchemaOverrides(JSON.parse(await (await fh.getFile()).text()) as LeanSchema);
         } catch { return null; }
       })();
     }
@@ -244,6 +255,10 @@ export class FsaDataSource implements DataSource {
 
   async toEnvelopeText(text: string): Promise<string> {
     return leanTextToEnvelope(text, await this.getSchema());
+  }
+
+  async toLeanText(text: string): Promise<string> {
+    return envelopeTextToLean(text, await this.getSchema());
   }
 
   async writeFile(folder: string, id: string, text: string): Promise<void> {

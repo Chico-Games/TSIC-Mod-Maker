@@ -128,3 +128,66 @@ test('computeOverlay: not-in-default key is an addition', () => {
   assert.equal(diff.additions.size, 1);
   assert.equal(diff.additions.get('items/X').id, 'X');
 });
+
+// ── Bug 3 regression: lean⇆envelope representation mismatch ─────────────────
+// On disk (default) records are LEAN; the working set holds ENVELOPE JSON. The
+// two canonical texts never match, so before the fix computeOverlay flagged
+// EVERY record as an override and Save-As wrote the whole tree. The fix: pass a
+// `key → lean text` map so the comparison is lean-vs-lean.
+//
+// Model it with a lean text that differs from the working record's own
+// canonical (envelope) text, exactly like the real pack.
+test('computeOverlay: envelope working set with NO edits produces zero overrides (Bug 3)', () => {
+  const leanText = '{\n  "id": "A",\n  "properties": {\n    "v": 1\n  }\n}\n';
+  const def: DefaultProject = {
+    meta: { schema_version: 1, version: 1, label: '', published_at: '2026-07-07T00:00:00Z' },
+    records: new Map([['items/A', { id: 'A', properties: { v: 1 } }]]),
+    texts: new Map([['items/A', leanText]]),
+  };
+  // Working record in ENVELOPE form — its canonical text differs from lean.
+  const envelopeJson = { id: 'A', properties: { v: { type: 'int', value: 1 } } };
+  const working = new Map([['items/A', {
+    folder: 'items', id: 'A', json: envelopeJson,
+    originalText: JSON.stringify(envelopeJson, null, 2) + '\n', diskFolder: 'items', diskId: 'A',
+  }]]) as any;
+
+  // Sanity: without the lean map the old comparison wrongly flags an override.
+  assert.equal(computeOverlay(def, working).overrides.size, 1);
+
+  // With the lean map (what the writer would emit), zero overrides / additions.
+  const workingLean = new Map([['items/A', leanText]]);
+  const diff = computeOverlay(def, working, workingLean);
+  assert.equal(diff.overrides.size, 0, 'unchanged record must not be an override');
+  assert.equal(diff.additions.size, 0);
+  assert.equal(diff.tombstones.size, 0);
+});
+
+test('computeOverlay: exactly one edited envelope record is an override (Bug 3)', () => {
+  const leanA = '{\n  "id": "A",\n  "properties": {\n    "v": 1\n  }\n}\n';
+  const leanB = '{\n  "id": "B",\n  "properties": {\n    "v": 2\n  }\n}\n';
+  const def: DefaultProject = {
+    meta: { schema_version: 1, version: 1, label: '', published_at: '2026-07-07T00:00:00Z' },
+    records: new Map<string, any>([
+      ['items/A', { id: 'A', properties: { v: 1 } }],
+      ['items/B', { id: 'B', properties: { v: 2 } }],
+    ]),
+    texts: new Map([['items/A', leanA], ['items/B', leanB]]),
+  };
+  const mkRec = (id: string, json: any) => ({
+    folder: 'items', id, json,
+    originalText: JSON.stringify(json, null, 2) + '\n', diskFolder: 'items', diskId: id,
+  });
+  const working = new Map<string, any>([
+    ['items/A', mkRec('A', { id: 'A', properties: { v: { type: 'int', value: 1 } } })],
+    ['items/B', mkRec('B', { id: 'B', properties: { v: { type: 'int', value: 2 } } })],
+  ]);
+  // B edited (v: 2 → 99); A unchanged. Lean texts reflect the writer's output.
+  const workingLean = new Map([
+    ['items/A', leanA],
+    ['items/B', '{\n  "id": "B",\n  "properties": {\n    "v": 99\n  }\n}\n'],
+  ]);
+  const diff = computeOverlay(def, working, workingLean);
+  assert.equal(diff.overrides.size, 1);
+  assert.ok(diff.overrides.has('items/B'), 'only the edited record is an override');
+  assert.equal(diff.additions.size, 0);
+});
