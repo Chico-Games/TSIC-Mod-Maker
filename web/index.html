@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Public-dir assets are referenced root-absolute; Vite rewrites them
+         against `base` ('./'), which is what keeps these resolving on the
+         GitHub Pages project path rather than the org root. -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>TSIC Definition Editor</title>
     <style>
       html, body { margin: 0; padding: 0; height: 100%; background: #1a1a1a; color: #e7e7e7; font-family: system-ui, sans-serif; }

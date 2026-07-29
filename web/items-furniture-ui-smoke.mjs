@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
+import { autoStopOnExit } from './smoke-server.mjs';
 
 const PORT = 4236;
 
@@ -7,6 +8,7 @@ function startServer() {
   const proc = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
     cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'], shell: true,
   });
+  autoStopOnExit(proc);
   return proc;
 }
 
