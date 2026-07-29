@@ -7,6 +7,7 @@ import { humanizeAssetId } from './definitionsNaming';
 import { SearchableSelect, type SelectOption } from './SearchableSelect';
 import { isClassCompatible, type DragSource, type DropTarget } from '../dnd/dispatch';
 import { useJumpToDefinition } from './useJumpToDefinition';
+import { refWriteValue } from './defRefWrite';
 
 interface Props {
   ownerKey: string;
@@ -37,9 +38,21 @@ export function DefRefSlot(props: Props) {
   let cur: any = rec?.json;
   for (const seg of path) cur = cur?.[seg as any];
 
-  const isRef = cur && typeof cur === 'object' && cur.type === 'definition_ref';
-  const refClass = isRef ? String(cur.class ?? '') : (defaultClass ?? '');
-  const refValue = isRef ? String(cur.value ?? '') : '';
+  // The cell can arrive in several shapes depending on the field's schema
+  // coverage: `definition_ref` (new rows / well-typed fields), `soft_asset_ref`
+  // (recipe input/output keys, death-loot refs — soft object pointers), a
+  // `{type:'string'}` envelope or a bare string (schema-gap fields like
+  // `upgraded_furniture_definition`). Recognize all of them so the slot resolves
+  // and renders instead of showing an empty "pick …" placeholder.
+  const curObj = cur && typeof cur === 'object' ? cur : null;
+  const curType: string = curObj
+    ? String(curObj.type ?? '')
+    : (typeof cur === 'string' ? 'bare_string' : '');
+  const isObjRef = curType === 'definition_ref' || curType === 'soft_asset_ref';
+  const refClass = isObjRef && curObj?.class ? String(curObj.class) : (defaultClass ?? '');
+  const refValue = curObj
+    ? String(curObj.value ?? '')
+    : (curType === 'bare_string' ? String(cur) : '');
 
   const slotKey = `slot:${ownerKey}:${path.join('.')}`;
 
@@ -114,11 +127,7 @@ export function DefRefSlot(props: Props) {
   }, [refClass, assetsOfClass, definitions, findKeyById]);
 
   const setRef = (next: string) => {
-    updateValueAtPath(ownerKey, path, {
-      type: 'definition_ref',
-      class: refClass,
-      value: next,
-    });
+    updateValueAtPath(ownerKey, path, refWriteValue(curType, refClass, next));
   };
 
   const setQty = (val: number) => {
