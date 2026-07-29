@@ -4,8 +4,9 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 180.0,
+    "duration": 600.0,
     "requires_consumption_slot": true,
+    "consumption_sound": "/Game/Characters/Customer/Audio/Cues/SC_Medical.SC_Medical",
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
@@ -22,7 +23,7 @@
       "b_apply_max_stamina_increase": false,
       "max_stamina_increase": 0.0,
       "b_apply_stamina_regen_per_second": true,
-      "stamina_regen_per_second": 2.0,
+      "stamina_regen_per_second": 1.0,
       "b_apply_stamina_regen_delay_reduction": false,
       "stamina_regen_delay_reduction": 0.0,
       "b_apply_percentage_damage_increase": false,
@@ -60,11 +61,13 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Vitamin Pills",
-    "description": "Daily vitamin supplement that boosts maximum health and stamina regeneration. Lasts 3 minutes.",
+    "description": "Daily vitamin supplement. Nothing dramatic, but it lasts all afternoon.",
+    "thumbnail": "/Game/Items/Consumables/Medical/VitaminPills/Textures/T_Thumb_SM_Medicines_08.T_Thumb_SM_Medicines_08",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_VitaminPills_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

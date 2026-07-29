@@ -7,18 +7,51 @@
     "gameplay_tags": [],
     "display_name": "Chef",
     "death_drop_table": [
-      {
-        "world_item": "FD_WoodenSpoon_SI",
-        "count": 1,
-        "weight": 1
-      },
-      {
-        "world_item": "FD_Spatula_SI",
-        "count": 1,
-        "weight": 1
-      }
+      { "world_item": "FD_WoodenSpoon_SI", "count": 1, "weight": 1 },
+      { "world_item": "FD_Spatula_SI", "count": 1, "weight": 1 }
     ],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000
+    "world_gen_priority": 1000,
+    "variants": [
+      {
+        "key": { "name": "EASY", "value": 1 },
+        "value": {
+          "variant_tint": { "r": 1.0, "g": 0.05, "b": 0.05, "a": 1.0 },
+          "damage_multiplier": 1.0,
+          "death_drop_table": [
+            { "world_item": "FD_WoodenSpoon_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_Spatula_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_CookingOil_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "MEDIUM", "value": 2 },
+        "value": {
+          "variant_tint": { "r": 0.05, "g": 1.0, "b": 0.05, "a": 1.0 },
+          "damage_multiplier": 2.0,
+          "death_drop_table": [
+            { "world_item": "FD_WoodenSpoon_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_Spatula_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_CookingOil_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_CafeteriaTray_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "HARD", "value": 3 },
+        "value": {
+          "variant_tint": { "r": 0.05, "g": 0.05, "b": 1.0, "a": 1.0 },
+          "damage_multiplier": 3.0,
+          "death_drop_table": [
+            { "world_item": "FD_WoodenSpoon_SI", "count": 3, "weight": 2 },
+            { "world_item": "FD_Spatula_SI", "count": 3, "weight": 2 },
+            { "world_item": "FD_ScrapMetal_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_CafeteriaTray_SI", "count": 2, "weight": 1 }
+          ]
+        }
+      }
+    ],
+    "shirt_material_slot_index": 2
   }
 }

@@ -10,7 +10,16 @@
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
-    "has_toggled_on_audio": false,
+    "has_toggled_on_audio": true,
+    "toggled_on_audio": {
+      "sound": "/Game/Shared/Audio/Stations/SW_Loop_WaterBoil.SW_Loop_WaterBoil",
+      "volume_multiplier": 0.4,
+      "b_looping": true,
+      "b_attach_to_entity": true,
+      "attenuation_distance": 800.0,
+      "fade_in_time": 0.5,
+      "fade_out_time": 0.8
+    },
     "has_toggled_off_audio": false,
     "has_static_lights": false,
     "has_toggled_on_lights": false,
@@ -19,10 +28,48 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 33.0,
-    "destructible_collection": "/Game/Furniture/SewingMachine/GeometryCollections/GCS_SewingMachine.GCS_SewingMachine",
+    "destructible_collection": "/Game/Kitchen_VOL4/GeometryCollections/GCS_CoffeeMachine_04a.GCS_CoffeeMachine_04a",
     "loot_dropped_on_death": [],
     "constructable_item_to_grant": "ID_CoffeeMachine_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.3281,
+          "y": -2.9112,
+          "z": 33.2859
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 30.8657,
+          "y": 22.2218,
+          "z": 25.9529
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.3281,
+          "y": -2.9112,
+          "z": 32.6205
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 44.0938,
+          "y": 31.7454,
+          "z": 33.2729
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -41,7 +88,7 @@
         "z": 1.0
       }
     },
-    "upgrade_recipe": null,
+    "upgrade_recipe": "RD_CoffeeMachineTier2_CN",
     "is_draggable": true,
     "display_name": "Coffee Machine",
     "description": "A simple microwave for basic cooking. Heats and cooks simple meals quickly.",
@@ -49,7 +96,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Fab/Suburban_Household/VOL9_Kitchen/Meshes/NN/SM_Kitchen_Appliances_Set_NN_01a.SM_Kitchen_Appliances_Set_NN_01a",
+    "static_mesh": "/Game/Kitchen_VOL4/Meshes/SM_CoffeeMachine_04a.SM_CoffeeMachine_04a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -59,7 +106,7 @@
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,

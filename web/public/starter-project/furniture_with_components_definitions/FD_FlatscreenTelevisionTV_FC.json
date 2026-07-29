@@ -4,9 +4,10 @@
   "class": "UFurnitureWithComponentsDefinition",
   "schema_version": 2,
   "properties": {
-    "has_static_audio": false,
+    "has_static_audio": true,
     "static_audio": {
-      "volume_multiplier": 1,
+      "sound": "/Game/Furniture/Televisions/Sounds/AmbientSounds/SW_TVStatic.SW_TVStatic",
+      "volume_multiplier": 0.35,
       "pitch_multiplier": 1,
       "b_looping": true,
       "b_attach_to_entity": true,
@@ -28,7 +29,7 @@
           "z": 1
         }
       },
-      "attenuation_distance": 1000,
+      "attenuation_distance": 900,
       "fade_in_time": 0,
       "fade_out_time": 0
     },
@@ -177,7 +178,7 @@
       "LD_TelevisionLoot"
     ],
     "constructable_item_to_grant": "ID_FlatscreenTelevisionTV_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
     "blocking_collision_boxes": [
       {
         "offset": {
@@ -260,7 +261,7 @@
     "friction": 0.699999988079071,
     "restitution": 0.30000001192092896,
     "drag_linear_damping": 5,
-    "drag_angular_damping": 5,
+    "drag_angular_damping": 1.25,
     "drag_max_angular_velocity": 90,
     "release_linear_damping": 0.009999999776482582,
     "release_angular_damping": 0.05000000074505806,

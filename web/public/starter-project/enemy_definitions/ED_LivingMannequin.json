@@ -8,13 +8,94 @@
     "display_name": "Living Mannequin",
     "enemy_class": "/Game/Characters/Enemies/LivingMannequin/Blueprints/CH_LivingMannequin.CH_LivingMannequin_C",
     "death_drop_table": [
-      {
-        "world_item": "FD_MannequinArm_SI",
-        "count": 1,
-        "weight": 1
-      }
+      { "world_item": "FD_MannequinArm_SI", "count": 1, "weight": 1 }
     ],
     "weighted_chance": 1000,
-    "world_gen_priority": 1000
+    "world_gen_priority": 1000,
+    "ai_stack": "v2",
+    "behavior": "BHV_LivingMannequin",
+    "wounded_tag": {
+      "tag": "State.Wounded",
+      "below": 0.5
+    },
+    "perception": "PRC_LivingMannequin",
+    "attacks": [
+      {
+        "ability": "AI.LivingMannequin.Attack.Grab",
+        "weight": 2
+      },
+      {
+        "ability": "AI.LivingMannequin.Attack.Regular",
+        "weight": 1
+      },
+      {
+        "ability": "AI.LivingMannequin.Attack.PowerSwing.Forward",
+        "weight": 0.4
+      }
+    ],
+    "movement_profiles": [
+      {
+        "name": "walk",
+        "max_speed": 160,
+        "accel": 1000,
+        "rotation_rate": 220
+      },
+      {
+        "name": "walk_medium",
+        "max_speed": 330,
+        "accel": 1250,
+        "rotation_rate": 260
+      },
+      {
+        "name": "hurry",
+        "max_speed": 450,
+        "accel": 1600,
+        "rotation_rate": 320
+      },
+      {
+        "name": "sprint",
+        "max_speed": 700,
+        "accel": 2600,
+        "rotation_rate": 420
+      }
+    ],
+    "variants": [
+      {
+        "key": { "name": "EASY", "value": 1 },
+        "value": {
+          "damage_multiplier": 1.0,
+          "death_drop_table": [
+            { "world_item": "FD_MannequinArm_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_Mannequin_2_SI", "count": 1, "weight": 1 },
+            { "world_item": "FD_UpholsteryFabric_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "MEDIUM", "value": 2 },
+        "value": {
+          "damage_multiplier": 2.0,
+          "death_drop_table": [
+            { "world_item": "FD_MannequinArm_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_Mannequin_2_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_UpholsteryFabric_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_Tape_SI", "count": 1, "weight": 1 }
+          ]
+        }
+      },
+      {
+        "key": { "name": "HARD", "value": 3 },
+        "value": {
+          "damage_multiplier": 3.0,
+          "death_drop_table": [
+            { "world_item": "FD_MannequinArm_SI", "count": 3, "weight": 2 },
+            { "world_item": "FD_Mannequin_3_SI", "count": 2, "weight": 1 },
+            { "world_item": "FD_UpholsteryFabric_SI", "count": 3, "weight": 1 },
+            { "world_item": "FD_WoodenDowel_SI", "count": 2, "weight": 1 }
+          ]
+        }
+      }
+    ],
+    "token_cost": 1
   }
 }

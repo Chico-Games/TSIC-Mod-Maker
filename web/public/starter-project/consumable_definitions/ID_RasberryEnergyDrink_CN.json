@@ -4,8 +4,9 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 600.0,
+    "duration": 300.0,
     "requires_consumption_slot": true,
+    "consumption_sound": "/Game/Characters/Customer/Audio/Cues/SC_Drink.SC_Drink",
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
@@ -17,14 +18,14 @@
       "max_health_increase": 0.0,
       "b_apply_flat_armour_increase": false,
       "flat_armour_increase": 0.0,
-      "b_apply_flat_speed_increase": false,
-      "flat_speed_increase": 0.0,
+      "b_apply_flat_speed_increase": true,
+      "flat_speed_increase": 0.06,
       "b_apply_max_stamina_increase": false,
       "max_stamina_increase": 0.0,
-      "b_apply_stamina_regen_per_second": false,
-      "stamina_regen_per_second": 0.0,
-      "b_apply_stamina_regen_delay_reduction": false,
-      "stamina_regen_delay_reduction": 0.0,
+      "b_apply_stamina_regen_per_second": true,
+      "stamina_regen_per_second": 3.0,
+      "b_apply_stamina_regen_delay_reduction": true,
+      "stamina_regen_delay_reduction": 0.3,
       "b_apply_percentage_damage_increase": false,
       "percentage_damage_increase": 0.0,
       "b_apply_flat_damage_increase": false,
@@ -60,11 +61,13 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Raspberry Energy Drink",
-    "description": "Energy drink with high caffeine content.",
+    "description": "Energy drink with an irresponsible caffeine content. Tastes of raspberry and regret.",
+    "thumbnail": "/Game/Items/Consumables/UncookedFood/EnergyDrink/Textures/T_Thumb_SM_DrinkCan_4.T_Thumb_SM_DrinkCan_4",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_RasberryEnergyDrink_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

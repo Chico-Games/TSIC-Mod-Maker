@@ -1,0 +1,128 @@
+{
+ "id": "SKL_Engage",
+ "class": "ScpSkillDefinition",
+ "properties": {
+  "inputs": {
+   "Target": "actor",
+   "Attack": "tag"
+  },
+  "states": [
+   {
+    "name": "CloseIn",
+    "initial": true,
+    "actions": [
+     {
+      "do": "claim_attack_token",
+      "target": "$In.Target",
+      "timeout": 4
+     },
+     {
+      "do": "move_to",
+      "target": "$In.Target",
+      "acceptance": "$Attack.MaxRange",
+      "acceptance_scale": 0.9,
+      "speed_profile": "sprint",
+      "repath_if_moved": 100
+     }
+    ],
+    "transitions": [
+     {
+      "on": "event",
+      "event": "AI.Event.PathBlocked",
+      "to": "ClearPath",
+      "conditions": [
+       {
+        "if": "can_break_furniture",
+        "entity": "$Path.BlockingEntity"
+       }
+      ]
+     },
+     {
+      "on": "event",
+      "event": "AI.Event.TokenLost",
+      "to": "CloseIn"
+     },
+     {
+      "on": "actions_succeeded",
+      "conditions": [
+       {
+        "if": "has_attack"
+       }
+      ],
+      "to": "Swing"
+     },
+     {
+      "on": "actions_succeeded",
+      "to": "CloseIn"
+     },
+     {
+      "on": "action_failed",
+      "conditions": [
+       {
+        "if": "has_attack"
+       }
+      ],
+      "to": "Swing"
+     },
+     {
+      "on": "action_failed",
+      "to": "CloseIn"
+     }
+    ]
+   },
+   {
+    "name": "ClearPath",
+    "actions": [
+     {
+      "do": "run_skill",
+      "skill": "SKL_DestroyEntity",
+      "params": {
+       "Entity": "$Path.BlockingEntity",
+       "Ability": "$Attack.Melee"
+      }
+     }
+    ],
+    "transitions": [
+     {
+      "on": "actions_succeeded",
+      "to": "CloseIn"
+     },
+     {
+      "on": "action_failed",
+      "to": "CloseIn"
+     }
+    ]
+   },
+   {
+    "name": "Swing",
+    "min_commit_seconds": 0.6,
+    "actions": [
+     {
+      "do": "activate_ability",
+      "ability": "$In.Attack"
+     }
+    ],
+    "transitions": [
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "has_attack_token",
+        "negate": true
+       }
+      ],
+      "to": "CloseIn"
+     },
+     {
+      "on": "actions_succeeded",
+      "to": "CloseIn"
+     },
+     {
+      "on": "action_failed",
+      "to": "CloseIn"
+     }
+    ]
+   }
+  ]
+ }
+}

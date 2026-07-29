@@ -17,12 +17,50 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 60.0,
-    "destructible_collection": "/Game/Furniture/Checkout/GeometryCollections/GCS_Checkout_Computer_01a.GCS_Checkout_Computer_01a",
+    "destructible_collection": "/Game/Grocery/VOL1/Meshes/GeometryCollections/GCS_Register_Set_NN_01a.GCS_Register_Set_NN_01a",
     "loot_dropped_on_death": [
       "LD_CheckoutLoot"
     ],
     "constructable_item_to_grant": "ID_CashRegister_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.0166,
+          "y": 20.6847,
+          "z": 15.3011
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 15.655,
+          "y": 33.0799,
+          "z": 12.1457
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.0166,
+          "y": 20.6847,
+          "z": 14.9896
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 22.3643,
+          "y": 47.2571,
+          "z": 15.5715
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -49,7 +87,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Checkout/Meshes/SM_Checkout_Computer_01a.SM_Checkout_Computer_01a",
+    "static_mesh": "/Game/Grocery/VOL1/Meshes/NN/SM_Register_Set_NN_01a.SM_Register_Set_NN_01a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -59,7 +97,7 @@
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,

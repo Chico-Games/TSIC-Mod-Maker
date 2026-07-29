@@ -1,0 +1,63 @@
+{
+  "id": "PRC_BaseHostile",
+  "class": "ScpPerceptionDefinition",
+  "properties": {
+    "abstract": true,
+    "update_interval": {
+      "near": 0.1,
+      "mid": 0.25,
+      "far": 0.75
+    },
+    "sight": {
+      "cone_angle": 70,
+      "range": 2500,
+      "peripheral_cone_angle": 160,
+      "peripheral_range": 900,
+      "peripheral_gain": 0.4,
+      "auto_detect_radius": 150,
+      "time_to_spot": 1.5,
+      "time_to_forget_glimpse": 4,
+      "memory_seconds": 30,
+      "ghost_track_seconds": 5,
+      "stealth": {
+        "spot_multiplier": 0.35,
+        "range_multiplier": 0.6
+      },
+      "motion": {
+        "still": 0.6,
+        "sprint": 1.5
+      }
+    },
+    "hearing": {
+      "acuity": 1,
+      "occlusion_attenuation": 0.5,
+      "noise_lifetime": 8
+    },
+    "damage": {
+      "total_halflife": 7,
+      "recent_window": 2
+    },
+    "observed": {
+      "enabled": false
+    },
+    "targeting": {
+      "target_priority": [
+        "strongest_attacker",
+        "closest_spotted"
+      ],
+      "switch_damage": 25,
+      "alert_allies_radius": 1500,
+      "patrol_return_distance": 6000
+    },
+    "day_section_overrides": {
+      "Gameplay.DaySection.Night": {
+        "sight": {
+          "range": 3500,
+          "time_to_spot": 0.9,
+          "time_to_forget_glimpse": 13,
+          "memory_seconds": 120
+        }
+      }
+    }
+  }
+}

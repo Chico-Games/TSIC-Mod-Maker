@@ -1,0 +1,91 @@
+{
+  "id": "ID_ContainmentTrap_EQ",
+  "asset_path": "/Game/Items/Equipment/Traps/BasicTrap/ID_ContainmentTrap_EQ",
+  "class": "UTrapItemDefinition",
+  "schema_version": 2,
+  "properties": {
+    "projectile_class": "/Game/Items/Equipment/Traps/BasicTrap/BP_TrapProjectile.BP_TrapProjectile_C",
+    "initial_velocity": {
+      "x": 800.0,
+      "y": 0.0,
+      "z": 200.0
+    },
+    "capturable_enemy_classes": [
+      "/Game/Characters/Enemies/TVHead/Blueprints/CH_TVHead.CH_TVHead_C",
+      "/Game/Characters/Enemies/BoneHead/Blueprints/CH_BoneHead.CH_BoneHead_C"
+    ],
+    "equipment_actors_and_meshes": [],
+    "ability_sets_to_grant": [
+      "/Game/Items/Equipment/Traps/BasicTrap/AS_ThrowTrap.AS_ThrowTrap"
+    ],
+    "effects_to_apply": {
+      "b_apply_heal_per_second": false,
+      "heal_per_second": 0.0,
+      "b_apply_instant_heal": false,
+      "instant_heal": 0.0,
+      "b_apply_max_health_increase": false,
+      "max_health_increase": 0.0,
+      "b_apply_flat_armour_increase": false,
+      "flat_armour_increase": 0.0,
+      "b_apply_flat_speed_increase": false,
+      "flat_speed_increase": 0.0,
+      "b_apply_max_stamina_increase": false,
+      "max_stamina_increase": 0.0,
+      "b_apply_stamina_regen_per_second": false,
+      "stamina_regen_per_second": 0.0,
+      "b_apply_stamina_regen_delay_reduction": false,
+      "stamina_regen_delay_reduction": 0.0,
+      "b_apply_percentage_damage_increase": false,
+      "percentage_damage_increase": 0.0,
+      "b_apply_flat_damage_increase": false,
+      "flat_damage_increase": 0.0,
+      "b_apply_life_steal_percentage": false,
+      "life_steal_percentage": 0.0,
+      "b_apply_flat_satiation": false,
+      "flat_satiation": 0.0,
+      "b_apply_satiation_per_second": false,
+      "satiation_per_second": 0.0,
+      "b_apply_radiation_immunity": false,
+      "radiation_immunity": false,
+      "b_apply_cold_immunity": false,
+      "cold_immunity": false,
+      "b_apply_heat_immunity": false,
+      "heat_immunity": false,
+      "b_apply_water_breathing": false,
+      "water_breathing": false,
+      "b_apply_carry_capacity_increase": false,
+      "carry_capacity_increase": 0.0,
+      "b_apply_tool_durability_multiplier": false,
+      "tool_durability_multiplier": 0.0,
+      "b_apply_xp_gain_multiplier": false,
+      "xp_gain_multiplier": 0.0,
+      "f_gameplay_effect_with_modifiers": [],
+      "input_mapping_config": {
+        "input_mapping_contexts_to_add": [],
+        "input_mapping_contexts_to_remove": [],
+        "b_local_player_only": true
+      }
+    },
+    "has_durability": false,
+    "has_ammo": false,
+    "max_ammo": 0,
+    "stackable": true,
+    "weight": 0.10000000149011612,
+    "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
+    "item_category_tag": "Entity.Inventory.Item.Category.Tool",
+    "capture_radius": 350.0,
+    "deployed_lifetime_seconds": 60.0,
+    "capture_glow_material": "/Game/Items/Equipment/Traps/BasicTrap/Materials/M_TrapCaptureGlow.M_TrapCaptureGlow",
+    "capture_glow_mesh_unit_radius": 50.0,
+    "capture_glow_color": {
+      "r": 1.0,
+      "g": 0.55,
+      "b": 0.15,
+      "a": 1.0
+    },
+    "capture_glow_opacity": 0.07,
+    "max_stack_size": 10,
+    "display_name": "Containment Trap",
+    "description": "An SCP-grade capture rig baited with rare fruit. Can hold even the worst of them."
+  }
+}

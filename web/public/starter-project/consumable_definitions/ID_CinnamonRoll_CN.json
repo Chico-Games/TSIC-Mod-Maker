@@ -4,7 +4,7 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 600.0,
+    "duration": 780.0,
     "requires_consumption_slot": true,
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
@@ -18,9 +18,9 @@
       "b_apply_flat_armour_increase": false,
       "flat_armour_increase": 0.0,
       "b_apply_flat_speed_increase": true,
-      "flat_speed_increase": 25.0,
-      "b_apply_max_stamina_increase": false,
-      "max_stamina_increase": 0.0,
+      "flat_speed_increase": 0.04,
+      "b_apply_max_stamina_increase": true,
+      "max_stamina_increase": 18.0,
       "b_apply_stamina_regen_per_second": false,
       "stamina_regen_per_second": 0.0,
       "b_apply_stamina_regen_delay_reduction": false,
@@ -32,7 +32,7 @@
       "b_apply_life_steal_percentage": false,
       "life_steal_percentage": 0.0,
       "b_apply_flat_satiation": true,
-      "flat_satiation": 30.0,
+      "flat_satiation": 40.0,
       "b_apply_satiation_per_second": false,
       "satiation_per_second": 0.0,
       "b_apply_radiation_immunity": false,
@@ -60,11 +60,12 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Warm Cinnamon Roll",
-    "description": "A warm, sweet cinnamon roll. Boosts morale significantly.",
+    "description": "A warm, sweet cinnamon roll. Lifts the spirits and the pace.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_CinnamonRoll_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

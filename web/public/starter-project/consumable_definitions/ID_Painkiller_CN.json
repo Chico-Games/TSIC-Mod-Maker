@@ -4,19 +4,20 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 60.0,
+    "duration": 180.0,
     "requires_consumption_slot": true,
+    "consumption_sound": "/Game/Characters/Customer/Audio/Cues/SC_Medical.SC_Medical",
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
       "b_apply_heal_per_second": false,
       "heal_per_second": 0.0,
       "b_apply_instant_heal": true,
-      "instant_heal": 20.0,
+      "instant_heal": 10.0,
       "b_apply_max_health_increase": false,
       "max_health_increase": 0.0,
       "b_apply_flat_armour_increase": true,
-      "flat_armour_increase": 5.0,
+      "flat_armour_increase": 4.0,
       "b_apply_flat_speed_increase": false,
       "flat_speed_increase": 0.0,
       "b_apply_max_stamina_increase": false,
@@ -60,11 +61,13 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Painkiller",
-    "description": "Pain relief medication that provides instant healing and temporary armor boost. Effective for 1 minute.",
+    "description": "Pain relief medication. Takes the edge off a wound, and off the next one.",
+    "thumbnail": "/Game/Items/Consumables/Medical/Painkiller/Textures/T_Thumb_SM_Medicines_06.T_Thumb_SM_Medicines_06",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_Painkiller_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

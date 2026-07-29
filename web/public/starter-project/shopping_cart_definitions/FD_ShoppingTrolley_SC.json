@@ -19,7 +19,46 @@
     "has_toggled_off_vfx": false,
     "starting_health": 100.0,
     "loot_dropped_on_death": [],
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.2325,
+          "y": 0,
+          "z": 63.7495
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 30.8149,
+          "y": 18.0765,
+          "z": 31.9361
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.2325,
+          "y": 0,
+          "z": 53.8383
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 53.1292,
+          "y": 31.1663,
+          "z": 55.0622
+        }
+      }
+    ],
+    "constructable_item_to_grant": "ID_ShoppingTrolley_CI",
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -53,6 +92,7 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
+    "destructible_collection": "/Game/Fab/ShoppingMarketVOL2_Supermarket/GeometryCollections/GCS_Shopping_Cart_01a.GCS_Shopping_Cart_01a",
     "destruction_impulse_strength": 0.0,
     "drag_angular_damping": 0.0,
     "drag_linear_damping": 0.0,
@@ -66,6 +106,32 @@
     "release_linear_damping": 0.0,
     "restitution": 0.20000000298023224,
     "tip_over_angle": 45.0,
-    "upright_friction": 0.10000000149011612
+    "upright_friction": 0.10000000149011612,
+    "handle_local_direction": {
+      "x": -1.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "mount_hold_time": 0.6,
+    "ride_prompt_text": "Ride",
+    "drive_prompt_text": "Drive",
+    "ride_seat_offset": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 110.0
+    },
+    "drive_handle_offset": {
+      "x": -85.0,
+      "y": 0.0,
+      "z": 90.0
+    },
+    "push_force": 1200.0,
+    "max_push_speed": 500.0,
+    "sprint_push_multiplier": 1.5,
+    "steer_torque_strength": 8.0,
+    "steer_torque_damping": 2.0,
+    "upright_stabilization_strength": 30.0,
+    "upright_stabilization_damping": 11.0,
+    "drive_stamina_drain_per_tick": 2.0
   }
 }

@@ -110,8 +110,23 @@ if (!propertyMetaSrc && existsSync(join(PACK_DIR, '.property-meta.json'))) {
   propertyMetaSrc = join(PACK_DIR, '.property-meta.json');
 }
 if (propertyMetaSrc) {
+  // The pack's committed .property-meta.json is a generated sidecar and goes stale
+  // whenever the mod's data outruns its last regeneration — data gains properties
+  // the sidecar never learned about, and every one shows up as drift. That is
+  // silent unless we compare, because the fallback simply overwrites. Warn (don't
+  // block: a genuine upstream removal legitimately shrinks the count).
+  const fromPack = !propertyMetaSrc.includes('test-output');
+  if (fromPack && existsSync(join(WEB_SCHEMA, 'property-meta.json'))) {
+    const nOld = Object.keys(readJSON(join(WEB_SCHEMA, 'property-meta.json')).properties || {}).length;
+    const nNew = Object.keys(readJSON(propertyMetaSrc).properties || {}).length;
+    if (nNew < nOld) {
+      warn(`pack sidecar has FEWER properties than the current bundle (${nNew} vs ${nOld}) — it is probably stale.`);
+      warn(`  Regenerate it upstream (TSIC/Tools/Export/scan_property_meta.py, commit to tsic-default-mod),`);
+      warn(`  or re-run without --no-scan to scan the local TSIC headers directly.`);
+    }
+  }
   copyFileSync(propertyMetaSrc, join(WEB_SCHEMA, 'property-meta.json'));
-  log(`   wrote property-meta.json (from ${propertyMetaSrc.includes('test-output') ? 'header scan' : 'pack'})`);
+  log(`   wrote property-meta.json (from ${fromPack ? 'pack' : 'header scan'})`);
 }
 // Merge editor-side overrides: Blueprint-defined properties that have no C++
 // UPROPERTY anywhere in Source/, so the header scanner can't see them. Without
@@ -132,6 +147,12 @@ if (existsSync(OVERRIDES)) {
 }
 const propertyMeta = readJSON(join(WEB_SCHEMA, 'property-meta.json'));
 const pmKeys = new Set(Object.keys(propertyMeta.properties || {}));
+
+// Pack-level inheritance directives read off `properties` by the game's
+// DefinitionPackSubsystem and stripped before deserialization. Not properties of
+// any class, so never scannable — mirrors PACK_DIRECTIVE_PROPS in
+// src/persistence/schemaDriftValidator.ts (keep the two in sync).
+const PACK_DIRECTIVE_PROPS = new Set(['extends', 'abstract']);
 
 // ── header parent map (for self-healing the hierarchy) ──────────────────────
 function buildHeaderParentMap() {
@@ -182,6 +203,28 @@ for (const folder of listDefFolders(PACK_DIR)) {
     e.count++; dataClasses.set(full, e);
   }
 }
+// Merge editor-side parent chains BEFORE the self-heal below, so a class with an
+// override gets its real family chain instead of the degraded [UDataAsset,
+// UObject] fallback. Precedence: pack > overrides > self-heal.
+const HIERARCHY_OVERRIDES = join(WEB_SCHEMA, 'class-hierarchy.overrides.json');
+if (existsSync(HIERARCHY_OVERRIDES)) {
+  let applied = 0;
+  for (const [full, o] of Object.entries(readJSON(HIERARCHY_OVERRIDES).classes || {})) {
+    if (hierarchy.classes[full]) continue;      // exporter data wins
+    if (!dataClasses.has(full)) continue;       // don't add classes the pack never uses
+    const { folder, count } = dataClasses.get(full);
+    hierarchy.classes[full] = {
+      folder,
+      instance_count: count,
+      parents: o.parents,
+      family_root: o.family_root || full,
+    };
+    applied++;
+    log(`   + override class ${full} (parents: ${o.parents.join(' → ')})`);
+  }
+  if (applied) log(`   applied ${applied} class-hierarchy override(s) from class-hierarchy.overrides.json`);
+}
+
 const parentMap = buildHeaderParentMap();
 let healed = 0;
 for (const [full, { folder, count }] of dataClasses) {
@@ -317,6 +360,7 @@ for (const folder of listDefFolders(WEB_STARTER)) {
     if (!props || typeof props !== 'object') continue;
     const bc = chainOf(full).map(bare);
     for (const p of Object.keys(props)) {
+      if (PACK_DIRECTIVE_PROPS.has(p)) continue;
       if (!bc.some((cc) => pmKeys.has(`${cc}.${p}`))) {
         const k = `${bare(full)}.${p}`;
         unknownProp[k] = (unknownProp[k] || 0) + 1;

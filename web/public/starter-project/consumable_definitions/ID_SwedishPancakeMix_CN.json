@@ -4,7 +4,7 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 30.0,
+    "duration": 180.0,
     "requires_consumption_slot": true,
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
@@ -13,8 +13,8 @@
       "heal_per_second": 0.0,
       "b_apply_instant_heal": false,
       "instant_heal": 0.0,
-      "b_apply_max_health_increase": false,
-      "max_health_increase": 0.0,
+      "b_apply_max_health_increase": true,
+      "max_health_increase": -4.0,
       "b_apply_flat_armour_increase": false,
       "flat_armour_increase": 0.0,
       "b_apply_flat_speed_increase": false,
@@ -60,11 +60,12 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Swedish Pancake Mix",
-    "description": "Pre-packaged mix for Swedish-style thin pancakes. Add water and cook.",
+    "description": "Pre-packaged mix for Swedish-style thin pancakes. Add milk and cook.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_SwedishPancakeMix_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

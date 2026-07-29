@@ -5,8 +5,8 @@
   "schema_version": 2,
   "properties": {
     "starts_toggled_on": true,
-    "toggle_on_cue_tag": "",
-    "toggle_off_cue_tag": "",
+    "toggle_on_cue_tag": "GameplayCue.Furniture.Toggle.On",
+    "toggle_off_cue_tag": "GameplayCue.Furniture.Toggle.Off",
     "gameplay_event_tag": "",
     "layer_name": "",
     "interaction_hold_time": 0,
@@ -101,7 +101,48 @@
     },
     "has_toggled_on_lights": true,
     "toggled_on_light": {
-      "light_datas": []
+      "light_datas": [
+        {
+          "light_type": {
+            "name": "SPOT_LIGHT",
+            "value": 1
+          },
+          "relative_transform": {
+            "rotation": {
+              "x": -0.0,
+              "y": 0.4999999999999998,
+              "z": 0.0,
+              "w": 0.8660254037844388
+            },
+            "translation": {
+              "x": 22.785706985518775,
+              "y": 3.4082663802337265e-07,
+              "z": 125.4090742361185
+            },
+            "scale3_d": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          },
+          "intensity": 1000,
+          "attenuation_radius": 250,
+          "casts_shadows": false,
+          "light_color": {
+            "b": 214,
+            "g": 244,
+            "r": 255,
+            "a": 255
+          },
+          "source_radius": 6.054529190063477,
+          "soft_source_radius": 6.054529190063477,
+          "source_length": 0,
+          "max_draw_distance": 5000,
+          "max_distance_fade_range": 0,
+          "inner_cone_angle": 49.66400146484375,
+          "outer_cone_angle": 56.00799560546875
+        }
+      ]
     },
     "has_toggled_off_lights": false,
     "toggled_off_light": {
@@ -184,7 +225,7 @@
       "LD_MetalLampLoot"
     ],
     "constructable_item_to_grant": "ID_FloorLight_3_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
     "blocking_collision_boxes": [
       {
         "offset": {
@@ -317,7 +358,7 @@
     "friction": 0.699999988079071,
     "restitution": 0.30000001192092896,
     "drag_linear_damping": 5,
-    "drag_angular_damping": 5,
+    "drag_angular_damping": 1.25,
     "drag_max_angular_velocity": 90,
     "release_linear_damping": 0.009999999776482582,
     "release_angular_damping": 0.05000000074505806,

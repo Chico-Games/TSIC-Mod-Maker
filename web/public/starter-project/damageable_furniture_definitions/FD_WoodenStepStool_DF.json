@@ -9,7 +9,45 @@
       "LD_WoodenStepStoolLoot"
     ],
     "constructable_item_to_grant": "ID_WoodenStepStool_CI",
-    "deconstruction_tier": 2,
+    "deconstruction_tier": 1,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.032,
+          "y": 0.0403,
+          "z": 69.4816
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 34.4468,
+          "y": 52.5067,
+          "z": 34.7291
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": -0.032,
+          "y": 0.0403,
+          "z": 58.7036
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 59.3911,
+          "y": 90.5287,
+          "z": 59.8777
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -43,8 +81,9 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
+    "destructible_collection": "/Game/Fab/Wooden_Stairs_with_Platform_Asset__with_LOD_/wooden_step_stool_with_platform/GeometryCollections/GCS_wooden_step_stool_with_platform.GCS_wooden_step_stool_with_platform",
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,

@@ -1,0 +1,63 @@
+{
+  "id": "SKL_Investigate",
+  "class": "ScpSkillDefinition",
+  "properties": {
+    "inputs": {
+      "Spot": "vector"
+    },
+    "states": [
+      {
+        "name": "Approach",
+        "initial": true,
+        "actions": [
+          {
+            "do": "move_to",
+            "target": "$In.Spot",
+            "acceptance": 120,
+            "speed_profile": "hurry",
+            "repath_if_moved": 100
+          }
+        ],
+        "transitions": [
+          {
+            "on": "event",
+            "event": "AI.Event.PoiChanged",
+            "to": "Approach"
+          },
+          {
+            "on": "actions_succeeded",
+            "to": "LookAround"
+          },
+          {
+            "on": "action_failed",
+            "result": "failed"
+          }
+        ]
+      },
+      {
+        "name": "LookAround",
+        "actions": [
+          {
+            "do": "look_around",
+            "sweeps": 2
+          },
+          {
+            "do": "wait",
+            "seconds": 3
+          }
+        ],
+        "transitions": [
+          {
+            "on": "event",
+            "event": "AI.Event.PoiChanged",
+            "to": "Approach"
+          },
+          {
+            "on": "actions_succeeded",
+            "result": "succeeded"
+          }
+        ]
+      }
+    ]
+  }
+}

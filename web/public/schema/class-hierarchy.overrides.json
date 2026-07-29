@@ -1,0 +1,11 @@
+{
+  "_comment": "Editor-side parent chains for definition classes that the pack's .class-hierarchy.json omits AND whose C++ header is absent from the TSIC checkout refresh-schema.mjs scans, so the header self-heal cannot derive them either. Without an entry such a class degrades to parents [UDataAsset, UObject], which severs it from its family's property metadata and reports every inherited property as schema drift. Precedence in refresh-schema.mjs is pack > overrides > self-heal: real exporter data always wins, these fill gaps, the degraded [UDataAsset, UObject] chain stays the last resort. `parents` is the full chain, nearest ancestor first, ending in UObject. Delete an entry once the pack's exporter emits the class. Parallel mechanism to property-meta.overrides.json and asset-catalog.overrides.json.",
+  "schema_version": 2,
+  "classes": {
+    "UOutfitDefinition": {
+      "_why": "Added on TSIC branch `metahuman` (commit 79fcf7940, 'MetaHuman migration groundwork: Outfit slot + leader-posed clothing system'), never merged to main — so no OutfitDefinition.h exists in the scanned Source/ tree, while tsic-default-mod@beta already ships ID_BeachOutfit_OF + ID_HazmatSuit_OF. Chain mirrors its sibling UGloveDefinition. Drop this once `metahuman` merges.",
+      "parents": ["UEquippableDefinition", "UItemDefinition", "UDataAsset", "UObject"],
+      "family_root": "UItemDefinition"
+    }
+  }
+}

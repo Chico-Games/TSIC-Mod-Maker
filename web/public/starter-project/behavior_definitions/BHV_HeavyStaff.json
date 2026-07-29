@@ -1,0 +1,191 @@
+{
+  "id": "BHV_HeavyStaff",
+  "class": "ScpBehaviorDefinition",
+  "properties": {
+    "root_eval_interval": 0.2,
+    "roots": [
+      {
+        "name": "Combat",
+        "when": [
+          {
+            "if": "has_target"
+          },
+          {
+            "if": "target_within",
+            "distance": 420
+          }
+        ],
+        "hold_seconds": 1.5,
+        "nav_policy": "breach",
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_Engage",
+            "params": {
+              "Target": "$Perception.Target",
+              "Attack": "$Attack.Tag"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Chase",
+        "when": [
+          {
+            "if": "has_target"
+          },
+          {
+            "if": "time_since_seen",
+            "under": 12
+          }
+        ],
+        "hold_seconds": 1,
+        "fail_cooldown": 6,
+        "nav_policy": "breach",
+        "states": [
+          {
+            "name": "Pursue",
+            "initial": true,
+            "actions": [
+              {
+                "do": "move_to",
+                "target": "$Perception.TargetLocation",
+                "acceptance": 250,
+                "speed_profile": "sprint",
+                "repath_if_moved": 150
+              }
+            ],
+            "transitions": [
+              {
+                "on": "event",
+                "event": "AI.Event.PathBlocked",
+                "to": "ClearPath",
+                "conditions": [
+                  {
+                    "if": "can_break_furniture",
+                    "entity": "$Path.BlockingEntity"
+                  }
+                ]
+              },
+              {
+                "on": "actions_succeeded",
+                "to": "Pursue"
+              },
+              {
+                "on": "action_failed",
+                "to": "Pursue"
+              }
+            ]
+          },
+          {
+            "name": "ClearPath",
+            "actions": [
+              {
+                "do": "run_skill",
+                "skill": "SKL_DestroyEntity",
+                "params": {
+                  "Entity": "$Path.BlockingEntity",
+                  "Ability": "AI.HeavyStaff.Attack.Melee"
+                }
+              }
+            ],
+            "transitions": [
+              {
+                "on": "actions_succeeded",
+                "to": "Pursue"
+              },
+              {
+                "on": "action_failed",
+                "to": "Pursue"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Search",
+        "when": [
+          {
+            "if": "has_target"
+          }
+        ],
+        "actions": [
+          {
+            "do": "wander",
+            "origin": "$Perception.PointOfInterest",
+            "ring_min": 100,
+            "ring_max": 1000,
+            "leg_seconds": 6,
+            "pause_seconds": 1.5,
+            "speed_profile": "walk_medium"
+          }
+        ]
+      },
+      {
+        "name": "Search",
+        "when": [
+          {
+            "if": "target_lost_within",
+            "seconds": 15
+          }
+        ]
+      },
+      {
+        "name": "AttackNuisance",
+        "when": [
+          {
+            "if": "has_nuisance",
+            "min_damage": 5
+          }
+        ],
+        "nav_policy": "breach",
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_DestroyEntity",
+            "params": {
+              "Entity": "$Perception.Nuisance",
+              "Ability": "AI.HeavyStaff.Attack.Melee"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Investigate",
+        "when": [
+          {
+            "if": "heard_noise_within",
+            "seconds": 8
+          }
+        ],
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_Investigate",
+            "params": {
+              "Spot": "$Perception.PointOfInterest"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Patrol",
+        "states": [
+          {
+            "name": "Wander",
+            "initial": true,
+            "actions": [
+              {
+                "do": "wander",
+                "ring_min": 800,
+                "ring_max": 2500,
+                "speed_profile": "walk",
+                "origin": "$Perception.PatrolAnchor"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -4,15 +4,15 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 30.0,
+    "duration": 240.0,
     "requires_consumption_slot": true,
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
       "b_apply_heal_per_second": false,
       "heal_per_second": 0.0,
-      "b_apply_instant_heal": false,
-      "instant_heal": 0.0,
+      "b_apply_instant_heal": true,
+      "instant_heal": 3.0,
       "b_apply_max_health_increase": false,
       "max_health_increase": 0.0,
       "b_apply_flat_armour_increase": false,
@@ -60,11 +60,12 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Flatpack Meal Components",
-    "description": "Unassembled meal components in flat packaging. Requires assembly and cooking.",
+    "description": "Unassembled meal components in flat packaging. Requires assembly.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_FlatpackMealComponents_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

@@ -107,13 +107,6 @@
             "class": "LayoutDefinition"
           }
         },
-        "environmental_effects": {
-          "kind": "array",
-          "element": {
-            "kind": "soft_class",
-            "class": "GameplayEffect"
-          }
-        },
         "ambient_audio": {
           "kind": "struct",
           "name": "AmbientAudioConfig"
@@ -1202,6 +1195,20 @@
             "kind": "struct",
             "name": "DeathDropEntry"
           }
+        },
+        "variants": {
+          "kind": "map",
+          "key": {
+            "kind": "enum",
+            "name": "EEnemyDifficultyVariantTier"
+          },
+          "value": {
+            "kind": "struct",
+            "name": "EnemyVariantTierData"
+          }
+        },
+        "shirt_material_slot_index": {
+          "kind": "int"
         }
       }
     },
@@ -4087,6 +4094,24 @@
     "EnemyDifficultyTier": {
       "fields": {}
     },
+    "EnemyVariantTierData": {
+      "fields": {
+        "variant_tint": {
+          "kind": "struct",
+          "name": "LinearColor"
+        },
+        "damage_multiplier": {
+          "kind": "float"
+        },
+        "death_drop_table": {
+          "kind": "array",
+          "element": {
+            "kind": "struct",
+            "name": "DeathDropEntry"
+          }
+        }
+      }
+    },
     "EnemyWeighted": {
       "fields": {
         "enemy_spawn_parameter": {
@@ -4653,6 +4678,26 @@
     },
     "ECurrentStoreDifficulty": {
       "members": []
+    },
+    "EEnemyDifficultyVariantTier": {
+      "members": [
+        {
+          "name": "Base",
+          "value": 0
+        },
+        {
+          "name": "Easy",
+          "value": 1
+        },
+        {
+          "name": "Medium",
+          "value": 2
+        },
+        {
+          "name": "Hard",
+          "value": 3
+        }
+      ]
     },
     "ELootMeshSize": {
       "members": []

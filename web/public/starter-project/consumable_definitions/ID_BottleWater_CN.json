@@ -4,8 +4,9 @@
   "class": "UConsumableDefinition",
   "schema_version": 2,
   "properties": {
-    "duration": 1200.0,
+    "duration": 420.0,
     "requires_consumption_slot": true,
+    "consumption_sound": "/Game/Characters/Customer/Audio/Cues/SC_Drink.SC_Drink",
     "equipment_actors_and_meshes": [],
     "ability_sets_to_grant": [],
     "effects_to_apply": {
@@ -21,10 +22,10 @@
       "flat_speed_increase": 0.0,
       "b_apply_max_stamina_increase": false,
       "max_stamina_increase": 0.0,
-      "b_apply_stamina_regen_per_second": false,
-      "stamina_regen_per_second": 0.0,
-      "b_apply_stamina_regen_delay_reduction": false,
-      "stamina_regen_delay_reduction": 0.0,
+      "b_apply_stamina_regen_per_second": true,
+      "stamina_regen_per_second": 1.0,
+      "b_apply_stamina_regen_delay_reduction": true,
+      "stamina_regen_delay_reduction": 0.2,
       "b_apply_percentage_damage_increase": false,
       "percentage_damage_increase": 0.0,
       "b_apply_flat_damage_increase": false,
@@ -60,11 +61,13 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Bottled Water",
-    "description": "Bottled water for hydration.",
+    "description": "Bottled water. Not a meal, but you move better hydrated.",
+    "thumbnail": "/Game/Items/Consumables/UncookedFood/BottleWater/Textures/T_Thumb_SM_Bottle_SmallWater.T_Thumb_SM_Bottle_SmallWater",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_BottleWater_SI",
     "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
-    "item_category_tag": "Entity.Inventory.Item.Category.Consumable"
+    "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
+    "max_stack_size": 10
   }
 }

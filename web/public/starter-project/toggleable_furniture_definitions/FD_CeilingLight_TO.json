@@ -5,6 +5,10 @@
   "schema_version": 2,
   "properties": {
     "starts_toggled_on": true,
+    "player_toggleable": false,
+    "follows_day_night": true,
+    "toggle_on_cue_tag": "GameplayCue.Furniture.Toggle.On",
+    "toggle_off_cue_tag": "GameplayCue.Furniture.Toggle.Off",
     "interaction_hold_time": 0.0,
     "has_static_audio": false,
     "has_toggled_on_audio": false,
@@ -51,8 +55,9 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 8000,
+    "destructible_collection": "/Game/Furniture/Lights/GeometryCollections/GCS_CeilingLight.GCS_CeilingLight",
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,
@@ -67,6 +72,50 @@
     ],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "toggled_on_light": {
+      "light_datas": [
+        {
+          "light_type": {
+            "name": "SPOT_LIGHT",
+            "value": 1
+          },
+          "relative_transform": {
+            "rotation": {
+              "x": -0.0,
+              "y": 0.7071067811865476,
+              "z": 0.0,
+              "w": 0.7071067811865476
+            },
+            "translation": {
+              "x": 0,
+              "y": 0,
+              "z": -4
+            },
+            "scale3_d": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          },
+          "intensity": 200000,
+          "attenuation_radius": 4000,
+          "casts_shadows": true,
+          "light_color": {
+            "b": 255,
+            "g": 214,
+            "r": 185,
+            "a": 255
+          },
+          "source_radius": 11.03358268737793,
+          "soft_source_radius": 6.601322174072266,
+          "source_length": 479.05499267578125,
+          "max_draw_distance": 0,
+          "max_distance_fade_range": 0,
+          "inner_cone_angle": 51.95856475830078,
+          "outer_cone_angle": 78.57075500488281
+        }
+      ]
+    }
   }
 }

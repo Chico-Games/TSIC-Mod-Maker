@@ -1,0 +1,102 @@
+{
+  "id": "SKL_Greet",
+  "class": "ScpSkillDefinition",
+  "properties": {
+    "inputs": {
+      "Target": "actor"
+    },
+    "states": [
+      {
+        "name": "Choose",
+        "initial": true,
+        "actions": [
+          {
+            "do": "face",
+            "target": "$In.Target"
+          }
+        ],
+        "transitions": [
+          {
+            "on": "tick",
+            "conditions": [
+              {
+                "if": "day_section",
+                "is": "Gameplay.DaySection.Night"
+              }
+            ],
+            "to": "GreetNight"
+          },
+          {
+            "on": "tick",
+            "to": "GreetDay"
+          }
+        ]
+      },
+      {
+        "name": "GreetDay",
+        "actions": [
+          {
+            "do": "face",
+            "target": "$In.Target"
+          },
+          {
+            "do": "wait",
+            "seconds": 1.5
+          }
+        ],
+        "transitions": [
+          {
+            "on": "actions_succeeded",
+            "to": "Stamp"
+          },
+          {
+            "on": "action_failed",
+            "result": "failed"
+          }
+        ]
+      },
+      {
+        "name": "GreetNight",
+        "actions": [
+          {
+            "do": "face",
+            "target": "$In.Target"
+          },
+          {
+            "do": "wait",
+            "seconds": 4
+          }
+        ],
+        "transitions": [
+          {
+            "on": "actions_succeeded",
+            "to": "Stamp"
+          },
+          {
+            "on": "action_failed",
+            "result": "failed"
+          }
+        ]
+      },
+      {
+        "name": "Stamp",
+        "actions": [
+          {
+            "do": "mark_social",
+            "target": "$In.Target"
+          }
+        ],
+        "transitions": [
+          {
+            "on": "actions_succeeded",
+            "result": "succeeded"
+          },
+          {
+            "on": "action_failed",
+            "result": "failed"
+          }
+        ]
+      }
+    ]
+  }
+}

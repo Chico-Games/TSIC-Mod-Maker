@@ -17,12 +17,50 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 200.0,
-    "destructible_collection": "/Game/Furniture/CraftingBenches/GeometryCollections/GCS_CraftingTableTierOne.GCS_CraftingTableTierOne",
+    "destructible_collection": "/Game/INDUSTRIAL/VOL4_Consoles/Meshes/GeometryCollections/GCS_Consoles_Industrial_12a.GCS_Consoles_Industrial_12a",
     "loot_dropped_on_death": [
       "LD_CraftingBenchTierOneLoot"
     ],
     "constructable_item_to_grant": "ID_ArmorBenchTier3_CI",
-    "deconstruction_tier": 0,
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 50,
+          "y": 7.6009,
+          "z": 120.2562
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 36.72,
+          "y": 0.25,
+          "z": 93.2226
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 50,
+          "y": 7.6009,
+          "z": 120.2562
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 51,
+          "y": 7.7529,
+          "z": 122.6613
+        }
+      }
+    ],
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -45,11 +83,11 @@
     "is_draggable": true,
     "display_name": "Expert Armor Forge",
     "description": "Expert armor forge. Craft heavy armor and specialized protective equipment.",
-    "level": 1,
+    "level": 3,
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/CraftingBenches/Meshes/SM_CraftingTableTierOne.SM_CraftingTableTierOne",
+    "static_mesh": "/Game/INDUSTRIAL/VOL4_Consoles/Meshes/LP/SM_Consoles_Industrial_12a.SM_Consoles_Industrial_12a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -59,7 +97,7 @@
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
     "destruction_impulse_strength": 0.0,
-    "drag_angular_damping": 5.0,
+    "drag_angular_damping": 1.25,
     "drag_linear_damping": 5.0,
     "drag_mass": 1.0,
     "drag_max_angular_velocity": 90.0,

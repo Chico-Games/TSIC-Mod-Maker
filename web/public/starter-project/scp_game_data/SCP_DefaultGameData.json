@@ -9,11 +9,19 @@
     "ghost_material": "/Game/Furniture/Shared/Materials/ConstructionGhost/M_ConstructionGhost.M_ConstructionGhost",
     "post_process_stencil_material": "/Game/Fab/HandDrawingDemo/Materials/MI_Draw2.MI_Draw2",
     "fallback_static_mesh": "/Game/Items/CraftingMaterials/Cardboard/Meshes/SM_CartonBox2_05.SM_CartonBox2_05",
+    "cardboard_label_material": "/Game/Items/CraftingMaterials/Cardboard/Materials/M_CardboardLabel.M_CardboardLabel",
     "fallback_item_thumbnail": "/Game/Items/CraftingMaterials/Cardboard/Textures/T_Thumb_SM_CartonBox2_05.T_Thumb_SM_CartonBox2_05",
+    "fallback_interactable_text_open_sound": "/Game/Shared/Audio/World/SW_PageFlip_World.SW_PageFlip_World",
+    "fallback_interactable_text_close_sound": "/Game/Shared/Audio/World/SW_PageFlip_World.SW_PageFlip_World",
     "death_box_definition": "FD_DeathBox_DB",
     "item_pickup_visual_actor_class": "/Game/Items/Shared/BP_ItemPickupVisual.BP_ItemPickupVisual_C",
-    "default_item_pickup_sounds": {},
-    "default_footstep_cue_tags": [],
+    "default_item_pickup_sounds": {
+      "pickup_start_sound": "/Game/Shared/Audio/World/SW_Pickup_Start.SW_Pickup_Start",
+      "pickup_end_sound": "/Game/Shared/Audio/World/SW_Pickup_End.SW_Pickup_End"
+    },
+    "default_footstep_cue_tags": [
+      "GameplayCue.Character.FootStep.Audio"
+    ],
     "default_furniture_shake_data": "/Game/Furniture/Shared/FurnitureShake/DA_DefaultFurnitureShake.DA_DefaultFurnitureShake",
     "menu_input_actions": [
       {
@@ -23,10 +31,6 @@
       {
         "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenMapMenu.IA_OpenMapMenu",
         "value": "UI.GameScreen.Map"
-      },
-      {
-        "key": "/Game/Shared/Input/Actions/ModeSwitch/IA_OpenCraftingMenu.IA_OpenCraftingMenu",
-        "value": "UI.GameScreen.Crafting"
       }
     ],
     "consume_ability_set": "/Game/Characters/Customer/Abilities/AS_Consume.AS_Consume",
@@ -62,7 +66,6 @@
     ],
     "research_credit_tier1": "ID_ResearchCredit_T1_CM",
     "research_credit_tier2": "ID_ResearchCredit_T2_CM",
-    "research_credit_tier3": "ID_ResearchCredit_T3_CM",
-    "default_customer_recipe_rules": "ARR_DefaultCustomerRecipes"
+    "research_credit_tier3": "ID_ResearchCredit_T3_CM"
   }
 }
