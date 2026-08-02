@@ -62,6 +62,8 @@ So:
 - **Several stations can share one ARR** — change it once, every station updates.
 - **A recipe can be in more than one ARR** — the same recipe at multiple benches.
 
+![The Stations sub-tab. Left: stations grouped by kind, each with its tier pills and recipe count. Middle: the selected station's recipes as cards — an upgrade recipe on top, craft recipes below, each with inputs, outputs, a duration slider and a level. Right: the item palette you drag from.](images/stations-recipe-cards.jpg)
+
 In the **Recipes & Loot → Stations** sub-tab, pick a station on the left and its ARR's recipes render
 as cards on the right. Drag a recipe card onto a different station's row to **move** the reference
 between ARRs. The recipe file doesn't move — only the id in the two lists changes.

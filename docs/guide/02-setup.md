@@ -19,7 +19,7 @@ learn the data without touching a folder.
 The header's info line tells you where you are at all times:
 
 ```
-Project: Default Project · 2940 defs · 50 folders · 2 unsaved
+Project: Default Project · 2922 defs · 50 folders · 2 unsaved
 ```
 
 Read-only means `💾 Save` is disabled. That's deliberate: it stops you from accidentally editing the
@@ -123,6 +123,8 @@ editor's schema knows that reference's class, it mints an empty stub so the refe
 stubs are unsaved records like any other, so the next `Save` writes them into your project as real
 files. If you didn't want them, undo or delete them before saving. A big number here usually means
 you've opened a thin overlay without the base game underneath it.
+
+![The schema-drift gate. It lists exactly which records and properties are unknown, and blocks the load until you answer — so a project that seems to hang on "loading…" is often this dialog waiting behind another window.](images/schema-drift-gate.jpg)
 
 **"Schema drift detected."** The project contains classes or properties the editor's schema doesn't
 know about. This normally means the project came from a newer game build than the editor's schema.

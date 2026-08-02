@@ -38,6 +38,8 @@ neighbours.
 arrows move the cursor; Escape closes. Results always open in the **Definitions** tab, whichever tab
 you searched from.
 
+![Searching "food". The first rows matched on id — see the highlight inside `Dog Food` — and the rest matched on a property value, here the `asset_path`. The 🧠 chip shows the concept index covering all 2922 records.](images/search-palette.jpg)
+
 It searches three ways at once, and the result rows tell you which one matched:
 
 | Match | How it works |
@@ -48,7 +50,7 @@ It searches three ways at once, and the result rows tell you which one matched:
 
 Concept search runs on a small language model the browser downloads once, in the background, the
 first time you load a project. The 🧠 chip in the header tracks it: a percentage while downloading,
-`🧠 1200/2940` while it embeds your records, `🧠 ready` when it's done. Until then the other two
+`🧠 1200/2922` while it embeds your records, `🧠 ready` when it's done. Until then the other two
 kinds of match work normally. If the download fails, the chip says so and search carries on without
 it.
 

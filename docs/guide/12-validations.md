@@ -20,6 +20,8 @@ Run it **before every save-and-test cycle**, not before publish. A dangling refe
 minutes after you made it takes seconds to fix; found three weeks later it takes an afternoon of
 archaeology.
 
+![The Validations tab against the bundled base game: 133 issues, grouped by category with a count on each heading. Every row has an `Open` link that jumps to the record in the Definitions tab.](images/validations.jpg)
+
 ```ui-issues
 error :: orphan ref :: RD_MyThing_CR → ID_Missing_CM (input) does not resolve
 error :: upgrade target missing :: FUR_Bench_T2 → FD_BenchTierThree not loaded

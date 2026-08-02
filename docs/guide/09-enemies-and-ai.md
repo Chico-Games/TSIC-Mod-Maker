@@ -41,6 +41,8 @@ missing. A `⚠ N broken references` chip beside the sub-tabs lists the ones it 
 
 ### Sandbox
 
+![The Sandbox. A Bone Head's sight cone is drawn as the wide wedge — the darker inner region is the primary cone, the paler one peripheral. The dashed line is a live sight link to the player, the thin trail is its nav path, and the strip along the bottom is the decision timeline.](images/ai-sandbox.jpg)
+
 A live top-down world at a fixed 60 Hz. Drag pawns and furniture around and watch senses and
 decisions update in real time.
 
@@ -51,6 +53,10 @@ decisions update in real time.
 - **Blocking furniture**: filter the `FD_` list, place one or a wall of eight. Each row shows health,
   armour, size and whether it's breakable — an unbreakable piece fails `can_break_furniture`, so the
   AI has to route around it instead of through it.
+- **Overlays** toggle what's drawn: sight cones, sight links, attack ranges, nav paths, POI and
+  anchor, noise pulses, hitboxes, labels, grid. Turn most of them off when you're chasing one thing.
+  The colour key along the top is the detection ladder — **Spotted**, **Glimpsed**, **Remembered** —
+  plus **Target**, **POI** and **Anchor**.
 - **Inspector** on the right shows the selected actor's live state.
 - **Timeline** underneath shows the decision history. This is what to read when an enemy "does
   nothing": it shows which skill it picked and why the next one didn't fire.

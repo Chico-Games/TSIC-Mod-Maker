@@ -409,7 +409,7 @@ Details :: the selected object's properties
 
 | Control | What it does |
 |---|---|
-| Layout picker | Every `LYD_*` in the project, with issue counts |
+| Layout picker | Every `LYD_*` in the project, with issue counts. Type to filter, or narrow by the **biome** and **`Layout.Type`** chips it offers — the fast way to find "every Nook in the Warehouse" |
 | `Save ●` | Saves **this layout only**, not the whole project. The dot means unsaved |
 | `+ Add…` | Adds an object: Proxy, Layout, EnemySpawn, LootSpawn or VisualHelper |
 | `Seed` + `Reroll` | The preview seed |
@@ -437,6 +437,8 @@ Only top-level objects are listed. The contents of a nested layout are drawn in 
 aren't individually selectable — clicking one selects the parent `Layout` object. To edit what's
 inside, pick that layout in the picker and edit it there.
 
+![`LYD_ShowFloor_All` on the default seed. Grey boxes resolved; the red ones did not — and most of those are fine. With no tile-tag override set, 60 of the objects here are simply gated out by their tile requirements. The floor grid is 100 uu cells in 1000 uu sections, and the little red/green/blue axes mark each object's pivot.](images/layouts-viewport.jpg)
+
 **Viewport** — the boxes are **bounding boxes from the mesh catalogue, not real meshes**. Colour
 tells you the state:
 
@@ -447,9 +449,15 @@ tells you the state:
 #ffcc44 Gold wire sphere :: a loot spawn point
 #888888 Grey wire sphere :: a visual helper
 #ff9933 Orange box :: resolved, mesh path set, but the mesh is not in the catalogue — a 100 uu placeholder, not its real size
-#ff3333 Solid red :: failed to resolve; the billboard says why
+#ff3333 Solid red :: not placed this time. Read the billboard — only two of the five reasons are faults
 #ffeb3b Yellow cage :: your current selection
 ```
+
+**Red does not mean broken.** Every object that didn't resolve draws red, including the ones behaving
+exactly as designed — filtered by tile requirements, or rolled out by spawn chance. A base-game tile
+opened with no tile-tag override is mostly red for that reason. The billboard is what tells you which
+it is; only `No definition or queries`, `No matching definitions`, `Missing mesh` and `Layout cycle`
+are actually wrong.
 
 Red/green/blue axes are drawn at every object's pivot, which is the quickest way to see how a
 rotation actually composes. The floor grid is 100 uu cells inside 1000 uu sections — usable as a

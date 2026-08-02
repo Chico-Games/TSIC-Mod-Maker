@@ -4,7 +4,7 @@
 //
 // Runs from `prebuild` and `predev`, so the published guide can never drift
 // from the markdown in the repo. The output is generated and gitignored.
-import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, copyFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,6 +40,13 @@ function inline(s) {
   );
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/(^|[\s(])\*([^*]+)\*/g, '$1<em>$2</em>');
+  // Images are written before links in the source, so undo the link rewrite
+  // that already fired on the ![alt](src) form and emit a figure instead.
+  s = s.replace(
+    /!<a href="([^"]+)"[^>]*>([^<]*)<\/a>/g,
+    (_, src, alt) =>
+      `<figure><img src="${src}" alt="${alt}" loading="lazy" /><figcaption>${alt}</figcaption></figure>`,
+  );
   s = s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[+i])}</code>`);
   return s;
 }
@@ -360,6 +367,20 @@ function md(text) {
 
     if (/^(-{3,}|\*{3,})\s*$/.test(line)) { out.push('<hr />'); i++; continue; }
 
+    // A line that is only an image becomes a full-width figure, not a
+    // paragraph — <figure> inside <p> is invalid and would inherit prose width.
+    const shot = line.match(/^!\[([^\]]*)\]\(([^)]+)\)\s*$/);
+    if (shot) {
+      const [, alt, src] = shot;
+      out.push(
+        `<figure><img src="${src}" alt="${esc(alt)}" loading="lazy" />` +
+          (alt ? `<figcaption>${inline(alt)}</figcaption>` : '') +
+          `</figure>`,
+      );
+      i++;
+      continue;
+    }
+
     if (/^\s*[-*]\s/.test(line) || /^\s*\d+\.\s/.test(line)) {
       const ordered = /^\s*\d+\.\s/.test(line);
       const items = [];
@@ -438,6 +459,17 @@ const toc = chapters
 const words = chapters.reduce((n, c) => n + c.html.split(/\s+/).length, 0);
 
 mkdirSync(OUT_DIR, { recursive: true });
+
+// Screenshots live beside the markdown so `![](images/x.jpg)` resolves both on
+// GitHub and on the published page. Copy them next to the generated HTML.
+const IMG_SRC = resolve(SRC, 'images');
+if (existsSync(IMG_SRC)) {
+  const imgOut = join(OUT_DIR, 'images');
+  mkdirSync(imgOut, { recursive: true });
+  const shots = readdirSync(IMG_SRC).filter((f) => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+  for (const f of shots) copyFileSync(join(IMG_SRC, f), join(imgOut, f));
+  console.log(`[guide] ${shots.length} screenshots copied`);
+}
 writeFileSync(OUT, `<!doctype html>
 <html lang="en">
 <head>
@@ -544,7 +576,17 @@ main{padding:0 48px 140px; max-width:1180px; margin:0 auto;}
 .chapter > *{grid-column:text;}
 .chapter > .scroll,
 .chapter > pre,
+.chapter > figure,
 .chapter > .uiframe{grid-column:text-start / full-end;}
+figure{margin:0 0 24px;}
+figure img{
+  display:block; width:100%; height:auto; border-radius:6px;
+  border:1px solid var(--line);
+}
+figcaption{
+  margin-top:8px; font-size:12.5px; color:var(--ink-soft); line-height:1.5;
+  max-width:76ch;
+}
 .chapter + .chapter{border-top:1px solid var(--line); margin-top:60px;}
 .eyebrow{
   font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);

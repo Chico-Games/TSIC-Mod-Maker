@@ -7,7 +7,7 @@
 ## Appendix A — Folder → class
 
 Every folder in the base game data, the class it holds, and how many records ship in it. 50 folders,
-2940 records. Counts are from the bundled base project and will drift as the game updates —
+2922 records. Counts are from the bundled base project and will drift as the game updates —
 `html_game_definitions` exists as a Furniture sub-tab but ships empty, so it isn't listed below.
 
 | Folder | Class | Records |
