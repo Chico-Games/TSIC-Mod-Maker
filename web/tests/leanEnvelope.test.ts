@@ -57,6 +57,31 @@ test('enum recovers int despite empty E-prefixed schema entry', () => {
   assert.deepEqual(envelopeToLean(env, schema), lean);
 });
 
+test('enum member name matches case-insensitively (authored vs reflected casing)', () => {
+  // Real regression: EnemyDefinition.variants ships map keys as {"name":"EASY",
+  // "value":1} while _schema.json records the reflected C++ members as
+  // Base/Easy/Medium/Hard. An exact-case compare found nothing and fell through
+  // to the defensive `value: 0`, so lean→envelope→lean silently rewrote Easy (1)
+  // as Base (0) — data loss on save for 10 enemy definitions.
+  const caseSchema: LeanSchema = {
+    classes: {}, structs: {},
+    enums: { EDifficulty: { members: [
+      { name: 'Base', value: 0 }, { name: 'Easy', value: 1 },
+      { name: 'Medium', value: 2 }, { name: 'Hard', value: 3 },
+    ] } },
+  };
+  for (const [authored, expected] of [['EASY', 1], ['MEDIUM', 2], ['HARD', 3], ['BASE', 0]] as const) {
+    const lean = { name: authored, value: expected };
+    const env = leanToEnvelope(lean, { kind: 'enum', name: 'EDifficulty' }, caseSchema);
+    // `name` must survive verbatim — normalising it to the schema's casing would
+    // change the bytes on disk.
+    assert.deepEqual(envelopeToLean(env, caseSchema), lean);
+  }
+  // An genuinely unresolvable member still falls back to 0 rather than throwing.
+  const bogus = leanToEnvelope({ name: 'NOPE', value: 9 }, { kind: 'enum', name: 'EDifficulty' }, caseSchema);
+  assert.deepEqual(envelopeToLean(bogus, caseSchema), { name: 'NOPE', value: 0 });
+});
+
 test('nested array of structs round-trips', () => {
   const lean = [{ level: 1, label: 'a' }, { level: 2, label: 'b' }];
   const env = leanToEnvelope(lean, schema.classes.UItemDefinition.properties.tiers, schema);

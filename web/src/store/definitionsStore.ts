@@ -3435,6 +3435,9 @@ if (typeof window !== 'undefined') {
 // the draft cache synchronously, bypassing the 1-second debounce. Tiny
 // enough that we don't gate them on env — they only run when called.
 if (typeof window !== 'undefined') {
+  // The whole store, for harnesses that need to drive a load without a directory picker
+  // (which needs a user gesture and so can't be scripted).
+  (window as any).__tsicDefs = useDefinitionsStore;
   (window as any).__forceDirty = () => {
     const s = useDefinitionsStore.getState();
     const firstKey = s.definitions.keys().next().value;

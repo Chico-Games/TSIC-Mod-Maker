@@ -25,6 +25,7 @@ import { ValidationsTab } from './components/ValidationsTab';
 import { ItemsTab } from './components/ItemsTab';
 import { FurnitureTab } from './components/FurnitureTab';
 import { LayoutsTab } from './components/layouts/LayoutsTab';
+import { AiTab } from './components/ai/AiTab';
 import { useAppStore, type AppTab } from './store/appStore';
 import { useDefinitionsStore } from './store/definitionsStore';
 import { useModIoStore } from './store/modIoStore';
@@ -277,6 +278,7 @@ export function App() {
       case 'furniture': return <FurnitureTab />;
       case 'definitions': return <DefinitionsTab />;
       case 'layouts': return <LayoutsTab />;
+      case 'ai': return <AiTab />;
       case 'validations': return <ValidationsTab />;
     }
   };

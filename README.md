@@ -1,6 +1,10 @@
 # TSIC Definition Editor
 
-A drag-and-drop authoring tool for the TSIC `Definitions/` data tree. Static web app — TypeScript + React, no Rust core. Reads and writes the same folder of typed-envelope JSON exports that the game ships with.
+A browser authoring tool for the TSIC definition tree. Static web app — TypeScript + React, no
+backend. Reads and writes the same folder of JSON the game loads.
+
+> **📖 Authoring content? Start with the [Modding Guide](docs/guide/README.md)** — 14 chapters
+> covering every tab, world layout, and publishing. This README is the developer view of the app.
 
 ## Quick start
 
@@ -11,100 +15,133 @@ npm run dev
 # open http://localhost:5173
 ```
 
-The first run loads the **starter project** baked into the build at `web/public/starter-project/`. To edit a project of your own, click `📂 Open project` in the header and point at a folder of typed-envelope JSON. The directory handle persists in IndexedDB; subsequent reloads reconnect automatically.
+The first run loads the **default project** bundled at `web/public/starter-project/`, read-only.
+`📂 Open project` in the header points the editor at a folder of your own. Directory handles persist
+in IndexedDB and reconnect on reload.
 
-## Header buttons
+Requires the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker)
+— Chromium only (Chrome / Edge / Brave). Other browsers can read the bundled defaults but can't save.
 
-| Button | What it does |
+## Header
+
+| Control | What it does |
 |---|---|
-| 📂 Open folder | Pick a Definitions folder to read/write. |
-| 💾 Save | Save every dirty record back to the picked folder. |
-| Save as… | Pick a fresh folder; write the entire working set there. |
-| ↺ Starter project | Drop the folder handle and reload the starter-project tree. |
-| ⟳ Reload | Re-read the picked folder from disk (discards in-memory edits). |
-| ⌘K Search | Fuzzy search every loaded asset. |
+| `⌘K Search` | Fuzzy id + substring value + semantic concept search across every loaded record. |
+| `📌 Pin folder…` | One pinned folder for one-click reopen. |
+| `📂 Open project ▾` | Pick a folder; the chevron lists projects in the configured Projects folder, then recents. Rows have a delete-from-disk action. |
+| `✨ New project` | Create a folder, optionally seeded from the default project. |
+| `💾 Save (n) ▾` | Click saves dirty records. Hover for `Save as…`, `Export` (overlay ZIP), `Export flattened`, and the mod.io actions. |
+| `⚙` | Working directory + auto-load, Projects folder, Default project source, developer actions. |
+| `⟳ Reload` | Re-read from disk, discarding in-memory edits. |
+
+The info line carries project name, record and folder counts, dirty count, the mod.io sync chip and
+the 🧠 semantic-index chip.
 
 ## Tabs
 
 - **Recipes & Loot** — five sub-tabs:
-  - **Stations**: pick a crafting / production / plantable station; the right pane shows recipes pulled from its `available_recipe_rules_definition` (ARR). Each recipe renders as a card whose layout adapts to its class (`UCraftRecipeDefinition`, `UPlantRecipeDefinition`, `UFurnitureUpgradeRecipe`). Plantable stations include the `grow_stages` editor.
-  - **Furniture**: per-furniture page; edits death loot tables (`loot_dropped_on_death`) and the upgrade recipe inline. Each death-loot ref expands in place to reveal the linked `LootDefinition`'s editor — no tab switch.
-  - **Tech Tree**: dagre-layered DAG of items / recipes / stations driven by the loaded definitions.
-  - **Enemies**: per-enemy `death_drop_table` editor, envelope-driven.
-  - **Biome**: per-biome editor of the `LSP_<biome>_Floor` / `LSP_<biome>_Furniture` LootSpawnPoint pair.
-- **Items** — vertical sub-tab rail per item folder (Crafting Materials, Consumables, Constructables, Equippables, Gloves, Ammo, Seeds, Traps, Static Items). Each sub-tab uses the shared `<ClassBrowserTab>` with Detail / Spreadsheet / Compare modes, inline row-warning chips, a Where-Used panel, multi-select bulk edit, duplicate, and property-echo on the rail. Equippables and Gloves get a smart effects view that hides the inactive `b_apply_X` pairs. Auto-creates missing static-item partners (`FD_*_SI`) on tab open.
-- **Furniture** — same component, vertical sub-tab rail per furniture folder (Furniture, Damageable, Toggleable, With Components, Storage, Universal Storage, Crafting Stations, Production Stations, Plantable, Elevator, Teleporter, Death Box, Containment Cage, Shopping Cart, Spawn Points, Enemy Spawn Points, Interactable Text). Cross-links to Recipes & Loot for damageable/station records.
-- **Definitions** — schema-aware editor for any record. Three-pane layout (folder rail, file list, typed-envelope editor). The new sub-tabs cover the common authoring flows; this tab is authoritative for everything else, including orphan `LootDefinition` (`LD_*`) assets not yet referenced by any furniture.
-- **Validations** — orphan refs, missing Item↔StaticItem partners, stations with no/missing ARRs, empty/orphan ARRs, recipes with no inputs/outputs, FurnitureUpgradeRecipe whose target is unset/missing, orphan loot tables.
+  - **Stations**: pick a crafting / production / plantable station; the right pane shows recipes from
+    its `available_recipe_rules_definition` (ARR). Cards adapt to the recipe class
+    (`UCraftRecipeDefinition`, `UPlantRecipeDefinition`, `UFurnitureUpgradeRecipe`). Plantables get
+    the `grow_stages` editor.
+  - **Furniture**: per-furniture page for death loot (`loot_dropped_on_death`) and the upgrade recipe.
+    Each death-loot ref expands in place to the linked `LootDefinition`'s editor.
+  - **Tech Tree**: five read-only views over a graph built from the loaded definitions — Chain,
+    Ladder, Cost, Chokepoints, Audit.
+  - **Enemies**: per-enemy `death_drop_table` editor.
+  - **Biome**: per-biome `LSP_<biome>_Floor` / `_Furniture` pair.
+- **Items** — nine sub-tabs (Crafting Materials, Consumables, Constructables, Equippables, Gloves,
+  Ammo, Seeds, Traps, Static Items) over the shared `<ClassBrowserTab>`: Detail / Spreadsheet modes,
+  row-warning chips, Where-Used, multi-select bulk edit, duplicate, property echo. Equippables and
+  Gloves get a smart effects view that hides inactive `b_apply_X` pairs. Mounting the tab mints
+  missing `FD_*_SI` partners.
+- **Furniture** — same component, eighteen sub-tabs, plus tier-chain grouping in the rail (`＋` mints
+  the next tier and its linking upgrade recipe). Cross-links to Recipes & Loot for damageable and
+  station records.
+- **Definitions** — schema-aware editor for any record. Three panes: folder rail, file list, typed
+  editor. Authoritative for anything the specialised tabs don't cover, including orphan `LD_*`.
+- **Layouts** — three-pane 3D editor (outliner / viewport / details) over `ULayoutDefinition`, with a
+  port of the engine's layout resolver: search queries, tile requirements, spawn chance, seeded
+  selection, nested layouts, cycle detection. Bounding boxes come from the exported mesh catalogue.
+- **AI** — five views of one live AI2 simulation: Sandbox, Scenarios, Behaviour, Perception, Attacks.
+  See [docs/ai-tab.md](docs/ai-tab.md).
+- **Validations** — orphan refs, item↔static partners, station/ARR problems, recipes with no
+  inputs/outputs, upgrade targets, orphan loot.
+
+## How data is stored
+
+Files on disk are **lean** JSON (`"duration": 16.0`). The store holds **typed envelopes**
+(`{type: "float", value: 16}`), converted on read/write via the pack's `_schema.json`
+(`persistence/leanEnvelope.ts`). Writes are `JSON.stringify(json, null, 2) + "\n"`.
+
+A project layers over the default project; `persistence/overlay.ts` diffs the two in lean form so
+only genuinely changed records count as dirty.
+
+Loading self-heals: every dangling `definition_ref` whose class the schema knows gets a stub minted
+(`autoCreateMissingRefs`), marked dirty like any other new record.
 
 ## Drag-and-drop
 
-A single `<DndContext>` at app root with a unified dispatcher in `web/src/dnd/dispatch.ts`. Sources: palette items (any definition), recipe cards, slot values. Targets: recipe input/output cells, upgrade cost cells, loot entries, ARR recipe lists, station rows. Dropping a recipe card on a station row pops the ref out of its current ARR and pushes it onto the target ARR — the recipe asset itself doesn't move on disk.
+One `<DndContext>` at app root, one dispatcher in `web/src/dnd/dispatch.ts`. Sources: palette items,
+recipe cards, slot values. Targets: recipe input/output cells, upgrade cost cells, loot entries, ARR
+recipe lists, station rows. Dropping a recipe card on a station row moves the ref between ARRs; the
+asset doesn't move on disk.
 
-## Starter project
+## Undo, clipboard, search
 
-`web/public/schema/` holds `class-hierarchy.json` and `property-meta.json`, which drive UPROPERTY tooltips, clamp bounds, and enum dropdowns in the typed editor. `web/public/starter-project/` holds the bundled definition data tree plus a `manifest.json`. Both are committed to the repo and shipped with the build.
+- Undo/redo is snapshot-based over `definitions`/`dirty`/`tombstones`, 100 frames, coalescing
+  same-target edits within 600 ms. Cleared on load.
+- `Ctrl+C`/`Ctrl+V` route through `clipboard.ts` on the current path selection — array, map, slot or
+  recipe.
+- Search is fuzzy over ids, substring over string values, plus a semantic pass from a MiniLM
+  embedding model loaded in a worker and warmed in the background after load.
 
-## Tests
+## Scripts
 
 ```sh
-# Type check
-npm run typecheck
+npm run typecheck          # tsc -b --noEmit
+npm run build              # tsc -b && vite build
+npm run refresh-schema     # regenerate public/schema from the game export
 
-# Production build
-npm run build
-
-# Data smoke (loads bundled defaults, asserts cross-references resolve)
-npm run data-smoke
-
-# UI smoke (Playwright; spawns vite preview, exercises the Definitions tab)
-npm run smoke
+npm run data-smoke         # load bundled defaults headlessly, assert cross-refs resolve
+npm run smoke              # every Playwright UI smoke + AI smoke + AI scenario suite
+npm run smoke:def          # one of: def, loot, itemsfurn, savedload, layouts, modio-ui
+npm run smoke:ai           # every v2 enemy, 20 sim-seconds, headless
+npm run test:ai            # the AI scenario suite (also :seeds, :determinism)
+npm run test               # unit tests
 ```
 
-## File structure
+## Layout
 
 ```
 web/
-  public/schema/                        # engine schema: class-hierarchy.json, property-meta.json
-  public/starter-project/              # starter data tree + manifest.json
+  public/schema/                       # class-hierarchy.json, property-meta.json
+  public/starter-project/              # bundled default project + _schema.json
   src/
-    App.tsx                            # DndContext + tab shell
+    App.tsx                            # DndContext, tab shell, global keybindings
+    clipboard.ts                       # copy/paste over the current selection
     dnd/dispatch.ts                    # unified drag-drop dispatcher
+    persistence/
+      dataSource.ts                    # HTTP + FSA sources, lean⇆envelope on read/write
+      leanEnvelope.ts                  # the conversion itself
+      overlay.ts                       # default-vs-working diff
+      draftStore.ts, recentProjects.ts, pinnedProject.ts, projectsRoot.ts
+    search/                            # fuzzy.ts, semantic.ts, semantic-worker.ts, hybrid.ts
     store/
-      definitionsStore.ts              # zustand: load/save, indexes, validations
-      appStore.ts                      # zustand: tab + sub-tab + search-open
-      referencedByIndex.ts             # reverse-ref index powering Where-Used
+      definitionsStore.ts              # load/save, indexes, undo history, auto-heal
+      appStore.ts                      # tab/sub-tab/selection/clipboard
+      validationStore.ts               # per-record drift + dangling-ref issues (the dots)
+      layoutEditorStore.ts, layoutResolverStore.ts, gameplayTagStore.ts
+      assetCatalogStore.ts, modIoStore.ts, referencedByIndex.ts
     components/
-      Header.tsx
-      RecipesAndLootTab.tsx            # sub-tab strip
-      StationsSubTab.tsx
-      FurnitureSubTab.tsx
-      TechTreeSubTab.tsx
-      EnemiesSubTab.tsx
-      BiomeSubTab.tsx
-      ItemsTab.tsx                     # top-level Items tab (rail of ClassBrowserTab sub-tabs)
-      FurnitureTab.tsx                 # top-level Furniture tab (rail of ClassBrowserTab sub-tabs)
-      classBrowser/                    # shared ClassBrowserTab + per-folder configs + sub-components
-        ClassBrowserTab.tsx            # Detail / Spreadsheet / Compare shell with multi-select + bulk edit
-        configs.ts                     # per-folder column / warning / smart-view config
-        SpreadsheetView.tsx
-        CompareView.tsx
-        SmartEffectsView.tsx           # hides inactive b_apply_X pairs on equippables/gloves
-        WhereUsedPanel.tsx
-        BulkEditDialog.tsx
-        RowWarnings.ts
-        PropertyEchoContext.tsx
-        types.ts
-      DefinitionsTab.tsx               # typed-envelope editor (large)
-      ValidationsTab.tsx
-      RecipeCard.tsx
-      DefRefSlot.tsx                   # one editable definition_ref + qty
-      ItemPalette.tsx                  # draggable definition browser
-      GrowStagesEditor.tsx             # plant grow_stages array editor
-      ...
-docs/superpowers/specs/                # design docs
+      classBrowser/                    # shared Detail/Spreadsheet browser + per-folder configs
+      layouts/                         # Toolbar, Outliner, Viewport, Details, resolver/
+      techtree/                        # Chain, Ladder, Cost, Chokepoints, Audit
+      ai/                              # Sandbox, Scenarios, Behaviour, Perception, Attacks
+      modio/                           # publish wizard, browse, sign-in, sync chip
+      pickers/                         # TagPicker and friends
+    ai/                                # the simulation itself (see docs/ai-tab.md)
+docs/
+  guide/                               # the modding guide
+  ai-tab.md                            # AI tab internals
 ```
-
-## Browser support
-
-Requires the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker) — Chromium-based browsers (Chrome / Edge / Brave). Other browsers can still read the bundled defaults but cannot Save / Save As.

@@ -184,6 +184,7 @@ export function Header() {
     { id: 'furniture', label: 'Furniture' },
     { id: 'definitions', label: 'Definitions' },
     { id: 'layouts', label: 'Layouts' },
+    { id: 'ai', label: 'AI' },
     { id: 'validations', label: 'Validations' },
   ];
 

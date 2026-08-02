@@ -258,9 +258,20 @@ export function envelopeToLean(env: any, schema: LeanSchema): any {
     case 'enum': {
       const memberName = env.value;
       const members = resolveEnumMembers(schema, env.enum_name);
-      const found = members?.find((m) => m.name === memberName);
-      // Lean dual format. If the int is unknown, fall back to 0 (the exporter
-      // never emits an enum without a resolvable member, so this is defensive).
+      // Match case-insensitively: pack data writes member names in the game's
+      // authored casing, which is not always the reflected C++ casing the schema
+      // records (EnemyDefinition.variants keys ship as "EASY"/"MEDIUM"/"HARD"
+      // against schema members Easy/Medium/Hard). An exact compare missed those
+      // and silently fell through to 0 below, rewriting Easy (1) as Base (0) on
+      // save. Emit `name` verbatim so the bytes stay identical; only the int is
+      // resolved through the schema.
+      const wanted = typeof memberName === 'string' ? memberName.toLowerCase() : memberName;
+      const found = members?.find(
+        (m) => m.name === memberName || m.name.toLowerCase() === wanted,
+      );
+      // Lean dual format. If the int is still unknown, fall back to 0 (the
+      // exporter never emits an enum without a resolvable member, so this is
+      // defensive).
       return { name: memberName, value: found ? found.value : 0 };
     }
     case 'array': case 'set':

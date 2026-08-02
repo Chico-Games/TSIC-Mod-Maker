@@ -42,6 +42,23 @@
     "hold_seconds": 2
    },
    {
+    "name": "Freeze",
+    "when": [
+     {
+      "if": "provoked",
+      "invert": true
+     },
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "target_visible",
+      "invert": true
+     }
+    ],
+    "hold_seconds": 2
+   },
+   {
     "name": "Combat",
     "when": [
      {
