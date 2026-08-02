@@ -5,6 +5,7 @@ import { useDefinitionsStore } from './store/definitionsStore';
 import './store/validationStore';
 import './styles.css';
 import './styles-new.css';
+import './styles-ai.css';
 
 // The static #tsic-boot spinner in index.html is up before any JS runs.
 // Tear it down as soon as the first load completes (definitions populated

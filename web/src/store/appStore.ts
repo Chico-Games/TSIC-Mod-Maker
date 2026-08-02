@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'layouts' | 'validations';
+export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'layouts' | 'ai' | 'validations';
+export type AiSubTab = 'sandbox' | 'scenarios' | 'behavior' | 'perception' | 'attacks';
 export type RecipesSubTab = 'stations' | 'furniture' | 'tech-tree' | 'enemies' | 'biome';
 
 export type ItemsSubTab =
@@ -68,6 +69,7 @@ interface AppStore {
   recipesSubTab: RecipesSubTab;
   itemsSubTab: ItemsSubTab;
   furnitureSubTab: FurnitureSubTab;
+  aiSubTab: AiSubTab;
   searchOpen: boolean;
 
   /** Station rail selection on the Stations sub-tab — also used by
@@ -86,6 +88,7 @@ interface AppStore {
   setRecipesSubTab: (t: RecipesSubTab) => void;
   setItemsSubTab: (t: ItemsSubTab) => void;
   setFurnitureSubTab: (t: FurnitureSubTab) => void;
+  setAiSubTab: (t: AiSubTab) => void;
   setSearchOpen: (open: boolean) => void;
 
   selectStation: (k: string | null) => void;
@@ -98,6 +101,7 @@ const LS_TAB = 'tsic.app.tab.v1';
 const LS_SUB = 'tsic.app.recipesSub.v1';
 const LS_ITEMS_SUB = 'tsic.app.itemsSub.v1';
 const LS_FURN_SUB = 'tsic.app.furnitureSub.v1';
+const LS_AI_SUB = 'tsic.app.aiSub.v1';
 
 function loadTab(): AppTab {
   try {
@@ -108,6 +112,7 @@ function loadTab(): AppTab {
       v === 'furniture' ||
       v === 'definitions' ||
       v === 'layouts' ||
+      v === 'ai' ||
       v === 'validations'
     ) return v;
     // Legacy: a previous build had a 'furniture-loot' top-level tab.
@@ -131,6 +136,13 @@ function loadItemsSub(): ItemsSubTab {
   } catch { /* noop */ }
   return 'crafting-materials';
 }
+function loadAiSub(): AiSubTab {
+  try {
+    const v = localStorage.getItem(LS_AI_SUB);
+    if (v === 'sandbox' || v === 'behavior' || v === 'perception' || v === 'attacks') return v;
+  } catch { /* noop */ }
+  return 'sandbox';
+}
 function loadFurnSub(): FurnitureSubTab {
   try {
     const v = localStorage.getItem(LS_FURN_SUB);
@@ -144,6 +156,7 @@ export const useAppStore = create<AppStore>((set) => ({
   recipesSubTab: loadSub(),
   itemsSubTab: loadItemsSub(),
   furnitureSubTab: loadFurnSub(),
+  aiSubTab: loadAiSub(),
   searchOpen: false,
   selectedStationKey: null,
   selectedRecipeKey: null,
@@ -164,6 +177,10 @@ export const useAppStore = create<AppStore>((set) => ({
   setFurnitureSubTab: (t) => {
     try { localStorage.setItem(LS_FURN_SUB, t); } catch { /* noop */ }
     set({ furnitureSubTab: t });
+  },
+  setAiSubTab: (t) => {
+    try { localStorage.setItem(LS_AI_SUB, t); } catch { /* noop */ }
+    set({ aiSubTab: t });
   },
   setSearchOpen: (open) => set({ searchOpen: open }),
   selectStation: (k) => set({

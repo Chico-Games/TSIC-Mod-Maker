@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs && node savedload-ui-smoke.mjs && node layouts-ui-smoke.mjs",
+    "smoke": "node definitions-ui-smoke.mjs && node recipes-loot-ui-smoke.mjs && node items-furniture-ui-smoke.mjs && node savedload-ui-smoke.mjs && node layouts-ui-smoke.mjs && npm run smoke:ai && npm run test:ai",
     "smoke:def": "node definitions-ui-smoke.mjs",
     "smoke:loot": "node recipes-loot-ui-smoke.mjs",
     "smoke:itemsfurn": "node items-furniture-ui-smoke.mjs",
@@ -18,7 +18,12 @@
     "test": "node scripts/run-tests.mjs",
     "test:modio-e2e": "node scripts/run-modio-e2e.mjs",
     "smoke:modio-ui": "node tests/modioBrowseUI.mjs",
-    "data-smoke": "node data-smoke.mjs"
+    "data-smoke": "node data-smoke.mjs",
+    "smoke:ai": "tsx ai-smoke.mjs",
+    "test:ai": "tsx ai-test.mjs",
+    "test:ai:seeds": "tsx ai-test.mjs --seeds 8",
+    "test:ai:determinism": "tsx ai-test.mjs --repeat 2",
+    "smoke:ai-scenarios": "node ai-scenarios-ui-smoke.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
