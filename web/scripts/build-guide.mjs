@@ -63,6 +63,49 @@ function renderTable(rows) {
 }
 
 // ---------------------------------------------------------------------------
+// Code highlighting. Runs on already-escaped text, in a single pass per
+// pattern set so a match can't be re-tokenised by a later rule.
+// ---------------------------------------------------------------------------
+
+const JSON_TOKENS =
+  /("(?:[^"\\]|\\.)*")(\s*:)|("(?:[^"\\]|\\.)*")|\b(true|false|null)\b|(-?\d+(?:\.\d+)?)|([{}[\],:])/g;
+
+function highlightJson(escaped) {
+  return escaped.replace(JSON_TOKENS, (m, key, colon, str, lit, num, punct) => {
+    if (key) return `<span class="t-key">${key}</span><span class="t-punct">${colon}</span>`;
+    if (str) return `<span class="t-str">${str}</span>`;
+    if (lit) return `<span class="t-lit">${lit}</span>`;
+    if (num) return `<span class="t-num">${num}</span>`;
+    if (punct) return `<span class="t-punct">${punct}</span>`;
+    return m;
+  });
+}
+
+/** Trees, paths and log lines: quoted strings, and the trailing annotation
+ *  after an arrow, are the only things worth colouring. Box-drawing characters
+ *  are left exactly as authored. */
+function highlightPlain(escaped) {
+  return escaped
+    .split('\n')
+    .map((line) => {
+      const arrow = line.search(/[←↓]/);
+      const head = arrow === -1 ? line : line.slice(0, arrow);
+      const tail = arrow === -1 ? '' : line.slice(arrow);
+      const lit = head
+        .replace(/'([^']*)'/g, `<span class="t-str">'$1'</span>`)
+        .replace(/(\b[\w.-]+\.(?:json|glb|obj|fbx|png|wav|ogg|zip))\b/g, '<span class="t-key">$1</span>');
+      return lit + (tail ? `<span class="t-comment">${tail}</span>` : '');
+    })
+    .join('\n');
+}
+
+function renderCode(lang, raw) {
+  const escaped = esc(raw);
+  const body = lang === 'json' ? highlightJson(escaped) : highlightPlain(escaped);
+  return `<pre class="scroll${lang ? ` lang-${lang}` : ''}"><code>${body}</code></pre>`;
+}
+
+// ---------------------------------------------------------------------------
 // UI mockups.
 //
 // Fenced blocks tagged ui-header / ui-panes / ui-rail / ui-tiers / ui-legend
@@ -85,11 +128,22 @@ function uiEntry(raw) {
 
 const uiSplit = (s) => s.split('|').map((p) => p.trim()).filter(Boolean);
 
+/** Reads a  or  line. Both separators are in use
+ *  across the blocks below, so accept either rather than failing silently. */
+/** Reads a `key: value` or `key :: value` line. Both separators are in use
+ *  across the blocks below, so accept either rather than failing silently
+ *  into an empty mockup. */
+function kv(lines, key) {
+  const re = new RegExp(String.raw`^\s*${key}\s*::?\s*`);
+  const line = lines.find((l) => re.test(l));
+  return line ? line.replace(re, '').trim() : '';
+}
+
 function renderUiBlock(kind, bodyText) {
   const lines = bodyText.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim());
 
   if (kind === 'ui-header') {
-    const get = (k) => lines.find((l) => l.startsWith(`${k}:`))?.slice(k.length + 1).trim() ?? '';
+    const get = (k) => kv(lines, k);
     const activeTab = get('active');
     const tabs = uiSplit(get('tabs'))
       .map((t) => `<span class="ui-tab${t === activeTab ? ' on' : ''}">${esc(t)}</span>`)
@@ -152,6 +206,69 @@ function renderUiBlock(kind, bodyText) {
     return `<div class="uiframe"><div class="ui-rail">${rows}</div></div>`;
   }
 
+  if (kind === 'ui-fields') {
+    const rows = lines
+      .map((l) => {
+        const [name, type, value] = l.split('::').map((p) => (p ?? '').trim());
+        const dirty = name.startsWith('*');
+        const label = dirty ? name.slice(1).trim() : name;
+        let control;
+        if (type === 'bool') {
+          control = `<span class="ui-toggle${value === 'on' ? ' on' : ''}"><i></i></span>`;
+        } else if (type === 'tag') {
+          control = `<span class="ui-tagchip">${esc(value)}</span>`;
+        } else if (type === 'ref') {
+          control = `<span class="ui-slot">${esc(value)}<span class="ui-slotcaret">▾</span></span>`;
+        } else if (type === 'enum') {
+          control = `<span class="ui-select">${esc(value)}<span class="ui-slotcaret">▾</span></span>`;
+        } else {
+          control = `<span class="ui-input ui-${type}">${esc(value)}</span>`;
+        }
+        return `<div class="ui-field${dirty ? ' dirty' : ''}">
+          <span class="ui-flabel">${esc(label)}</span>
+          ${control}
+        </div>`;
+      })
+      .join('');
+    return `<div class="uiframe"><div class="ui-fields">${rows}</div></div>`;
+  }
+
+  if (kind === 'ui-issues') {
+    const rows = lines
+      .map((l) => {
+        const [sev, cat, detail] = l.split('::').map((p) => (p ?? '').trim());
+        return `<div class="ui-issue ${sev}">
+          <span class="ui-sev"></span>
+          <span class="ui-cat">${esc(cat)}</span>
+          <span class="ui-detail">${esc(detail)}</span>
+          <span class="ui-open">Open</span>
+        </div>`;
+      })
+      .join('');
+    return `<div class="uiframe"><div class="ui-issues">${rows}</div></div>`;
+  }
+
+  if (kind === 'ui-recipe') {
+    const get = (k) => kv(lines, k);
+    const slot = (s) => {
+      const m = s.match(/^(.*?)\s*×\s*(\d+)$/);
+      return `<span class="ui-ingredient">${esc(m ? m[1] : s)}${
+        m ? `<span class="ui-qty">×${m[2]}</span>` : ''
+      }</span>`;
+    };
+    const ins = uiSplit(get('in')).map(slot).join('');
+    const outs = uiSplit(get('out')).map(slot).join('');
+    return `<div class="uiframe"><div class="ui-recipe">
+      <div class="ui-recipe-head">${esc(get('title'))}</div>
+      <div class="ui-recipe-body">
+        <div class="ui-recipe-side"><span class="ui-slotlabel">input</span>${ins}</div>
+        <div class="ui-arrow">→</div>
+        <div class="ui-recipe-side"><span class="ui-slotlabel">output</span>${outs}</div>
+      </div>
+      ${get('meta') ? `<div class="ui-recipe-meta">${esc(get('meta'))}</div>` : ''}
+    </div></div>`;
+  }
+
   if (kind === 'ui-legend') {
     const rows = lines
       .map((l) => {
@@ -175,7 +292,10 @@ function renderUiBlock(kind, bodyText) {
   return '';
 }
 
-const UI_KINDS = new Set(['ui-header', 'ui-panes', 'ui-rail', 'ui-tiers', 'ui-legend']);
+const UI_KINDS = new Set([
+  'ui-header', 'ui-panes', 'ui-rail', 'ui-tiers', 'ui-legend',
+  'ui-fields', 'ui-issues', 'ui-recipe',
+]);
 
 function md(text) {
   const lines = text.split(/\r?\n/);
@@ -195,9 +315,7 @@ function md(text) {
       while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
       i++;
       out.push(
-        UI_KINDS.has(lang)
-          ? renderUiBlock(lang, buf.join('\n'))
-          : `<pre class="scroll"><code>${esc(buf.join('\n'))}</code></pre>`,
+        UI_KINDS.has(lang) ? renderUiBlock(lang, buf.join('\n')) : renderCode(lang, buf.join('\n')),
       );
       continue;
     }
@@ -282,10 +400,16 @@ const chapters = files.map((f) => {
   return { id: f.replace(/\.md$/, ''), num: f.slice(0, 2).replace(/^0/, ''), title, html, sections };
 });
 
+// The quick start is chapter "0" — numbered separately so the rail and the
+// "Chapter N of M" counter don't claim there are fifteen chapters.
+const numbered = chapters.filter((c) => c.num !== '0').length;
+
 const rail = [
   `<a class="rail-item" href="#index"><span class="rail-num">—</span><span>Index</span></a>`,
   ...chapters.map(
-    (c) => `<a class="rail-item" href="#${c.id}"><span class="rail-num">${c.num}</span><span>${esc(c.title)}</span></a>`,
+    (c) => `<a class="rail-item" href="#${c.id}"><span class="rail-num">${
+      c.num === '0' ? '★' : c.num
+    }</span><span>${esc(c.title)}</span></a>`,
   ),
 ].join('\n');
 
@@ -293,7 +417,9 @@ const body = [
   `<section class="chapter" id="index"><div class="eyebrow">The TSIC Modding Guide</div>${md(index)}</section>`,
   ...chapters.map(
     (c) => `<section class="chapter" id="${c.id}">
-      <div class="eyebrow"><span class="chnum">${c.num}</span> Chapter ${c.num} of ${chapters.length}</div>
+      <div class="eyebrow"><span class="chnum${c.num === '0' ? ' qs' : ''}">${
+        c.num === '0' ? '★' : c.num
+      }</span> ${c.num === '0' ? 'Start here' : `Chapter ${c.num} of ${numbered}`}</div>
       ${c.html}
     </section>`,
   ),
@@ -325,6 +451,8 @@ writeFileSync(OUT, `<!doctype html>
   --accent:#2f62d8; --accent-soft:#e8eefc;
   --loot:#b8820c; --enemy:#c8443c; --bounds:#c26414;
   --code-bg:#eef1f6;
+  --t-key:#1f5fbf; --t-str:#197d55; --t-num:#8a5a00; --t-lit:#8b3ea8;
+  --t-punct:#7a8493; --t-comment:#6b7480;
 }
 @media (prefers-color-scheme:dark){
   :root{
@@ -332,6 +460,8 @@ writeFileSync(OUT, `<!doctype html>
     --accent:#6d9bff; --accent-soft:#1d2738;
     --loot:#ffcc44; --enemy:#ff6b63; --bounds:#ff9933;
     --code-bg:#20252d;
+    --t-key:#7fb0ff; --t-str:#4fd6a0; --t-num:#ffcc72; --t-lit:#d79bff;
+    --t-punct:#7d8794; --t-comment:#7d8794;
   }
 }
 :root[data-theme="dark"]{
@@ -339,12 +469,16 @@ writeFileSync(OUT, `<!doctype html>
   --accent:#6d9bff; --accent-soft:#1d2738;
   --loot:#ffcc44; --enemy:#ff6b63; --bounds:#ff9933;
   --code-bg:#20252d;
+  --t-key:#7fb0ff; --t-str:#4fd6a0; --t-num:#ffcc72; --t-lit:#d79bff;
+  --t-punct:#7d8794; --t-comment:#7d8794;
 }
 :root[data-theme="light"]{
   --ground:#f7f8fa; --raise:#ffffff; --ink:#181c23; --ink-soft:#5b6472; --line:#dfe3ea;
   --accent:#2f62d8; --accent-soft:#e8eefc;
   --loot:#b8820c; --enemy:#c8443c; --bounds:#c26414;
   --code-bg:#eef1f6;
+  --t-key:#1f5fbf; --t-str:#197d55; --t-num:#8a5a00; --t-lit:#8b3ea8;
+  --t-punct:#7a8493; --t-comment:#6b7480;
 }
 *{box-sizing:border-box}
 body{
@@ -397,26 +531,26 @@ body{
 .rail-foot{margin-top:20px; padding-top:14px; border-top:1px solid var(--line); font-size:12px;}
 .rail-foot a{color:var(--ink-soft);}
 main{padding:0 48px 140px; max-width:1180px; margin:0 auto;}
-/* Content grid: prose keeps a readable measure in the centre track, while
-   tables and code blocks — which are wide and dense in this guide — break out
-   to the full column. Without this everything is squeezed to prose width and
-   the four-column tables wrap into soup. */
+/* Content grid. Everything shares ONE left edge; prose stops at a readable
+   measure and the wide, dense things in this guide — tables, code, UI mockups
+   — keep going to the right. Centring the prose instead would give the page
+   two different left margins, which reads as "some text is narrower". */
 .chapter{
   display:grid; padding-top:60px;
   grid-template-columns:
-    [full-start] minmax(0,1fr)
     [text-start] minmax(0,76ch) [text-end]
     minmax(0,1fr) [full-end];
 }
 .chapter > *{grid-column:text;}
 .chapter > .scroll,
 .chapter > pre,
-.chapter > .uiframe{grid-column:full;}
+.chapter > .uiframe{grid-column:text-start / full-end;}
 .chapter + .chapter{border-top:1px solid var(--line); margin-top:60px;}
 .eyebrow{
   font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);
   display:flex; align-items:center; gap:10px; margin-bottom:10px;
 }
+.chnum.qs{background:var(--loot); color:#1a1400;}
 .chnum{
   display:inline-grid; place-items:center; width:26px; height:26px; border-radius:3px;
   background:var(--accent); color:#fff; font-size:12px; letter-spacing:0;
@@ -438,6 +572,12 @@ pre{
   border-left:2px solid var(--line); font-size:13px; line-height:1.55;
 }
 pre code{background:none; padding:0; font-size:inherit;}
+.t-key{color:var(--t-key);}
+.t-str{color:var(--t-str);}
+.t-num{color:var(--t-num);}
+.t-lit{color:var(--t-lit);}
+.t-punct{color:var(--t-punct);}
+.t-comment{color:var(--t-comment); font-style:italic;}
 .scroll{overflow-x:auto; max-width:100%;}
 
 /* ---- Editor mockups -------------------------------------------------------
@@ -496,6 +636,83 @@ pre code{background:none; padding:0; font-size:inherit;}
   color:var(--app-muted); background:var(--app-bg);
 }
 .ui-pill.on{border-color:var(--app-accent); color:var(--app-accent);}
+/* Typed property editor */
+.ui-fields{padding:10px 12px; display:flex; flex-direction:column;}
+.ui-field{
+  display:grid; grid-template-columns:210px 1fr; gap:14px; align-items:center;
+  padding:7px 8px; border-bottom:1px solid var(--app-border);
+}
+.ui-field:last-child{border-bottom:0;}
+.ui-field.dirty{border-left:2px solid var(--app-warn); padding-left:6px;}
+.ui-flabel{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px; color:var(--app-muted);
+}
+.ui-input{
+  background:var(--app-bg); border:1px solid var(--app-border); border-radius:4px;
+  padding:4px 9px; font-size:12.5px; min-width:0;
+}
+.ui-input.ui-number{max-width:110px; text-align:right; font-variant-numeric:tabular-nums;}
+.ui-select,.ui-slot{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--app-bg); border:1px solid var(--app-border); border-radius:4px;
+  padding:4px 9px; font-size:12.5px;
+}
+.ui-slot{color:var(--app-accent); font-family:ui-monospace,Menlo,Consolas,monospace;}
+.ui-slotcaret{color:var(--app-muted); font-size:10px;}
+.ui-tagchip{
+  background:rgba(95,179,255,.12); border:1px solid rgba(95,179,255,.35);
+  color:var(--app-accent); border-radius:10px; padding:2px 9px; font-size:11.5px;
+  font-family:ui-monospace,Menlo,Consolas,monospace; justify-self:start;
+}
+.ui-toggle{
+  width:34px; height:19px; border-radius:10px; background:var(--app-panel-2);
+  border:1px solid var(--app-border); position:relative; display:inline-block; justify-self:start;
+}
+.ui-toggle i{
+  position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%;
+  background:var(--app-muted);
+}
+.ui-toggle.on{background:rgba(54,198,155,.25); border-color:#36c69b;}
+.ui-toggle.on i{left:auto; right:2px; background:#36c69b;}
+
+/* Validation rows */
+.ui-issues{padding:8px; display:flex; flex-direction:column; gap:2px;}
+.ui-issue{
+  display:grid; grid-template-columns:8px 132px 1fr auto; gap:11px; align-items:center;
+  padding:7px 10px; border-radius:5px; background:var(--app-panel); font-size:12.5px;
+}
+.ui-sev{width:8px; height:8px; border-radius:50%; background:var(--app-muted);}
+.ui-issue.error .ui-sev{background:#ef6c6c;}
+.ui-issue.warning .ui-sev{background:#f0b35e;}
+.ui-cat{
+  font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; color:var(--app-muted);
+}
+.ui-detail{color:var(--app-text); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;}
+.ui-open{color:var(--app-accent); font-size:11.5px;}
+
+/* Recipe card */
+.ui-recipe{padding:0;}
+.ui-recipe-head{
+  padding:9px 14px; background:var(--app-panel); border-bottom:1px solid var(--app-border);
+  font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; color:var(--app-accent);
+}
+.ui-recipe-body{display:flex; align-items:center; gap:16px; padding:14px; flex-wrap:wrap;}
+.ui-recipe-side{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.ui-slotlabel{
+  font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--app-muted);
+}
+.ui-ingredient{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--app-panel-2); border:1px solid var(--app-border); border-radius:5px;
+  padding:5px 10px; font-size:12px; font-family:ui-monospace,Menlo,Consolas,monospace;
+}
+.ui-qty{color:var(--app-warn); font-variant-numeric:tabular-nums;}
+.ui-arrow{color:var(--app-muted); font-size:17px;}
+.ui-recipe-meta{
+  padding:8px 14px; border-top:1px solid var(--app-border); color:var(--app-muted); font-size:11.5px;
+}
+
 .ui-legend{padding:10px 12px; display:flex; flex-direction:column; gap:8px;}
 .ui-legrow{display:grid; grid-template-columns:20px 132px 1fr; gap:11px; align-items:baseline; font-size:12.5px;}
 .ui-swatch{width:16px; height:16px; border-radius:3px; display:inline-block; transform:translateY(2px);}
@@ -546,7 +763,7 @@ html{scroll-behavior:smooth;}
 <div class="wrap">
   <nav class="rail">
     <h1>The TSIC Modding Guide</h1>
-    <p class="sub">${chapters.length} chapters &middot; ~${(words / 1000).toFixed(0)}k words</p>
+    <p class="sub">${numbered} chapters + quick start &middot; ~${(words / 1000).toFixed(0)}k words</p>
     <a class="backlink" href="../">&larr; Definition Editor</a>
     ${rail}
     <div class="rail-foot"><a href="${REPO}/tree/main/docs/guide" target="_blank" rel="noopener">Source on GitHub &nearr;</a></div>

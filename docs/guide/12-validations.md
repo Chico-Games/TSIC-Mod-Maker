@@ -20,6 +20,14 @@ Run it **before every save-and-test cycle**, not before publish. A dangling refe
 minutes after you made it takes seconds to fix; found three weeks later it takes an afternoon of
 archaeology.
 
+```ui-issues
+error :: orphan ref :: RD_MyThing_CR → ID_Missing_CM (input) does not resolve
+error :: upgrade target missing :: FUR_Bench_T2 → FD_BenchTierThree not loaded
+warning :: item↔static :: ID_MyStim_CN: static_item_definition is empty
+warning :: empty ARR :: ARR_MyStation has no recipes
+warning :: orphan loot :: LD_OldCrate is not referenced by anything
+```
+
 Note that the issue dots elsewhere in the app are a *different, smaller* set — dangling references
 and schema drift only. Structural problems live here and nowhere else.
 

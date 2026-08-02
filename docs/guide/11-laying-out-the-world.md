@@ -475,7 +475,17 @@ switch gizmo mode, so flying with `W` retargets the gizmo to Move as a side effe
 | Duplicate selection (offset +50 uu on X) | `Ctrl+D` |
 | Delete selection | `Delete` or `Backspace` |
 
-**Details panel** — the full property editor for the selected object.
+**Details panel** — the full property editor for the selected object. A `ProxyActor` picked by query
+rather than named outright looks like this:
+
+```ui-fields
+layout_actor_type :: enum :: ProxyActor
+furniture_definition :: ref :: (unset — using queries)
+search_queries :: text :: 2 queries
+tile_requirements :: text :: 1 query
+*spawn_chance_under :: number :: 0.35
+seed_offset :: number :: -1
+```
 
 Two limits worth knowing before you plan a bulk change here:
 

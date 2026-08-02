@@ -94,6 +94,18 @@ Hover any property label for its description, pulled from the game's own source 
 fields carry the game's clamps. Enums are dropdowns. Asset references open a picker filtered to the
 correct class. Tags open the real tag tree.
 
+Editing a crafting material looks like this — each property gets the control its *type* deserves,
+and the amber bar marks a field you've changed but not yet saved:
+
+```ui-fields
+display_name :: text :: Metal Screws
+*weight :: number :: 0.05
+stackable :: bool :: on
+max_stack_size :: number :: 200
+item_category_tag :: tag :: Item.Category.Material
+static_item_definition :: ref :: FD_MetalScrews_SI
+```
+
 When something renders as a plain JSON box instead, the editor's schema doesn't know that property —
 see schema drift in [chapter 2](02-setup.md). It still saves correctly.
 

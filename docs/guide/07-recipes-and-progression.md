@@ -32,7 +32,17 @@ Three classes build on that:
 | `UFurnitureUpgradeRecipe` | an upgrade target | Furniture upgrades |
 
 The recipe card in the Stations sub-tab changes shape depending on which class it is, so you always
-see the fields that class actually has.
+see the fields that class actually has. A craft recipe reads as inputs on the left, output on the
+right, and the numbers that gate it underneath:
+
+```ui-recipe
+title :: RD_MetalPanel_CR
+in :: ID_SteelPanel_CM ×10 | ID_MetalScrews_CM ×12
+out :: ID_MetalPanel_CM ×1
+meta :: 16s · station level 3 · Craft.Bench.CraftingTable
+```
+
+Every slot on that card is a drop target — drag an item from the palette onto one to change it.
 
 ## ARRs — how a station knows what it can make
 

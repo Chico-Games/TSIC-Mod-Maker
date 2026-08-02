@@ -43,6 +43,34 @@ Hover `💾 Save` for the menu.
 > overrides *everything* and conflicts with every other mod in the load order. It exists for
 > inspection and pipeline work, not distribution.
 
+## Where mods live and how they load
+
+One folder, two ways in:
+
+| How it got there | Where it lands |
+|---|---|
+| You copied it in by hand | `<game>/TSIC/Mods/<your-folder>/` |
+| A player subscribed on mod.io | The same `Mods/` directory — the installer downloads it there |
+
+There's no separate "installed mods" store. A downloaded mod and a hand-copied one are the same
+thing on disk, which is why you can test exactly what players will run.
+
+The download path is deliberately narrow: the installer refuses any host that isn't mod.io, checks
+the file's MD5 against what the API promised, rejects unsafe mod ids, and stamps the mod.io revision
+into `mod.json` so the game can tell which release a folder came from.
+
+At startup the game then:
+
+1. **Scans** `Mods/` (and `Content/Mods`) for any direct subfolder containing a `mod.json`.
+2. **Resolves the load order** — one default mod, then the ordered list from the Mod Selection
+   screen. Mods on disk but not in that order are inactive.
+3. **Merges** every active mod's files into one list keyed by lowercased relative path, later mods
+   winning ([ch. 1](01-what-youre-editing.md)).
+4. **Imports** non-definition assets — your textures, sounds and meshes.
+5. **Loads the definition pack** and logs what resolved.
+
+All of it happens once, at startup. There is no hot reload.
+
 ## Testing locally
 
 Mods are read from a `Mods/` folder inside the game directory — the folder that also contains

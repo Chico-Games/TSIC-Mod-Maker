@@ -12,8 +12,12 @@ You do not need Unreal Engine, C++, or any programming knowledge. You need a Chr
 
 ## Chapters
 
+**In a hurry?** [Quick start](00-quick-start.md) gets you from opening the editor to a working mod
+in the game in about fifteen minutes, with no theory at all.
+
 | # | Chapter | What it covers |
 |---|---|---|
+| ★ | [Quick start](00-quick-start.md) | First mod, end to end. Ten steps, no explanation. |
 | 1 | [What you're editing](01-what-youre-editing.md) | Definitions, mods, and the overlay model. Read this first — it explains everything else. |
 | 2 | [Setup and your first project](02-setup.md) | Settings, creating a project, saving, reloading, recovering drafts. |
 | 3 | [Anatomy of a definition](03-anatomy-of-a-definition.md) | What's inside a definition file, folder↔class, naming conventions, references. |
