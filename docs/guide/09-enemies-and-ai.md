@@ -102,10 +102,30 @@ The `PRC_` definition as a draggable diagram: sight cones, ranges, angles. The r
 peripheral and auto-detect handles all write straight into the record, and the sandbox picks the
 change up immediately.
 
-Perception profiles inherit through an `extends` chain, and every field tells you whether it's
-authored here or inherited. **Editing an inherited value writes a local override on the child** — the
-shared base is untouched, so tuning one enemy never retunes every enemy that extends it. (Opening
-`PRC_BaseHostile` itself and editing it there does affect everyone. Where-Used first.)
+Perception profiles inherit, and every field tells you whether it's authored here or inherited.
+**Editing an inherited value writes a local override on the child** — the shared base is untouched,
+so tuning one enemy never retunes every enemy that extends it. (Opening `PRC_BaseHostile` itself and
+editing it there does affect everyone. Where-Used first.)
+
+> **Why it works**
+>
+> AI definitions support inheritance through an `extends` property naming another definition:
+>
+> ```json
+> "properties": {
+>   "extends": "PRC_BaseHostile",
+>   "sight": { "range": 3000, "time_to_spot": 1.1 }
+> }
+> ```
+>
+> At load the game walks the chain and merges parent into child, child winning, then drops the
+> `extends` field. Seven of the eight shipped perception profiles are one line of `extends` plus the
+> handful of numbers that make that enemy different.
+>
+> The rules are strict, and each has its own load error: the parent must exist
+> (`extends unknown definition`), must be **the same class** (`extends '…' of a different class`),
+> and the chain must not loop (`extends cycle`). This is an AI-definition feature — items, furniture
+> and recipes have no equivalent.
 
 Perception is where most enemy "feel" lives. A cone that's too wide makes an enemy omniscient; too
 narrow and it walks past the player. Tune here, then verify in the *Blind corner* scene.

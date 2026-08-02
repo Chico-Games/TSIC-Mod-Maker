@@ -42,7 +42,14 @@ function inline(s) {
 }
 
 function renderTable(rows) {
-  const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+  // Split on unescaped pipes only. Cells in this guide carry things like
+  // `Tile.MazeDirection.<Up\|UpDown\|All>`, where a bare split('|') would
+  // shred the row into extra columns and leave stray backslashes behind.
+  const cells = (r) =>
+    r
+      .replace(/^\||\|$/g, '')
+      .split(/(?<!\\)\|/)
+      .map((c) => c.trim().replace(/\\\|/g, '|'));
   const head = cells(rows[0]);
   const body = rows.slice(2).map(cells);
   const th = head.map((c) => `<th>${inline(c)}</th>`).join('');
@@ -137,7 +144,12 @@ const index = readFileSync(join(SRC, 'README.md'), 'utf8');
 const chapters = files.map((f) => {
   const raw = readFileSync(join(SRC, f), 'utf8');
   const title = raw.match(/^#\s+\d+\.\s*(.+)$/m)?.[1] ?? f;
-  return { id: f.replace(/\.md$/, ''), num: f.slice(0, 2).replace(/^0/, ''), title, html: md(raw) };
+  const html = md(raw);
+  // Harvest the rendered h2s for the right-hand "on this page" list, so the
+  // anchors are guaranteed to match the ones the body actually emitted.
+  const sections = [...html.matchAll(/<h2 id="([^"]+)">(?:<span class="secnum">([^<]*)<\/span>)?<span>(.*?)<\/span><\/h2>/g)]
+    .map((m) => ({ id: m[1], num: m[2] ?? '', text: m[3].replace(/<[^>]+>/g, '') }));
+  return { id: f.replace(/\.md$/, ''), num: f.slice(0, 2).replace(/^0/, ''), title, html, sections };
 });
 
 const rail = [
@@ -156,6 +168,16 @@ const body = [
     </section>`,
   ),
 ].join('\n');
+
+const toc = chapters
+  .map(
+    (c) => `<ul data-chapter="${c.id}">${c.sections
+      .map(
+        (s) => `<li><a href="#${s.id}">${s.num ? `<span class="tocnum">${s.num}</span>` : ''}${s.text}</a></li>`,
+      )
+      .join('')}</ul>`,
+  )
+  .join('\n');
 
 const words = chapters.reduce((n, c) => n + c.html.split(/\s+/).length, 0);
 
@@ -203,11 +225,29 @@ body{
 .mono,code,pre,.rail-num,.eyebrow,.secnum,.chnum,th,.backlink{
   font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
 }
-.wrap{display:grid; grid-template-columns:270px minmax(0,1fr); align-items:start;}
+.wrap{display:grid; grid-template-columns:280px minmax(0,1fr) 240px; align-items:start;}
 .rail{
-  position:sticky; top:0; height:100vh; overflow-y:auto; padding:26px 14px 40px 22px;
+  position:sticky; top:0; height:100vh; overflow-y:auto; padding:26px 14px 40px 26px;
   border-right:1px solid var(--line); background:var(--raise);
 }
+/* Right-hand "on this page" — only the active chapter's sections are shown. */
+.toc{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding:30px 24px 40px 14px; font-size:12.5px;
+}
+.toc-label{
+  font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);
+  margin-bottom:10px;
+}
+.toc ul{list-style:none; margin:0; padding:0; display:none;}
+.toc ul.active{display:block;}
+.toc li{margin:0 0 2px;}
+.toc a{
+  display:block; padding:4px 8px; border-radius:4px; text-decoration:none;
+  color:var(--ink-soft); border-left:2px solid transparent; line-height:1.35;
+}
+.toc a:hover{color:var(--ink); background:var(--accent-soft);}
+.toc .tocnum{color:var(--accent); font-size:11px; margin-right:6px;}
 .rail h1{font-size:15px; line-height:1.3; margin:0 0 4px; letter-spacing:-.01em;}
 .rail .sub{font-size:12px; color:var(--ink-soft); margin:0 0 14px;}
 .backlink{
@@ -226,9 +266,22 @@ body{
 .rail-num{font-size:11px; color:var(--accent); font-variant-numeric:tabular-nums;}
 .rail-foot{margin-top:20px; padding-top:14px; border-top:1px solid var(--line); font-size:12px;}
 .rail-foot a{color:var(--ink-soft);}
-main{padding:0 40px 120px;}
-.chapter{max-width:70ch; margin:0 auto; padding-top:56px;}
-.chapter + .chapter{border-top:1px solid var(--line); margin-top:56px;}
+main{padding:0 48px 140px; max-width:1180px; margin:0 auto;}
+/* Content grid: prose keeps a readable measure in the centre track, while
+   tables and code blocks — which are wide and dense in this guide — break out
+   to the full column. Without this everything is squeezed to prose width and
+   the four-column tables wrap into soup. */
+.chapter{
+  display:grid; padding-top:60px;
+  grid-template-columns:
+    [full-start] minmax(0,1fr)
+    [text-start] minmax(0,76ch) [text-end]
+    minmax(0,1fr) [full-end];
+}
+.chapter > *{grid-column:text;}
+.chapter > .scroll,
+.chapter > pre{grid-column:full;}
+.chapter + .chapter{border-top:1px solid var(--line); margin-top:60px;}
 .eyebrow{
   font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);
   display:flex; align-items:center; gap:10px; margin-bottom:10px;
@@ -255,14 +308,19 @@ pre{
 }
 pre code{background:none; padding:0; font-size:inherit;}
 .scroll{overflow-x:auto; max-width:100%;}
-table{border-collapse:collapse; width:100%; font-size:14px; margin:0 0 18px; min-width:min(100%,420px);}
+table{border-collapse:collapse; width:100%; font-size:14px; margin:0 0 20px; min-width:min(100%,420px);}
 th{
   text-align:left; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--ink-soft); font-weight:500; padding:0 12px 7px 0; border-bottom:1px solid var(--line);
+  color:var(--ink-soft); font-weight:500; padding:0 16px 8px 0; border-bottom:1px solid var(--line);
   white-space:nowrap;
 }
-td{padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top;}
+td{padding:10px 16px 10px 0; border-bottom:1px solid var(--line); vertical-align:top;}
+tbody tr:hover td{background:var(--accent-soft);}
 tr:last-child td{border-bottom:0;}
+/* First column of a table is nearly always the thing being named — an id, a
+   property, a key. Keep it from wrapping mid-token where there's room. */
+td:first-child{padding-left:2px;}
+th:first-child{padding-left:2px;}
 blockquote{
   margin:0 0 20px; padding:14px 18px; border-left:3px solid var(--accent);
   background:var(--raise); border-radius:0 4px 4px 0;
@@ -274,10 +332,15 @@ blockquote h3{margin-top:0;}
 :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px;}
 html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
-@media (max-width:860px){
+@media (max-width:1340px){
+  .wrap{grid-template-columns:280px minmax(0,1fr);}
+  .toc{display:none;}
+}
+@media (max-width:900px){
   .wrap{grid-template-columns:1fr;}
   .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);}
   main{padding:0 20px 80px;}
+  .chapter{display:block;}
 }
 </style>
 </head>
@@ -291,18 +354,31 @@ html{scroll-behavior:smooth;}
     <div class="rail-foot"><a href="${REPO}/tree/main/docs/guide" target="_blank" rel="noopener">Source on GitHub &nearr;</a></div>
   </nav>
   <main>${body}</main>
+  <aside class="toc">
+    <div class="toc-label">On this page</div>
+    ${toc}
+  </aside>
 </div>
 <script>
   const items = [...document.querySelectorAll('.rail-item')];
   const map = new Map(items.map((a) => [a.getAttribute('href').slice(1), a]));
+  const tocLists = [...document.querySelectorAll('.toc ul')];
+  const tocMap = new Map(tocLists.map((u) => [u.dataset.chapter, u]));
+
+  function setActive(id) {
+    items.forEach((a) => a.classList.remove('active'));
+    map.get(id)?.classList.add('active');
+    tocLists.forEach((u) => u.classList.remove('active'));
+    tocMap.get(id)?.classList.add('active');
+  }
+
   const obs = new IntersectionObserver((entries) => {
     for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      items.forEach((a) => a.classList.remove('active'));
-      map.get(e.target.id)?.classList.add('active');
+      if (e.isIntersecting) setActive(e.target.id);
     }
   }, { rootMargin: '-10% 0px -80% 0px' });
   document.querySelectorAll('.chapter').forEach((s) => obs.observe(s));
+  setActive(location.hash.slice(1) || 'index');
 </script>
 </body>
 </html>

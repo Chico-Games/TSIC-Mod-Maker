@@ -65,6 +65,34 @@ Every folder in the base game data, the class it holds, and how many records shi
 
 Plus `maps/` (world files) and `web/` (UI overrides), which aren't definition folders.
 
+### The folders this guide doesn't otherwise cover
+
+Most of the tree is items, furniture, recipes, loot, layouts and AI — the chapters above. These are
+the rest. All are editable in the **Definitions** tab; none have a specialised view.
+
+| Folder | What it holds |
+|---|---|
+| `boss_summoner_definitions` | Altar/station furniture used to summon a boss |
+| `boss_summon_recipe_definitions` | What a summon costs, and which `ED_` it produces |
+| `containment_cage_definitions` | Cages that hold a captured creature |
+| `death_box_definitions` | The container a dead player's inventory lands in |
+| `hotkey_definitions` | A physical binding across keyboard and controller, plus how it's shown |
+| `input_behavior_definitions` | A named input intent (`behavior_tag`) bound to exactly one hotkey. One hotkey can serve many behaviours |
+| `situation_definitions` | Which input behaviours are live in a given context — `SIT_Combat`, menus, and so on. Abilities and screens activate a situation to enter it |
+| `inventory_rules_definitions` | Per-container rules: capacity, item whitelist/blacklist, whether items can be added at all |
+| `outfit_definitions` / `shoe_definitions` | Equippables with their own folders — same shape as `equippable_definitions`, split out by slot |
+| `random_event_definitions` | World events like `RE_GraveyardShift` — lighting, intercom announcement, ambient audio |
+| `world_rules_definitions` | One record, `WR_Default`: day sections and the lighting config for each. JSON is the source of truth; the C++ defaults are only an error floor. A mod overrides the whole set |
+| `scp_game_data` | One record of global pointers — front-end map, icon atlas, fallback mesh, shared materials |
+| `spawn_point_definitions` | Where players enter the world |
+| `enemy_spawn_parameter_definitions` | Rates and conditions for enemy spawning ([ch. 9](09-enemies-and-ai.md)) |
+| `skill_definitions` | The individual actions an AI behaviour can invoke ([ch. 9](09-enemies-and-ai.md)) |
+
+Hotkeys, input behaviours and situations are one system in three folders: a **hotkey** is the physical
+key, a **behaviour** is the intent bound to it, and a **situation** is the set of behaviours that
+apply right now. Rebinding a key means editing the hotkey; adding a new action means a behaviour plus
+a situation that lists it.
+
 ---
 
 ## Appendix B — Naming glossary

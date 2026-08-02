@@ -123,8 +123,40 @@ Definitions are the bulk of it, but the pipeline also handles:
 | `*_definitions/*.json` | Definitions — the subject of this guide. |
 | `maps/*.json` | Whole world maps. Later load order wins, same as definitions. See [ch. 11](11-laying-out-the-world.md). |
 | `web/…` | The game's HTML/CSS/JS UI. Adding files is free; *replacing* a base file means listing it in `mod.json`'s `overrides` and taking the `ui` permission. |
-| Textures, sounds, meshes | Imported at load into the game's runtime content, addressable by your definitions. |
+| Art and audio files | Imported at load and addressable by your definitions — see below. |
 | `mod.json` → `scripts` | Gameplay scripting, if your mod declares it. Out of scope for this guide. |
+
+Anything else is ignored. A `.json` file counts as a definition unless it's `mod.json`, sits under
+`maps/` or `web/`, or any part of its path starts with `.` or `_` — which is why `_schema.json` and
+the editor's `.manifest.json` sidecars are skipped rather than rejected. Park your own notes in a
+`_notes/` folder and the loader will leave them alone.
+
+### Shipping your own art and audio
+
+You are not limited to the meshes the base game ships. Drop the file in your mod and the game imports
+it at load:
+
+| Kind | Extensions |
+|---|---|
+| Textures | `png` `jpg` `jpeg` `exr`, plus `webp` `ktx2` `avif` `hdr` `tga` `bmp` `gif` |
+| Sounds | `wav` `ogg` `mp3` |
+| Meshes | `gltf` `glb` `obj` `fbx` `stl` `vox` |
+
+Each becomes an asset your definitions can point at, under a path built from your mod id:
+
+```
+com.yourname.yourmod/meshes/MyCrate.glb
+        ↓  imported at load as
+/ModData/com_yourname_yourmod/meshes/mycrate
+```
+
+Two rules for writing that path into a `static_mesh` field: **it is lowercased**, and every character
+in the mod id that isn't a letter, digit, `_` or `-` becomes `_` (so the dots in a reverse-DNS id turn
+into underscores). Files under `web/` are never imported this way — those belong to the HTML UI and
+are served straight from disk.
+
+Failures are logged per file (`texture import failed for …`) and don't stop the rest of the mod
+loading.
 
 ## Load order and the mod stack
 

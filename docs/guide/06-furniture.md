@@ -114,9 +114,20 @@ Editing the *physical* station (health, mesh, storage) here; editing *what it ca
 
 ## Furniture and meshes
 
-The `static_mesh` property points at the mesh the world will render. It matters beyond looks: the
-Layouts editor draws each object's bounding box from the mesh catalog, so **furniture with no mesh
-shows up as a "Missing mesh" error when you try to place it in a room**.
+The `static_mesh` property points at the mesh the world will render, in Unreal's `Package.Object`
+form:
+
+```
+/Game/Furniture/WareHouse/Meshes/SM_Box1_01.SM_Box1_01
+```
+
+It matters beyond looks: the Layouts editor draws each object's bounding box from the mesh catalogue,
+so **furniture with no mesh shows up as a "Missing mesh" error when you try to place it in a room**.
+
+You can also point it at a mesh your own mod ships — drop a `.glb`, `.obj` or `.fbx` in the mod folder
+and reference the imported path ([ch. 1](01-what-youre-editing.md#shipping-your-own-art-and-audio)).
+The editor's catalogue won't know it, so the Layouts viewport draws an orange placeholder box at the
+wrong size; that's an editor limitation, not a data problem.
 
 Mesh pivots in the base game are not consistent — some are centred, some sit on a back face, some on
 a corner. This matters when you rotate things in a layout; [chapter 11](11-laying-out-the-world.md)

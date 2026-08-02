@@ -91,6 +91,21 @@ The game log is explicit about mods — the category is `LogScpMods`. Look for:
 
 Those lines answer nearly every "why isn't my mod working" question.
 
+The definition loader reports separately, and this is where a broken *file* shows up rather than a
+broken mod:
+
+- `DefinitionPack: loaded '<mod>' (N defs, N refs resolved, N unresolved)` — the headline. If `N
+  defs` is lower than the number of files you shipped, something was rejected below.
+- `DefinitionPack: unknown class '<class>' in <file>` — the `class` field names something the game
+  doesn't have. Usually a typo, or a definition from a newer build.
+- `DefinitionPack: header <file>: <reason>` — missing `id`, bad JSON, that kind of thing.
+- `DefinitionPack: asset import: N files in …` — your textures, sounds and meshes
+  ([ch. 1](01-what-youre-editing.md#shipping-your-own-art-and-audio)); individual failures log above
+  it.
+
+Unresolved refs are worth watching: they're the runtime equivalent of the `orphan ref` validation,
+and they mean something in your data points at an id nothing defines.
+
 ## Publishing to mod.io
 
 `💾 Save` → hover → `📤 Publish to mod.io`. You need to be signed in (`🌐 Sign in (mod.io)` in the

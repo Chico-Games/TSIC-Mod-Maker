@@ -40,6 +40,8 @@ You do not need Unreal Engine, C++, or any programming knowledge. You need a Chr
 | Tune how an enemy behaves | [Ch. 9](09-enemies-and-ai.md) |
 | Build a new room / tile | [Ch. 11](11-laying-out-the-world.md) |
 | Re-skin existing furniture (e.g. chairs → boxes) | [Ch. 1](01-what-youre-editing.md), then [Ch. 6](06-furniture.md) |
+| Ship my own mesh, texture or sound | [Ch. 1](01-what-youre-editing.md#shipping-your-own-art-and-audio) |
+| Work out what a folder I've never used is for | [Appendix A](14-appendices.md#the-folders-this-guide-doesnt-otherwise-cover) |
 | Get my mod running in the game | [Ch. 13](13-shipping.md) |
 | Understand an error the editor is showing me | [Ch. 12](12-validations.md) |
 | Fix something that isn't working | [Appendix E](14-appendices.md#appendix-e--troubleshooting) |
