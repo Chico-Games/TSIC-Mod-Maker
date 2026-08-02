@@ -26,7 +26,10 @@ function inline(s) {
   s = esc(s);
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, t, href) => {
     const local = /^\d\d-|^README\.md/.test(href);
-    const target = local ? `#${href.split('#')[0].replace(/\.md$/, '')}` : href;
+    // Chapter files become in-page sections; the index file is the "index"
+    // section, not a section literally called README.
+    const stem = href.split('#')[0].replace(/\.md$/, '');
+    const target = local ? `#${stem === 'README' ? 'index' : stem}` : href;
     const ext = local ? '' : ' target="_blank" rel="noopener"';
     return `<a href="${target}"${ext}>${t}</a>`;
   });
@@ -103,7 +106,14 @@ function md(text) {
       if (level === 1) txt = txt.replace(/^\d+\.\s*/, ''); // the rail already shows the number
       const num = level > 1 && /^\d+\.\d/.test(txt) ? txt.match(/^[\d.]+/)[0] : null;
       if (num) txt = txt.slice(num.length).trim();
-      const id = txt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      // Match GitHub's heading-anchor rule so a link written against the
+      // markdown on GitHub also resolves here: apostrophes are dropped, not
+      // turned into separators ("doesn't" -> "doesnt", never "doesn-t").
+      const id = txt
+        .toLowerCase()
+        .replace(/[’']/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
       const badge = num ? `<span class="secnum">${num}</span>` : '';
       out.push(`<h${level} id="${id}">${badge}<span>${inline(txt)}</span></h${level}>`);
       i++;
