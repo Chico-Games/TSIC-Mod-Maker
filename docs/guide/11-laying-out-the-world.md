@@ -397,7 +397,13 @@ missing either means that biome never gets a workbench.
 
 ## 11.12 The editor
 
-Three panes under a toolbar: outliner, viewport, details.
+Three panes under a toolbar:
+
+```ui-panes
+Outliner :: every object in this layout, in order
+*Viewport :: bounding boxes, gizmo, status billboards
+Details :: the selected object's properties
+```
 
 **Toolbar**
 
@@ -434,14 +440,16 @@ inside, pick that layout in the picker and edit it there.
 **Viewport** — the boxes are **bounding boxes from the mesh catalogue, not real meshes**. Colour
 tells you the state:
 
-| Colour | Means |
-|---|---|
-| Neutral grey box | A proxy that resolved, at its real bounds |
-| Translucent blue | A nested layout |
-| Small wireframe sphere | A spawn point or visual helper — these have no mesh, so they get a fixed 40 uu marker |
-| **Orange box** | Resolved, and the mesh path is set, but the mesh isn't in the catalogue — so the box is a 100 uu placeholder, not its real size |
-| **Solid red** | Failed to resolve. The billboard says why |
-| Yellow wireframe cage | Your current selection |
+```ui-legend
+#cccccc Neutral grey :: a proxy that resolved, drawn at its real bounds
+#5588ff Blue :: a nested layout
+#ff5555 Red wire sphere :: an enemy spawn point — no mesh, fixed 40 uu marker
+#ffcc44 Gold wire sphere :: a loot spawn point
+#888888 Grey wire sphere :: a visual helper
+#ff9933 Orange box :: resolved, mesh path set, but the mesh is not in the catalogue — a 100 uu placeholder, not its real size
+#ff3333 Solid red :: failed to resolve; the billboard says why
+#ffeb3b Yellow cage :: your current selection
+```
 
 Red/green/blue axes are drawn at every object's pivot, which is the quickest way to see how a
 rotation actually composes. The floor grid is 100 uu cells inside 1000 uu sections — usable as a

@@ -12,6 +12,18 @@
 
 ## The nine item folders
 
+```ui-rail
+*Crafting Materials :: 130
+Consumables :: 87
+Constructables :: 299
+Equippables :: 34
+Gloves :: 4
+Ammo :: 3
+Seeds :: 10
+Traps :: 3
+Static Items :: 545
+```
+
 | Sub-tab | Folder | Holds |
 |---|---|---|
 | Crafting Materials | `crafting_material_definitions` | Raw and intermediate ingredients |
@@ -30,7 +42,15 @@ needs a matching furniture definition to place ([ch. 6](06-furniture.md)).
 
 ## The two view modes
 
-The Items and Furniture tabs share one browser with two modes.
+The Items and Furniture tabs share one browser with two modes. The shape is the same either way — a
+rail of folders, a list of records, the editor, and Where-Used alongside it:
+
+```ui-panes
+Sub-tab rail :: Crafting Materials, Consumables, …
+Record list :: search, ＋ New, duplicate, issue dots
+*Detail / Spreadsheet :: the record itself
+Where-Used :: what points at this
+```
 
 ### Detail
 

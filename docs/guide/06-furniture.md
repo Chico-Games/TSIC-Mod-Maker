@@ -80,8 +80,14 @@ editing it improves everything at once.
 ## Tier chains
 
 Every furniture sub-tab groups its rail by family. A workbench that exists at three levels shows as
-one row with `base` `T1` `T2` pills under it; click a pill to edit that tier, `×` to delete it. A
-piece with no upgrades is just a plain row.
+one row with tier pills; click a pill to edit that tier, `×` to delete it. A piece with no upgrades is
+just a plain row.
+
+```ui-tiers
+Crafting Table :: base | T1 | *T2
+Armor Bench :: base | T1
+Sewing Machine :: base
+```
 
 The `＋` on the family row **mints the next tier and the recipe that links to it** — a new furniture
 definition plus a `UFurnitureUpgradeRecipe` pointing the current top tier at it. You still have to

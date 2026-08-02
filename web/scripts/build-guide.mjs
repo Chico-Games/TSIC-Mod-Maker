@@ -62,6 +62,121 @@ function renderTable(rows) {
   return `<div class="scroll"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
 }
 
+// ---------------------------------------------------------------------------
+// UI mockups.
+//
+// Fenced blocks tagged ui-header / ui-panes / ui-rail / ui-tiers / ui-legend
+// render as the editor's own chrome, using the app's real tokens from
+// src/styles.css. They stay plain readable text in a code fence on GitHub,
+// which is what the markdown has to degrade to.
+//
+// The mockups keep the app's dark palette in both page themes on purpose: it
+// is a picture of a dark application, not page furniture.
+// ---------------------------------------------------------------------------
+
+/** "*Active thing :: subtitle" -> { label, sub, active } */
+function uiEntry(raw) {
+  let s = raw.trim();
+  const active = s.startsWith('*');
+  if (active) s = s.slice(1).trim();
+  const [label, sub] = s.split('::').map((p) => p.trim());
+  return { label, sub: sub ?? '', active };
+}
+
+const uiSplit = (s) => s.split('|').map((p) => p.trim()).filter(Boolean);
+
+function renderUiBlock(kind, bodyText) {
+  const lines = bodyText.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim());
+
+  if (kind === 'ui-header') {
+    const get = (k) => lines.find((l) => l.startsWith(`${k}:`))?.slice(k.length + 1).trim() ?? '';
+    const activeTab = get('active');
+    const tabs = uiSplit(get('tabs'))
+      .map((t) => `<span class="ui-tab${t === activeTab ? ' on' : ''}">${esc(t)}</span>`)
+      .join('');
+    const info = get('info');
+    const buttons = uiSplit(get('buttons'))
+      .map((b) => `<span class="ui-btn">${esc(b)}</span>`)
+      .join('');
+    return `<div class="uiframe"><div class="ui-headerbar">
+      <div class="ui-tabs">${tabs}</div>
+      ${info ? `<span class="ui-info">${esc(info)}</span>` : ''}
+      <span class="ui-grow"></span>
+      <div class="ui-btns">${buttons}</div>
+    </div></div>`;
+  }
+
+  if (kind === 'ui-panes') {
+    const panes = uiSplit(lines.join(' | ')).map(uiEntry);
+    const cells = panes
+      .map(
+        (p) => `<div class="ui-pane${p.active ? ' wide' : ''}">
+          <div class="ui-pane-title">${esc(p.label)}</div>
+          ${p.sub ? `<div class="ui-pane-sub">${esc(p.sub)}</div>` : ''}
+        </div>`,
+      )
+      .join('');
+    return `<div class="uiframe"><div class="ui-panes">${cells}</div></div>`;
+  }
+
+  if (kind === 'ui-rail') {
+    const items = lines
+      .map(uiEntry)
+      .map(
+        (it) => `<div class="ui-railitem${it.active ? ' on' : ''}">
+          <span>${esc(it.label)}</span>${it.sub ? `<span class="ui-count">${esc(it.sub)}</span>` : ''}
+        </div>`,
+      )
+      .join('');
+    return `<div class="uiframe"><div class="ui-rail">${items}</div></div>`;
+  }
+
+  if (kind === 'ui-tiers') {
+    const rows = lines
+      .map((l) => {
+        const [name, pills] = l.split('::');
+        const chips = uiSplit(pills ?? '')
+          .map((p) => {
+            const on = p.startsWith('*');
+            const t = on ? p.slice(1) : p;
+            return `<span class="ui-pill${on ? ' on' : ''}">${esc(t)}</span>`;
+          })
+          .join('');
+        return `<div class="ui-family">
+          <span class="ui-family-name">${esc((name ?? '').trim())}</span>
+          <span class="ui-plus">＋</span>
+          <span class="ui-pills">${chips}</span>
+        </div>`;
+      })
+      .join('');
+    return `<div class="uiframe"><div class="ui-rail">${rows}</div></div>`;
+  }
+
+  if (kind === 'ui-legend') {
+    const rows = lines
+      .map((l) => {
+        const m = l.match(/^(\S+)\s+(.*)$/);
+        if (!m) return '';
+        const [, colour, rest] = m;
+        const [label, desc] = rest.split('::').map((p) => p.trim());
+        const style = colour.startsWith('#')
+          ? `background:${colour}`
+          : `background:transparent;border:1px dashed ${colour.replace(/^outline-/, '')}`;
+        return `<div class="ui-legrow">
+          <span class="ui-swatch" style="${style}"></span>
+          <span class="ui-legname">${esc(label)}</span>
+          <span class="ui-legdesc">${esc(desc ?? '')}</span>
+        </div>`;
+      })
+      .join('');
+    return `<div class="uiframe"><div class="ui-legend">${rows}</div></div>`;
+  }
+
+  return '';
+}
+
+const UI_KINDS = new Set(['ui-header', 'ui-panes', 'ui-rail', 'ui-tiers', 'ui-legend']);
+
 function md(text) {
   const lines = text.split(/\r?\n/);
   const out = [];
@@ -74,11 +189,16 @@ function md(text) {
     if (/^←|^Next: \[/.test(line)) { i++; continue; }
 
     if (/^```/.test(line)) {
+      const lang = line.replace(/^```/, '').trim();
       const buf = [];
       i++;
       while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
       i++;
-      out.push(`<pre class="scroll"><code>${esc(buf.join('\n'))}</code></pre>`);
+      out.push(
+        UI_KINDS.has(lang)
+          ? renderUiBlock(lang, buf.join('\n'))
+          : `<pre class="scroll"><code>${esc(buf.join('\n'))}</code></pre>`,
+      );
       continue;
     }
 
@@ -290,7 +410,8 @@ main{padding:0 48px 140px; max-width:1180px; margin:0 auto;}
 }
 .chapter > *{grid-column:text;}
 .chapter > .scroll,
-.chapter > pre{grid-column:full;}
+.chapter > pre,
+.chapter > .uiframe{grid-column:full;}
 .chapter + .chapter{border-top:1px solid var(--line); margin-top:60px;}
 .eyebrow{
   font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-soft);
@@ -318,6 +439,73 @@ pre{
 }
 pre code{background:none; padding:0; font-size:inherit;}
 .scroll{overflow-x:auto; max-width:100%;}
+
+/* ---- Editor mockups -------------------------------------------------------
+   These use the app's own tokens (web/src/styles.css) and stay dark in both
+   page themes — they are pictures of a dark application. */
+.uiframe{
+  --app-bg:#0e1116; --app-panel:#161b22; --app-panel-2:#1d242d; --app-border:#2a313c;
+  --app-text:#d6deeb; --app-muted:#8a96a8; --app-accent:#5fb3ff; --app-warn:#f0b35e;
+  background:var(--app-bg); border:1px solid var(--app-border); border-radius:7px;
+  margin:0 0 22px; overflow:hidden; color:var(--app-text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:13px; line-height:1.4;
+}
+.ui-headerbar{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:8px 12px; background:var(--app-panel); border-bottom:1px solid var(--app-border);
+}
+.ui-tabs{display:flex; gap:4px; flex-wrap:wrap;}
+.ui-tab{
+  padding:5px 11px; border-radius:6px; border:1px solid transparent;
+  color:var(--app-muted); font-size:12.5px; white-space:nowrap;
+}
+.ui-tab.on{background:var(--app-panel-2); color:var(--app-text); border-color:var(--app-border);}
+.ui-info{color:var(--app-muted); font-size:11.5px; white-space:nowrap;}
+.ui-grow{flex:1;}
+.ui-btns{display:flex; gap:6px; flex-wrap:wrap;}
+.ui-btn{
+  background:var(--app-panel-2); border:1px solid var(--app-border); color:var(--app-text);
+  padding:5px 10px; border-radius:6px; font-size:12px; white-space:nowrap;
+}
+.ui-panes{display:flex; gap:1px; background:var(--app-border); min-height:120px;}
+.ui-pane{
+  flex:1; background:var(--app-panel); padding:12px 14px;
+  display:flex; flex-direction:column; gap:5px;
+}
+.ui-pane.wide{flex:2.2; background:var(--app-bg);}
+.ui-pane-title{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--app-accent);}
+.ui-pane-sub{font-size:12px; color:var(--app-muted);}
+.ui-rail{padding:8px; display:flex; flex-direction:column; gap:2px; background:var(--app-panel);}
+.ui-railitem{
+  display:flex; justify-content:space-between; gap:10px; align-items:center;
+  padding:6px 10px; border-radius:5px; color:var(--app-muted); font-size:12.5px;
+  border-left:3px solid transparent;
+}
+.ui-railitem.on{background:var(--app-panel-2); color:var(--app-text); border-left-color:var(--app-accent);}
+.ui-count{font-size:11px; color:var(--app-muted); font-variant-numeric:tabular-nums;}
+.ui-family{
+  display:flex; align-items:center; gap:9px; padding:7px 10px;
+  border-left:3px solid var(--app-accent); background:var(--app-panel-2); border-radius:5px;
+}
+.ui-family-name{flex:1; font-size:12.5px;}
+.ui-plus{color:var(--app-muted); font-size:12px;}
+.ui-pills{display:flex; gap:4px;}
+.ui-pill{
+  padding:2px 8px; border-radius:9px; font-size:11px; border:1px solid var(--app-border);
+  color:var(--app-muted); background:var(--app-bg);
+}
+.ui-pill.on{border-color:var(--app-accent); color:var(--app-accent);}
+.ui-legend{padding:10px 12px; display:flex; flex-direction:column; gap:8px;}
+.ui-legrow{display:grid; grid-template-columns:20px 132px 1fr; gap:11px; align-items:baseline; font-size:12.5px;}
+.ui-swatch{width:16px; height:16px; border-radius:3px; display:inline-block; transform:translateY(2px);}
+.ui-legname{color:var(--app-text);}
+.ui-legdesc{color:var(--app-muted);}
+@media (max-width:700px){
+  .ui-panes{flex-direction:column;}
+  .ui-legrow{grid-template-columns:20px 1fr; }
+  .ui-legdesc{grid-column:2;}
+}
 table{border-collapse:collapse; width:100%; font-size:14px; margin:0 0 20px; min-width:min(100%,420px);}
 th{
   text-align:left; font-size:11px; letter-spacing:.08em; text-transform:uppercase;

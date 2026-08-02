@@ -78,6 +78,15 @@ Everything else in this guide is a more interesting version of those five steps.
 
 ## The other header buttons
 
+The whole header, left to right — tabs, then where you are, then everything you can do to the project:
+
+```ui-header
+tabs: Recipes & Loot | Items | Furniture | Definitions | Layouts | AI | Validations
+active: Items
+info: Project: My Mod · 2941 defs · 50 folders · 3 unsaved
+buttons: ⌘K Search | 📌 Pin folder… | 📂 Open project ▾ | ✨ New project | 💾 Save (3) ▾ | 📖 Guide | ⚙ | ⟳ Reload
+```
+
 | Button | What it does |
 |---|---|
 | `📂 Open project` | Pick an existing project folder. The `▾` beside it lists projects found in your Projects folder, then recently opened folders. |

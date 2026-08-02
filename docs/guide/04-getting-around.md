@@ -13,6 +13,11 @@
 
 ## The seven tabs
 
+```ui-header
+tabs: Recipes & Loot | Items | Furniture | Definitions | Layouts | AI | Validations
+active: Recipes & Loot
+```
+
 | Tab | Use it for |
 |---|---|
 | **Recipes & Loot** | Crafting stations, furniture loot, the tech tree, enemy drops, biome loot. The task-oriented view. |
