@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run guide",
+    "guide": "node scripts/build-guide.mjs",
     "refresh-schema": "node scripts/refresh-schema.mjs",
+    "prebuild": "npm run guide",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",

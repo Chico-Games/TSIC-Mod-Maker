@@ -409,6 +409,13 @@ export function Header() {
             : []),
         ]}
       />
+      <a
+        className="header-guide-link"
+        href="./guide/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="The TSIC Modding Guide — how to author content, lay out the world, and publish a mod"
+      >📖 Guide</a>
       <button
         onClick={() => setSettingsOpen(true)}
         title="Settings"

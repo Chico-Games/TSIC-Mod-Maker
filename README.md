@@ -4,7 +4,11 @@ A browser authoring tool for the TSIC definition tree. Static web app — TypeSc
 backend. Reads and writes the same folder of JSON the game loads.
 
 > **📖 Authoring content? Start with the [Modding Guide](docs/guide/README.md)** — 14 chapters
-> covering every tab, world layout, and publishing. This README is the developer view of the app.
+> covering every tab, world layout, and publishing. Published at
+> **<https://chico-games.github.io/TSIC-Mod-Maker/guide/>** and linked from the editor's header.
+> This README is the developer view of the app.
+
+**Live editor:** <https://chico-games.github.io/TSIC-Mod-Maker/>
 
 ## Quick start
 
@@ -100,7 +104,8 @@ asset doesn't move on disk.
 
 ```sh
 npm run typecheck          # tsc -b --noEmit
-npm run build              # tsc -b && vite build
+npm run build              # tsc -b && vite build (prebuild renders the guide)
+npm run guide              # docs/guide/*.md -> public/guide/index.html
 npm run refresh-schema     # regenerate public/schema from the game export
 
 npm run data-smoke         # load bundled defaults headlessly, assert cross-refs resolve

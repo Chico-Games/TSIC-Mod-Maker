@@ -76,6 +76,20 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .header .file-info { color: var(--muted); font-size: 12px; }
 .header .dirty { color: var(--warn); font-weight: 600; }
 .header .spacer { flex: 1; }
+/* Matches the header buttons so the guide link reads as one of them, but stays
+   an <a> — it opens the docs site in a new tab. */
+.header-guide-link {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: normal;
+}
+.header-guide-link:hover { background: #283040; color: var(--text); }
 .tabs { display: flex; gap: 4px; }
 .tab {
   padding: 6px 12px;

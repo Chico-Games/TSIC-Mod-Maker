@@ -3,6 +3,10 @@
 A complete, practical guide to authoring TSIC content with the Definition Editor — from your first
 edit to a published mod, including how to lay out the world.
 
+**Read it online:** <https://chico-games.github.io/TSIC-Mod-Maker/guide/> — the same chapters as one
+searchable page, linked from `📖 Guide` in the editor's header. This folder is the source; the
+published page is regenerated from it on every deploy.
+
 You do not need Unreal Engine, C++, or any programming knowledge. You need a Chromium-based browser
 (Chrome, Edge or Brave) and the editor.
 
