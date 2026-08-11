@@ -7,6 +7,7 @@ import { aggroScenarios } from './aggro';
 import { navScenarios } from './nav';
 import { personalityScenarios } from './personality';
 import { coverageScenarios } from './coverage';
+import { combatScenarios } from './combat';
 
 export const ALL_SCENARIOS: ScenarioSpec[] = [
 	...perceptionScenarios,
@@ -15,6 +16,7 @@ export const ALL_SCENARIOS: ScenarioSpec[] = [
 	...navScenarios,
 	...personalityScenarios,
 	...coverageScenarios,
+	...combatScenarios,
 ];
 
 /** Every tag in use, in first-seen order — the Scenarios view builds its filters from this. */

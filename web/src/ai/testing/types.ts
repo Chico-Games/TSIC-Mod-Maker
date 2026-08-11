@@ -44,6 +44,8 @@ export interface PlayerSpec {
 	stealthed?: boolean;
 	/** Footstep noise is on by default; turn it off to isolate sight from hearing. */
 	silent?: boolean;
+	/** Run at the sprint speed (GE_SprintSpeedBoost, 1.4x the walk) for the whole scenario. */
+	sprint?: boolean;
 	speed?: number;
 }
 
@@ -65,6 +67,23 @@ export type ScriptStep = { at: number } & (
 	| { move: string; to: Vec2 }
 	| { move: string; dir: Vec2 }
 	| { move: string; awayFrom: string }
+	/**
+	 * Circle-strafe: hold `radius` from `orbit` and slide around it. This is what a player
+	 * actually does in a melee fight, and it is the input that separates an enemy which
+	 * tracks you from one that swings where you used to be.
+	 */
+	| { move: string; orbit: string; radius?: number; clockwise?: boolean }
+	/**
+	 * Kite: back off when closer than `distance`, close the gap when further than 1.25x it.
+	 * Holds a chosen range against something that is trying to close.
+	 */
+	| { move: string; keepAway: string; distance: number }
+	/**
+	 * Keep facing an actor every step, the way a mouse does — independent of where the feet
+	 * are going, so it composes with any of the move directives above. `null` releases it.
+	 * Without this a strafing player keeps its spawn yaw and its own swings miss.
+	 */
+	| { who: string; track: string | null }
 	| { stop: string }
 	| { who: string; crouch: boolean }
 	| { who: string; stealth: boolean }

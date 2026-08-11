@@ -6,9 +6,16 @@
 // around is a scenario that mostly tests the wander roll.
 //
 // The number that governs all of it: SKL_Engage drives to `$Attack.MaxRange × 0.9`, and
-// `$Attack.MaxRange` is the capsule-sum APPROACH ENVELOPE (agentRadius + targetRadius + 40 =
-// 124 for two 42uu pawns), not the ability's reach. So every enemy parks at ~112uu and only
-// the ones whose melee reaches that far can hit anything.
+// `$Attack.MaxRange` is the capsule-sum APPROACH ENVELOPE (agentRadius + targetRadius + 40),
+// not the ability's reach — so an enemy parks roughly 40uu × 0.9 of clear air short of contact.
+//
+// That leftover air is what an attack has to reach across, because the AI attack gate
+// (UGameplayAbility_PlayAnimation::CheckAIAttackRequirements) measures the SURFACE-TO-SURFACE
+// capsule gap, NOT centre-to-centre distance. It comes to ~18-28uu against weapons of 50-150uu,
+// so every shipped melee reaches comfortably. This file spent a long time asserting the
+// opposite — that four of six enemies could never land a hit — because it compared MaxRange
+// against centre distance and read the generic ValidateRange path instead of the AI one.
+// TSIC.AI.V2's AiApproachParityTest settled it in a live session: they all land hits.
 
 import type { ScenarioSpec } from '../types';
 
@@ -27,17 +34,16 @@ const MELEE = [
 		tag: 'AI.TVHead.Attack.Melee',
 		reach: 100,
 		measuredContact: 182.9,
-		// TVHead's melee DOES fire here now — the range gate passes. What does not land is the
-		// damage, because this port models its hitbox as the 140uu box the MaleStaff montages
-		// use (they are shared) while its capsule is ~3x wider, so the box stops short of a
-		// target its own body is holding 183uu away. The live run has CH_TVHead_C dealing 189
-		// damage, so the GAME lands it and the modelled hitbox geometry is what is wrong.
-		// Needs a real hitbox measurement (notify offset + extent on the TVHead montages)
-		// before this can be asserted either way.
+		// TVHead's melee DOES fire — the range gate passes. What does not land is the damage,
+		// and it is a ~2uu MODELLING MARGIN, not a content bug. Measured, not guessed.
 		hitboxKnownBug:
-			'Hitbox geometry, not reach: the melee activates, but this port models TVHead with ' +
-			"the shared 140uu MaleStaff hitbox while its capsule is ~141uu wide, so the box " +
-			'cannot span the 183uu its own body enforces. The live game lands 189 damage.',
+			"TVHead's hitbox is byte-identical to MaleStaff's (offset 0,80,90 scale 1.0,1.2,1.3 " +
+			'-> reach 140 from the mesh origin, read from AS_Attack_01_Montage on 2026-08-02), ' +
+			'and its own capsule holds it ~184uu from the target. Reach 140 plus the 42uu ' +
+			"player radius is 182, so this port's 2D box-vs-circle test lands 2uu on the MISS " +
+			'side while the real 3D box-vs-capsule overlap lands on the HIT side — the live ' +
+			'game deals 162-189 damage every run. Closing this needs a real capsule overlap ' +
+			'test, not a different reach number.',
 	},
 	{ def: 'ED_Gardener', tag: 'AI.Gardener.Attack.Melee', reach: 100, measuredContact: 70.4 },
 	{ def: 'ED_MaleStaff', tag: 'AI.MaleStaff.Attack.Melee', reach: 50, night: true },
@@ -112,11 +118,11 @@ const reachAudit: ScenarioSpec[] = MELEE.map((enemy) => {
 			? enemy.hitboxKnownBug
 			: canReach
 			? undefined
-			: `${enemy.def} settles ${contact.toFixed(0)}uu from its target (capsule contact, measured ` +
-				`in-game by TSIC.AI.V2's AiApproachParityTest) and ability range is checked ` +
-				`centre-to-centre — UGameplayAbility_PlayAnimation::CalculateDistance is a plain ` +
-				`FVector::Dist — so its ${enemy.reach}uu melee is unreachable BY CONSTRUCTION. No ` +
-				`approach tuning can fix this; only raising the ability's MaxRange can.`,
+			: `${enemy.def} stops with a ${gapAtStop.toFixed(0)}uu surface-to-surface gap to its ` +
+				`target (capsule contact ${contact.toFixed(0)}uu, measured in-game by ` +
+				`TSIC.AI.V2's AiApproachParityTest). CheckAIAttackRequirements gates on that GAP, ` +
+				`so a ${enemy.reach}uu melee cannot reach across it. Only raising the ability's ` +
+				`MaxRange closes this; approach tuning cannot.`,
 		check: (t, e) => {
 			const agent = t.agent();
 			e.happenedWithin('fires its melee', agent.firstAttackTime(enemy.tag), 25);
@@ -203,15 +209,18 @@ export const engageScenarios: ScenarioSpec[] = [
 		],
 		knownBug:
 			'No attack with a minimum range can ever fire. SKL_Engage only leaves CloseIn for ' +
-			'Swing on actions_succeeded — i.e. after ARRIVING — so by the time an attack is ' +
-			'allowed to fire the agent sits at the approach envelope, inside every standoff ' +
-			'minimum. The gate is the surface-to-surface GAP, so BoneHead needs ~244uu of ' +
-			'centre distance for its 150-gap Charge and gets ~121. The selector sorts ' +
-			'highest-minimum-range first precisely so specials beat the point-blank filler, ' +
-			'and nothing ever reaches it. HALF-FIXED 2026-08-02: ScpAi2::SelectAttack now ' +
-			'publishes the winner\'s real MinRange into $Attack.MinRange (it was hardcoded to ' +
-			'0, throwing away the one number a standoff needs), so a behaviour CAN now gate an ' +
-			'early swing on it — no shipped skill does yet, which is why this still fails.',
+			'Swing on actions_succeeded — i.e. after ARRIVING — so by the time an attack may ' +
+			'fire the agent is at the approach envelope, inside every standoff minimum. ' +
+			"HALF-FIXED 2026-08-02: ScpAi2::SelectAttack now publishes the winner's real " +
+			'MinRange into $Attack.MinRange (it was hardcoded to 0, discarding the one number a ' +
+			'standoff needs), so a behaviour CAN gate on it. THE OBVIOUS FIX IS WRONG, THOUGH — ' +
+			'adding `on: tick -> Swing when has_attack && $Attack.MinRange > 0` makes this ' +
+			'scenario pass and makes the GAME worse: AiApproachParityTest measured BoneHead ' +
+			'hovering at 691uu burning 4s and 7s standoff montages and dealing 0 damage, where ' +
+			'it had been closing to ~120uu for 240. Firing a special costs the approach, and ' +
+			'BoneHead has ~20s of standoff montage to spend in a 30s fight. A real fix has to ' +
+			'bound how much of an engagement standoff attacks may consume — design call, not a ' +
+			'transition. Reverted 2026-08-02; the sim alone would have shipped it.',
 		check: (t, e) => {
 			const tags = t.agent().attackTags;
 			e.gte('more than the point-blank filler is used', tags.length, 2);

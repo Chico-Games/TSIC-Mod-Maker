@@ -137,6 +137,7 @@ export class BehaviorMachine {
 			pendingResult: 0,
 			actionsLive: false,
 			transitionBudget: MAX_TRANSITIONS_PER_TICK,
+			selfRetryDeferrals: 0,
 		};
 	}
 
@@ -408,6 +409,29 @@ export class BehaviorMachine {
 			frame.pendingResult = transition.result === 'succeeded' ? 1 : -1;
 			return;
 		}
+		// Same-tick self-retry guard. An authored `action_failed -> <same state>` live-locks
+		// when the action fails on ENTER: enterStateChain escalates the fresh failure at once,
+		// which performs the same transition again, until the tick budget is gone and the whole
+		// FRAME fails. Shipped content does exactly this in Chase/Pursue and SKL_Engage's
+		// CloseIn, and it costs an enemy its target. Re-entering the leaf we entered THIS TICK
+		// cannot make progress, so defer to the next one.
+		if (
+			frame.activePath.length &&
+			frame.pathEnterTimes.length === frame.activePath.length &&
+			transition.toIndex === frame.activePath[frame.activePath.length - 1] &&
+			frame.pathEnterTimes[frame.pathEnterTimes.length - 1] >= this.now &&
+			++frame.selfRetryDeferrals <= MAX_TRANSITIONS_PER_TICK
+		) {
+			// Re-arm the completion so the retry actually happens next tick. Without this the
+			// leaf stays `completionHandled` and the deferral becomes a permanent stall — the
+			// agent sits in CloseIn with finished actions and never swings again.
+			frame.completionHandled[frame.activePath.length - 1] = false;
+			return;
+		}
+
+		// A transition that actually lands means the retry loop broke — start counting again.
+		frame.selfRetryDeferrals = 0;
+
 		// Budget exhausted: an authored cycle is resolving within one tick.
 		frame.transitionBudget -= 1;
 		if (frame.transitionBudget < 0) {
@@ -724,7 +748,26 @@ export class BehaviorMachine {
 				agent.applyMovementProfile(p.speed_profile);
 				memory.destination = null;
 				memory.repathFrom = null;
+				// KNOWN FIDELITY GAP, deliberately left in place.
+				//
+				// FScpAction_MoveTo::Enter RESOLVES AND ISSUES the move, so it can return
+				// Succeeded (already inside the arrival band) or Failed (no destination, no
+				// route) before a tick runs. This port defers all of that to the first tick and
+				// always reports Running.
+				//
+				// That matters: an action failing on ENTER is what turns an authored
+				// `action_failed -> <same state>` retry into a same-tick live-lock, which cost
+				// BoneHead its target in every live session while this suite stayed green. So
+				// this port structurally cannot see that class of bug — the guard for it is
+				// verified in-game by AiApproachParityTest, not here.
+				//
+				// Porting Enter faithfully was TRIED on 2026-08-03 and reverted: it made
+				// nav/blocker-smash-narrow stall permanently at 665uu (the chase never resumes
+				// past the smashed blocker, at any time budget) for reasons not yet understood,
+				// and it did NOT make the self-retry path reachable anyway. Do not re-apply it
+				// without explaining that stall first.
 				return 'Running';
+
 			case 'wander':
 				agent.applyMovementProfile(p.speed_profile);
 				memory.phase = 0;

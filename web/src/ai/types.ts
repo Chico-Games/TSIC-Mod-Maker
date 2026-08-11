@@ -180,6 +180,8 @@ export interface MachineFrame {
   pendingResult: number;
   actionsLive: boolean;
   transitionBudget: number;
+  /** Consecutive ticks a same-tick self-retry has been deferred — see performTransition. */
+  selfRetryDeferrals: number;
 }
 
 /** One root entry's live when-list verdict, rebuilt every selection pass. */

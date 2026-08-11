@@ -67,6 +67,10 @@ const DEFAULT_MAX_ATTACKERS = 2;
 const MOTION_REFERENCE_SPEED = 600;
 /** CrouchNoiseMultiplier on UScpStealthComponent. */
 const CROUCH_NOISE_MULTIPLIER = 0.35;
+/** AScpCharacter's MaxWalkSpeed. */
+export const PLAYER_WALK_SPEED = 500;
+/** GE_SprintSpeedBoost adds +0.4 to WalkSpeedPercent, so sprinting is 1.4x the walk. */
+export const PLAYER_SPRINT_SPEED = PLAYER_WALK_SPEED * 1.4;
 
 /** Default world seed. Every world is seeded; scenarios override it to sweep. */
 export const DEFAULT_WORLD_SEED = 20260731;
@@ -214,7 +218,10 @@ export class PlayerActor extends Actor {
 		this.crouched = false;
 		this.motionFactor01 = 0;
 		this.moveInput = { x: 0, y: 0 };
-		this.speed = 600;
+		// AScpCharacter's MaxWalkSpeed. Sprint is GE_SprintSpeedBoost: +0.4 additive on
+		// WalkSpeedPercent, so 500 x 1.4. This was 600 — a number that belonged to neither —
+		// which quietly made every kiting scenario easier than the real game.
+		this.speed = PLAYER_WALK_SPEED;
 		this.emitsFootstepNoise = true;
 		this.noiseAccumulator = 0;
 		this.grabbedUntil = -1;
@@ -1055,6 +1062,9 @@ export class World {
 		const closed = new Set<number>();
 		const h = (c: number, r: number) => Math.hypot(c - goal.col, r - goal.row);
 		let found: { c: number; r: number } | null = null;
+		// Partial-path bookkeeping: the closest cell to the goal the search ever reached.
+		let bestPartial: OpenCell | null = null;
+		let bestPartialH = Infinity;
 		let guard = 0;
 
 		while (open.size && guard++ < 20000) {
@@ -1065,6 +1075,11 @@ export class World {
 			if (current.c === goal.col && current.r === goal.row) {
 				found = current;
 				break;
+			}
+			const heuristic = h(current.c, current.r);
+			if (heuristic < bestPartialH) {
+				bestPartialH = heuristic;
+				bestPartial = current;
 			}
 			for (let dc = -1; dc <= 1; dc += 1) {
 				for (let dr = -1; dr <= 1; dr += 1) {
@@ -1088,6 +1103,12 @@ export class World {
 			}
 		}
 
+		// PARTIAL PATH. FAIMoveRequest sets SetAllowPartialPath(true), so an unreachable goal
+		// does not fail the move — the pawn walks to the closest reachable spot and only THEN
+		// stalls, which is what lets the blocked-path escalation find the furniture in its way.
+		// Failing outright here meant an agent walled off from its target gave up from across
+		// the room, having never got near enough to identify what was blocking it.
+		if (!found) found = bestPartial;
 		if (!found) return { points: [], blockedBy: null, failed: true };
 
 		const cells: number[] = [];

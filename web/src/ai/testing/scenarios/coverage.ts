@@ -351,7 +351,9 @@ export const coverageScenarios: ScenarioSpec[] = [
 		id: 'nav/breach-and-blocking-policies-differ',
 		title: 'The same furniture is smashed while chasing and routed around while patrolling',
 		tags: ['nav', 'furniture'],
-		seconds: 45,
+		// Demolition is slow: ~200hp at ~12 a swing through 3s montages. The old 45s budget
+		// was shorter than the job, exactly like nav/blocker-smash-narrow's was.
+		seconds: 100,
 		// Nav policy rides the ROOT: aggro roots breach, everything else treats furniture as
 		// blocking. Two agents, identical geometry, one aggroed and one not.
 		enemies: [
@@ -365,12 +367,11 @@ export const coverageScenarios: ScenarioSpec[] = [
 			[100, 70, 100, 2200],
 		],
 		script: [{ at: 0, alert: { enemy: 'chaser', target: 'player', radius: 200 } }],
-		knownBug:
-			'Same root cause as nav/blocker-smash-narrow: the aggro root DOES breach — the ' +
-			'path runs through the furniture and the agent walks into it, stalls, and reports ' +
-			'the blocker — but SKL_DestroyEntity can never land the smash, so the blocker ' +
-			'takes no damage and the chase never gets through. The policy split itself is ' +
-			'working; the demolition on the far side of it is not.',
+		// FIXED 2026-08-02. Two causes, both this port's: the smash could never land (ability
+		// range is the surface-to-surface GAP, not centre distance), and the chaser gave up
+		// from across the room because an unreachable goal FAILED the move outright instead of
+		// walking as far as it could — the C++ sets SetAllowPartialPath(true), so the pawn
+		// reaches the blocker and only then escalates to PathBlocked.
 		check: (t, e) => {
 			e.gt('the chaser damages the blocker in its way', t.agent('chaser').damageDealtTo('blocker'), 0);
 		},
@@ -492,6 +493,63 @@ export const coverageScenarios: ScenarioSpec[] = [
 			const agent = t.agent();
 			e.eq('the target is cleared', agent.targetAt(15), null);
 			e.gt('and the machine keeps selecting roots', agent.roots.length, 1);
+		},
+	},
+	// =====================================================================
+	// Behaviour machine — general robustness
+	//
+	// NOT armour for the same-tick self-retry guard, though they were written reaching for it.
+	// Verified by experiment: unbounding the deferral leaves both of these PASSING, because
+	// this port never reaches the deferral path — its moves effectively cannot fail on Enter
+	// now that findPath returns a partial route. The guard is real (it fixed BoneHead losing
+	// its target every live run) but it is **verifiable only in-game**, by
+	// AiApproachParityTest: `transition budget exhausted` went from 2 distinct cycles per run
+	// to zero. Do not trust these two to catch a regression in it.
+	// =====================================================================
+	{
+		id: 'machine/self-retry-does-not-kill-the-frame',
+		title: 'A routine engagement never fails its root to an authored self-retry',
+		tags: ['machine', 'robustness', 'combat'],
+		seconds: 45,
+		// What this DOES check: a plain fight produces no root failures and no target thrash.
+		// A root failure mid-engagement is how the self-retry live-lock surfaced in-game, so
+		// this would catch a gross regression — it just cannot reproduce the live-lock itself.
+		enemies: [{ def: 'ED_BoneHead', x: 0, y: 0, yaw: 0 }],
+		players: [{ x: 1200, y: 0, silent: true, health: 100000 }],
+		script: [{ at: 0, alert: { target: 'player' } }],
+		check: (t, e) => {
+			const rootFailures = t.events.filter((v) => v.kind === 'fail' && v.text.startsWith('root FAILED'));
+			e.eq('no root failed during an ordinary fight', rootFailures.length, 0);
+			e.ok(
+				'and it stayed in the fight',
+				t.agent().heldTargetFor('player', 30),
+				`roots: ${t.agent().roots.join(',')}`,
+			);
+		},
+	},
+	{
+		id: 'machine/persistent-failure-still-escalates',
+		title: 'An agent that genuinely cannot proceed still hands the root over',
+		tags: ['machine', 'robustness', 'nav'],
+		seconds: 40,
+		// What this DOES check: an agent with nowhere to go still cycles roots and lets its
+		// target go, rather than wedging. The related guard bound — deferring a same-tick retry
+		// must not become "retry forever", which in-game turned a frame-killing spin into an
+		// agent that never moved at all — is NOT exercised here; see the note above.
+		enemies: [{ def: 'ED_Janitor', x: 0, y: 0, yaw: 0 }],
+		players: [{ x: 2600, y: 2000, silent: true }],
+		// Boxed in with no way out and no breakable blocker to report.
+		walls: [
+			[-260, -260, 260, -260],
+			[260, -260, 260, 260],
+			[260, 260, -260, 260],
+			[-260, 260, -260, -260],
+		],
+		script: [{ at: 0, alert: { target: 'player' } }],
+		check: (t, e) => {
+			const agent = t.agent();
+			e.gt('it keeps selecting roots rather than wedging', agent.roots.length, 1);
+			e.eq('and does not still believe it is chasing at the end', agent.targetAt(38), null);
 		},
 	},
 ];

@@ -5,9 +5,9 @@
 // same scenario at the same seed produce byte-identical traces and the same world hash —
 // that is what `--repeat` verifies and what makes a failure worth chasing.
 
-import { World } from '../sim';
+import { World, PLAYER_SPRINT_SPEED } from '../sim';
 import type { Actor, EnemyActor, EntityActor, PlayerActor, Cast } from '../sim';
-import { dist, norm, sub, hashString } from '../util';
+import { add, clamp, dist, norm, scale, sub, hashString, yawOf } from '../util';
 import type { Vec2 } from '../util';
 import type { AiPack, TimelineEvent } from '../types';
 import type {
@@ -269,10 +269,14 @@ function buildPlayerTrace(handle: string, samples: PlayerSample[], damage: Damag
 // ---------------------------------------------------------------------------
 
 interface Directive {
-	kind: 'to' | 'dir' | 'away';
+	kind: 'to' | 'dir' | 'away' | 'orbit' | 'keepAway';
 	to?: Vec2;
 	dir?: Vec2;
 	from?: string;
+	/** Handle the directive is anchored to, for `orbit` and `keepAway`. */
+	anchor?: string;
+	radius?: number;
+	clockwise?: boolean;
 }
 
 export interface RunOptions {
@@ -323,6 +327,7 @@ export function buildScenarioWorld(spec: ScenarioSpec, pack: AiPack, seed: numbe
 		player.crouched = Boolean(spawn.crouched);
 		player.stealthed = Boolean(spawn.stealthed);
 		player.emitsFootstepNoise = !spawn.silent;
+		if (spawn.sprint) player.speed = PLAYER_SPRINT_SPEED;
 		if (spawn.speed !== undefined) player.speed = spawn.speed;
 		players.set(handle, player);
 	}
@@ -383,6 +388,8 @@ export class ScenarioRun {
 	private script: ScriptStep[];
 	private nextStep = 0;
 	private directives = new Map<PlayerActor, Directive | null>();
+	/** Players holding an actor in view every step, independent of where they are walking. */
+	private tracking = new Map<PlayerActor, string>();
 	private ctx: ScenarioContext;
 
 	constructor(spec: ScenarioSpec, pack: AiPack, seed: number) {
@@ -461,6 +468,16 @@ export class ScenarioRun {
 			if (s.to) this.directives.set(player, { kind: 'to', to: s.to });
 			else if (s.dir) this.directives.set(player, { kind: 'dir', dir: s.dir });
 			else if (s.awayFrom) this.directives.set(player, { kind: 'away', from: s.awayFrom });
+			else if (s.orbit) {
+				this.directives.set(player, {
+					kind: 'orbit',
+					anchor: s.orbit,
+					radius: s.radius,
+					clockwise: s.clockwise !== false,
+				});
+			} else if (s.keepAway) {
+				this.directives.set(player, { kind: 'keepAway', anchor: s.keepAway, radius: s.distance });
+			}
 			return;
 		}
 		if (s.stop !== undefined) {
@@ -480,6 +497,10 @@ export class ScenarioRun {
 			if (s.paused !== undefined) (actor as EnemyActor).paused = s.paused;
 			if (s.teleport) actor.pos = { ...s.teleport };
 			if (s.face !== undefined) actor.yaw = s.face;
+			if (s.track !== undefined) {
+				if (s.track === null) this.tracking.delete(actor as PlayerActor);
+				else this.tracking.set(actor as PlayerActor, s.track);
+			}
 			return;
 		}
 		if (s.attack !== undefined) {
@@ -537,10 +558,60 @@ export class ScenarioRun {
 				player.moveInput = from ? norm(sub(player.pos, from.pos)) : { x: 0, y: 0 };
 				continue;
 			}
+			if (directive.kind === 'orbit') {
+				player.moveInput = this.orbitInput(player, directive);
+				continue;
+			}
+			if (directive.kind === 'keepAway') {
+				player.moveInput = this.keepAwayInput(player, directive);
+				continue;
+			}
 			const to = directive.to as Vec2;
 			// Arrived: hold the spot rather than jittering across it.
 			player.moveInput = dist(player.pos, to) <= 40 ? { x: 0, y: 0 } : norm(sub(to, player.pos));
 		}
+
+		// Facing is applied after the feet, so a strafing player is looking at the thing it is
+		// circling rather than at wherever it happens to be walking.
+		for (const [player, handle] of this.tracking) {
+			if (player.dead || player.removed) continue;
+			const target = this.actor(handle);
+			if (!target) continue;
+			const toward = sub(target.pos, player.pos);
+			if (toward.x || toward.y) player.yaw = yawOf(toward);
+		}
+	}
+
+	/**
+	 * Circle-strafe: a tangent step around the anchor plus a radial correction that pulls the
+	 * player back onto the ring. The correction saturates over half the radius, so a player
+	 * shoved off the ring by a body-block walks back to it instead of snapping.
+	 */
+	private orbitInput(player: PlayerActor, directive: Directive): Vec2 {
+		const anchor = this.actor(directive.anchor as string);
+		if (!anchor) return { x: 0, y: 0 };
+		const outward = sub(player.pos, anchor.pos);
+		const separation = Math.hypot(outward.x, outward.y);
+		// Standing exactly on the anchor leaves no tangent to pick — step off it first.
+		if (separation < 1) return { x: 1, y: 0 };
+		const radius = directive.radius ?? separation;
+		const out = scale(outward, 1 / separation);
+		const tangent = directive.clockwise ? { x: out.y, y: -out.x } : { x: -out.y, y: out.x };
+		const correction = clamp(-(separation - radius) / Math.max(1, radius * 0.5), -1, 1);
+		return norm(add(tangent, scale(out, correction)));
+	}
+
+	/** Hold a range: back off inside `distance`, close outside 1.25x it, stand still between. */
+	private keepAwayInput(player: PlayerActor, directive: Directive): Vec2 {
+		const anchor = this.actor(directive.anchor as string);
+		if (!anchor) return { x: 0, y: 0 };
+		const outward = sub(player.pos, anchor.pos);
+		const separation = Math.hypot(outward.x, outward.y);
+		if (separation < 1) return { x: 1, y: 0 };
+		const want = directive.radius ?? 0;
+		if (separation < want) return norm(outward);
+		if (separation > want * 1.25) return norm(scale(outward, -1));
+		return { x: 0, y: 0 };
 	}
 }
 
