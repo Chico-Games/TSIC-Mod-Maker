@@ -5,21 +5,21 @@
   "schema_version": 2,
   "properties": {
     "floor_offset": {
-      "x": 1000.0,
-      "y": 0.0,
-      "z": 0.0
+      "x": 1000,
+      "y": 0,
+      "z": 0
     },
     "left_door_closed_transform": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
         "x": -74.16,
         "y": 129.8271629051397,
-        "z": 0.0
+        "z": 0
       },
       "scale3_d": {
         "x": 1.0299999713897705,
@@ -29,15 +29,15 @@
     },
     "right_door_closed_transform": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
+        "x": 0,
         "y": 129.8271629051397,
-        "z": 0.0
+        "z": 0
       },
       "scale3_d": {
         "x": 1.0299999713897705,
@@ -47,38 +47,70 @@
     },
     "left_door_open_offset": {
       "x": -74.16,
-      "y": 0.0,
-      "z": 0.0
+      "y": 0,
+      "z": 0
     },
     "right_door_open_offset": {
       "x": 74.16,
-      "y": 0.0,
-      "z": 0.0
+      "y": 0,
+      "z": 0
     },
     "doorway_volume_transform": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 6.732080497506843e-07,
+        "x": 6.732080497506843e-7,
         "y": 116.89832708914346,
         "z": 119.56475532806456
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
     "doorway_volume_extent": {
-      "x": 70.0,
-      "y": 15.0,
-      "z": 115.0
+      "x": 70,
+      "y": 15,
+      "z": 115
     },
     "interior_volume_transform": {
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "translation": {
+        "x": 0.000001330311712344212,
+        "y": -5.938163252244941,
+        "z": 130.74697583104052
+      },
+      "scale3_d": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
+    },
+    "interior_volume_extent": {
+      "x": 140,
+      "y": 110,
+      "z": 130
+    },
+    "call_sound": "Elevator.Call",
+    "blocked_sound": "Elevator.Blocked",
+    "door_open_sound": "Elevator.DoorOpen",
+    "door_close_sound": "Elevator.DoorClose",
+    "moving_sound": "Elevator.Moving",
+    "arrived_sound": "Elevator.Arrived",
+    "cab_mesh": "/Game/Fab/Office80s/Models/Walls/SM_Elevator.SM_Elevator",
+    "door_mesh": "/Game/Fab/Office80s/Models/Walls/SM_ElevatorDoors.SM_ElevatorDoors",
+    "floor_mesh": "/Game/Furniture/Floors/Meshes/SM_FloorLab.SM_FloorLab",
+    "floor_mesh_transform": {
       "rotation": {
         "x": 0.0,
         "y": 0.0,
@@ -86,30 +118,17 @@
         "w": 1.0
       },
       "translation": {
-        "x": 1.330311712344212e-06,
-        "y": -5.938163252244941,
-        "z": 130.74697583104052
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 0.17677,
+        "y": 0.16611,
+        "z": 0.2
       }
     },
-    "interior_volume_extent": {
-      "x": 140.0,
-      "y": 110.0,
-      "z": 130.0
-    },
-    "call_sound": "/Game/Shared/Audio/World/Elevator/SW_Elev_CallClick.SW_Elev_CallClick",
-    "blocked_sound": "/Game/Shared/Audio/World/Elevator/SW_Elev_Blocked.SW_Elev_Blocked",
-    "door_open_sound": "/Game/Shared/Audio/World/Elevator/SW_Elev_DoorOpen.SW_Elev_DoorOpen",
-    "door_close_sound": "/Game/Shared/Audio/World/Elevator/SW_Elev_DoorClose.SW_Elev_DoorClose",
-    "moving_sound": "/Game/Shared/Audio/Hums/SW_Hum_Machine.SW_Hum_Machine",
-    "arrived_sound": "/Game/Shared/Audio/World/Elevator/SW_Elev_Ding.SW_Elev_Ding",
-    "cab_mesh": "/Game/Fab/Office80s/Models/Walls/SM_Elevator.SM_Elevator",
-    "door_mesh": "/Game/Fab/Office80s/Models/Walls/SM_ElevatorDoors.SM_ElevatorDoors",
-    "interaction_hold_time": 0.0,
+    "interaction_hold_time": 0,
     "interaction_prompt_text": "Call Elevator",
     "has_static_audio": false,
     "has_toggled_on_audio": false,
@@ -120,25 +139,25 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 100.0,
+    "starting_health": 200,
     "loot_dropped_on_death": [],
     "deconstruction_tier": 0,
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
     "is_draggable": false,
@@ -154,13 +173,13 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
+    "destruction_impulse_strength": 0,
     "door_anim_duration": 0.800000011920929,
-    "door_timeout_duration": 8.0,
+    "door_timeout_duration": 8,
     "drag_angular_damping": 1.25,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
+    "drag_linear_damping": 5,
+    "drag_mass": 1,
+    "drag_max_angular_velocity": 90,
     "drag_tier": 0,
     "friction": 0.699999988079071,
     "furniture_armour": 2,
@@ -169,6 +188,6 @@
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
     "teleport_delay": 1.5,
-    "travel_duration": 2.0
+    "travel_duration": 2
   }
 }

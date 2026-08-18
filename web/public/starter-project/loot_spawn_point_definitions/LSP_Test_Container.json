@@ -1,0 +1,49 @@
+{
+  "id": "LSP_Test_Container",
+  "asset_path": "/Game/WorldGeneration/SpawnPoints/Items/Test/LSP_Test_Container",
+  "class": "ULootSpawnPointDefinition",
+  "schema_version": 2,
+  "properties": {
+    "loot_by_difficulty": [
+      {
+        "key": {
+          "name": "EASY",
+          "value": 0
+        },
+        "value": {
+          "loot_items": [
+            {
+              "item_entity": "FD_Bandage_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_Bread_SI",
+              "count": 2,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_MetalScrews_SI",
+              "count": 3,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_Tape_SI",
+              "count": 3,
+              "weight": 1
+            }
+          ],
+          "spawn_chance": 1.0
+        }
+      }
+    ],
+    "accumulate_previous_tiers": true,
+    "source_type": {
+      "name": "CONTAINER",
+      "value": 2
+    },
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000,
+    "gameplay_tags": []
+  }
+}

@@ -1,12 +1,12 @@
 {
   "id": "FD_Car_DF",
   "asset_path": "/Game/Furniture/CarPark/Furniture/FD_Car_DF",
-  "class": "UDamageableFurnitureDefinition",
+  "class": "UStorageDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 73,
+    "starting_health": 146,
     "furniture_armour": 2,
-    "destructible_collection": "/Game/Vehicles/VOL3_RetroCars/GeometryCollections/GCS_Car_02a.GCS_Car_02a",
+    "destructible_collection": "/Game/Fab/Vehicles/VOL3_RetroCars/GeometryCollections/GCS_Car_02a.GCS_Car_02a",
     "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_Car"
@@ -106,7 +106,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Vehicles/VOL3_RetroCars/Meshes/SM_Car_02a.SM_Car_02a",
+    "static_mesh": "/Game/Fab/Vehicles/VOL3_RetroCars/Meshes/SM_Car_02a.SM_Car_02a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -114,6 +114,26 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 5000
+    "world_gen_priority": 5000,
+    "has_static_audio": false,
+    "has_toggled_on_audio": false,
+    "has_toggled_off_audio": false,
+    "has_static_lights": false,
+    "has_toggled_on_lights": false,
+    "has_toggled_off_lights": false,
+    "has_static_vfx": false,
+    "has_toggled_on_vfx": false,
+    "has_toggled_off_vfx": false,
+    "inventory_rules_definition": "IRD_StorageTier2_8",
+    "inventory_loot": {
+      "rolls": 3,
+      "chance_per_roll": 0.55
+    },
+    "gameplay_event_tag": "UI.GameScreen.Storage",
+    "layer_name": "UI.Layer.GameMenu",
+    "interaction_hold_time": 0.0,
+    "interaction_prompt_text": "Search",
+    "open_sound": "Container.Open.Car",
+    "close_sound": "Container.Close.Car"
   }
 }

@@ -1,0 +1,121 @@
+{
+  "id": "LSP_LostAndFound_Container",
+  "asset_path": "/Game/WorldGeneration/SpawnPoints/Items/LostAndFound/LSP_LostAndFound_Container",
+  "class": "ULootSpawnPointDefinition",
+  "schema_version": 2,
+  "properties": {
+    "loot_by_difficulty": [
+      {
+        "key": {
+          "name": "EASY",
+          "value": 0
+        },
+        "value": {
+          "loot_items": [
+            {
+              "item_entity": "FD_Glasses_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_WoolenMitten_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_Handkerchief_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_EmptyLeatherWallet_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_WorkGloves_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_BottleWater_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_CapGun_SI",
+              "count": 1,
+              "weight": 1
+            }
+          ],
+          "spawn_chance": 0.8
+        }
+      },
+      {
+        "key": {
+          "name": "NORMAL",
+          "value": 1
+        },
+        "value": {
+          "loot_items": [
+            {
+              "item_entity": "FD_Wallet_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_ExpiredBusPass_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_BrokenWalkman_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_Pencil_SI",
+              "count": 1,
+              "weight": 1
+            }
+          ],
+          "spawn_chance": 0.8
+        }
+      },
+      {
+        "key": {
+          "name": "HARD",
+          "value": 2
+        },
+        "value": {
+          "loot_items": [
+            {
+              "item_entity": "FD_LibraryCard_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_KnittingYarn_SI",
+              "count": 1,
+              "weight": 1
+            },
+            {
+              "item_entity": "FD_PowerGloves_SI",
+              "count": 1,
+              "weight": 1
+            }
+          ],
+          "spawn_chance": 0.8
+        }
+      }
+    ],
+    "accumulate_previous_tiers": true,
+    "source_type": {
+      "name": "CONTAINER",
+      "value": 2
+    },
+    "weighted_chance": 1000,
+    "world_gen_priority": 1000,
+    "gameplay_tags": []
+  }
+}

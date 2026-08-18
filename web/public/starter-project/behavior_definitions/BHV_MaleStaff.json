@@ -1,170 +1,175 @@
 {
-  "id": "BHV_MaleStaff",
-  "class": "ScpBehaviorDefinition",
-  "properties": {
-    "root_eval_interval": 0.2,
-    "roots": [
-      {
-        "name": "Combat",
-        "when": [
-          {
-            "if": "has_target"
-          },
-          {
-            "if": "provoked"
-          }
-        ],
-        "hold_seconds": 1.5,
-        "nav_policy": "breach",
-        "actions": [
-          {
-            "do": "run_skill",
-            "skill": "SKL_Engage",
-            "params": {
-              "Target": "$Perception.Target",
-              "Attack": "$Attack.Tag"
-            }
-          }
-        ]
-      },
-      {
-        "name": "Combat",
-        "when": [
-          {
-            "if": "has_target"
-          },
-          {
-            "if": "target_within",
-            "distance": 420
-          }
-        ]
-      },
-      {
-        "name": "Combat",
-        "when": [
-          {
-            "if": "has_target"
-          },
-          {
-            "if": "day_section",
-            "is": "Gameplay.DaySection.Night"
-          }
-        ]
-      },
-      {
-        "name": "Greet",
-        "when": [
-          {
-            "if": "has_target"
-          },
-          {
-            "if": "target_visible"
-          },
-          {
-            "if": "greeted_within",
-            "seconds": 90,
-            "invert": true
-          }
-        ],
-        "hold_seconds": 3,
-        "actions": [
-          {
-            "do": "run_skill",
-            "skill": "SKL_Greet",
-            "params": {
-              "Target": "$Perception.Target"
-            }
-          }
-        ]
-      },
-      {
-        "name": "Search",
-        "when": [
-          {
-            "if": "has_target"
-          },
-          {
-            "if": "time_since_seen",
-            "over": 12
-          }
-        ],
-        "actions": [
-          {
-            "do": "wander",
-            "origin": "$Perception.PointOfInterest",
-            "ring_min": 100,
-            "ring_max": 1000,
-            "leg_seconds": 6,
-            "pause_seconds": 1.5,
-            "speed_profile": "walk_medium"
-          }
-        ]
-      },
-      {
-        "name": "Search",
-        "when": [
-          {
-            "if": "target_lost_within",
-            "seconds": 35
-          }
-        ]
-      },
-      {
-        "name": "AttackNuisance",
-        "when": [
-          {
-            "if": "has_nuisance",
-            "min_damage": 5
-          }
-        ],
-        "nav_policy": "breach",
-        "actions": [
-          {
-            "do": "run_skill",
-            "skill": "SKL_DestroyEntity",
-            "params": {
-              "Entity": "$Perception.Nuisance",
-              "Ability": "AI.MaleStaff.Attack.Melee"
-            }
-          }
-        ]
-      },
-      {
-        "name": "Investigate",
-        "when": [
-          {
-            "if": "heard_noise_within",
-            "seconds": 8
-          }
-        ],
-        "actions": [
-          {
-            "do": "run_skill",
-            "skill": "SKL_Investigate",
-            "params": {
-              "Spot": "$Perception.PointOfInterest"
-            }
-          }
-        ]
-      },
-      {
-        "name": "Patrol",
-        "states": [
-          {
-            "name": "Wander",
-            "initial": true,
-            "actions": [
-              {
-                "do": "wander",
-                "ring_min": 800,
-                "ring_max": 2500,
-                "speed_profile": "walk",
-                "origin": "$Perception.PatrolAnchor"
-              }
-            ]
-          }
-        ]
+ "id": "BHV_MaleStaff",
+ "class": "ScpBehaviorDefinition",
+ "properties": {
+  "root_eval_interval": 0.2,
+  "roots": [
+   {
+    "name": "Combat",
+    "when": [
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "provoked"
+     }
+    ],
+    "hold_seconds": 1.5,
+    "nav_policy": "breach",
+    "actions": [
+     {
+      "do": "run_skill",
+      "skill": "SKL_Engage",
+      "params": {
+       "Target": "$Perception.Target",
+       "Attack": "$Attack.Tag"
       }
+     }
     ]
-  }
+   },
+   {
+    "name": "Combat",
+    "when": [
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "target_within",
+      "distance": 420
+     },
+     {
+      "if": "day_section",
+      "is": "Gameplay.DaySection.Day",
+      "invert": true
+     }
+    ]
+   },
+   {
+    "name": "Combat",
+    "when": [
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "day_section",
+      "is": "Gameplay.DaySection.Night"
+     }
+    ]
+   },
+   {
+    "name": "Greet",
+    "when": [
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "target_visible"
+     },
+     {
+      "if": "greeted_within",
+      "seconds": 90,
+      "invert": true
+     }
+    ],
+    "hold_seconds": 3,
+    "actions": [
+     {
+      "do": "run_skill",
+      "skill": "SKL_Greet",
+      "params": {
+       "Target": "$Perception.Target"
+      }
+     }
+    ]
+   },
+   {
+    "name": "Search",
+    "when": [
+     {
+      "if": "has_target"
+     },
+     {
+      "if": "time_since_seen",
+      "over": 12
+     }
+    ],
+    "actions": [
+     {
+      "do": "wander",
+      "origin": "$Perception.PointOfInterest",
+      "ring_min": 100,
+      "ring_max": 1000,
+      "leg_seconds": 6,
+      "pause_seconds": 1.5,
+      "speed_profile": "walk_medium"
+     }
+    ]
+   },
+   {
+    "name": "Search",
+    "when": [
+     {
+      "if": "target_lost_within",
+      "seconds": 35
+     }
+    ]
+   },
+   {
+    "name": "AttackNuisance",
+    "when": [
+     {
+      "if": "has_nuisance",
+      "min_damage": 5
+     }
+    ],
+    "nav_policy": "breach",
+    "actions": [
+     {
+      "do": "run_skill",
+      "skill": "SKL_DestroyEntity",
+      "params": {
+       "Entity": "$Perception.Nuisance",
+       "Ability": "AI.MaleStaff.Attack.Melee"
+      }
+     }
+    ]
+   },
+   {
+    "name": "Investigate",
+    "when": [
+     {
+      "if": "heard_noise_within",
+      "seconds": 8
+     }
+    ],
+    "actions": [
+     {
+      "do": "run_skill",
+      "skill": "SKL_Investigate",
+      "params": {
+       "Spot": "$Perception.PointOfInterest"
+      }
+     }
+    ]
+   },
+   {
+    "name": "Patrol",
+    "states": [
+     {
+      "name": "Wander",
+      "initial": true,
+      "actions": [
+       {
+        "do": "wander",
+        "ring_min": 800,
+        "ring_max": 2500,
+        "speed_profile": "walk",
+        "origin": "$Perception.PatrolAnchor"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
 }

@@ -16,7 +16,7 @@
           "search_queries": [],
           "tile_requirements": [],
           "spawn_chance_over": 0.0,
-          "spawn_chance_under": 1.0
+          "spawn_chance_under": 0.7
         },
         "enemy_spawn_point_definition": "ESP_SCPBase",
         "transform": {
@@ -133,7 +133,10 @@
           "search_queries": [
             {
               "search_query": { "name": "HAS_ALL_EXACT", "value": 4 },
-              "tags": ["Entity.RandomGeneration.FurnitureType.Mat"],
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom",
+                "Entity.RandomGeneration.FurnitureType.Mat"
+              ],
               "b_not": false
             }
           ],

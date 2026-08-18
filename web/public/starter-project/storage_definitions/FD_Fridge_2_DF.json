@@ -5,6 +5,10 @@
   "schema_version": 2,
   "properties": {
     "inventory_rules_definition": "IRD_StorageTier1_2",
+    "inventory_loot": {
+      "rolls": 2,
+      "chance_per_roll": 0.5
+    },
     "gameplay_event_tag": "UI.GameScreen.Storage",
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
@@ -18,7 +22,7 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 67,
+    "starting_health": 134,
     "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Fridges/GeometryCollections/GCS_Fridge.GCS_Fridge",
     "destruction_impulse_strength": 0,
@@ -117,8 +121,54 @@
       "name": "Furniture"
     },
     "random_material_overrides": [],
-    "loot_positions": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.6879,
+            "w": 0.7258
+          },
+          "translation": {
+            "x": -6.49,
+            "y": 5.21,
+            "z": 3.43
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9838,
+            "w": 0.1791
+          },
+          "translation": {
+            "x": 5.02,
+            "y": -7.74,
+            "z": 3.43
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.3,
     "weighted_chance": 1000,
-    "world_gen_priority": 6000
+    "world_gen_priority": 6000,
+    "open_sound": "Container.Open.Locker",
+    "close_sound": "Container.Close.Locker"
   }
 }

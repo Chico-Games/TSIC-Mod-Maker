@@ -7,16 +7,16 @@
     "available_recipe_rules_definition": "ARR_MicrowaveRecipes",
     "max_recipes": 5,
     "gameplay_event_tag": "UI.GameScreen.Production",
-    "interaction_hold_time": 0.0,
+    "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
     "has_toggled_on_audio": true,
     "toggled_on_audio": {
-      "sound": "/Game/Shared/Audio/Hums/SW_Hum_Machine.SW_Hum_Machine",
+      "sound": "Furniture.Loop.Machine",
       "volume_multiplier": 0.35,
       "b_looping": true,
       "b_attach_to_entity": true,
-      "attenuation_distance": 700.0,
+      "attenuation_distance": 700,
       "fade_in_time": 0.5,
       "fade_out_time": 0.8
     },
@@ -27,7 +27,7 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 33.0,
+    "starting_health": 66,
     "destructible_collection": "/Game/Fab/Suburban_Household/VOL9_Kitchen/Meshes/GeometryCollections/GCS_Microwave_NN_06j.GCS_Microwave_NN_06j",
     "loot_dropped_on_death": [],
     "constructable_item_to_grant": "ID_Microwave_CI",
@@ -72,20 +72,20 @@
     ],
     "building_base": {
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       },
       "scale3_d": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
+        "x": 1,
+        "y": 1,
+        "z": 1
       }
     },
     "upgrade_recipe": "RD_MicrowaveTier2_CN",
@@ -102,14 +102,58 @@
       "name": "Furniture"
     },
     "random_material_overrides": [],
-    "loot_positions": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.2318,
+            "w": 0.9728
+          },
+          "translation": {
+            "x": -5.2,
+            "y": 6.56,
+            "z": 1.13
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9993,
+            "w": 0.0367
+          },
+          "translation": {
+            "x": 8.84,
+            "y": -0.13,
+            "z": 1.13
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.3,
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
-    "destruction_impulse_strength": 0.0,
+    "destruction_impulse_strength": 0,
     "drag_angular_damping": 1.25,
-    "drag_linear_damping": 5.0,
-    "drag_mass": 1.0,
-    "drag_max_angular_velocity": 90.0,
+    "drag_linear_damping": 5,
+    "drag_mass": 1,
+    "drag_max_angular_velocity": 90,
     "drag_tier": 2,
     "friction": 0.699999988079071,
     "furniture_armour": 1,

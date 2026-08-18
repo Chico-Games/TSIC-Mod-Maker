@@ -29,27 +29,31 @@
     "movement_profiles": [
       {
         "name": "walk",
-        "max_speed": 140,
+        "max_speed": 110,
         "accel": 800,
-        "rotation_rate": 180
+        "rotation_rate": 180,
+        "braking_deceleration": 260
       },
       {
         "name": "walk_medium",
-        "max_speed": 290,
+        "max_speed": 161,
         "accel": 950,
-        "rotation_rate": 220
+        "rotation_rate": 220,
+        "braking_deceleration": 380
       },
       {
         "name": "hurry",
-        "max_speed": 380,
+        "max_speed": 210,
         "accel": 1200,
-        "rotation_rate": 270
+        "rotation_rate": 270,
+        "braking_deceleration": 500
       },
       {
         "name": "sprint",
-        "max_speed": 560,
+        "max_speed": 315,
         "accel": 2000,
-        "rotation_rate": 360
+        "rotation_rate": 360,
+        "braking_deceleration": 750
       }
     ],
     "token_cost": 1,
@@ -59,6 +63,7 @@
         "value": {
           "variant_tint": { "r": 1.0, "g": 0.05, "b": 0.05, "a": 1.0 },
           "damage_multiplier": 1.0,
+          "health_multiplier": 1.0,
           "death_drop_table": [
             { "world_item": "FD_StaffFlesh_SI", "count": 2, "weight": 1 },
             { "world_item": "FD_StaffShirtFragment_SI", "count": 2, "weight": 1 },
@@ -71,6 +76,7 @@
         "value": {
           "variant_tint": { "r": 0.05, "g": 1.0, "b": 0.05, "a": 1.0 },
           "damage_multiplier": 2.0,
+          "health_multiplier": 2.0,
           "death_drop_table": [
             { "world_item": "FD_StaffFlesh_SI", "count": 3, "weight": 1 },
             { "world_item": "FD_StaffShirtFragment_SI", "count": 3, "weight": 1 },
@@ -84,6 +90,7 @@
         "value": {
           "variant_tint": { "r": 0.05, "g": 0.05, "b": 1.0, "a": 1.0 },
           "damage_multiplier": 3.0,
+          "health_multiplier": 3.0,
           "death_drop_table": [
             { "world_item": "FD_StaffFlesh_SI", "count": 3, "weight": 2 },
             { "world_item": "FD_StaffShirtFragment_SI", "count": 3, "weight": 2 },

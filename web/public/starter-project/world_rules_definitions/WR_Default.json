@@ -7,57 +7,130 @@
       {
         "key": "Gameplay.DaySection.Day",
         "value": {
-          "duration": 1260.0
+          "duration": 1260
         }
       },
       {
         "key": "Gameplay.DaySection.Night",
         "value": {
-          "duration": 540.0
+          "duration": 540
         }
       }
     ],
     "day_light_config": {
-      "intensity": 1.0,
-      "color": { "r": 1.0, "g": 0.95, "b": 0.8, "a": 1.0 },
-      "temperature": 5500.0,
+      "intensity": 1,
+      "color": {
+        "r": 1,
+        "g": 0.95,
+        "b": 0.8,
+        "a": 1
+      },
+      "temperature": 5500,
       "b_enabled": true
     },
     "night_light_config": {
-      "intensity": 0.0,
-      "color": { "r": 0.8, "g": 0.9, "b": 1.0, "a": 1.0 },
-      "temperature": 4000.0,
+      "intensity": 0,
+      "color": {
+        "r": 0.8,
+        "g": 0.9,
+        "b": 1,
+        "a": 1
+      },
+      "temperature": 4000,
       "b_enabled": true
     },
     "off_light_config": {
-      "intensity": 0.0,
-      "color": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 },
-      "temperature": 6500.0,
+      "intensity": 0,
+      "color": {
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 1
+      },
+      "temperature": 6500,
       "b_enabled": false
     },
     "transition_flash_config": {
-      "intensity": 3.0,
-      "color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-      "temperature": 6500.0,
+      "intensity": 3,
+      "color": {
+        "r": 1,
+        "g": 1,
+        "b": 1,
+        "a": 1
+      },
+      "temperature": 6500,
       "b_enabled": true
     },
     "transition_flash_duration": 0.15,
-    "default_respawn_delay": 5.0,
-    "tombstone_lifetime": 300.0,
+    "light_wave": {
+      "sweep_direction": {
+        "x": -1,
+        "y": 0,
+        "z": 0
+      },
+      "band_depth": 1400,
+      "band_interval": 0.28,
+      "max_bands": 14,
+      "band_sound": "World.LightWave",
+      "band_sound_volume": 1,
+      "band_sound_pitch_variance": 0.06,
+      "band_sound_inner_radius": 800,
+      "band_sound_falloff_distance": 9000
+    },
+    "day_night_hazards": [
+      {
+        "day_section": "Gameplay.DaySection.Night",
+        "b_only_in_darkness": true,
+        "tick_interval": 8.0,
+        "damage_per_tick": 1.0,
+        "b_ignores_armor": false,
+        "death_type_tag": "Death.Environmental"
+      }
+    ],
+    "default_respawn_delay": 5,
+    "tombstone_lifetime": 300,
     "max_tombstones_per_player": 3,
-    "respawn_protection_duration": 10.0,
-    "event_roll_interval": 2760.0,
+    "respawn_protection_duration": 10,
+    "player_spawn_enemy_free_radius": 6000,
+    "event_roll_interval": 2760,
     "event_chance": 0.2,
     "loot_multipliers": {
-      "random_loot_global_mul": 1.0,
-      "enemy_drop_global_mul": 1.0,
+      "random_loot_global_mul": 1,
+      "enemy_drop_global_mul": 1,
       "source_mul": [],
       "item_type_mul": []
     },
     "difficulty_to_variant_tier": [
-      { "key": { "name": "NORMAL", "value": 1 }, "value": { "name": "EASY", "value": 1 } },
-      { "key": { "name": "HARD", "value": 2 }, "value": { "name": "MEDIUM", "value": 2 } },
-      { "key": { "name": "NIGHTMARE", "value": 3 }, "value": { "name": "HARD", "value": 3 } }
+      {
+        "key": {
+          "name": "NORMAL",
+          "value": 1
+        },
+        "value": {
+          "name": "EASY",
+          "value": 1
+        }
+      },
+      {
+        "key": {
+          "name": "HARD",
+          "value": 2
+        },
+        "value": {
+          "name": "MEDIUM",
+          "value": 2
+        }
+      },
+      {
+        "key": {
+          "name": "NIGHTMARE",
+          "value": 3
+        },
+        "value": {
+          "name": "HARD",
+          "value": 3
+        }
+      }
     ]
   }
 }

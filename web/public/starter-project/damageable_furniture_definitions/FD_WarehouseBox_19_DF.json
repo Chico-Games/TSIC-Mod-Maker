@@ -4,7 +4,7 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 100,
+    "starting_health": 200,
     "furniture_armour": 3,
     "destructible_collection": "/Game/Furniture/WareHouse/GeometryCollections/GCS_ConcreteBag04.GCS_ConcreteBag04",
     "destruction_impulse_strength": 0,
@@ -102,8 +102,74 @@
       "name": "Furniture"
     },
     "random_material_overrides": [],
-    "loot_positions": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9689,
+            "w": 0.2476
+          },
+          "translation": {
+            "x": -14.11,
+            "y": -4.19,
+            "z": 101.75
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.1428,
+            "w": 0.9898
+          },
+          "translation": {
+            "x": 9.26,
+            "y": -7.69,
+            "z": 101.27
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.4521,
+            "w": 0.892
+          },
+          "translation": {
+            "x": -10.08,
+            "y": 6.21,
+            "z": 80.9
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.3,
     "weighted_chance": 1000,
-    "world_gen_priority": 5000
+    "world_gen_priority": 5000,
+    "drag_sound_slot": "Character.Drag.Stone"
   }
 }

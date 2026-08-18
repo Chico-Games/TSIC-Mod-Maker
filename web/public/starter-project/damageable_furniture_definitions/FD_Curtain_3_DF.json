@@ -4,9 +4,18 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 67,
+    "scavenge_yield": [
+      {
+        "item_to_drop": "ID_UpholsteryFabric_CM",
+        "count": 1,
+        "chance_to_drop": 1.0
+      }
+    ],
+    "scavenge_hold_time": 0.35,
+    "scavenge_verb_text": "Take Down",
+    "starting_health": 134,
     "furniture_armour": 2,
-    "destructible_collection": "/Game/Scandinavi_Apartment/GeometryCollections/GCS_Curtain_Opt03.GCS_Curtain_Opt03",
+    "destructible_collection": "/Game/Fab/Scandinavi_Apartment/GeometryCollections/GCS_Curtain_Opt03.GCS_Curtain_Opt03",
     "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_CurtainRailLoot"
@@ -94,7 +103,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Scandinavi_Apartment/Assets/SM_Curtain_Opt03.SM_Curtain_Opt03",
+    "static_mesh": "/Game/Fab/Scandinavi_Apartment/Assets/SM_Curtain_Opt03.SM_Curtain_Opt03",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"

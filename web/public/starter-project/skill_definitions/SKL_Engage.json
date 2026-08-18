@@ -6,6 +6,9 @@
    "Target": "actor",
    "Attack": "tag"
   },
+  "vars": {
+   "StandoffSpot": "vector"
+  },
   "states": [
    {
     "name": "CloseIn",
@@ -26,6 +29,49 @@
      }
     ],
     "transitions": [
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "has_attack"
+       },
+       {
+        "if": "var_compare",
+        "a": "$Attack.MinRange",
+        "b": 0,
+        "op": "gt"
+       },
+       {
+        "if": "distance",
+        "a": "$Self",
+        "b": "$In.Target",
+        "greater_than": "$Attack.MinRange"
+       }
+      ],
+      "to": "Swing"
+     },
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "var_compare",
+        "a": "$Attack.MinRange",
+        "b": 0,
+        "op": "gt"
+       },
+       {
+        "if": "distance",
+        "a": "$Self",
+        "b": "$In.Target",
+        "less_than": "$Attack.MinRange"
+       },
+       {
+        "if": "timer_elapsed",
+        "seconds": 1.2
+       }
+      ],
+      "to": "MakeRoom"
+     },
      {
       "on": "event",
       "event": "AI.Event.PathBlocked",
@@ -62,6 +108,115 @@
         "if": "has_attack"
        }
       ],
+      "to": "Swing"
+     },
+     {
+      "on": "action_failed",
+      "to": "CloseIn"
+     }
+    ]
+   },
+   {
+    "name": "MakeRoom",
+    "actions": [
+     {
+      "do": "find_spot",
+      "out": "$Var.StandoffSpot",
+      "query": {
+       "generator": {
+        "ring": {
+         "around": "$In.Target",
+         "radius": "$Attack.MinRange",
+         "radius_scale": 1.25,
+         "radius_jitter": 60
+        }
+       },
+       "scorers": {
+        "path_cost": 1.0,
+        "separation": 0.6,
+        "furniture_clearance": 0.4,
+        "noise": 0.3,
+        "los_to": {
+         "target": "$In.Target",
+         "weight": 2.0
+        }
+       }
+      }
+     }
+    ],
+    "transitions": [
+     {
+      "on": "actions_succeeded",
+      "to": "Withdraw"
+     },
+     {
+      "on": "action_failed",
+      "to": "CloseIn"
+     }
+    ]
+   },
+   {
+    "name": "Withdraw",
+    "min_commit_seconds": 0.5,
+    "actions": [
+     {
+      "do": "move_to",
+      "target": "$Var.StandoffSpot",
+      "acceptance": 90,
+      "speed_profile": "hurry"
+     }
+    ],
+    "transitions": [
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "var_compare",
+        "a": "$Attack.MinRange",
+        "b": 0,
+        "op": "le"
+       }
+      ],
+      "to": "CloseIn"
+     },
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "has_attack_token",
+        "negate": true
+       }
+      ],
+      "to": "CloseIn"
+     },
+     {
+      "on": "tick",
+      "conditions": [
+       {
+        "if": "has_attack"
+       },
+       {
+        "if": "distance",
+        "a": "$Self",
+        "b": "$In.Target",
+        "greater_than": "$Attack.MinRange"
+       }
+      ],
+      "to": "Swing"
+     },
+     {
+      "on": "event",
+      "event": "AI.Event.PathBlocked",
+      "to": "ClearPath",
+      "conditions": [
+       {
+        "if": "can_break_furniture",
+        "entity": "$Path.BlockingEntity"
+       }
+      ]
+     },
+     {
+      "on": "actions_succeeded",
       "to": "Swing"
      },
      {

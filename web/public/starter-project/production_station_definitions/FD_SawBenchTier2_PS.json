@@ -12,11 +12,11 @@
     "has_static_audio": false,
     "has_toggled_on_audio": true,
     "toggled_on_audio": {
-      "sound": "/Game/Shared/Audio/Stations/SW_Loop_Sawing.SW_Loop_Sawing",
+      "sound": "Furniture.Loop.Sawing",
       "volume_multiplier": 0.6,
       "b_looping": true,
       "b_attach_to_entity": true,
-      "attenuation_distance": 1200.0,
+      "attenuation_distance": 1200,
       "fade_in_time": 0.5,
       "fade_out_time": 0.8
     },
@@ -27,8 +27,8 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 300,
-    "destructible_collection": "/Game/ScienceLab/Meshes/GeometryCollections/GCS_ReceptionDesk01.GCS_ReceptionDesk01",
+    "starting_health": 600,
+    "destructible_collection": "/Game/Fab/ScienceLab/Meshes/GeometryCollections/GCS_ReceptionDesk01.GCS_ReceptionDesk01",
     "loot_dropped_on_death": [
       "LD_CraftingBenchTierOneLoot"
     ],
@@ -97,13 +97,78 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/ScienceLab/Meshes/Furniture/SM_ReceptionDesk01.SM_ReceptionDesk01",
+    "static_mesh": "/Game/Fab/ScienceLab/Meshes/Furniture/SM_ReceptionDesk01.SM_ReceptionDesk01",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
     },
     "random_material_overrides": [],
-    "loot_positions": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.8053,
+            "w": 0.5929
+          },
+          "translation": {
+            "x": -69.76,
+            "y": 119.0,
+            "z": 119.27
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9978,
+            "w": 0.0663
+          },
+          "translation": {
+            "x": -69.76,
+            "y": -119.0,
+            "z": 119.27
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0539,
+            "w": -0.9985
+          },
+          "translation": {
+            "x": -8.82,
+            "y": 119.0,
+            "z": 87.25
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.4,
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
     "destruction_impulse_strength": 0,

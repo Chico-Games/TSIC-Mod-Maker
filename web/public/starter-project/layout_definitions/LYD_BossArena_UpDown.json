@@ -115,7 +115,7 @@
           "search_queries": [],
           "tile_requirements": [],
           "spawn_chance_over": 0,
-          "spawn_chance_under": 1
+          "spawn_chance_under": 0.7
         },
         "enemy_spawn_point_definition": "ESP_BossArena",
         "transform": {
@@ -195,6 +195,406 @@
             "x": -425.0,
             "y": -425.0,
             "z": 0.0
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Tile.Offset.Biome.Empty.Left",
+                "Tile.Offset.Biome.None.Left",
+                "Tile.Offset.Biome.SkyCeiling.Left",
+                "Tile.Offset.Biome.SkyEmpty.Left",
+                "Tile.Offset.HeightDrop.Left"
+              ],
+              "b_not": true
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Tile.Offset.MazeOpening.Left"
+              ],
+              "b_not": true
+            }
+          ],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -600,
+            "y": -737.5,
+            "z": 250
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Tile.Offset.Biome.Empty.Left",
+                "Tile.Offset.Biome.None.Left",
+                "Tile.Offset.Biome.SkyCeiling.Left",
+                "Tile.Offset.Biome.SkyEmpty.Left",
+                "Tile.Offset.HeightDrop.Left"
+              ],
+              "b_not": true
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Tile.Offset.MazeOpening.Left"
+              ],
+              "b_not": true
+            }
+          ],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": -300,
+            "y": -737.5,
+            "z": 250
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Tile.Offset.Biome.Empty.Left",
+                "Tile.Offset.Biome.None.Left",
+                "Tile.Offset.Biome.SkyCeiling.Left",
+                "Tile.Offset.Biome.SkyEmpty.Left",
+                "Tile.Offset.HeightDrop.Left"
+              ],
+              "b_not": true
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Tile.Offset.MazeOpening.Left"
+              ],
+              "b_not": true
+            }
+          ],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 0,
+            "y": -737.5,
+            "z": 250
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Tile.Offset.Biome.Empty.Left",
+                "Tile.Offset.Biome.None.Left",
+                "Tile.Offset.Biome.SkyCeiling.Left",
+                "Tile.Offset.Biome.SkyEmpty.Left",
+                "Tile.Offset.HeightDrop.Left"
+              ],
+              "b_not": true
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Tile.Offset.MazeOpening.Left"
+              ],
+              "b_not": true
+            }
+          ],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 300,
+            "y": -737.5,
+            "z": 250
+          },
+          "scale3_d": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        }
+      },
+      {
+        "layout_actor_type": {
+          "name": "PROXY_ACTOR",
+          "value": 0
+        },
+        "b_visual_helper": false,
+        "definition_filter": {
+          "seed_offset": 1,
+          "search_queries": [
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureType.Light.Wall"
+              ],
+              "b_not": false
+            },
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Entity.RandomGeneration.FurnitureCategory.Bedroom",
+                "Entity.RandomGeneration.FurnitureCategory.DiningRoom",
+                "Entity.RandomGeneration.FurnitureCategory.LivingRoom"
+              ],
+              "b_not": false
+            }
+          ],
+          "tile_requirements": [
+            {
+              "search_query": {
+                "name": "HAS_ANY_EXACT",
+                "value": 2
+              },
+              "tags": [
+                "Tile.Offset.Biome.Empty.Left",
+                "Tile.Offset.Biome.None.Left",
+                "Tile.Offset.Biome.SkyCeiling.Left",
+                "Tile.Offset.Biome.SkyEmpty.Left",
+                "Tile.Offset.HeightDrop.Left"
+              ],
+              "b_not": true
+            },
+            {
+              "search_query": {
+                "name": "HAS_ALL_EXACT",
+                "value": 4
+              },
+              "tags": [
+                "Tile.Offset.MazeOpening.Left"
+              ],
+              "b_not": true
+            }
+          ],
+          "spawn_chance_over": 0,
+          "spawn_chance_under": 1
+        },
+        "transform": {
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 600,
+            "y": -737.5,
+            "z": 250
           },
           "scale3_d": {
             "x": 1,

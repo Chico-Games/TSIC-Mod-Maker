@@ -5,6 +5,10 @@
   "schema_version": 2,
   "properties": {
     "inventory_rules_definition": "IRD_StorageTier1_2",
+    "inventory_loot": {
+      "rolls": 2,
+      "chance_per_roll": 0.5
+    },
     "gameplay_event_tag": "UI.GameScreen.Storage",
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
@@ -18,7 +22,7 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 67,
+    "starting_health": 134,
     "furniture_armour": 2,
     "destructible_collection": "/Game/Furniture/Fridges/GeometryCollections/GCS_M_Fridge1C.GCS_M_Fridge1C",
     "destruction_impulse_strength": 0,
@@ -119,6 +123,8 @@
     "random_material_overrides": [],
     "loot_positions": [],
     "weighted_chance": 1000,
-    "world_gen_priority": 6000
+    "world_gen_priority": 6000,
+    "open_sound": "Container.Open.Locker",
+    "close_sound": "Container.Close.Locker"
   }
 }

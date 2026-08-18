@@ -5,6 +5,10 @@
   "schema_version": 2,
   "properties": {
     "inventory_rules_definition": "IRD_StorageTier1_2",
+    "inventory_loot": {
+      "rolls": 1,
+      "chance_per_roll": 0.85
+    },
     "gameplay_event_tag": "UI.GameScreen.Storage",
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
@@ -18,7 +22,7 @@
     "has_static_vfx": false,
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
-    "starting_health": 43,
+    "starting_health": 86,
     "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/Shelves/GeometryCollections/GCS_WhiteShelf.GCS_WhiteShelf",
     "destruction_impulse_strength": 0,
@@ -168,7 +172,93 @@
       "name": "Furniture"
     },
     "random_material_overrides": [],
-    "loot_positions": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.1607,
+            "w": 0.987
+          },
+          "translation": {
+            "x": -103.46,
+            "y": 55.04,
+            "z": -3.85
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.4662,
+            "w": 0.8847
+          },
+          "translation": {
+            "x": -33.25,
+            "y": 48.27,
+            "z": -3.85
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9576,
+            "w": -0.2881
+          },
+          "translation": {
+            "x": 35.78,
+            "y": 71.56,
+            "z": -3.85
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      },
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.9441,
+            "w": 0.3296
+          },
+          "translation": {
+            "x": 77.92,
+            "y": 72.88,
+            "z": -3.85
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.35,
     "weighted_chance": 1000,
     "world_gen_priority": 6000
   }

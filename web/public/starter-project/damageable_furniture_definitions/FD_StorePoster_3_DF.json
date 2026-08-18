@@ -4,7 +4,16 @@
   "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "starting_health": 30,
+    "scavenge_yield": [
+      {
+        "item_to_drop": "ID_PlasticScrap_CM",
+        "count": 1,
+        "chance_to_drop": 1.0
+      }
+    ],
+    "scavenge_hold_time": 0.35,
+    "scavenge_verb_text": "Tear Down",
+    "starting_health": 60,
     "furniture_armour": 1,
     "destructible_collection": "/Game/Furniture/StorePosters/GeometryCollections/GCS_GIGA_PACK_Poster.GCS_GIGA_PACK_Poster",
     "destruction_impulse_strength": 0,
@@ -13,25 +22,7 @@
     ],
     "constructable_item_to_grant": "ID_StorePoster_3_CI",
     "deconstruction_tier": 1,
-    "blocking_collision_boxes": [
-      {
-        "offset": {
-          "x": 0,
-          "y": 0.1191,
-          "z": 55.6891
-        },
-        "rotation": {
-          "pitch": 0,
-          "yaw": 0,
-          "roll": 0
-        },
-        "box_size": {
-          "x": 31.0662,
-          "y": 0.2,
-          "z": 47.6518
-        }
-      }
-    ],
+    "blocking_collision_boxes": [],
     "support_collision_boxes": [
       {
         "offset": {
@@ -95,12 +86,21 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/StorePosters/Meshes/SM_GIGA_PACK_Poster.SM_GIGA_PACK_Poster",
+    "static_mesh": "/Game/Furniture/StorePosters/Meshes/SM_StorePoster_Framed.SM_StorePoster_Framed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
     },
-    "random_material_overrides": [],
+    "random_material_overrides": [
+      {
+        "key": 1,
+        "value": {
+          "materials": [
+            "/Game/Furniture/StorePosters/Materials/MI_GIGA_PACK_Poster_Mat_C.MI_GIGA_PACK_Poster_Mat_C"
+          ]
+        }
+      }
+    ],
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 3000

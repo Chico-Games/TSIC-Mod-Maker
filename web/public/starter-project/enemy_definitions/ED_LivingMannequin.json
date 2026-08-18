@@ -36,27 +36,31 @@
     "movement_profiles": [
       {
         "name": "walk",
-        "max_speed": 160,
+        "max_speed": 125,
         "accel": 1000,
-        "rotation_rate": 220
+        "rotation_rate": 220,
+        "braking_deceleration": 330
       },
       {
         "name": "walk_medium",
-        "max_speed": 330,
+        "max_speed": 182,
         "accel": 1250,
-        "rotation_rate": 260
+        "rotation_rate": 260,
+        "braking_deceleration": 480
       },
       {
         "name": "hurry",
-        "max_speed": 450,
+        "max_speed": 249,
         "accel": 1600,
-        "rotation_rate": 320
+        "rotation_rate": 320,
+        "braking_deceleration": 660
       },
       {
         "name": "sprint",
-        "max_speed": 700,
+        "max_speed": 364,
         "accel": 2600,
-        "rotation_rate": 420
+        "rotation_rate": 420,
+        "braking_deceleration": 960
       }
     ],
     "variants": [
@@ -64,6 +68,7 @@
         "key": { "name": "EASY", "value": 1 },
         "value": {
           "damage_multiplier": 1.0,
+          "health_multiplier": 1.0,
           "death_drop_table": [
             { "world_item": "FD_MannequinArm_SI", "count": 2, "weight": 1 },
             { "world_item": "FD_Mannequin_2_SI", "count": 1, "weight": 1 },
@@ -75,6 +80,7 @@
         "key": { "name": "MEDIUM", "value": 2 },
         "value": {
           "damage_multiplier": 2.0,
+          "health_multiplier": 2.0,
           "death_drop_table": [
             { "world_item": "FD_MannequinArm_SI", "count": 3, "weight": 1 },
             { "world_item": "FD_Mannequin_2_SI", "count": 2, "weight": 1 },
@@ -87,6 +93,7 @@
         "key": { "name": "HARD", "value": 3 },
         "value": {
           "damage_multiplier": 3.0,
+          "health_multiplier": 3.0,
           "death_drop_table": [
             { "world_item": "FD_MannequinArm_SI", "count": 3, "weight": 2 },
             { "world_item": "FD_Mannequin_3_SI", "count": 2, "weight": 1 },
