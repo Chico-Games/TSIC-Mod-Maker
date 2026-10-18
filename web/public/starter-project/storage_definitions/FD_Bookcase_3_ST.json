@@ -4,12 +4,37 @@
   "class": "UStorageDefinition",
   "schema_version": 2,
   "properties": {
-    "inventory_rules_definition": "IRD_StorageTier1_2",
-    "inventory_loot": {
-      "rolls": 2,
-      "chance_per_roll": 0.5
-    },
-    "gameplay_event_tag": "UI.GameScreen.Storage",
+    "compartments": [
+      {
+        "id": "main",
+        "layout": "Grid",
+        "width": 3,
+        "height": 2,
+        "accepts": [
+          "general",
+          "seed"
+        ],
+        "surface": {
+          "offset": {
+            "x": -0.2,
+            "y": 0.0,
+            "z": 23.15
+          },
+          "yaw": 0.0,
+          "width": 58.0,
+          "depth": 38.0,
+          "part": "Drawer"
+        },
+        "gate": {
+          "part": "Drawer",
+          "min_open": 0.5
+        },
+        "loot": {
+          "rolls": 2,
+          "chance": 0.5
+        }
+      }
+    ],
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Open",
@@ -23,11 +48,10 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 200.0,
-    "destructible_collection": "/Game/Furniture/Shelves/GeometryCollections/GCS_Bookcase03_Vol1.GCS_Bookcase03_Vol1",
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Shelf02_Closed.GCS_Shelf02_Closed",
     "loot_dropped_on_death": [],
     "deconstruction_tier": 1,
     "constructable_item_to_grant": "ID_Bookcase_3_CI",
-    "upgrade_recipe": "RD_Bookcase_3_CN",
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -36,7 +60,7 @@
         "w": 1.0
       },
       "translation": {
-        "x": 0.0,
+        "x": -0.74,
         "y": 0.0,
         "z": 0.0
       },
@@ -53,7 +77,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Shelves/Meshes/SM_Bookcase03_Vol1.SM_Bookcase03_Vol1",
+    "static_mesh": "/Game/Furniture/MidCentury/Shelf02/SM_Shelf02_Closed.SM_Shelf02_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -65,160 +89,13 @@
           "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.9982,
-            "w": 0.0596
+            "z": 0.0,
+            "w": 1.0
           },
           "translation": {
-            "x": -17.88,
-            "y": 24.21,
-            "z": 1.51
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
+            "x": 1.66,
             "y": 0.0,
-            "z": 0.3242,
-            "w": -0.946
-          },
-          "translation": {
-            "x": 15.98,
-            "y": 18.81,
-            "z": 1.51
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.6661,
-            "w": -0.7459
-          },
-          "translation": {
-            "x": -24.37,
-            "y": 27.02,
-            "z": 37.29
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.9875,
-            "w": 0.1576
-          },
-          "translation": {
-            "x": 18.04,
-            "y": 25.42,
-            "z": 37.29
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.7895,
-            "w": -0.6138
-          },
-          "translation": {
-            "x": -25.99,
-            "y": 19.41,
-            "z": 73.58
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0563,
-            "w": -0.9984
-          },
-          "translation": {
-            "x": 18.12,
-            "y": 20.08,
-            "z": 73.58
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0502,
-            "w": -0.9987
-          },
-          "translation": {
-            "x": -7.46,
-            "y": 25.0,
-            "z": 109.87
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.5464,
-            "w": 0.8375
-          },
-          "translation": {
-            "x": 9.9,
-            "y": 20.6,
-            "z": 109.87
+            "z": 131.1
           },
           "scale3_d": {
             "x": 1.0,
@@ -230,7 +107,7 @@
       }
     ],
     "loot_position_chance": 0.35,
-    "weighted_chance": 1000,
+    "weighted_chance": 400,
     "world_gen_priority": 6000,
     "destruction_impulse_strength": 0.0,
     "drag_angular_damping": 1.25,
@@ -251,6 +128,66 @@
     ],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.66,
+          "y": 0.0,
+          "z": 65.3
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 24.6,
+          "y": 32.9,
+          "z": 65.3
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.66,
+          "y": 0.0,
+          "z": 65.3
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 25.6,
+          "y": 33.9,
+          "z": 65.3
+        }
+      }
+    ],
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Shelf02/SK_Shelf02.SK_Shelf02",
+      "parts": [
+        {
+          "name": "Drawer",
+          "motion": "Slide",
+          "range": 38.0
+        }
+      ]
+    },
+    "container_view": {
+      "location": {
+        "x": 87.8,
+        "y": 38.5,
+        "z": 209.1
+      },
+      "rotation": {
+        "pitch": -70.6,
+        "yaw": 179.6,
+        "roll": 0
+      }
+    }
   }
 }

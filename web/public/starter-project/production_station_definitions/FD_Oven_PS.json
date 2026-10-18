@@ -1,12 +1,9 @@
 {
   "id": "FD_Oven_PS",
   "asset_path": "/Game/Furniture/Cooking/Oven/Construction/FD_Oven_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_OvenRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
@@ -28,15 +25,15 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 200,
-    "destructible_collection": "/Game/Fab/MERIDIAN/VOL57_School/Meshes/GeometryCollections/GCS_Commercial_Grill_NN_01a.GCS_Commercial_Grill_NN_01a",
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Stove01_Closed.GCS_Stove01_Closed",
     "loot_dropped_on_death": [],
     "deconstruction_tier": 2,
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": 0,
-          "y": 0,
-          "z": 59.688
+          "x": 0.0,
+          "y": 1.55,
+          "z": 65.0
         },
         "rotation": {
           "pitch": 0,
@@ -44,18 +41,18 @@
           "roll": 0
         },
         "box_size": {
-          "x": 27.6103,
-          "y": 24.0276,
-          "z": 29.7838
+          "x": 35.4,
+          "y": 31.8,
+          "z": 65.0
         }
       }
     ],
     "support_collision_boxes": [
       {
         "offset": {
-          "x": 0,
-          "y": 0,
-          "z": 50.4448
+          "x": 0.0,
+          "y": 1.55,
+          "z": 65.0
         },
         "rotation": {
           "pitch": 0,
@@ -63,13 +60,12 @@
           "roll": 0
         },
         "box_size": {
-          "x": 47.604,
-          "y": 41.4269,
-          "z": 51.3513
+          "x": 36.4,
+          "y": 32.8,
+          "z": 65.0
         }
       }
     ],
-    "upgrade_recipe": "RD_OvenTier2_CN",
     "building_base": {
       "rotation": {
         "x": 0,
@@ -79,7 +75,7 @@
       },
       "translation": {
         "x": 0,
-        "y": 0,
+        "y": -2.05,
         "z": 0
       },
       "scale3_d": {
@@ -95,7 +91,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Fab/MERIDIAN/VOL57_School/Meshes/NN/SM_Commercial_Grill_NN_01a.SM_Commercial_Grill_NN_01a",
+    "static_mesh": "/Game/Furniture/MidCentury/Stove01/SM_Stove01_Closed.SM_Stove01_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -107,55 +103,13 @@
           "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.9422,
-            "w": 0.335
+            "z": 0.0,
+            "w": 1.0
           },
           "translation": {
-            "x": -6.6069,
-            "y": -7.9312,
-            "z": 100.7892
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
             "x": 0.0,
-            "y": 0.0,
-            "z": 0.497,
-            "w": -0.8678
-          },
-          "translation": {
-            "x": 13.0129,
-            "y": -12.4875,
-            "z": 100.7892
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.1271,
-            "w": 0.9919
-          },
-          "translation": {
-            "x": -10.98,
-            "y": 4.51,
-            "z": 84.83
+            "y": 1.55,
+            "z": 130.5
           },
           "scale3_d": {
             "x": 1.0,
@@ -181,6 +135,80 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "constructable_item_to_grant": "ID_Oven_CI"
+    "constructable_item_to_grant": "ID_Oven_CI",
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Stove01/SK_Stove01.SK_Stove01",
+      "parts": [
+        {
+          "name": "OvenDoor",
+          "motion": "Hinge",
+          "range": -90.0,
+          "opens_for_screen": true
+        },
+        {
+          "name": "Drawer",
+          "motion": "Slide",
+          "range": 35.0,
+          "opens_for_screen": false
+        }
+      ]
+    },
+    "contents_always_visible": true,
+    "compartments": [
+      {
+        "id": "tray",
+        "layout": "Grid",
+        "width": 4,
+        "height": 3,
+        "accepts": [
+          "cold",
+          "general"
+        ],
+        "gate": {
+          "part": "OvenDoor",
+          "min_open": 0.5
+        },
+        "surface": {
+          "offset": {
+            "x": 0.0,
+            "y": 0.8,
+            "z": 35.2
+          },
+          "yaw": 90.0,
+          "width": 54.0,
+          "depth": 38.0,
+          "camera_distance": 240.0,
+          "camera_pitch": -34.0
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.Oven",
+      "input": "tray",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Timed",
+        "gate": "OvenDoor",
+        "on_gate_open": "Pause",
+        "offline": true
+      },
+      "burn": {
+        "after_seconds": 60.0,
+        "result": "ID_BurntPile_CM"
+      },
+      "feedback": {
+        "vibrate": {
+          "amplitude": 0.1,
+          "hz": 12.0
+        },
+        "complete_sound": "Recipe.Completed",
+        "action_label": "Cook",
+        "working_light": "OvenDoor",
+        "working_sound": "toggled_on_audio"
+      }
+    },
+    "gameplay_event_tag": "UI.GameScreen.Inventory"
   }
 }

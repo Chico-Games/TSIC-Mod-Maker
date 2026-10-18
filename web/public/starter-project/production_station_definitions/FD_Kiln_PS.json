@@ -1,16 +1,9 @@
 {
   "id": "FD_Kiln_PS",
   "asset_path": "/Game/Furniture/Processing/Kiln/Construction/FD_Kiln_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_KilnRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
-    "interaction_hold_time": 0,
-    "interaction_prompt_text": "Use",
-    "has_static_audio": false,
-    "has_toggled_on_audio": true,
     "toggled_on_audio": {
       "sound": "Furniture.Loop.Fire",
       "volume_multiplier": 0.6,
@@ -20,13 +13,6 @@
       "fade_in_time": 0.5,
       "fade_out_time": 0.8
     },
-    "has_toggled_off_audio": false,
-    "has_static_lights": false,
-    "has_toggled_on_lights": false,
-    "has_toggled_off_lights": false,
-    "has_static_vfx": false,
-    "has_toggled_on_vfx": false,
-    "has_toggled_off_vfx": false,
     "starting_health": 200,
     "destructible_collection": "/Game/Fab/Commercial_Kitchen/GeometryCollections/GCS_PizzaOven.GCS_PizzaOven",
     "loot_dropped_on_death": [],
@@ -69,7 +55,6 @@
         }
       }
     ],
-    "upgrade_recipe": "RD_KilnTier2_CN",
     "building_base": {
       "rotation": {
         "x": 0,

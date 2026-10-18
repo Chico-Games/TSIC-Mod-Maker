@@ -1,12 +1,9 @@
 {
   "id": "FD_Dishwasher_PS",
   "asset_path": "/Game/Furniture/Cooking/Dishwasher/Furniture/FD_Dishwasher_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_DishwasherRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
@@ -88,7 +85,6 @@
         "z": 1
       }
     },
-    "upgrade_recipe": "RD_DishwasherTier2_CN",
     "is_draggable": true,
     "display_name": "Dishwasher",
     "description": "A simple microwave for basic cooking. Heats and cooks simple meals quickly.",
@@ -96,7 +92,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Fab/Suburban_Household/VOL9_Kitchen/Meshes/NN/SM_Dishwasher_NN_01a.SM_Dishwasher_NN_01a",
+    "static_mesh": "/Game/Furniture/Appliances/Dishwasher01/SM_Dishwasher01_Closed.SM_Dishwasher01_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -188,6 +184,78 @@
     ],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/Appliances/Dishwasher01/SK_Dishwasher01.SK_Dishwasher01",
+      "parts": [
+        {
+          "name": "Door",
+          "motion": "Hinge",
+          "range": -90
+        },
+        {
+          "name": "Rack",
+          "motion": "Slide",
+          "range": 52
+        }
+      ]
+    },
+    "compartments": [
+      {
+        "id": "rack",
+        "layout": "Grid",
+        "width": 5,
+        "height": 2,
+        "accepts": [
+          "cold"
+        ],
+        "gate": {
+          "part": "Door",
+          "min_open": 0.5
+        },
+        "surface": {
+          "offset": {
+            "x": 0.0,
+            "y": 13,
+            "z": 22.5
+          },
+          "yaw": 90.0,
+          "width": 44.0,
+          "depth": 43.0,
+          "part": "Rack",
+          "camera_distance": 220.0,
+          "camera_pitch": -45.0
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.Dishwasher",
+      "input": "rack",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant",
+        "gate": "Door",
+        "on_gate_open": "Pause"
+      },
+      "feedback": {
+        "action_label": "Craft",
+        "working_sound": "toggled_on_audio"
+      }
+    },
+    "container_view": {
+      "location": {
+        "x": -34,
+        "y": 132.7,
+        "z": 306.4
+      },
+      "rotation": {
+        "pitch": -60,
+        "yaw": -91.2,
+        "roll": 0
+      }
+    }
   }
 }

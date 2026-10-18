@@ -1,0 +1,148 @@
+{
+  "id": "UI_LoreScreen_TH",
+  "class": "ScpUiThemeDefinition",
+  "properties": {
+    "extends": "UI_LorePaper_TH",
+    "colours": {
+      "lore.screen.scrim": "rgba(35, 31, 24, 0.75)",
+      "lore.screen.bg": "rgba(8, 16, 12, 0.92)",
+      "lore.screen.border": "#2a3a30",
+      "lore.screen.text": "#92e0a8",
+      "lore.screen.text.bright": "#bbf5c5",
+      "lore.screen.text.dim": "rgba(146, 224, 168, 0.6)",
+      "lore.screen.chip.border": "rgba(140, 220, 160, 0.3)",
+      "lore.screen.chip.hover": "rgba(60, 180, 90, 0.15)",
+      "lore.screen.chip.current": "rgba(60, 180, 90, 0.25)"
+    },
+    "styles": {
+      "lore.scrim": {
+        "background": "$colours.lore.screen.scrim",
+        "padding": 40
+      },
+      "lore.frame": {
+        "background": "$colours.lore.screen.bg",
+        "padding": [
+          24,
+          28
+        ],
+        "border": {
+          "colour": "$colours.lore.screen.border",
+          "width": 1
+        }
+      },
+      "lore.sheet": {
+        "background": "$colours.lore.screen.bg",
+        "padding": [
+          0,
+          0,
+          6,
+          0
+        ],
+        "shadow": {
+          "offset": [
+            0,
+            0
+          ],
+          "colour": "$colours.lore.screen.bg"
+        }
+      },
+      "lore.group": {
+        "font": "$fonts.terminal",
+        "size": 11,
+        "tracking": 0.36,
+        "case": "upper",
+        "colour": "$colours.lore.screen.text.dim"
+      },
+      "lore.heading": {
+        "font": "$fonts.terminal",
+        "size": 20,
+        "colour": "$colours.lore.screen.text.bright"
+      },
+      "lore.heading.gloria": {
+        "extends": "lore.heading",
+        "font": "$fonts.terminal",
+        "size": 20
+      },
+      "lore.heading.reenie": {
+        "extends": "lore.heading",
+        "font": "$fonts.terminal",
+        "size": 20
+      },
+      "lore.heading.plain": {
+        "font": "$fonts.terminal",
+        "size": 20,
+        "colour": "$colours.lore.screen.text.bright"
+      },
+      "lore.body": {
+        "font": "$fonts.terminal",
+        "size": 16,
+        "colour": "$colours.lore.screen.text"
+      },
+      "lore.body.gloria": {
+        "extends": "lore.body",
+        "font": "$fonts.terminal",
+        "size": 16
+      },
+      "lore.body.reenie": {
+        "extends": "lore.body",
+        "font": "$fonts.terminal",
+        "size": 16
+      },
+      "lore.body.plain": {
+        "font": "$fonts.terminal",
+        "size": 16,
+        "colour": "$colours.lore.screen.text"
+      },
+      "lore.index": {
+        "variant": "plate",
+        "font": "$fonts.terminal",
+        "size": 12,
+        "colour": "$colours.lore.screen.text",
+        "background": "$colours.lore.screen.bg",
+        "padding": [
+          2,
+          6
+        ],
+        "radius": 0,
+        "border": {
+          "colour": "$colours.lore.screen.chip.border",
+          "width": 1
+        },
+        "min.height": 0,
+        "hover": {
+          "background": "$colours.lore.screen.chip.hover"
+        },
+        "focus": {
+          "background": "$colours.lore.screen.chip.hover"
+        },
+        "pressed": {
+          "background": "$colours.lore.screen.chip.hover"
+        }
+      },
+      "lore.index.current": {
+        "extends": "lore.index",
+        "background": "$colours.lore.screen.chip.current",
+        "colour": "$colours.lore.screen.text.bright",
+        "border": {
+          "colour": "$colours.lore.screen.chip.border",
+          "width": 1
+        },
+        "hover": {
+          "background": "$colours.lore.screen.chip.current"
+        },
+        "focus": {
+          "background": "$colours.lore.screen.chip.current"
+        },
+        "pressed": {
+          "background": "$colours.lore.screen.chip.current"
+        }
+      },
+      "lore.pageinfo": {
+        "font": "$fonts.terminal",
+        "size": 11,
+        "tracking": 0.04,
+        "colour": "$colours.lore.screen.text.dim"
+      }
+    }
+  }
+}

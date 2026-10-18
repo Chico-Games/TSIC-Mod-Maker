@@ -1,0 +1,31 @@
+{
+  "id": "UI_Notebook_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Notebook",
+    "layer": "menu",
+    "theme": "UI_Overlays_TH",
+    "input_mode": "InputMode.Menu.Notebook",
+    "cancel": "UI.Cmd.Notebook.Close",
+    "actions": [ { "action": "back", "label": "Put away" } ],
+    "uses": [ "UI.Notebook.State" ],
+    "tree": {
+      "id": "nb-layer", "widget": "panel", "layout": "overlay", "style": "overlay.clear",
+      "children": [
+        { "id": "nb-hint", "widget": "panel", "layout": "horizontal", "style": "notebook.hint", "gap": 14, "slot": { "anchor": "bottom-center", "padding": [0, 0, 0, 29] },
+          "children": [
+            { "id": "nb-page", "widget": "text", "style": "notebook.page", "slot": { "valign": "center" },
+              "bind": { "text": "UI.Notebook.State.Page <= 0 ? 'Front cover' : (UI.Notebook.State.PageCount > 0 ? (UI.Notebook.State.Page >= UI.Notebook.State.PageCount ? 'Back cover' : \"Page {UI.Notebook.State.Page} of {UI.Notebook.State.PageCount - 1}\") : \"Page {UI.Notebook.State.Page}\")" } },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "valign": "center" },
+              "children": [
+                { "widget": "text", "style": "notebook.hint.text", "text": "Click Previous / Next or scroll to turn ·" },
+                { "widget": "panel", "style": "notebook.kbd", "children": [ { "widget": "text", "style": "notebook.kbd", "text": "Tab" } ] },
+                { "widget": "text", "style": "notebook.hint.text", "text": "or" },
+                { "widget": "panel", "style": "notebook.kbd", "children": [ { "widget": "text", "style": "notebook.kbd", "text": "Esc" } ] },
+                { "widget": "text", "style": "notebook.hint.text", "text": "to put away" }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

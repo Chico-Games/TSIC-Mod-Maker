@@ -1,0 +1,141 @@
+{
+  "id": "UI_DeathScreen_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "DeathScreen",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      }
+    ],
+    "uses": [
+      "UI.DeathScreen.Shown"
+    ],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 420
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 8,
+              "slot": {
+                "padding": [
+                  18,
+                  22,
+                  14,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "widget": "text",
+                  "style": "text.masthead",
+                  "text": "You Died.",
+                  "line_height": 0.9,
+                  "justify": "Center",
+                  "slot": {
+                    "align": "center"
+                  }
+                },
+                {
+                  "id": "cause",
+                  "widget": "text",
+                  "style": "menu.text.death.sub",
+                  "justify": "Center",
+                  "wrap": true,
+                  "text": "The Store has taken you. Your loved one remains lost.",
+                  "bind": {
+                    "text": "UI.DeathScreen.Shown.DeathMessage != '' ? UI.DeathScreen.Shown.DeathMessage : 'The Store has taken you. Your loved one remains lost.'"
+                  }
+                },
+                {
+                  "id": "run-ended",
+                  "widget": "text",
+                  "style": "menu.text.death.sub",
+                  "justify": "Center",
+                  "wrap": true,
+                  "bind": {
+                    "visible": "UI.DeathScreen.Shown.bRunEnded",
+                    "text": "UI.DeathScreen.Shown.RunEndedMessage != '' ? UI.DeathScreen.Shown.RunEndedMessage : 'The run is over.'"
+                  }
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "rows",
+              "widget": "panel",
+              "layout": "vertical",
+              "focus": "group",
+              "slot": {
+                "padding": [
+                  6,
+                  4,
+                  10,
+                  4
+                ]
+              },
+              "children": [
+                {
+                  "id": "btn-respawn",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Respawn",
+                  "dept": "Dept. 01",
+                  "first_in_group": true,
+                  "focus": "initial",
+                  "bind": {
+                    "visible": "!UI.DeathScreen.Shown.bRunEnded"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Death.Respawn"
+                    }
+                  }
+                },
+                {
+                  "id": "btn-menu",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Quit to Menu",
+                  "dept": "Fire Exit",
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Pause.QuitToMenu"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

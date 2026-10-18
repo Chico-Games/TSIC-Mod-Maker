@@ -1,0 +1,218 @@
+{
+  "id": "UI_FirstBoot_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "FirstBoot",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "",
+    "actions": [],
+    "uses": [
+      "UI.FirstBoot.Progress"
+    ],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage.title",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 460
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 16,
+              "slot": {
+                "padding": [
+                  18,
+                  22,
+                  10,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true,
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "text.masthead",
+                      "text": "First Time\nSetup",
+                      "line_height": 0.9,
+                      "wrap": true
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "align": "right",
+                    "valign": "top"
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "style": "chip.badge",
+                      "slot": {
+                        "align": "right"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.badge",
+                          "case": "None",
+                          "text": "Vol. 1"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.date",
+                      "text": "Opening night.",
+                      "justify": "Right",
+                      "wrap": true,
+                      "slot": {
+                        "align": "right"
+                      },
+                      "case": "Upper"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "body",
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 12,
+              "slot": {
+                "padding": [
+                  12,
+                  22,
+                  22,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "id": "status",
+                  "widget": "text",
+                  "style": "menu.text.loading",
+                  "justify": "Center",
+                  "case": "Upper",
+                  "wrap": true,
+                  "cycle_seconds": 4.5,
+                  "cycle": [
+                    "Unboxing the store...",
+                    "Teaching the graphics card about furniture...",
+                    "Compiling every shade of beige...",
+                    "Introducing your GPU to the showroom...",
+                    "Cutting the ribbon...",
+                    "Warming up the price guns...",
+                    "Programming the automatic doors...",
+                    "Alphabetising the allen keys...",
+                    "Calibrating the trolley wheels...",
+                    "Testing the tannoy...",
+                    "Laminating the shift rota...",
+                    "Hiring the mannequins...",
+                    "Printing the very first receipt...",
+                    "Explaining the returns policy to the driver...",
+                    "Inflating the ball pit...",
+                    "Deciding what the meatballs are made of...",
+                    "Sweeping up the packing peanuts...",
+                    "Setting every clock to store time...",
+                    "Sharpening the box cutters...",
+                    "Pinning up the staff notices...",
+                    "Rehearsing the closing announcement...",
+                    "Counting the trolleys twice...",
+                    "Finding somewhere to put the fire extinguisher...",
+                    "Filing the very first incident report..."
+                  ],
+                  "slot": {
+                    "align": "fill"
+                  }
+                },
+                {
+                  "id": "progress",
+                  "widget": "progressbar",
+                  "style": "menu.bar.loading",
+                  "width": 300,
+                  "progress": 0,
+                  "slot": {
+                    "align": "center",
+                    "padding": [
+                      4,
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  "bind": {
+                    "progress": "UI.FirstBoot.Progress.Progress"
+                  }
+                },
+                {
+                  "id": "phase",
+                  "widget": "text",
+                  "style": "menu.text.loading.phase",
+                  "justify": "Center",
+                  "case": "Upper",
+                  "slot": {
+                    "align": "center"
+                  },
+                  "bind": {
+                    "text": "UI.FirstBoot.Progress.Phase",
+                    "visible": "UI.FirstBoot.Progress.Phase != ''"
+                  }
+                },
+                {
+                  "id": "note",
+                  "widget": "text",
+                  "style": "menu.text.loading.note",
+                  "justify": "Center",
+                  "wrap": true,
+                  "line_height": 1.5,
+                  "slot": {
+                    "align": "fill",
+                    "padding": [
+                      6,
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  "text": "Performing first time setup and shader compilation.\nThis only happens once. The next launch goes straight to the menu."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

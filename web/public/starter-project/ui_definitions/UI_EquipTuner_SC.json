@@ -1,0 +1,1151 @@
+{
+  "id": "UI_EquipTuner_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "EquipTuner",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.EquipTuner.Toggle",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      },
+      {
+        "action": "back",
+        "label": "Close"
+      }
+    ],
+    "uses": [
+      "UI.EquipTuner.State"
+    ],
+    "tree": {
+      "widget": "panel",
+      "layout": "overlay",
+      "id": "et-root",
+      "style": "screen.clear",
+      "on": {
+        "show": {
+          "cmd": "UI.Cmd.EquipTuner.RequestState"
+        }
+      },
+      "children": [
+        {
+          "widget": "panel",
+          "layout": "scroll",
+          "id": "et-panel",
+          "style": "dev.panel.dock",
+          "slot": {
+            "align": "right",
+            "valign": "fill",
+            "width": 440
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 8,
+              "slot": {
+                "padding": [
+                  14,
+                  12,
+                  14,
+                  16
+                ]
+              },
+              "children": [
+                {
+                  "widget": "text",
+                  "text": "Equipment pose tuner",
+                  "style": "dev.title.tuner.bench"
+                },
+                {
+                  "widget": "text",
+                  "bind": {
+                    "text": "!has:UI.EquipTuner.State ? '' : UI.EquipTuner.State.Message != '' ? UI.EquipTuner.State.Message : UI.EquipTuner.State.bEquipped ? '' : 'Item is not on the player.'",
+                    "style": "has:UI.EquipTuner.State ? (!UI.EquipTuner.State.bHasTuner ? 'dev.status.bad' : 'dev.status') : 'dev.status'"
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "widget": "button",
+                      "label": "<",
+                      "style": "dev.button",
+                      "id": "et-prev",
+                      "focus": "initial",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.Nav",
+                          "args": {
+                            "Delta": -1
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true,
+                        "valign": "center"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "dev.label.strong",
+                          "justify": "Center",
+                          "bind": {
+                            "text": "UI.EquipTuner.State.Items.Num > 0 ? \"{UI.EquipTuner.State.ItemIndex + 1} / {UI.EquipTuner.State.Items.Num}  -  {UI.EquipTuner.State.ItemName}\" : '-'"
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "dev.meta",
+                          "justify": "Center",
+                          "wrap": true,
+                          "bind": {
+                            "text": "UI.EquipTuner.State.ItemId != '' ? \"{UI.EquipTuner.State.ItemId}  ·  {UI.EquipTuner.State.Slot}  ·  {UI.EquipTuner.State.LayerClass}\" : ''"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "button",
+                      "label": ">",
+                      "style": "dev.button",
+                      "id": "et-next",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.Nav",
+                          "args": {
+                            "Delta": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "dropdown",
+                  "id": "et-items",
+                  "min_width": 380,
+                  "slot": {
+                    "align": "fill"
+                  },
+                  "bind": {
+                    "values": "UI.EquipTuner.State.Items.Id",
+                    "options": "UI.EquipTuner.State.Items.Name",
+                    "value": "UI.EquipTuner.State.ItemId"
+                  },
+                  "on": {
+                    "change": {
+                      "cmd": "UI.Cmd.EquipTuner.SelectItem",
+                      "args": {
+                        "ItemId": "{self.value}"
+                      }
+                    }
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "et-piece",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Piece",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "list",
+                      "id": "et-rows",
+                      "horizontal": true,
+                      "selectable": true,
+                      "empty_text": "No pieces.",
+                      "style": "dev.list.chips",
+                      "bind": {
+                        "items": "UI.EquipTuner.State.Rows",
+                        "selected": "UI.EquipTuner.State.RowIndex"
+                      },
+                      "on": {
+                        "activate": {
+                          "cmd": "UI.Cmd.EquipTuner.SelectRow",
+                          "args": {
+                            "Index": "{self.value}"
+                          }
+                        }
+                      },
+                      "template": {
+                        "widget": "button",
+                        "label": "",
+                        "style": "dev.button",
+                        "bind": {
+                          "label": "item.Socket",
+                          "style": "item.bFocused ? 'dev.button.on.blue' : item.bSocketExists ? 'dev.button' : 'dev.button.bad'"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Socket",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "dropdown",
+                          "id": "et-socket",
+                          "min_width": 200,
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "values": "UI.EquipTuner.State.Sockets",
+                            "value": "UI.EquipTuner.State.Row.Socket"
+                          },
+                          "on": {
+                            "change": {
+                              "cmd": "UI.Cmd.EquipTuner.SetSocket",
+                              "args": {
+                                "Socket": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "dev.text.warn",
+                      "wrap": true,
+                      "bind": {
+                        "visible": "UI.EquipTuner.State.Rows.Num > 0 ? !UI.EquipTuner.State.Row.bSocketExists : false",
+                        "text": "\"{UI.EquipTuner.State.Row.Socket} does not exist on {UI.EquipTuner.State.BodyMesh}: the piece is sitting at the mesh origin.\""
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "et-location",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Location (cm)",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "X (forward)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-LocX",
+                          "min": -60,
+                          "max": 60,
+                          "step": 0.1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.LocX"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "LocX",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Y (right)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-LocY",
+                          "min": -60,
+                          "max": 60,
+                          "step": 0.1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.LocY"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "LocY",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Z (up)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-LocZ",
+                          "min": -60,
+                          "max": 60,
+                          "step": 0.1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.LocZ"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "LocZ",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "et-rotation",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Rotation (deg)",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Pitch",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-Pitch",
+                          "min": -180,
+                          "max": 180,
+                          "step": 0.5,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.Pitch"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "Pitch",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Yaw",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-Yaw",
+                          "min": -180,
+                          "max": 180,
+                          "step": 0.5,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.Yaw"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "Yaw",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Roll",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-Roll",
+                          "min": -180,
+                          "max": 180,
+                          "step": 0.5,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.Roll"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "Roll",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "et-scale",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Scale",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Uniform",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-scale-row",
+                          "min": 0.1,
+                          "max": 3,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.ScaleX"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "Scale",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "X",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-ScaleX",
+                          "min": 0.1,
+                          "max": 3,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.ScaleX"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "ScaleX",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Y",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-ScaleY",
+                          "min": 0.1,
+                          "max": 3,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.ScaleY"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "ScaleY",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Z",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-ScaleZ",
+                          "min": 0.1,
+                          "max": 3,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.Row.ScaleZ"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetValue",
+                              "args": {
+                                "Field": "ScaleZ",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "et-camera",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Camera",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "button",
+                          "label": "Front",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 0,
+                                "Pitch": -8,
+                                "Distance": 260,
+                                "Height": 110
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Left",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 90,
+                                "Pitch": -8,
+                                "Distance": 260,
+                                "Height": 110
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Right",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": -90,
+                                "Pitch": -8,
+                                "Distance": 260,
+                                "Height": 110
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Back",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 180,
+                                "Pitch": -8,
+                                "Distance": 260,
+                                "Height": 110
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "button",
+                          "label": "Head",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 0,
+                                "Pitch": 0,
+                                "Distance": 110,
+                                "Height": 165
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Hands",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 20,
+                                "Pitch": -20,
+                                "Distance": 150,
+                                "Height": 95
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Torso",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 0,
+                                "Pitch": 0,
+                                "Distance": 170,
+                                "Height": 130
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Legs",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": 0,
+                                "Pitch": 5,
+                                "Distance": 190,
+                                "Height": 45
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Orbit",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-cam-yaw",
+                          "min": -180,
+                          "max": 180,
+                          "step": 1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.CamYaw"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": "{#et-cam-yaw.value}",
+                                "Pitch": "{#et-cam-pitch.value}",
+                                "Distance": "{#et-cam-distance.value}",
+                                "Height": "{#et-cam-height.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Pitch",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-cam-pitch",
+                          "min": -80,
+                          "max": 80,
+                          "step": 1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.CamPitch"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": "{#et-cam-yaw.value}",
+                                "Pitch": "{#et-cam-pitch.value}",
+                                "Distance": "{#et-cam-distance.value}",
+                                "Height": "{#et-cam-height.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Distance",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-cam-distance",
+                          "min": 30,
+                          "max": 800,
+                          "step": 5,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.CamDistance"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": "{#et-cam-yaw.value}",
+                                "Pitch": "{#et-cam-pitch.value}",
+                                "Distance": "{#et-cam-distance.value}",
+                                "Height": "{#et-cam-height.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Height",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 84,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "et-cam-height",
+                          "min": -20,
+                          "max": 220,
+                          "step": 1,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.blue",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.EquipTuner.State.CamHeight"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.EquipTuner.SetCamera",
+                              "args": {
+                                "Yaw": "{#et-cam-yaw.value}",
+                                "Pitch": "{#et-cam-pitch.value}",
+                                "Distance": "{#et-cam-distance.value}",
+                                "Height": "{#et-cam-height.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "et-buttons",
+                  "focus": "group",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "button",
+                      "label": "Reset piece",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.ResetRow"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "Copy to L/R partner",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.CopyToPair"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "Revert item",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.Revert"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "et-buttons-2",
+                  "focus": "group",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "button",
+                      "label": "Save to JSON",
+                      "style": "dev.button.save",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.Save"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "Close",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.EquipTuner.Toggle"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "text",
+                  "style": "dev.text.dirty",
+                  "bind": {
+                    "text": "UI.EquipTuner.State.bDirty ? 'Unsaved edits on this item.' : ''"
+                  }
+                },
+                {
+                  "widget": "text",
+                  "style": "dev.text.json",
+                  "wrap": true,
+                  "bind": {
+                    "text": "UI.EquipTuner.State.JsonPath != '' ? \"Saves to {UI.EquipTuner.State.JsonPath}\" : ''"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

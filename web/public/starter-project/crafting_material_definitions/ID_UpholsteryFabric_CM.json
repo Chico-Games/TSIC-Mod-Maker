@@ -5,12 +5,42 @@
   "schema_version": 2,
   "properties": {
     "thumbnail": "mod:icons/id_upholsteryfabric_cm",
-    "display_name": "Upholstery Fabric",
-    "description": "A bolt of tough upholstery fabric.",
+    "display_name": "Frayed Fabric",
+    "description": "Crafting material. Used for Bandage, First Aid Kit, Heavy Gloves and more. Found all over the store. Dropped by Living Mannequins and staff.\nA bundle of torn upholstery, edges fraying in every direction.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_UpholsteryFabric_SI",
     "item_category_tag": "Entity.Inventory.Item.Category.CraftingMaterial",
-    "max_stack_size": 50
+    "max_stack_size": 3,
+    "inventory_layout": {
+      "cells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    "storage_class": "fabric",
+    "material_class": "cloth",
+    "presentations": [
+      {
+        "key": "drape",
+        "value": {
+          "mesh": "/Game/Items/CraftingMaterials/ScrapFabric/Meshes/SM_ScrapFabric_Hung.SM_ScrapFabric_Hung"
+        }
+      }
+    ]
   }
 }

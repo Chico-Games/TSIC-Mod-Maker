@@ -1,0 +1,112 @@
+{
+  "id": "UI_HudActionPanel_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.BehaviorBar.Entries", "UI.Interaction.Targets", "UI.Upgrade.Target", "UI.Input.Mode.Changed", "UI.CircularProgress.State" ],
+    "tree": {
+      "id": "action-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[actionbar].bHidden ? false : !UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "action-shell", "widget": "panel", "layout": "overlay", "slot": { "anchor": "bottom-right", "offset": [-36, -36] },
+          "bind": { "visible": "UI.BehaviorBar.Entries.Entries.Num > 0 ? true : UI.Interaction.Targets.Targets.Num > 0" },
+          "children": [
+            { "id": "action-column", "widget": "panel", "layout": "vertical", "gap": 2, "slot": { "anchor": "bottom-right" },
+              "children": [
+                { "id": "target-name", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "align": "right", "padding": [0, 0, 0, 2] },
+                  "bind": { "visible": "UI.Hud.Visibility[interaction].bHidden ? false : (UI.Interaction.Targets.Targets.Num > 0 ? UI.Interaction.Targets.Targets[0].Name != '' : false)" },
+                  "children": [
+                    { "id": "target-name-glyph", "widget": "glyph", "size": 14, "slot": { "valign": "center" },
+                      "bind": { "glyph": "UI.Interaction.Targets.Targets[0].Category == '' ? 'interact' : UI.Interaction.Targets.Targets[0].Category" } },
+                    { "id": "target-name-text", "widget": "text", "style": "hud.target.name", "justify": "Right", "wrap_at": 320, "slot": { "valign": "center" },
+                      "bind": {
+                        "text": "UI.Interaction.Targets.Targets[0].Name",
+                        "colour": "UI.Interaction.Targets.Targets[0].Category == 'crafting' ? '#f0cd8a' : (UI.Interaction.Targets.Targets[0].Category == 'plantable' ? '#a9e2a0' : (UI.Interaction.Targets.Targets[0].Category == 'storage' ? '#d9c9f2' : (UI.Interaction.Targets.Targets[0].Category == 'door' ? '#c9d9ea' : (UI.Interaction.Targets.Targets[0].Category == 'toggle' ? '#f2e394' : (UI.Interaction.Targets.Targets[0].Category == 'loot' ? '#f2d3a4' : (UI.Interaction.Targets.Targets[0].Category == 'cart' ? '#98d4c8' : (UI.Interaction.Targets.Targets[0].Category == 'elevator' ? '#d5e0a8' : (UI.Interaction.Targets.Targets[0].Category == 'teleporter' ? '#c5a8f0' : (UI.Interaction.Targets.Targets[0].Category == 'text' ? '#e8d8b0' : '#e8e2d5')))))))))"
+                      } }
+                  ] },
+                { "id": "target-verb", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "align": "right" },
+                  "bind": { "visible": "UI.Hud.Visibility[interaction].bHidden ? false : (UI.Interaction.Targets.Targets.Num > 0 ? (UI.Interaction.Targets.Targets[0].Status == '' ? UI.Interaction.Targets.Targets[0].HoldLabel == '' : true) : false)" },
+                  "children": [
+                    { "id": "target-verb-glyph", "widget": "glyph", "size": 13, "slot": { "valign": "center" },
+                      "bind": {
+                        "glyph": "UI.Interaction.Targets.Targets[0].Category == '' ? 'interact' : UI.Interaction.Targets.Targets[0].Category",
+                        "opacity": "UI.Interaction.Targets.Targets[0].Status == 'SingleUseUsed' ? 0.4 : 1"
+                      } },
+                    { "id": "target-verb-text", "widget": "text", "justify": "Right", "wrap_at": 320, "slot": { "valign": "center" },
+                      "bind": {
+                        "text": "UI.Interaction.Targets.Targets[0].Label == '' ? (UI.Interaction.Targets.bDraggable ? 'Drag' : 'Interact') : UI.Interaction.Targets.Targets[0].Label",
+                        "style": "UI.Interaction.Targets.Targets[0].Status == 'SingleUseUsed' ? 'hud.target.used' : 'hud.target.verb'",
+                        "colour": "UI.Interaction.Targets.Targets[0].Status == 'SingleUseUsed' ? 'rgba(190, 190, 190, 0.4)' : (UI.Interaction.Targets.Targets[0].Category == 'crafting' ? '#f0cd8a' : (UI.Interaction.Targets.Targets[0].Category == 'plantable' ? '#a9e2a0' : (UI.Interaction.Targets.Targets[0].Category == 'storage' ? '#d9c9f2' : (UI.Interaction.Targets.Targets[0].Category == 'door' ? '#c9d9ea' : (UI.Interaction.Targets.Targets[0].Category == 'toggle' ? '#f2e394' : (UI.Interaction.Targets.Targets[0].Category == 'loot' ? '#f2d3a4' : (UI.Interaction.Targets.Targets[0].Category == 'cart' ? '#98d4c8' : (UI.Interaction.Targets.Targets[0].Category == 'elevator' ? '#d5e0a8' : (UI.Interaction.Targets.Targets[0].Category == 'teleporter' ? '#c5a8f0' : (UI.Interaction.Targets.Targets[0].Category == 'text' ? '#e8d8b0' : '#e8e2d5'))))))))))"
+                      } }
+                  ] },
+                { "id": "target-drag", "widget": "text", "style": "hud.target.verb", "text": "Drag", "justify": "Right", "slot": { "align": "right" },
+                  "bind": { "visible": "UI.Hud.Visibility[interaction].bHidden ? false : (UI.Interaction.Targets.Targets.Num > 0 ? (UI.Interaction.Targets.Targets[0].Status == '' ? (UI.Interaction.Targets.Targets[0].Label == '' ? (UI.Interaction.Targets.Targets[0].HoldLabel == '' ? UI.Interaction.Targets.bDraggable : false) : false) : false) : false)" } },
+                { "id": "target-hold", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "align": "right" },
+                  "bind": { "visible": "UI.Hud.Visibility[interaction].bHidden ? false : (UI.Interaction.Targets.Targets.Num > 0 ? UI.Interaction.Targets.Targets[0].HoldLabel != '' : false)" },
+                  "children": [
+                    { "widget": "panel", "style": "hud.hold.tag", "slot": { "valign": "center" },
+                      "children": [ { "widget": "text", "style": "hud.hold.tag", "text": "Hold" } ] },
+                    { "widget": "text", "slot": { "valign": "center" },
+                      "bind": {
+                        "text": "UI.Interaction.Targets.Targets[0].HoldLabel",
+                        "style": "UI.Interaction.Targets.Targets[0].HoldStatus == '' ? 'hud.target.hold' : (UI.Interaction.Targets.Targets[0].HoldStatus == 'Available' ? 'hud.target.hold' : 'hud.target.used')"
+                      } },
+                    { "widget": "text", "style": "hud.target.reason", "slot": { "valign": "center" },
+                      "bind": {
+                        "text": "UI.Interaction.Targets.Targets[0].HoldSubText",
+                        "visible": "UI.Interaction.Targets.Targets[0].HoldStatus == '' ? false : UI.Interaction.Targets.Targets[0].HoldStatus != 'Available'"
+                      } }
+                  ] },
+                { "id": "upgradable-badge", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "align": "right" },
+                  "bind": { "visible": "UI.Upgrade.Target.EntityId > 0 ? UI.Upgrade.Target.bHasUpgradeTool : false" },
+                  "children": [
+                    { "widget": "text", "style": "hud.upgrade.badge.glyph", "text": "^", "case": "None", "slot": { "valign": "center" } },
+                    { "widget": "text", "style": "hud.upgrade.badge", "text": "Upgradable", "slot": { "valign": "center" } }
+                  ] },
+                { "id": "action-divider", "widget": "panel", "style": "hud.rule", "height": 1, "slot": { "padding": [0, 6, 0, 6] },
+                  "bind": { "visible": "UI.Hud.Visibility[interaction].bHidden ? false : UI.Interaction.Targets.Targets.Num > 0" } },
+                { "id": "action-rows", "widget": "list", "style": "list", "selectable": false,
+                  "bind": { "items": "UI.BehaviorBar.Entries.Entries" },
+                  "template": { "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "padding": [0, 2, 0, 2] },
+                    "bind": { "visible": "item.bVisible ? item.StatusInt != 1 : false" },
+                    "children": [
+                      { "widget": "panel", "slot": { "fill": true } },
+                      { "widget": "text", "slot": { "valign": "center" },
+                        "bind": {
+                          "text": "item.DisplayName",
+                          "style": "item.StatusInt == 2 ? 'hud.action.cooldown' : (item.StatusInt == 3 ? 'hud.action.used' : 'hud.action.row')"
+                        } },
+                      { "widget": "text", "max_chars": 30, "slot": { "valign": "center" },
+                        "bind": {
+                          "text": "item.SubText",
+                          "visible": "item.SubText != ''",
+                          "style": "item.StatusInt == 3 ? 'hud.action.sub.used' : 'hud.action.sub'"
+                        } },
+                      { "widget": "panel", "layout": "overlay", "height": 29, "slot": { "valign": "center" },
+                        "children": [
+                          { "widget": "panel", "style": "hud.action.key", "layout": "overlay", "slot": { "anchor": "center" },
+                            "children": [
+                              { "widget": "text", "style": "hud.action.keytext", "justify": "Center", "case": "Upper",
+                                "bind": {
+                                  "text": "UI.Input.Mode.Changed.Mode == 'Gamepad' ? item.GamepadKeyText : item.KeyboardKeyText",
+                                  "visible": "UI.Input.Mode.Changed.Mode == 'Gamepad' ? true : item.KeyboardKeyText != 'Shift'"
+                                } },
+                              { "widget": "glyph", "glyph": "shift", "style": "hud.action.keyglyph", "size": 14, "shadow": false, "slot": { "anchor": "center" },
+                                "bind": { "visible": "UI.Input.Mode.Changed.Mode == 'Gamepad' ? false : item.KeyboardKeyText == 'Shift'" } }
+                            ] },
+                          { "widget": "progressring", "style": "hud.ring.cooldown", "size": 34, "slot": { "anchor": "center" },
+                            "bind": { "progress": "item.CooldownPercent", "visible": "item.CooldownPercent > 0 ? item.CooldownPercent < 1 : false" } }
+                        ] }
+                    ] } }
+              ] },
+            { "id": "progress-parked", "widget": "progressring", "style": "hud.ring.panel", "size": 26, "slot": { "anchor": "bottom-right", "offset": [-9, 15] },
+              "bind": {
+                "visible": "UI.CircularProgress.State.bActive ? UI.CircularProgress.State.Total > 0 : false",
+                "progress": "UI.CircularProgress.State.Elapsed / UI.CircularProgress.State.Total",
+                "colour": "UI.CircularProgress.State.Color == '' ? '#ffffff' : UI.CircularProgress.State.Color"
+              } }
+          ] }
+      ]
+    }
+  }
+}

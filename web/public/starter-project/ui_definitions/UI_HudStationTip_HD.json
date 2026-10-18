@@ -1,0 +1,29 @@
+{
+  "id": "UI_HudStationTip_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 5,
+    "uses": [ "UI.StationTip.State" ],
+    "tree": {
+      "id": "station-tip-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "children": [
+        { "id": "station-tip", "widget": "worldmarker", "use_screen_fraction": true,
+          "slot": { "anchor": "top-left" },
+          "bind": {
+            "visible": "UI.StationTip.State.bActive",
+            "screen_fraction": "\"{UI.StationTip.State.X},{UI.StationTip.State.Y}\"",
+            "offset": "'0,-14'",
+            "pivot": "'0.5,1'"
+          },
+          "children": [
+            { "id": "station-tip-chip", "widget": "panel", "layout": "horizontal", "style": "hud.station.tip",
+              "children": [
+                { "id": "station-tip-text", "widget": "text", "style": "hud.station.tip",
+                  "bind": { "text": "UI.StationTip.State.Text", "colour": "UI.StationTip.State.Status == 'burning' ? '#ffd9d4' : '#f4ecdc'" } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

@@ -1,12 +1,9 @@
 {
   "id": "FD_SawBench_PS",
   "asset_path": "/Game/Furniture/CraftingBenches/SawBench/Construction/FD_SawBench_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_SawBenchRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
@@ -28,7 +25,7 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 600,
-    "destructible_collection": "/Game/Fab/ScienceLab/Meshes/GeometryCollections/GCS_ReceptionDesk01.GCS_ReceptionDesk01",
+    "destructible_collection": "",
     "loot_dropped_on_death": [
       "LD_CraftingBenchTierOneLoot"
     ],
@@ -36,9 +33,9 @@
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": -50.4029,
-          "y": -0.0003,
-          "z": 77.0444
+          "x": 0.0,
+          "y": 0.0,
+          "z": 78.0
         },
         "rotation": {
           "pitch": 0,
@@ -46,18 +43,18 @@
           "roll": 0
         },
         "box_size": {
-          "x": 29.8142,
-          "y": 73.9502,
-          "z": 38.5092
+          "x": 70.0,
+          "y": 44.0,
+          "z": 26.0
         }
       }
     ],
     "support_collision_boxes": [
       {
         "offset": {
-          "x": -50.4029,
-          "y": -0.0003,
-          "z": 65.0933
+          "x": 0.0,
+          "y": 0.0,
+          "z": 50.0
         },
         "rotation": {
           "pitch": 0,
@@ -65,13 +62,12 @@
           "roll": 0
         },
         "box_size": {
-          "x": 51.4038,
-          "y": 127.5003,
-          "z": 66.3952
+          "x": 74.0,
+          "y": 48.0,
+          "z": 100.0
         }
       }
     ],
-    "upgrade_recipe": "RD_SawBenchTier2_CN",
     "building_base": {
       "rotation": {
         "x": 0,
@@ -80,7 +76,7 @@
         "w": 1
       },
       "translation": {
-        "x": 0,
+        "x": 50.41,
         "y": 0,
         "z": 0
       },
@@ -92,12 +88,12 @@
     },
     "is_draggable": true,
     "display_name": "Saw Bench",
-    "description": "A powered saw bench that mills logs and scrap into planks, boards, and shaped timber over time.",
+    "description": "A powered saw bench. Hold a splintered board against the blade and it takes the ruined edge off, leaving a clean sawn plank.",
     "level": 1,
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Fab/ScienceLab/Meshes/Furniture/SM_ReceptionDesk01.SM_ReceptionDesk01",
+    "static_mesh": "/Game/Furniture/CraftingBenches/SawBench/Meshes/SM_TableSaw.SM_TableSaw",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -113,7 +109,7 @@
             "w": -0.8696
           },
           "translation": {
-            "x": -69.76,
+            "x": -19.35,
             "y": 119.0,
             "z": 119.27
           },
@@ -134,7 +130,7 @@
             "w": 0.9293
           },
           "translation": {
-            "x": -69.76,
+            "x": -19.35,
             "y": -119.0,
             "z": 119.27
           },
@@ -155,7 +151,7 @@
             "w": -0.1844
           },
           "translation": {
-            "x": -8.82,
+            "x": 41.59,
             "y": 119.0,
             "z": 87.25
           },
@@ -183,6 +179,75 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "constructable_item_to_grant": "ID_SawBench_CI"
+    "constructable_item_to_grant": "ID_SawBench_CI",
+    "contents_always_visible": true,
+    "compartments": [
+      {
+        "id": "bed",
+        "layout": "Grid",
+        "width": 2,
+        "height": 3,
+        "accepts": [
+          "wood"
+        ],
+        "presentation": "flat",
+        "surface": {
+          "offset": {
+            "x": 19.0,
+            "y": 10.4,
+            "z": 90.2
+          },
+          "yaw": 0.0,
+          "width": 20.0,
+          "depth": 34,
+          "camera_distance": 220.0,
+          "camera_pitch": -52.0
+        }
+      },
+      {
+        "id": "outfeed",
+        "layout": "Grid",
+        "width": 2,
+        "height": 3,
+        "accepts": [
+          "wood"
+        ],
+        "presentation": "flat",
+        "take_only": true,
+        "visible_when_empty": false,
+        "surface": {
+          "offset": {
+            "x": -19.0,
+            "y": 10.4,
+            "z": 90.2
+          },
+          "yaw": 0.0,
+          "width": 20.0,
+          "depth": 34
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.SawBench",
+      "input": "bed",
+      "output": "outfeed",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Attended"
+      },
+      "feedback": {
+        "vibrate": {
+          "amplitude": 0.3,
+          "hz": 18.0
+        },
+        "action_label": "Saw",
+        "anim": "/Game/Furniture/CraftingBenches/SawBench/Meshes/A_TableSaw_Run.A_TableSaw_Run",
+        "anim_mesh": "/Game/Furniture/CraftingBenches/SawBench/Meshes/SKM_TableSaw.SKM_TableSaw",
+        "working_sound": "toggled_on_audio"
+      }
+    },
+    "gameplay_event_tag": "UI.GameScreen.Inventory"
   }
 }

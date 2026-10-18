@@ -1,20 +1,17 @@
 {
   "id": "FD_BossSummoner_BoneHead_DF",
   "asset_path": "/Game/Furniture/BossSummoner/FD_BossSummoner_BoneHead_DF",
-  "class": "UBossSummonerDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "destructible_collection": "/Game/Furniture/ScientificDevices/GeometryCollections/GCS_GlassContainment.GCS_GlassContainment",
-    "display_name": "Bone Altar",
-    "boss_summon_recipe_definition": "RD_SummonBoneHead_BS",
-    "gameplay_event_tag": "UI.GameScreen.BossSummoner",
+    "display_name": "Payphone",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Summon",
     "level": 1,
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/ScientificDevices/Meshes/SM_GlassContainment.SM_GlassContainment",
+    "static_mesh": "/Game/Suburban_Household/VOL20_Vending/Meshes/LP/SM_Payphone_01a.SM_Payphone_01a",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -23,6 +20,56 @@
     "loot_positions": [],
     "weighted_chance": 1000,
     "world_gen_priority": 1000,
-    "gameplay_tags": []
+    "gameplay_tags": [],
+    "compartments": [
+      {
+        "id": "altar",
+        "layout": "Grid",
+        "width": 4,
+        "height": 3,
+        "accepts": [
+          "cold",
+          "general"
+        ],
+        "surface": {
+          "offset": {
+            "x": 0.0,
+            "y": 3.0,
+            "z": 71.5
+          },
+          "yaw": 90.0,
+          "width": 28.0,
+          "depth": 24.0
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.BossSummoner.BoneHead",
+      "input": "altar",
+      "output_type": "Event",
+      "output_event": "Station.Event.SummonBoss",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "action_label": "Summon"
+      }
+    },
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "container_view": {
+      "location": {
+        "x": 0.0,
+        "y": 75.0,
+        "z": 130.0
+      },
+      "rotation": {
+        "pitch": -40.0,
+        "yaw": -90.0,
+        "roll": 0
+      }
+    }
   }
 }

@@ -48,6 +48,62 @@ export interface PackOptions {
   modId?: string;
   displayName?: string;
   version?: string;
+  /** Capabilities the mod declares. The game's vocabulary is closed
+   *  (`FScpModDiscovery::ReadModMetadata`): `gameplay`, `ui`, `rules`,
+   *  `cheats`, `console`, `network` (reserved). An unknown name is a hard
+   *  parse error in game, so the packer refuses it too. */
+  capabilities?: string[];
+  /** Lua entry points, relative to the mod root and under `scripts/`:
+   *  `rules` runs in the host-only rules VM, `ui` in the per-machine UI VM.
+   *  Both-or-neither with the capabilities: a `rules` entry needs `gameplay`
+   *  or `rules`, those capabilities need a `rules` entry, and a `ui` entry
+   *  needs `ui`. */
+  scripts?: { rules?: string; ui?: string };
+  /** Files shipped beside the definition records — Lua scripts, icons under
+   *  `icons/`, fonts under `fonts/` — at their mod-relative path. */
+  extraFiles?: ZipEntry[];
+}
+
+export const KNOWN_CAPABILITIES = ['gameplay', 'ui', 'rules', 'cheats', 'console', 'network'] as const;
+
+/** Mirror of the manifest rules `FScpModDiscovery::ReadModMetadata` enforces,
+ *  so a mod the game would reject never gets packed. Returns the normalised
+ *  `capabilities` / `scripts` blocks to write, or nothing when the mod
+ *  declares neither. Throws with the game's own wording on a bad manifest. */
+export function validateManifestScripting(opts: Pick<PackOptions, 'capabilities' | 'scripts'>): {
+  capabilities?: string[];
+  scripts?: { rules?: string; ui?: string };
+} {
+  const capabilities = Array.from(new Set(opts.capabilities ?? []));
+  for (const c of capabilities) {
+    if (!(KNOWN_CAPABILITIES as readonly string[]).includes(c)) {
+      throw new Error(`unknown capability '${c}' (known: ${KNOWN_CAPABILITIES.join(', ')})`);
+    }
+  }
+  const scripts: { rules?: string; ui?: string } = {};
+  for (const side of ['rules', 'ui'] as const) {
+    const entry = opts.scripts?.[side];
+    if (entry == null) continue;
+    const normalised = entry.replace(/\\/g, '/');
+    if (!normalised || !normalised.startsWith('scripts/') || normalised.includes('..')) {
+      throw new Error(`'scripts.${side}' entry '${entry}' must be a relative path under scripts/`);
+    }
+    scripts[side] = normalised;
+  }
+  const rulesCapability = capabilities.includes('gameplay') || capabilities.includes('rules');
+  if (scripts.rules && !rulesCapability) {
+    throw new Error('a rules script requires the "gameplay" or "rules" capability');
+  }
+  if (rulesCapability && !scripts.rules) {
+    throw new Error('the "gameplay" and "rules" capabilities require a rules \'scripts\' entry');
+  }
+  if (scripts.ui && !capabilities.includes('ui')) {
+    throw new Error('a ui script requires the "ui" capability');
+  }
+  const out: { capabilities?: string[]; scripts?: { rules?: string; ui?: string } } = {};
+  if (capabilities.length) out.capabilities = capabilities;
+  if (scripts.rules || scripts.ui) out.scripts = scripts;
+  return out;
 }
 
 /** Slug that satisfies the game's ScpMod::IsSafeModId (lowercase alphanumerics,
@@ -110,8 +166,19 @@ export async function buildDeltaZip(
   if (opts.displayName) identity.displayName = opts.displayName;
   if (opts.version) identity.version = opts.version;
 
+  // Scripts, icons and fonts ride along at their mod-relative paths. They
+  // are not records, so they never take part in the starter diff.
+  for (const extra of opts.extraFiles ?? []) {
+    const path = extra.path.replace(/\\/g, '/').replace(/^\/+/, '');
+    if (!path || path === 'mod.json' || path.includes('..')) {
+      throw new Error(`extra file path '${extra.path}' is not a valid mod-relative path`);
+    }
+    entries.push({ path, data: extra.data });
+  }
+
   const manifest = {
     ...identity,
+    ...validateManifestScripting(opts),
     schema_version: 1,
     generated_by: 'tsic-definition-editor',
     generated_at: new Date().toISOString(),

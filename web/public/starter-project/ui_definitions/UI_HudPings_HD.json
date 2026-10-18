@@ -1,0 +1,30 @@
+{
+  "id": "UI_HudPings_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 6,
+    "uses": [ "UI.Hud.Visibility", "UI.Ping.Set" ],
+    "tree": {
+      "id": "pings-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[ping].bHidden ? false : !UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "ping-markers", "widget": "list", "style": "hud.overlay.rows", "selectable": false, "overlay_rows": true,
+          "bind": { "items": "UI.Ping.Set.Pings" },
+          "template": { "id": "ping-marker", "widget": "worldmarker", "clamp_to_screen": true, "stack": true,
+            "bind": { "world_location": "\"{item.Location.X},{item.Location.Y},{item.Location.Z}\"", "pivot": "'0.5,1'" },
+            "children": [
+              { "widget": "panel", "layout": "vertical", "style": "hud.ping.marker", "gap": 1,
+                "children": [
+                  { "widget": "text", "style": "hud.ping.marker", "justify": "Center",
+                    "bind": {
+                      "text": "item.PingType",
+                      "colour": "item.PingType == 'Hostile' ? '#ff5a5a' : (item.PingType == 'Enemy' ? '#ff5a5a' : (item.PingType == 'Loot' ? '#3ddc97' : (item.PingType == 'Food' ? '#3ddc97' : (item.PingType == 'Move' ? '#4ea1ff' : (item.PingType == 'Water' ? '#4ea1ff' : (item.PingType == 'Danger' ? '#ffc63f' : (item.PingType == 'Defend' ? '#ffc63f' : '#ffffff')))))))"
+                    } },
+                  { "widget": "text", "style": "hud.ping.owner", "justify": "Center", "bind": { "text": "item.OwnerId", "visible": "item.OwnerId != ''" } }
+                ] }
+            ] } }
+      ]
+    }
+  }
+}

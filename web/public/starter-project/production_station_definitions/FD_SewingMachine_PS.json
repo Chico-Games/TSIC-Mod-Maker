@@ -1,17 +1,15 @@
 {
   "id": "FD_SewingMachine_PS",
   "asset_path": "/Game/Furniture/Processing/SewingMachine/Furniture/FD_SewingMachine_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
-    "interaction_prompt_text": "Use",
+    "interaction_prompt_text": "Sew",
     "has_static_audio": false,
     "has_toggled_on_audio": true,
     "toggled_on_audio": {
-      "sound": "Furniture.Loop.Machine",
+      "sound": "Furniture.Loop.Sewing",
       "volume_multiplier": 0.35,
       "b_looping": true,
       "b_attach_to_entity": true,
@@ -33,9 +31,9 @@
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": 0.718,
-          "y": -24.1419,
-          "z": 28.8705
+          "x": -0.002,
+          "y": -0.0019,
+          "z": 29.6205
         },
         "rotation": {
           "pitch": 0,
@@ -52,9 +50,9 @@
     "support_collision_boxes": [
       {
         "offset": {
-          "x": 0.718,
-          "y": -24.1419,
-          "z": 28.2782
+          "x": -0.002,
+          "y": -0.0019,
+          "z": 29.0282
         },
         "rotation": {
           "pitch": 0,
@@ -76,9 +74,9 @@
         "w": 1
       },
       "translation": {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "x": -0.72,
+        "y": 24.14,
+        "z": 0.75
       },
       "scale3_d": {
         "x": 1,
@@ -86,10 +84,9 @@
         "z": 1
       }
     },
-    "upgrade_recipe": "RD_SewingMachine_CN",
     "is_draggable": true,
     "display_name": "Sewing Machine",
-    "description": "A sturdy sewing machine for processing fabric. Turns scrap fabric into processed fabric suitable for clothing and equipment.",
+    "description": "A sturdy sewing machine for processing fabric. Turns frayed fabric into hemmed fabric suitable for clothing and equipment.",
     "level": 1,
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
@@ -116,7 +113,7 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "available_recipe_rules_definition": "ARR_SewingMachineRecipes",
+    "open_sound": "Station.Sewing.Open",
     "toggled_off_audio": {
       "sound": "Station.Machine.Cycle",
       "volume_multiplier": 0.45,
@@ -126,6 +123,74 @@
       "attenuation_distance": 700.0,
       "fade_in_time": 0.0,
       "fade_out_time": 0.0
+    },
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "compartments": [
+      {
+        "id": "bed",
+        "layout": "Grid",
+        "width": 2,
+        "height": 2,
+        "accepts": [
+          "fabric"
+        ],
+        "presentation": "flat",
+        "surface": {
+          "offset": {
+            "x": 9.0,
+            "y": 4.4,
+            "z": 18.8
+          },
+          "yaw": 0.0,
+          "width": 22.0,
+          "depth": 16,
+          "camera_distance": 200.0,
+          "camera_pitch": -50.0
+        }
+      },
+      {
+        "id": "outfeed",
+        "layout": "Grid",
+        "width": 2,
+        "height": 2,
+        "accepts": [
+          "fabric"
+        ],
+        "presentation": "flat",
+        "take_only": true,
+        "visible_when_empty": false,
+        "surface": {
+          "offset": {
+            "x": -9.0,
+            "y": 4.4,
+            "z": 18.8
+          },
+          "yaw": 0.0,
+          "width": 22.0,
+          "depth": 16
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.SewingMachine",
+      "input": "bed",
+      "output": "outfeed",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Attended"
+      },
+      "feedback": {
+        "vibrate": {
+          "amplitude": 0.15,
+          "hz": 18.0
+        },
+        "action_label": "Sew",
+        "anim": "/Game/Furniture/SewingMachine/Animations/A_SewingRunFast.A_SewingRunFast",
+        "anim_mesh": "/Game/Furniture/SewingMachine/Meshes/SKM_SewingMachine.SKM_SewingMachine",
+        "working_sound": "toggled_on_audio"
+      }
     }
   }
 }

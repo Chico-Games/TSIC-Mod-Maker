@@ -1,0 +1,312 @@
+{
+  "id": "UI_Gallery_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Gallery",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.Pause.Resume",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Close" } ],
+    "tree": {
+      "id": "gallery", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "children": [
+        { "widget": "panel", "layout": "scroll", "style": "panel.gallery", "gap": 26,
+          "children": [
+            { "widget": "panel", "layout": "horizontal", "style": "panel.gallery.head", "gap": 12,
+              "children": [
+                { "widget": "text", "style": "text.gallery.title", "text": "All Elements" },
+                { "widget": "text", "style": "text.gallery.note", "text": "16 widgets in 9 sections", "slot": { "valign": "bottom" } }
+              ] },
+
+            { "id": "sec-buttons", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Buttons" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "button.primary / secondary / danger / ghost - variants, sizes, states" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "variants" } ] },
+                        { "widget": "panel", "layout": "horizontal", "wrap": true, "style": "panel.gallery.paper", "gap": 22,
+                          "children": [
+                            { "id": "btn-primary", "widget": "button", "style": "button.primary", "label": "Primary", "focus": "initial", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.secondary", "label": "Secondary", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.pink", "label": "Pink", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.ghost", "label": "Ghost", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.primary", "label": "Disabled", "disabled": true, "slot": { "valign": "center" } }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "sizes and states" } ] },
+                        { "widget": "panel", "layout": "horizontal", "wrap": true, "style": "panel.gallery.paper", "gap": 22,
+                          "children": [
+                            { "widget": "button", "style": "button.sm", "label": "Small", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.primary", "label": "Default", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.lg", "label": "Large", "slot": { "valign": "center" } },
+                            { "widget": "button", "style": "button.primary", "label": "Hovered", "preview_highlighted": true, "slot": { "valign": "center" } }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-inputs", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Text Inputs" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "input - placeholder, filled, focused, multi-line" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "paper" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper", "gap": 18,
+                          "children": [
+                            { "widget": "textfield", "placeholder": "Placeholder...", "min_width": 260 },
+                            { "widget": "textfield", "text": "Filled value", "min_width": 260 },
+                            { "widget": "textfield", "text": "Focused", "preview_focused": true, "min_width": 260 },
+                            { "widget": "textfield", "placeholder": "Password", "password": true, "min_width": 260 }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "multi-line" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper",
+                          "children": [
+                            { "widget": "textfield", "placeholder": "Describe what happened...", "multi_line": true, "rows": 4, "min_width": 320 }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-dropdown", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Dropdown" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "dropdown - closed, open, disabled (click to open)" },
+                { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card",
+                  "children": [
+                    { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "select" } ] },
+                    { "widget": "panel", "layout": "horizontal", "wrap": true, "style": "panel.gallery.paper", "gap": 22,
+                      "children": [
+                        { "widget": "dropdown", "options": [ "Option A", "Option B", "Option C" ], "selected_index": 1, "min_width": 200, "slot": { "valign": "center" } },
+                        { "widget": "dropdown", "options": [ "Epic", "High", "Medium", "Low" ], "selected_index": 0, "min_width": 140, "preview_open": true, "slot": { "valign": "center" } },
+                        { "widget": "dropdown", "options": [ "Locked" ], "selected_index": 0, "min_width": 140, "disabled": true, "slot": { "valign": "center" } }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-sliders", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Sliders and Toggles" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "slider on paper and dark; toggle on, off, disabled" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "paper" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper", "gap": 18,
+                          "children": [
+                            { "widget": "slider", "value": 35, "min": 0, "max": 100, "step": 1, "value_format": "{0}%", "track_width": 220 },
+                            { "widget": "slider", "value": 70, "min": 0, "max": 100, "step": 1, "value_format": "{0}%", "track_width": 220 },
+                            { "widget": "panel", "layout": "horizontal", "gap": 20,
+                              "children": [
+                                { "widget": "toggle", "is_on": true },
+                                { "widget": "toggle", "is_on": false },
+                                { "widget": "toggle", "is_on": true, "disabled": true }
+                              ] }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "dark" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.dark", "gap": 18,
+                          "children": [
+                            { "widget": "slider", "style": "slider.dark", "value": 50, "min": 0, "max": 100, "step": 1, "value_format": "{0}%", "value_style": "text.hud.dim", "track_width": 220 },
+                            { "widget": "slider", "style": "slider.dark", "value": 85, "min": 0, "max": 100, "step": 1, "value_format": "{0}%", "value_style": "text.hud.dim", "track_width": 220 }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-rows", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Row Buttons and List Rows" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "button.row - menu rows; list.row - rows inside a pane" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "rows" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper",
+                          "children": [
+                            { "widget": "button", "style": "button.row", "label": "Continue", "dept": "Dept. 01", "page": "PG. 01", "first_in_group": true },
+                            { "widget": "button", "style": "button.row", "label": "New Store", "dept": "Dept. 02", "page": "PG. 02", "preview_highlighted": true },
+                            { "widget": "button", "style": "button.row", "label": "Locked", "dept": "Dept. 07", "page": "PG. 07", "disabled": true }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "list pane" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper",
+                          "children": [
+                            { "widget": "panel", "layout": "vertical", "style": "panel.pane",
+                              "children": [
+                                { "id": "demo-list", "widget": "list", "selected_index": 1,
+                                  "items": [
+                                    { "label": "Cardboard Box 1", "right": "x3" },
+                                    { "label": "Cardboard Box 2", "right": "x6" },
+                                    { "label": "Cardboard Box 3", "right": "x9" },
+                                    { "label": "Cardboard Box 4", "right": "x12", "locked": true }
+                                  ] }
+                              ] },
+                            { "widget": "list", "empty_text": "No saves yet." }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-progress", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Progress Bars, Rings and Tabs" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "bar / bar.yellow / bar.ink; ring; tabbar" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "fills" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper", "gap": 18,
+                          "children": [
+                            { "widget": "progressbar", "style": "bar", "progress": 0.72, "width": 260 },
+                            { "widget": "progressbar", "style": "bar.yellow", "progress": 0.60, "width": 260 },
+                            { "widget": "progressbar", "style": "bar.ink", "progress": 0.40, "width": 260 },
+                            { "widget": "panel", "layout": "horizontal", "gap": 20,
+                              "children": [
+                                { "widget": "progressring", "progress": 0.25, "size": 48 },
+                                { "widget": "progressring", "progress": 0.75, "size": 48, "centre_text": "75" },
+                                { "widget": "progressring", "style": "ring.cook", "progress": 0.5, "size": 64 }
+                              ] }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "tabs and action bar" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper", "gap": 18,
+                          "children": [
+                            { "id": "demo-tabs", "widget": "tabbar", "tabs": [ "Video", "Audio", "Controls", "Gameplay" ], "selected_index": 1 },
+                            { "widget": "actionbar", "style": "actionbar.menu", "actions": [ { "action": "Enter", "label": "Select" }, { "action": "Escape", "label": "Back" } ] }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-panels", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Panels and Masthead" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "panel.page on a stage; the magazine cover header" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "panel" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.stage", "center_content": true,
+                          "children": [
+                            { "widget": "panel", "layout": "vertical", "style": "panel.page",
+                              "children": [ { "widget": "text", "style": "text.body", "text": "Paper panel" } ] }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "masthead" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper",
+                          "children": [
+                            { "widget": "panel", "layout": "horizontal",
+                              "children": [
+                                { "widget": "panel", "layout": "vertical", "slot": { "fill": true, "valign": "bottom" },
+                                  "children": [
+                                    { "widget": "text", "style": "text.kicker", "text": "Open a new", "italic": true },
+                                    { "widget": "text", "style": "text.masthead", "text": "Store.", "line_height": 0.9 }
+                                  ] },
+                                { "widget": "panel", "layout": "vertical", "gap": 4, "slot": { "valign": "top", "padding": [0, 0, 0, 16] },
+                                  "children": [
+                                    { "widget": "text", "style": "chip.issue", "text": "New Issue", "slot": { "align": "right" } },
+                                    { "widget": "text", "style": "text.meta", "text": "$5.99", "slot": { "align": "right" } },
+                                    { "widget": "text", "style": "text.date", "text": "Vol. 01 - 2026", "case": "Upper", "slot": { "align": "right" } }
+                                  ] }
+                              ] },
+                            { "widget": "panel", "style": "rule.panel", "slot": { "height": 4, "padding": [8, 0, 0, 0] } }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-decorations", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "Decorations" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "badges, stickers, corner labels, slots, type roles, the empty state" },
+                { "widget": "panel", "layout": "grid", "columns": 2,
+                  "children": [
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 14, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "ink on paper" } ] },
+                        { "widget": "panel", "layout": "horizontal", "wrap": true, "style": "panel.gallery.paper", "gap": 20,
+                          "children": [
+                            { "widget": "panel", "style": "chip.badge", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "text.badge", "text": "Badge" } ] },
+                            { "widget": "panel", "style": "chip.badge.accent", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "text.badge", "text": "You" } ] },
+                            { "widget": "panel", "style": "chip.sticker", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "chip.sticker", "text": "Sticker" } ] },
+                            { "widget": "panel", "style": "chip.corner", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "chip.corner", "text": "Corner" } ] },
+                            { "widget": "panel", "layout": "overlay", "style": "slot", "slot": { "valign": "center", "width": 56, "height": 56 },
+                              "children": [ { "widget": "panel", "style": "chip.count", "slot": { "align": "right", "valign": "bottom", "padding": [0, 4, 2, 0] }, "children": [ { "widget": "text", "style": "text.count", "text": "12" } ] } ] },
+                            { "widget": "panel", "layout": "overlay", "style": "slot.selected", "slot": { "valign": "center", "width": 56, "height": 56 },
+                              "children": [ { "widget": "panel", "style": "chip.count", "slot": { "align": "right", "valign": "bottom", "padding": [0, 4, 2, 0] }, "children": [ { "widget": "text", "style": "text.count", "text": "3" } ] } ] }
+                          ] }
+                      ] },
+                    { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card", "slot": { "padding": [0, 0, 14, 0] },
+                      "children": [
+                        { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "type roles" } ] },
+                        { "widget": "panel", "layout": "vertical", "style": "panel.gallery.paper", "gap": 8,
+                          "children": [
+                            { "widget": "text", "style": "text.title", "text": "Section Title" },
+                            { "widget": "text", "style": "text.title.sm", "text": "Small Title" },
+                            { "widget": "text", "style": "text.eyebrow", "text": "Recipes" },
+                            { "widget": "text", "style": "text.meta", "text": "128 / 240 kg" },
+                            { "widget": "text", "style": "text.body", "text": "Real sentences live in the body face, and only here.", "wrap": true },
+                            { "widget": "text", "style": "text.group", "text": "Group header" },
+                            { "widget": "text", "style": "text.empty", "text": "No saves yet.", "justify": "Center" }
+                          ] }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "sec-dark", "widget": "panel", "layout": "vertical", "style": "panel.gallery.section", "slot": { "width": 860, "align": "left" }, "gap": 10,
+              "children": [
+                { "widget": "text", "style": "text.gallery.heading", "text": "On Dark" },
+                { "widget": "panel", "style": "panel.gallery.rule", "slot": { "height": 1 } },
+                { "widget": "text", "style": "text.gallery.note", "text": "HUD type, dark chip, byline, toasts, a fade" },
+                { "widget": "panel", "layout": "vertical", "style": "panel.gallery.card",
+                  "children": [
+                    { "widget": "panel", "style": "panel.gallery.label", "children": [ { "widget": "text", "style": "text.gallery.label", "text": "on dark" } ] },
+                    { "widget": "panel", "layout": "horizontal", "wrap": true, "style": "panel.gallery.dark", "gap": 20,
+                      "children": [
+                        { "widget": "panel", "style": "chip.dark", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "chip.dark", "text": "Dark chip" } ] },
+                        { "widget": "text", "style": "text.byline", "text": "by - the - staff", "slot": { "valign": "center" } },
+                        { "widget": "text", "style": "text.hud", "text": "HUD text", "slot": { "valign": "center" } },
+                        { "widget": "text", "style": "text.hud.dim", "text": "HUD dim", "slot": { "valign": "center" } },
+                        { "widget": "progressbar", "style": "bar.health", "progress": 0.65, "width": 160, "slot": { "valign": "center" } },
+                        { "widget": "progressbar", "style": "bar.stamina", "progress": 0.3, "width": 160, "slot": { "valign": "center" } },
+                        { "id": "demo-toasts", "widget": "toaststack", "max_toasts": 3, "width": 260, "slot": { "valign": "center" } }
+                      ] }
+                  ] }
+              ] }
+          ] },
+        { "id": "gallery-fade", "widget": "fade", "mode": "In", "auto_play": true, "slot": { "align": "fill", "valign": "fill" } }
+      ]
+    }
+  }
+}

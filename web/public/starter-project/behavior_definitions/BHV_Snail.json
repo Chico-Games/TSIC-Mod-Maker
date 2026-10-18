@@ -1,0 +1,149 @@
+{
+  "id": "BHV_Snail",
+  "class": "ScpBehaviorDefinition",
+  "properties": {
+    "root_eval_interval": 0.2,
+    "roots": [
+      {
+        "name": "Combat",
+        "when": [
+          { "if": "has_target" },
+          { "if": "target_within", "distance": 450 }
+        ],
+        "hold_seconds": 1.5,
+        "nav_policy": "breach",
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_Engage",
+            "params": {
+              "Target": "$Perception.Target",
+              "Attack": "$Attack.Tag"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Chase",
+        "when": [
+          { "if": "has_target" },
+          { "if": "time_since_seen", "under": 600 }
+        ],
+        "hold_seconds": 1,
+        "fail_cooldown": 2,
+        "nav_policy": "breach",
+        "states": [
+          {
+            "name": "Pursue",
+            "initial": true,
+            "actions": [
+              {
+                "do": "move_to",
+                "target": "$Perception.TargetLocation",
+                "acceptance": 300,
+                "speed_profile": "walk",
+                "repath_if_moved": 150
+              }
+            ],
+            "transitions": [
+              {
+                "on": "event",
+                "event": "AI.Event.PathBlocked",
+                "to": "ClearPath",
+                "conditions": [
+                  { "if": "can_break_furniture", "entity": "$Path.BlockingEntity" }
+                ]
+              },
+              { "on": "actions_succeeded", "to": "Pursue" },
+              { "on": "action_failed", "to": "Pursue" }
+            ]
+          },
+          {
+            "name": "ClearPath",
+            "actions": [
+              {
+                "do": "run_skill",
+                "skill": "SKL_DestroyEntity",
+                "params": {
+                  "Entity": "$Path.BlockingEntity",
+                  "Ability": "AI.Snail.Attack.Crush"
+                }
+              }
+            ],
+            "transitions": [
+              { "on": "actions_succeeded", "to": "Pursue" },
+              { "on": "action_failed", "to": "Pursue" }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Search",
+        "when": [
+          { "if": "target_lost_within", "seconds": 600 }
+        ],
+        "actions": [
+          {
+            "do": "wander",
+            "origin": "$Perception.PointOfInterest",
+            "ring_min": 100,
+            "ring_max": 800,
+            "leg_seconds": 20,
+            "pause_seconds": 0.5,
+            "speed_profile": "walk"
+          }
+        ]
+      },
+      {
+        "name": "AttackNuisance",
+        "when": [
+          { "if": "has_nuisance", "min_damage": 5 }
+        ],
+        "nav_policy": "breach",
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_DestroyEntity",
+            "params": {
+              "Entity": "$Perception.Nuisance",
+              "Ability": "AI.Snail.Attack.Crush"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Investigate",
+        "when": [
+          { "if": "heard_noise_within", "seconds": 8 },
+          { "if": "suspicious", "at_least": 0.8 }
+        ],
+        "hold_seconds": 30,
+        "actions": [
+          {
+            "do": "run_skill",
+            "skill": "SKL_Investigate",
+            "params": { "Spot": "$Perception.PointOfInterest" }
+          }
+        ]
+      },
+      {
+        "name": "Patrol",
+        "states": [
+          {
+            "name": "Wander",
+            "initial": true,
+            "actions": [
+              {
+                "do": "wander",
+                "ring_min": 400,
+                "ring_max": 1500,
+                "speed_profile": "walk",
+                "origin": "$Perception.PatrolAnchor"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

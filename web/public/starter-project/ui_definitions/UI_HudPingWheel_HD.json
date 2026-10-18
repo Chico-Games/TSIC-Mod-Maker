@@ -1,0 +1,43 @@
+{
+  "id": "UI_HudPingWheel_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 40,
+    "uses": [ "UI.Hud.Visibility", "UI.Hud.Wheel" ],
+    "tree": {
+      "id": "ping-wheel-root", "widget": "panel", "layout": "overlay", "style": "hud.ping.scrim",
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : UI.Hud.Wheel[ping].bOpen" },
+      "children": [
+        { "id": "ping-wheel", "widget": "panel", "layout": "overlay", "style": "panel.flat", "width": 360, "height": 360, "slot": { "anchor": "center" },
+          "children": [
+            { "id": "ping-glass", "widget": "panel", "layout": "overlay", "style": "hud.ping.glass", "width": 340, "height": 340, "slot": { "anchor": "center" } },
+            { "id": "ping-sectors", "widget": "sectors", "style": "hud.ping.sectors", "count": 4, "outer_radius": 168, "inner_radius": 78, "gap_deg": 2.6, "start_deg": -90, "size": 360,
+              "colours": [ "#ff5a5a", "#3ddc97", "#4ea1ff", "#ffc63f" ], "slot": { "anchor": "center" },
+              "bind": { "selected": "UI.Hud.Wheel[ping].Selected" } },
+            { "id": "ping-items", "widget": "panel", "layout": "radial", "style": "panel.flat", "radius": 123, "slot": { "anchor": "center" },
+              "children": [
+                { "id": "ping-item-enemy", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 5, "slot": { "index": 0 }, "children": [
+                  { "widget": "image", "source": "mod:icons/ui/ping-enemy", "slot": { "align": "center" }, "bind": { "size": "'32,32'", "style": "UI.Hud.Wheel[ping].Selected == 0 ? 'hud.ping.icon.active' : 'hud.ping.icon.enemy'" } },
+                  { "widget": "text", "text": "ENEMY", "justify": "Center", "slot": { "align": "center" }, "bind": { "style": "UI.Hud.Wheel[ping].Selected == 0 ? 'hud.ping.label.active' : 'hud.ping.label'" } } ] },
+                { "id": "ping-item-loot", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 5, "slot": { "index": 1 }, "children": [
+                  { "widget": "image", "source": "mod:icons/ui/ping-loot", "slot": { "align": "center" }, "bind": { "size": "'32,32'", "style": "UI.Hud.Wheel[ping].Selected == 1 ? 'hud.ping.icon.active' : 'hud.ping.icon.loot'" } },
+                  { "widget": "text", "text": "LOOT", "justify": "Center", "slot": { "align": "center" }, "bind": { "style": "UI.Hud.Wheel[ping].Selected == 1 ? 'hud.ping.label.active' : 'hud.ping.label'" } } ] },
+                { "id": "ping-item-move", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 5, "slot": { "index": 2 }, "children": [
+                  { "widget": "image", "source": "mod:icons/ui/ping-move", "slot": { "align": "center" }, "bind": { "size": "'32,32'", "style": "UI.Hud.Wheel[ping].Selected == 2 ? 'hud.ping.icon.active' : 'hud.ping.icon.move'" } },
+                  { "widget": "text", "text": "MOVE", "justify": "Center", "slot": { "align": "center" }, "bind": { "style": "UI.Hud.Wheel[ping].Selected == 2 ? 'hud.ping.label.active' : 'hud.ping.label'" } } ] },
+                { "id": "ping-item-danger", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 5, "slot": { "index": 3 }, "children": [
+                  { "widget": "image", "source": "mod:icons/ui/ping-danger", "slot": { "align": "center" }, "bind": { "size": "'32,32'", "style": "UI.Hud.Wheel[ping].Selected == 3 ? 'hud.ping.icon.active' : 'hud.ping.icon.danger'" } },
+                  { "widget": "text", "text": "DANGER", "justify": "Center", "slot": { "align": "center" }, "bind": { "style": "UI.Hud.Wheel[ping].Selected == 3 ? 'hud.ping.label.active' : 'hud.ping.label'" } } ] }
+              ] },
+            { "id": "ping-hub", "widget": "panel", "layout": "overlay", "width": 132, "height": 132, "center_content": true, "slot": { "anchor": "center" },
+              "bind": { "style": "UI.Hud.Wheel[ping].Selected >= 0 ? 'hud.ping.hub.active' : 'hud.ping.hub'" },
+              "children": [
+                { "id": "ping-hub-label", "widget": "text", "justify": "Center", "slot": { "anchor": "center" },
+                  "bind": { "text": "UI.Hud.Wheel[ping].SelectedLabel", "style": "UI.Hud.Wheel[ping].Selected >= 0 ? 'hud.ping.hub.text.active' : 'hud.ping.hub.text'" } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

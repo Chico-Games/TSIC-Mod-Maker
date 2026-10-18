@@ -4,11 +4,11 @@
   "class": "UPlantRecipeDefinition",
   "schema_version": 2,
   "properties": {
-    "grow_stages": [
+    "growth_stages": [
       {
+        "at": 0,
         "mesh": "/Game/Fab/UltimateFarming/Meshes/SM_Beans_Starter.SM_Beans_Starter",
-        "ratio": 1.0,
-        "start_scale": {
+        "scale": {
           "x": 0.06,
           "y": 0.06,
           "z": 0.06
@@ -20,9 +20,9 @@
         }
       },
       {
+        "at": 0.5,
         "mesh": "/Game/Fab/UltimateFarming/Meshes/SM_Beans_A.SM_Beans_A",
-        "ratio": 1.0,
-        "start_scale": {
+        "scale": {
           "x": 0.114,
           "y": 0.114,
           "z": 0.114
@@ -33,6 +33,9 @@
           "z": 0.166
         }
       }
+    ],
+    "stations": [
+      "Station.Planter.T1"
     ],
     "recipe_tags": [],
     "input": [
@@ -55,7 +58,6 @@
         "value": 2
       }
     ],
-    "duration": 360.0,
-    "level": 2
+    "duration": 420
   }
 }

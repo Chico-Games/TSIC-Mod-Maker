@@ -1,0 +1,33 @@
+{
+  "id": "FD_VendingMachine_RunnerBeansSeeds",
+  "class": "UInteractableFurnitureDefinition",
+  "schema_version": 2,
+  "properties": {
+    "extends": "FD_VendingMachine_Base",
+    "display_name": "Runner Bean Seedling Vending Machine",
+    "static_mesh": "/Game/Fab/SUBURBS/VOL28_Vending/Meshes/NN/SM_Toy_Machines_NN_11a.SM_Toy_Machines_NN_11a",
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureType.VendingMachine",
+      "Tile.Difficulty.Hard",
+      "Tile.Difficulty.Nightmare",
+      "Tile.Difficulty.Apocalypse"
+    ],
+    "station": {
+      "recipe_tag": "Station.Vending.RunnerBeansSeeds",
+      "input": "coins",
+      "output": "tray",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "start_sound": "Container.Vending.Coin",
+        "craft_sound": "Shop.Buy",
+        "action_label": "Buy"
+      }
+    }
+  }
+}

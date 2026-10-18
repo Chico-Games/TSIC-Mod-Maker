@@ -160,3 +160,34 @@ test('whole-record round-trip is lossless', () => {
   const env = leanPropsToEnvelope(props, 'UItemDefinition', schema);
   assert.deepEqual(envelopePropsToLean(env, schema), props);
 });
+
+test('json kind: an opaque compiled value survives the round trip untouched', () => {
+  // UI screens, themes and AI2 definitions compile their own JSON; the schema
+  // marks those keys `json` and the editor must hand the bytes back verbatim.
+  const uiSchema: LeanSchema = {
+    classes: {
+      UScpUiScreenDefinition: {
+        parents: ['UScpDefinitionBase', 'UDataAsset', 'UObject'],
+        properties: {
+          screen: { kind: 'name' },
+          theme: { kind: 'definition_ref', class: 'ScpUiThemeDefinition' },
+          uses: { kind: 'array', element: { kind: 'string' } },
+          tree: { kind: 'json' },
+        },
+      },
+    },
+    structs: {},
+    enums: {},
+  };
+  const props = {
+    screen: 'PauseMenu',
+    theme: 'UI_Default_TH',
+    uses: ['UI.State.DevMode'],
+    tree: { id: 'root', widget: 'panel', children: [{ id: 'a', widget: 'text', text: 'hi', bind: { visible: 'x ? 1 : 0' } }] },
+  };
+  const env = leanPropsToEnvelope(props, 'UScpUiScreenDefinition', uiSchema);
+  assert.equal(env.tree.type, 'json');
+  assert.deepEqual(env.tree.value, props.tree);
+  assert.deepEqual(kindToSkeleton({ kind: 'json' }, uiSchema), { type: 'json' });
+  assert.deepEqual(envelopePropsToLean(env, uiSchema), props);
+});

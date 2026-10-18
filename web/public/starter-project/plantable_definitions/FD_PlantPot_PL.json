@@ -4,22 +4,65 @@
   "class": "UPlantableDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_PlantRecipesTier1",
-    "plant_slot_offsets": [
+    "compartments": [
       {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "id": "pot.1",
+        "layout": "Slot",
+        "max_count": 1,
+        "accepts": [
+          "seed"
+        ],
+        "strategy": "Grow",
+        "surface": {
+          "offset": {
+            "x": 0,
+            "y": 0,
+            "z": 11.5
+          },
+          "width": 20,
+          "depth": 20
+        }
+      },
+      {
+        "id": "pot.1.out",
+        "layout": "Grid",
+        "width": 3,
+        "height": 2,
+        "take_only": true,
+        "visible_when_empty": false,
+        "strategy": "Grow",
+        "surface": {
+          "offset": {
+            "x": 0,
+            "y": 0,
+            "z": 11.5
+          },
+          "width": 20,
+          "depth": 20
+        }
       }
     ],
-    "plant_root_offset": {
-      "x": 0,
-      "y": 0,
-      "z": 11.5
+    "station": {
+      "recipe_tag": "Station.Planter.T1",
+      "lanes": [
+        "pot.1"
+      ],
+      "lane_outputs": [
+        "pot.1.out"
+      ],
+      "trigger": {
+        "type": "On_Insert"
+      },
+      "work": {
+        "type": "Timed",
+        "offline": true
+      },
+      "feedback": {
+        "action_label": "Plant",
+        "start_sound": "Station.Plant",
+        "collect_sound": "Station.Harvest"
+      }
     },
-    "max_recipes": 1,
-    "entity_helper_class": "/Script/TSIC.ProductionHelper",
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "layer_name": "",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Plant in",
@@ -197,8 +240,8 @@
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": -3.234985612721175e-09,
-          "y": 3.865808650971303e-08,
+          "x": -3.234985612721175e-9,
+          "y": 3.865808650971303e-8,
           "z": 14.646452196328852
         },
         "rotation": {
@@ -216,8 +259,8 @@
     "support_collision_boxes": [
       {
         "offset": {
-          "x": 3.277830658288128e-08,
-          "y": -4.5728818065526866e-08,
+          "x": 3.277830658288128e-8,
+          "y": -4.5728818065526866e-8,
           "z": 1.3122071645411282
         },
         "rotation": {

@@ -1,10 +1,9 @@
 {
   "id": "FD_ArmorBenchTier1_CS",
   "asset_path": "/Game/Furniture/CraftingBenches/ArmorCrafting/Furniture/FD_ArmorBenchTier1_CS",
-  "class": "UCraftingStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "gameplay_event_tag": "UI.GameScreen.Crafting",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Craft at",
     "has_static_audio": false,
@@ -27,7 +26,7 @@
       {
         "offset": {
           "x": 0,
-          "y": 34.9759,
+          "y": -0.0241,
           "z": 110.6666
         },
         "rotation": {
@@ -46,7 +45,7 @@
       {
         "offset": {
           "x": 0,
-          "y": 34.9759,
+          "y": -0.0241,
           "z": 93.5
         },
         "rotation": {
@@ -70,7 +69,7 @@
       },
       "translation": {
         "x": 0.0,
-        "y": 0.0,
+        "y": -35.0,
         "z": 0.0
       },
       "scale3_d": {
@@ -79,7 +78,6 @@
         "z": 1.0
       }
     },
-    "upgrade_recipe": "RD_ArmorBenchTier2_CN",
     "is_draggable": true,
     "display_name": "Armor Crafting Bench",
     "description": "Basic armor crafting bench. Create light armor and basic protection gear.",
@@ -104,7 +102,7 @@
           },
           "translation": {
             "x": -27.7,
-            "y": 32.05,
+            "y": -2.95,
             "z": 83.01
           },
           "scale3_d": {
@@ -125,7 +123,7 @@
           },
           "translation": {
             "x": 22.59,
-            "y": 23.62,
+            "y": -11.38,
             "z": 83.01
           },
           "scale3_d": {
@@ -146,7 +144,7 @@
           },
           "translation": {
             "x": -13.95,
-            "y": 46.74,
+            "y": 11.74,
             "z": 83.01
           },
           "scale3_d": {
@@ -167,7 +165,7 @@
           },
           "translation": {
             "x": 12.34,
-            "y": 55.86,
+            "y": 20.86,
             "z": 83.01
           },
           "scale3_d": {
@@ -194,6 +192,76 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "available_recipe_rules_definition": "ARR_ArmorBenchTier1Recipes"
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "compartments": [
+      {
+        "id": "input",
+        "layout": "Grid",
+        "width": 8,
+        "height": 5,
+        "accepts": [
+          "fabric",
+          "fasteners",
+          "general"
+        ],
+        "surface": {
+          "offset": {
+            "x": -30.0,
+            "y": 4.0,
+            "z": 87.0
+          },
+          "yaw": 90.0,
+          "width": 96,
+          "depth": 60
+        }
+      },
+      {
+        "id": "output",
+        "layout": "Grid",
+        "width": 4,
+        "height": 5,
+        "accepts": [
+          "general"
+        ],
+        "take_only": true,
+        "visible_when_empty": false,
+        "surface": {
+          "offset": {
+            "x": 50.0,
+            "y": 4.0,
+            "z": 87.0
+          },
+          "yaw": 90.0,
+          "width": 56,
+          "depth": 60
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.ArmorBenchTier1",
+      "input": "input",
+      "output": "output",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "action_label": "Craft"
+      }
+    },
+    "container_view": {
+      "location": {
+        "x": -83.7,
+        "y": 343.9,
+        "z": 306.2
+      },
+      "rotation": {
+        "pitch": -31.8,
+        "yaw": -91.6,
+        "roll": 0
+      }
+    }
   }
 }

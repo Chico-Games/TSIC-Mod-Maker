@@ -34,18 +34,6 @@
       "conditions": [
        {
         "if": "has_attack"
-       },
-       {
-        "if": "var_compare",
-        "a": "$Attack.MinRange",
-        "b": 0,
-        "op": "gt"
-       },
-       {
-        "if": "distance",
-        "a": "$Self",
-        "b": "$In.Target",
-        "greater_than": "$Attack.MinRange"
        }
       ],
       "to": "Swing"

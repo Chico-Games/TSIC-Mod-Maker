@@ -1,0 +1,161 @@
+{
+  "id": "UI_Teleporter_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Teleporter",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Teleporter",
+    "cancel": "UI.Cmd.Pause.Resume",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Travel"
+      },
+      {
+        "action": "back",
+        "label": "Cancel"
+      }
+    ],
+    "uses": [
+      "UI.Teleporter.Destinations"
+    ],
+    "tree": {
+      "id": "scrim",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "screen.scrim",
+      "children": [
+        {
+          "id": "panel",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.page",
+          "gap": 12,
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 420
+          },
+          "children": [
+            {
+              "widget": "text",
+              "style": "text.title.sm",
+              "text": "Teleporter"
+            },
+            {
+              "id": "rename-row",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 8,
+              "focus": "group",
+              "children": [
+                {
+                  "id": "rename-input",
+                  "widget": "textfield",
+                  "placeholder": "Rename this teleporter…",
+                  "slot": {
+                    "fill": true,
+                    "valign": "center"
+                  }
+                },
+                {
+                  "id": "btn-rename",
+                  "widget": "button",
+                  "style": "button.sm",
+                  "label": "Rename",
+                  "slot": {
+                    "valign": "center"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Teleporter.Rename",
+                      "args": {
+                        "EntityId": 0,
+                        "NewName": "{#rename-input.value}"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "destinations",
+              "widget": "list",
+              "style": "list",
+              "selectable": false,
+              "max_height": 390,
+              "empty_text": "No destinations available.",
+              "bind": {
+                "items": "UI.Teleporter.Destinations.Destinations"
+              },
+              "template": {
+                "widget": "panel",
+                "layout": "vertical",
+                "slot": {
+                  "padding": [
+                    4,
+                    0
+                  ]
+                },
+                "children": [
+                  {
+                    "widget": "button",
+                    "style": "menu.button.tp",
+                    "fill_width": true,
+                    "justify": "Left",
+                    "bind": {
+                      "label": "item.Label != '' ? item.Label : \"Teleporter {item.EntityId}\"",
+                      "right": "item.Cooldown fmt:seconds",
+                      "disabled": "item.Cooldown > 0"
+                    },
+                    "on": {
+                      "click": [
+                        {
+                          "cmd": "UI.Cmd.Teleporter.Travel",
+                          "args": {
+                            "FromId": 0,
+                            "ToId": "{item.EntityId}"
+                          }
+                        },
+                        {
+                          "cmd": "UI.Cmd.Pause.Resume"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "actions",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 8,
+              "slot": {
+                "padding": [
+                  4,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "children": [
+                {
+                  "id": "btn-cancel",
+                  "widget": "button",
+                  "label": "Cancel",
+                  "focus": "initial",
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Pause.Resume"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

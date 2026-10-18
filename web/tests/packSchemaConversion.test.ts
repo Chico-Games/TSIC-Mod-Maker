@@ -56,12 +56,17 @@ test('HttpDataSource converts a lean record into typed envelopes', { skip }, asy
     assert.ok(isEnvelope(v), `property "${k}" should be a typed envelope, got ${JSON.stringify(v)}`);
   }
 
+  // The envelope carries the lean value verbatim. Compare against the record
+  // on disk rather than pinning pack prose: descriptions are regenerated
+  // (function half + flavour) and the test must not break on a copy change.
+  const lean = JSON.parse(readFileSync(join(PACK_DIR, 'constructable_item_definitions', 'ID_Aircon_CI.json'), 'utf8')).properties;
   // description is an FText UPROPERTY → 'text' envelope (string-like).
   assert.ok(['text', 'string', 'name'].includes(p.description.type));
-  assert.equal(p.description.value, 'Store furniture.');
+  assert.equal(p.description.value, lean.description);
   assert.equal(p.stackable.type, 'bool');
-  assert.equal(p.stackable.value, true);
+  assert.equal(p.stackable.value, lean.stackable);
   assert.equal(p.weight.type, 'float');
+  assert.equal(p.weight.value, lean.weight);
   // furniture_to_construct is a UObject/definition reference, not a raw string.
   assert.ok(['definition_ref', 'soft_asset_ref'].includes(p.furniture_to_construct.type));
   assert.equal(p.furniture_to_construct.value, 'FD_Aircon_DF');

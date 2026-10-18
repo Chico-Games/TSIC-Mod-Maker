@@ -1,0 +1,34 @@
+{
+  "id": "UI_HudDetection_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": -3,
+    "uses": [ "UI.Hud.Visibility", "UI.Detection.State" ],
+    "tree": {
+      "id": "detection-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[detection].bHidden ? false : !UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "detection-mist", "widget": "fade", "style": "hud.vignette.detection", "mode": "Hold", "shape": "Vignette", "vignette_depth": 0.14, "auto_play": false,
+          "bind": {
+            "visible": "UI.Detection.State.ScreenMist > 0.01",
+            "peak": "UI.Detection.State.ScreenMist"
+          } },
+        { "id": "detection-wedges", "widget": "list", "style": "hud.overlay.rows", "selectable": false, "overlay_rows": true,
+          "bind": { "items": "UI.Detection.State.Enemies" },
+          "template": { "id": "detection-wedge", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+            "bind": { "visible": "item.DetectionScore > 0.02" },
+            "children": [
+              { "widget": "fade", "style": "hud.vignette.detection", "mode": "Hold", "shape": "Vignette", "vignette_depth": 0.3, "auto_play": false,
+                "bind": {
+                  "peak": "item.DetectionScore",
+                  "vignette_depth": "0.12 + item.DetectionScore * 0.25",
+                  "direction": "item.BearingDeg < 45 ? 'Top' : (item.BearingDeg < 135 ? 'Right' : (item.BearingDeg < 225 ? 'Bottom' : (item.BearingDeg < 315 ? 'Left' : 'Top')))"
+                } },
+              { "id": "detection-claw", "widget": "claw", "style": "hud.detection.claw", "source": "mod:icons/ui/detection-claw", "slot": { "anchor": "fill" },
+                "bind": { "bearing_deg": "item.BearingDeg", "score": "item.DetectionScore" } }
+            ] } }
+      ]
+    }
+  }
+}

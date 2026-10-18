@@ -122,3 +122,53 @@ test('packer: identity is omitted, not faked, when the project is unbound', asyn
   assert.equal('id' in manifest, false);
   assert.equal('version' in manifest, false);
 });
+
+test('packer: capabilities, scripts and extra files reach the archive the way the game reads them', async () => {
+  // FScpModDiscovery::ReadModMetadata reads `capabilities` (closed vocabulary)
+  // and `scripts` ({rules, ui}, paths under scripts/) out of mod.json, and the
+  // Lua file itself has to sit at that path inside the mod.
+  const records: DefinitionRecord[] = [rec('items', 'C', { id: 'C', val: 3 })];
+  const lua = new TextEncoder().encode('tsic.log.info("hi")');
+  const out = await buildDeltaZip(records, new Map(), {
+    editorVersion: '0.0.0',
+    baseSource: 'default-project',
+    modId: 'com.test.scripting',
+    version: '0.2.0',
+    capabilities: ['gameplay', 'gameplay'],
+    scripts: { rules: 'scripts/main.lua' },
+    extraFiles: [{ path: 'scripts/main.lua', data: lua }],
+  });
+  const entries = await readZipAsync(await out.blob.arrayBuffer());
+  const paths = entries!.map((e) => e.path).sort();
+  assert.deepEqual(paths, ['items/C.json', 'mod.json', 'scripts/main.lua']);
+  const manifest = JSON.parse(new TextDecoder().decode(entries!.find((e) => e.path === 'mod.json')!.data));
+  assert.deepEqual(manifest.capabilities, ['gameplay']);
+  assert.deepEqual(manifest.scripts, { rules: 'scripts/main.lua' });
+  assert.equal(new TextDecoder().decode(entries!.find((e) => e.path === 'scripts/main.lua')!.data), 'tsic.log.info("hi")');
+});
+
+test('packer: a content-only mod writes neither capabilities nor scripts', async () => {
+  const records: DefinitionRecord[] = [rec('items', 'C', { id: 'C', val: 3 })];
+  const out = await buildDeltaZip(records, new Map(), { editorVersion: '0.0.0', baseSource: 'default-project' });
+  const manifest = JSON.parse(out.manifestJson);
+  assert.equal('capabilities' in manifest, false);
+  assert.equal('scripts' in manifest, false);
+});
+
+test('packer: refuses a manifest the game would reject', async () => {
+  const records: DefinitionRecord[] = [rec('items', 'C', { id: 'C', val: 3 })];
+  const base = { editorVersion: '0.0.0', baseSource: 'default-project' };
+  // unknown capability name
+  await assert.rejects(buildDeltaZip(records, new Map(), { ...base, capabilities: ['permissions'] }), /unknown capability 'permissions'/);
+  // a rules entry without the capability that lets it run
+  await assert.rejects(buildDeltaZip(records, new Map(), { ...base, scripts: { rules: 'scripts/main.lua' } }), /requires the "gameplay" or "rules" capability/);
+  // the capability without its entry
+  await assert.rejects(buildDeltaZip(records, new Map(), { ...base, capabilities: ['rules'] }), /require a rules 'scripts' entry/);
+  // a ui entry without ui
+  await assert.rejects(buildDeltaZip(records, new Map(), { ...base, scripts: { ui: 'scripts/ui.lua' } }), /a ui script requires the "ui" capability/);
+  // an entry outside scripts/
+  await assert.rejects(buildDeltaZip(records, new Map(), { ...base, capabilities: ['ui'], scripts: { ui: 'web/ui.js' } }), /under scripts/);
+  // ui alone is a content capability: screens and themes, no script needed
+  const ok = await buildDeltaZip(records, new Map(), { ...base, capabilities: ['ui'] });
+  assert.deepEqual(JSON.parse(ok.manifestJson).capabilities, ['ui']);
+});

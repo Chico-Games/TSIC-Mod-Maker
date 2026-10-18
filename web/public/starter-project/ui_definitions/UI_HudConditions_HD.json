@@ -1,0 +1,31 @@
+{
+  "id": "UI_HudConditions_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Conditions.State" ],
+    "tree": {
+      "id": "conditions-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[conditions].bHidden ? false : !UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "conditions-column", "widget": "list", "style": "list", "selectable": false, "reverse_order": true, "row_align": "left",
+          "slot": { "anchor": "bottom-left", "offset": [280, -30] },
+          "bind": { "items": "UI.Conditions.State.Conditions" },
+          "template": { "id": "condition-chip", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "padding": [0, 2, 0, 2] },
+            "bind": {
+              "style": "item.bFromSelected ? 'hud.chip.selected' : (item.Kind == 'Debuff' ? 'hud.chip.debuff' : 'hud.chip.buff')",
+              "pulse": "item.RemainingTime > 0 ? item.RemainingTime <= 5 : false"
+            },
+            "children": [
+              { "widget": "image", "plate_when_missing": false, "slot": { "valign": "center" },
+                "bind": { "source": "item.Icon", "size": "'14,14'" } },
+              { "id": "condition-name", "widget": "text", "slot": { "valign": "center" },
+                "bind": {
+                  "text": "item.Name == '' ? item.Id : item.Name",
+                  "style": "item.Kind == 'Debuff' ? 'hud.chip.debuff' : 'hud.chip.buff'"
+                } }
+            ] } }
+      ]
+    }
+  }
+}

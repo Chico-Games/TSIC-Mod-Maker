@@ -1,0 +1,13 @@
+{
+  "id": "UI_HudSprintVignette_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": -4,
+    "uses": [ "UI.Hud.Visibility", "UI.Player.Tags", "UI.Settings.Value" ],
+    "tree": {
+      "id": "sprint-vignette", "widget": "fade", "style": "hud.vignette.sprint", "mode": "Hold", "shape": "Vignette", "vignette_depth": 0.5, "peak": 1, "auto_play": false,
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : (UI.Player.Tags.Tags[State.Movement.Sprinting] ? UI.Settings.Value[accessibility.sprint_vignette].Value.Bool : false)" }
+    }
+  }
+}

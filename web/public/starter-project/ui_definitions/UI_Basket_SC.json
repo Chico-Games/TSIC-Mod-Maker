@@ -1,0 +1,164 @@
+{
+  "id": "UI_Basket_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Basket",
+    "layer": "overlay",
+    "theme": "UI_Overlays_TH",
+    "input_mode": "InputMode.Menu.Inventory",
+    "cancel": "UI.Cmd.Basket.Close",
+    "actions": [ { "action": "back", "label": "Close" } ],
+    "uses": [ "UI.Basket.State", "UI.Basket.Cursor", "UI.Sewing.State" ],
+    "tree": {
+      "id": "bk-root", "widget": "panel", "layout": "overlay", "style": "overlay.clear",
+      "on": { "show": { "cmd": "UI.Cmd.Basket.RequestState" } },
+      "children": [
+
+        { "id": "bk-badges", "widget": "list", "style": "hud.overlay.rows", "selectable": false, "overlay_rows": true, "slot": { "align": "fill", "valign": "fill" },
+          "bind": { "items": "UI.Basket.State.Badges" },
+          "template": { "id": "bk-badge", "widget": "worldmarker", "use_screen_fraction": true,
+            "bind": { "screen_fraction": "\"{item.X},{item.Y}\"", "pivot": "'0.5,1'" },
+            "children": [
+              { "widget": "panel", "layout": "overlay", "style": "basket.badge", "children": [
+                { "widget": "text", "style": "basket.badge", "justify": "Center", "bind": { "text": "item.Count" } }
+              ] }
+            ] } },
+
+        { "id": "bk-tabs", "widget": "list", "style": "list", "selectable": false, "row_key": "Name", "slot": { "anchor": "top-left", "padding": [24, 96, 0, 0] },
+          "bind": { "items": "UI.Basket.State.Containers" },
+          "template": { "widget": "panel", "layout": "overlay", "slot": { "padding": [0, 4] },
+            "children": [
+              { "id": "bk-tab", "widget": "button",
+                "bind": {
+                  "label": "\"{item.Label}   {item.Used} / {item.Capacity}\"",
+                  "style": "item.Name == UI.Basket.State.Container ? 'basket.tab.active' : 'basket.tab'",
+                  "disabled": "item.bDisabled"
+                },
+                "on": { "click": { "cmd": "UI.Cmd.Basket.Container", "args": { "Name": "{item.Name}" } } } }
+            ] } },
+
+        { "id": "bk-peer", "widget": "panel", "layout": "vertical", "style": "basket.peer", "gap": 4, "slot": { "anchor": "right-center", "padding": [0, 0, 24, 0], "width": 190 },
+          "bind": { "visible": "UI.Basket.State.PeerLabel != '' ? !UI.Sewing.State.bActive : false" },
+          "children": [
+            { "id": "bk-peer-name", "widget": "text", "style": "basket.peer.name", "wrap": true, "bind": { "text": "UI.Basket.State.PeerLabel" } },
+            { "id": "bk-peer-fill", "widget": "text", "style": "basket.peer.fill",
+              "bind": { "text": "\"{UI.Basket.State.PeerUsed} / {UI.Basket.State.PeerCapacity} {UI.Basket.State.bZoned ? 'slots' : 'cells'}\"" } },
+            { "id": "bk-dial", "widget": "progressring", "style": "basket.dial", "size": 84, "slot": { "align": "center", "padding": [0, 6, 0, 2] },
+              "bind": {
+                "visible": "UI.Basket.State.PeerCookProgress >= 0",
+                "progress": "UI.Basket.State.PeerCookProgress >= 1 ? 1 : 1 - UI.Basket.State.PeerCookProgress",
+                "style": "UI.Basket.State.PeerCookProgress >= 1 ? 'basket.dial.done' : 'basket.dial'",
+                "centre_text": "UI.Basket.State.PeerCookProgress >= 1 ? 'Done' : \"{UI.Basket.State.PeerCookRemaining fmt:time}\""
+              } },
+            { "id": "bk-dial-verb", "widget": "text", "style": "basket.dial.verb", "justify": "Center",
+              "bind": {
+                "visible": "UI.Basket.State.PeerCookProgress >= 0",
+                "text": "UI.Basket.State.PeerCookProgress >= 1 ? 'take it' : (UI.Basket.State.PeerCookWorking != '' ? UI.Basket.State.PeerCookWorking : 'Cooking')"
+              } },
+            { "id": "bk-cooking", "widget": "text", "style": "basket.peer.cooking", "wrap": true, "slot": { "padding": [0, 6, 0, 2] },
+              "bind": {
+                "visible": "UI.Basket.State.bPeerCooks ? (UI.Basket.State.PeerCookProgress >= 0 ? true : (UI.Basket.State.bPeerCookControls ? UI.Basket.State.PeerUsed > 0 : false)) : false",
+                "text": "UI.Basket.State.PeerCookProgress < 0 ? (UI.Basket.State.PeerCookLabel == 'Cook' ? 'Shut the door, then turn a knob' : 'Turn the dial on the machine') : (UI.Basket.State.PeerCookProgress >= 1 ? 'Done — take it' : (UI.Basket.State.PeerCookWorking != '' ? UI.Basket.State.PeerCookWorking : 'Cooking'))"
+              } },
+            { "id": "bk-preview", "widget": "text", "wrap": true, "slot": { "padding": [0, 2, 0, 0] },
+              "bind": {
+                "visible": "UI.Basket.State.bPeerCooks ? (UI.Basket.State.PeerCookProgress < 0 ? UI.Basket.State.PeerUsed > 0 : false) : false",
+                "text": "UI.Basket.State.PeerCookPreview != '' ? \"Makes {UI.Basket.State.PeerCookPreview}\" : 'Makes nothing yet'",
+                "style": "UI.Basket.State.PeerCookPreview != '' ? 'basket.peer.preview' : 'basket.peer.preview.none'"
+              } }
+          ] },
+
+        { "id": "bk-sew", "widget": "panel", "layout": "vertical", "gap": 6, "slot": { "anchor": "bottom-center", "padding": [0, 0, 0, 96], "width": 260 },
+          "bind": { "visible": "UI.Sewing.State.bActive" },
+          "children": [
+            { "id": "bk-sew-line", "widget": "text", "justify": "Center", "wrap": true,
+              "bind": {
+                "text": "UI.Sewing.State.Message != '' ? UI.Sewing.State.Message : (UI.Sewing.State.bHolding ? \"{UI.Sewing.State.WorkingLabel != '' ? UI.Sewing.State.WorkingLabel : 'Sewing'}… keep holding\" : \"Hold it to {UI.Sewing.State.ActionLabel != '' ? UI.Sewing.State.ActionLabel : 'Sew'}\")",
+                "style": "UI.Sewing.State.Message != '' ? 'basket.sew.line.bad' : 'basket.sew.line'"
+              } },
+            { "id": "bk-sew-bar", "widget": "progressbar", "style": "basket.sew.bar", "width": 220, "slot": { "align": "center" },
+              "bind": { "visible": "UI.Sewing.State.Message == ''", "progress": "UI.Sewing.State.Progress" } },
+            { "id": "bk-sew-makes", "widget": "text", "style": "basket.sew.makes", "justify": "Center",
+              "bind": { "visible": "UI.Sewing.State.Message == '' ? UI.Sewing.State.Making != '' : false", "text": "\"Makes {UI.Sewing.State.Making}\"" } }
+          ] },
+
+        { "id": "bk-inspect", "widget": "panel", "layout": "vertical", "style": "basket.inspect", "gap": 2, "slot": { "anchor": "top-center", "padding": [0, 100, 0, 0] },
+          "bind": { "visible": "UI.Basket.State.InspectName != ''" },
+          "children": [
+            { "widget": "text", "style": "basket.inspect.name", "justify": "Center", "bind": { "text": "UI.Basket.State.InspectName" } },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "center" },
+              "children": [
+                { "widget": "text", "style": "basket.inspect.count", "bind": { "text": "UI.Basket.State.InspectCount" } },
+                { "widget": "text", "style": "basket.inspect.cap", "slot": { "valign": "bottom", "padding": [0, 0, 0, 6] }, "bind": { "text": "\" / {UI.Basket.State.InspectCapacity}\"" } }
+              ] },
+            { "widget": "text", "style": "basket.inspect.hint", "justify": "Center", "text": "move away to close it", "slot": { "padding": [0, 4, 0, 0] } }
+          ] },
+
+        { "id": "bk-tip-marker", "widget": "worldmarker", "use_screen_fraction": true, "clamp_to_screen": true, "clamp_margin": 8, "slot": { "anchor": "top-left" },
+          "bind": {
+            "visible": "UI.Basket.Cursor.X >= 0 ? (UI.Basket.State.HeldName != '' ? true : (UI.Basket.State.HoverName != '' ? true : UI.Basket.State.HoverBodyPart != '')) : false",
+            "screen_fraction": "\"{UI.Basket.Cursor.X},{UI.Basket.Cursor.Y}\"",
+            "offset": "'14,18'",
+            "pivot": "'0,0'"
+          },
+          "children": [
+            { "id": "bk-tip", "widget": "panel", "layout": "vertical", "gap": 2, "slot": { "width": 260 },
+              "bind": { "style": "UI.Basket.State.HeldName != '' ? (UI.Basket.State.DropVerdict == 'place' ? 'basket.tip.place' : (UI.Basket.State.DropVerdict == 'merge' ? 'basket.tip.merge' : (UI.Basket.State.DropVerdict == 'partial' ? 'basket.tip.partial' : (UI.Basket.State.DropVerdict == 'swap' ? 'basket.tip.swap' : (UI.Basket.State.DropVerdict == 'takeonly' ? 'basket.tip.takeonly' : (UI.Basket.State.DropVerdict == 'locked' ? 'basket.tip.locked' : (UI.Basket.State.DropVerdict == 'world' ? 'basket.tip.world' : 'basket.tip.blocked'))))))) : 'basket.tip'" },
+              "children": [
+                { "id": "bk-tip-name", "widget": "text", "style": "basket.tip.name", "wrap": true,
+                  "bind": { "text": "UI.Basket.State.HeldName != '' ? (UI.Basket.State.HeldCount > 1 ? \"{UI.Basket.State.HeldName} × {UI.Basket.State.HeldCount}\" : UI.Basket.State.HeldName) : (UI.Basket.State.HoverName != '' ? (UI.Basket.State.HoverCount > 1 ? \"{UI.Basket.State.HoverName} × {UI.Basket.State.HoverCount}\" : UI.Basket.State.HoverName) : UI.Basket.State.HoverBodyPart)" } },
+                { "id": "bk-tip-facts", "widget": "text", "style": "basket.tip.sub", "wrap": true,
+                  "bind": {
+                    "visible": "UI.Basket.State.HeldName == '' ? (UI.Basket.State.HoverName != '' ? (UI.Basket.State.HoverWeight > 0 ? true : UI.Basket.State.HoverMaxDurability > 0) : false) : false",
+                    "text": "UI.Basket.State.HoverMaxDurability > 0 ? (UI.Basket.State.HoverWeight > 0 ? \"weight {UI.Basket.State.HoverWeight} · {UI.Basket.State.HoverDurability fmt:int} / {UI.Basket.State.HoverMaxDurability fmt:int} condition\" : \"{UI.Basket.State.HoverDurability fmt:int} / {UI.Basket.State.HoverMaxDurability fmt:int} condition\") : \"weight {UI.Basket.State.HoverWeight}\""
+                  } },
+                { "id": "bk-tip-how", "widget": "text", "style": "basket.tip.sub", "wrap": true,
+                  "bind": { "text": "UI.Basket.State.HeldName != '' ? (UI.Basket.State.DropVerdict == 'place' ? '✓ Release to place' : (UI.Basket.State.DropVerdict == 'merge' ? '✓ Release to add to the stack' : (UI.Basket.State.DropVerdict == 'partial' ? '½ Only part fits; the rest stays in your hand' : (UI.Basket.State.DropVerdict == 'swap' ? '⇄ Release to swap with what is there' : (UI.Basket.State.DropVerdict == 'takeonly' ? '↑ Take from here only' : (UI.Basket.State.DropVerdict == 'locked' ? 'Locked while it works' : (UI.Basket.State.DropVerdict == 'world' ? '↓ Release to drop it on the floor' : '✕ It cannot go here'))))))) : (UI.Basket.State.HoverName == '' ? 'Nothing worn · drop something here to wear it' : (UI.Basket.State.bHoverWorn ? 'Worn · drag it off to take it off' : (UI.Basket.State.bHoverFixed ? 'Left: take this one · Right: options' : 'Left: take · Ctrl: half · Right: options')))" } }
+              ] }
+          ] },
+
+        { "id": "bk-status", "widget": "panel", "layout": "vertical", "style": "basket.status", "gap": 2, "slot": { "anchor": "bottom-left", "padding": [24, 0, 0, 24], "width": 180 },
+          "children": [
+            { "id": "bk-title", "widget": "text", "style": "basket.status.title", "bind": { "text": "UI.Basket.State.Container != '' ? UI.Basket.State.Container : 'Basket'" } },
+            { "id": "bk-slots", "widget": "text", "style": "basket.status.text",
+              "bind": { "visible": "UI.Basket.State.SlotCapacity > 0", "text": "\"Cells {UI.Basket.State.UsedSlots} / {UI.Basket.State.SlotCapacity}\"" } },
+            { "widget": "panel", "layout": "horizontal", "gap": 4,
+              "children": [
+                { "widget": "text", "style": "basket.status.text", "text": "Weight" },
+                { "id": "bk-weight", "widget": "text", "bind": { "text": "UI.Basket.State.Weight fmt:int", "style": "UI.Basket.State.WeightTier > 0 ? 'basket.status.over' : 'basket.status.text'" } },
+                { "widget": "text", "style": "basket.status.text", "bind": { "text": "\"/ {UI.Basket.State.MaxWeight fmt:int}{UI.Basket.State.WeightTier == 2 ? ' · overburdened' : (UI.Basket.State.WeightTier == 1 ? ' · burdened' : '')}\"" } }
+              ] },
+            { "id": "bk-weight-bar", "widget": "progressbar", "style": "basket.weight.bar", "slot": { "align": "fill", "padding": [0, 5, 0, 0] },
+              "bind": {
+                "progress": "UI.Basket.State.MaxWeight > 0 ? UI.Basket.State.Weight / (UI.Basket.State.MaxWeight * 1.5) : 0",
+                "style": "UI.Basket.State.WeightTier == 2 ? 'basket.weight.bar.tier2' : (UI.Basket.State.WeightTier == 1 ? 'basket.weight.bar.tier1' : 'basket.weight.bar')"
+              } }
+          ] },
+
+        { "id": "bk-hints", "widget": "panel", "layout": "vertical", "style": "basket.hints", "gap": 1, "slot": { "anchor": "bottom-right", "padding": [0, 0, 24, 24] },
+          "children": [
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "right" }, "children": [
+              { "widget": "text", "style": "basket.hints.key", "text": "Left" }, { "widget": "text", "style": "basket.hints.text", "text": "take the stack (a pile: that one) · drag to move it ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "double-click" }, { "widget": "text", "style": "basket.hints.text", "text": "gather" } ] },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "right" }, "children": [
+              { "widget": "text", "style": "basket.hints.text", "text": "holding:" }, { "widget": "text", "style": "basket.hints.key", "text": "Left" }, { "widget": "text", "style": "basket.hints.text", "text": "place all ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "Right" }, { "widget": "text", "style": "basket.hints.text", "text": "place one, or take one more ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "wheel" }, { "widget": "text", "style": "basket.hints.text", "text": "one more / one back" } ] },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "right" }, "children": [
+              { "widget": "text", "style": "basket.hints.key", "text": "Ctrl" }, { "widget": "text", "style": "basket.hints.text", "text": "+Left take half ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "Shift" }, { "widget": "text", "style": "basket.hints.text", "text": "+Left send it where it goes ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "Q" }, { "widget": "text", "style": "basket.hints.text", "text": "drop the hovered stack" } ] },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "right" }, "children": [
+              { "widget": "text", "style": "basket.hints.key", "text": "Right" }, { "widget": "text", "style": "basket.hints.text", "text": "on an item: options (eat) · release" },
+              { "widget": "text", "style": "basket.hints.key", "text": "outside" }, { "widget": "text", "style": "basket.hints.text", "text": "drops it ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "click" }, { "widget": "text", "style": "basket.hints.text", "text": "a floor item to take it" } ] },
+            { "widget": "panel", "layout": "horizontal", "gap": 4, "slot": { "align": "right" }, "children": [
+              { "widget": "text", "style": "basket.hints.key", "text": "Tab" }, { "widget": "text", "style": "basket.hints.text", "text": "basket / cold bag / backpack ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "1-4" }, { "widget": "text", "style": "basket.hints.text", "text": "hooks ·" },
+              { "widget": "text", "style": "basket.hints.key", "text": "Esc" }, { "widget": "text", "style": "basket.hints.text", "text": "/" },
+              { "widget": "text", "style": "basket.hints.key", "text": "I" }, { "widget": "text", "style": "basket.hints.text", "text": "close" } ] }
+          ] }
+      ]
+    }
+  }
+}

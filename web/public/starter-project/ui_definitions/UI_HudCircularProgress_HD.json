@@ -1,0 +1,26 @@
+{
+  "id": "UI_HudCircularProgress_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.CircularProgress.State" ],
+    "tree": {
+      "id": "progress-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[crosshair].bHidden ? false : (UI.Hud.Visibility[all].bHidden ? false : (UI.CircularProgress.State.bActive ? UI.CircularProgress.State.Total > 0 : false))" },
+      "children": [
+        { "id": "progress-collar", "widget": "progressring", "style": "hud.ring.collar", "size": 22, "slot": { "anchor": "center" },
+          "bind": {
+            "visible": "UI.Hud.Visibility[progress.large].bHidden == false ? false : true",
+            "progress": "UI.CircularProgress.State.Elapsed / UI.CircularProgress.State.Total",
+            "colour": "UI.CircularProgress.State.Color == '' ? '#ffffff' : UI.CircularProgress.State.Color"
+          } },
+        { "id": "progress-parity", "widget": "progressring", "style": "hud.ring.parity", "size": 96, "slot": { "anchor": "center" },
+          "bind": {
+            "visible": "UI.Hud.Visibility[progress.large].bHidden == false",
+            "progress": "UI.CircularProgress.State.Elapsed / UI.CircularProgress.State.Total",
+            "colour": "UI.CircularProgress.State.Color == '' ? '#ffffff' : UI.CircularProgress.State.Color"
+          } }
+      ]
+    }
+  }
+}

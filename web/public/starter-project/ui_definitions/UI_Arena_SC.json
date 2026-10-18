@@ -1,0 +1,1386 @@
+{
+  "id": "UI_Arena_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Arena",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.Arena.Toggle",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      },
+      {
+        "action": "back",
+        "label": "Close"
+      }
+    ],
+    "uses": [
+      "UI.Arena.State"
+    ],
+    "tree": {
+      "widget": "panel",
+      "layout": "overlay",
+      "id": "ar-root",
+      "style": "dev.scrim",
+      "on": {
+        "show": {
+          "cmd": "UI.Cmd.Arena.RequestState"
+        }
+      },
+      "children": [
+        {
+          "widget": "panel",
+          "layout": "vertical",
+          "id": "ar-panel",
+          "style": "dev.panel",
+          "gap": 10,
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 1180
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "horizontal",
+              "id": "ar-header",
+              "gap": 10,
+              "children": [
+                {
+                  "widget": "text",
+                  "text": "Test Arena",
+                  "style": "dev.title.arena",
+                  "slot": {
+                    "valign": "center"
+                  }
+                },
+                {
+                  "widget": "text",
+                  "slot": {
+                    "valign": "center"
+                  },
+                  "bind": {
+                    "text": "!has:UI.Arena.State ? 'Waiting for the arena…' : !UI.Arena.State.bHasArena ? UI.Arena.State.Message : UI.Arena.State.SpawnPointCount == 0 ? UI.Arena.State.Message : UI.Arena.State.SpawnPointCount == 1 ? '1 spawn point' : \"{UI.Arena.State.SpawnPointCount} spawn points\"",
+                    "style": "has:UI.Arena.State ? (!UI.Arena.State.bHasArena ? 'dev.status.bad' : UI.Arena.State.SpawnPointCount == 0 ? 'dev.status.bad' : 'dev.status') : 'dev.status'"
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true
+                  }
+                },
+                {
+                  "widget": "button",
+                  "label": "Close",
+                  "style": "dev.button",
+                  "slot": {
+                    "valign": "center"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Arena.Toggle"
+                    }
+                  }
+                },
+                {
+                  "widget": "button",
+                  "label": "Fight",
+                  "style": "dev.button.fight",
+                  "id": "ar-fight",
+                  "focus": "initial",
+                  "slot": {
+                    "valign": "center"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Arena.Fight",
+                      "args": {
+                        "Setup": {
+                          "Name": "{#ar-name.value}",
+                          "Enemies": [
+                            {
+                              "EnemyId": "{#ar-enemy-0.value}",
+                              "VariantTier": "{#ar-tier-0.value}"
+                            },
+                            {
+                              "EnemyId": "{#ar-enemy-1.value}",
+                              "VariantTier": "{#ar-tier-1.value}"
+                            },
+                            {
+                              "EnemyId": "{#ar-enemy-2.value}",
+                              "VariantTier": "{#ar-tier-2.value}"
+                            }
+                          ],
+                          "Equipment": [
+                            "{#ar-gear-Head.value}",
+                            "{#ar-gear-Body.value}",
+                            "{#ar-gear-Legs.value}",
+                            "{#ar-gear-Shoes.value}",
+                            "{#ar-gear-Gloves.value}",
+                            "{#ar-gear-Backpack.value}"
+                          ],
+                          "Hotbar": [
+                            {
+                              "ItemId": "{#ar-hot-0.value}",
+                              "Count": "{#ar-count-0.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-1.value}",
+                              "Count": "{#ar-count-1.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-2.value}",
+                              "Count": "{#ar-count-2.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-3.value}",
+                              "Count": "{#ar-count-3.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-4.value}",
+                              "Count": "{#ar-count-4.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-5.value}",
+                              "Count": "{#ar-count-5.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-6.value}",
+                              "Count": "{#ar-count-6.value * 1}"
+                            },
+                            {
+                              "ItemId": "{#ar-hot-7.value}",
+                              "Count": "{#ar-count-7.value * 1}"
+                            }
+                          ],
+                          "bNoDamage": "{#ar-nodamage.checked}",
+                          "bInfiniteStamina": "{#ar-stamina.checked}",
+                          "bAiNameplates": "{#ar-nameplates.checked}",
+                          "bEnemyHealthBars": "{#ar-healthbars.checked}",
+                          "bAttackHitboxes": "{#ar-hitboxes.checked}",
+                          "bHitReactionDebug": "{#ar-hitreact.checked}",
+                          "bRecordFight": "{#ar-record.checked}"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "layout": "scroll",
+              "gap": 10,
+              "slot": {
+                "fill": true,
+                "height": 600
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "id": "ar-enemies",
+                      "style": "dev.section",
+                      "gap": 5,
+                      "focus": "group",
+                      "slot": {
+                        "fill": true,
+                        "valign": "top"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Enemies",
+                          "style": "dev.section.head"
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Point 1",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-enemy-0",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Enemies.InternalName",
+                                "options": "UI.Arena.State.Enemies.DisplayName",
+                                "value": "UI.Arena.State.Current.Enemies[0].EnemyId"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-tier-0",
+                              "min_width": 96,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "options": [
+                                "Base",
+                                "Easy",
+                                "Medium",
+                                "Hard"
+                              ],
+                              "bind": {
+                                "value": "UI.Arena.State.Current.Enemies[0].VariantTier"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Point 2",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-enemy-1",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Enemies.InternalName",
+                                "options": "UI.Arena.State.Enemies.DisplayName",
+                                "value": "UI.Arena.State.Current.Enemies[1].EnemyId"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-tier-1",
+                              "min_width": 96,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "options": [
+                                "Base",
+                                "Easy",
+                                "Medium",
+                                "Hard"
+                              ],
+                              "bind": {
+                                "value": "UI.Arena.State.Current.Enemies[1].VariantTier"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Point 3",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-enemy-2",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Enemies.InternalName",
+                                "options": "UI.Arena.State.Enemies.DisplayName",
+                                "value": "UI.Arena.State.Current.Enemies[2].EnemyId"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-tier-2",
+                              "min_width": 96,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "options": [
+                                "Base",
+                                "Easy",
+                                "Medium",
+                                "Hard"
+                              ],
+                              "bind": {
+                                "value": "UI.Arena.State.Current.Enemies[2].VariantTier"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "text",
+                          "text": "One enemy per spawn point. Move the points in the level to change where they stand.",
+                          "style": "dev.meta",
+                          "wrap": true
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "id": "ar-gear",
+                      "style": "dev.section",
+                      "gap": 5,
+                      "focus": "group",
+                      "slot": {
+                        "fill": true,
+                        "valign": "top"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Equipment",
+                          "style": "dev.section.head"
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Head",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Head",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Head.InternalName",
+                                "options": "UI.Arena.State.Head.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[0]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Body",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Body",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Body.InternalName",
+                                "options": "UI.Arena.State.Body.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[1]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Legs",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Legs",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Legs.InternalName",
+                                "options": "UI.Arena.State.Legs.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[2]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Shoes",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Shoes",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Shoes.InternalName",
+                                "options": "UI.Arena.State.Shoes.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[3]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Gloves",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Gloves",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Gloves.InternalName",
+                                "options": "UI.Arena.State.Gloves.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[4]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Backpack",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-gear-Backpack",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Backpack.InternalName",
+                                "options": "UI.Arena.State.Backpack.DisplayName",
+                                "value": "UI.Arena.State.CurrentGear[5]"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Weapons are hotbar items — put them in a cell.",
+                          "style": "dev.meta",
+                          "wrap": true
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "id": "ar-hotbar",
+                      "style": "dev.section",
+                      "gap": 5,
+                      "focus": "group",
+                      "slot": {
+                        "fill": true,
+                        "valign": "top"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Hotbar",
+                          "style": "dev.section.head"
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 1",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-0",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[0].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-0",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[0].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 2",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-1",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[1].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-1",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[1].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 3",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-2",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[2].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-2",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[2].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 4",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-3",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[3].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-3",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[3].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 5",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-4",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[4].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-4",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[4].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 6",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-5",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[5].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-5",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[5].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 7",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-6",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[6].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-6",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[6].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "Cell 8",
+                              "style": "dev.label",
+                              "slot": {
+                                "width": 58,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "id": "ar-hot-7",
+                              "min_width": 160,
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Arena.State.Items.InternalName",
+                                "options": "UI.Arena.State.Items.DisplayName",
+                                "value": "UI.Arena.State.Current.Hotbar[7].ItemId"
+                              }
+                            },
+                            {
+                              "widget": "textfield",
+                              "id": "ar-count-7",
+                              "placeholder": "1",
+                              "min_width": 52,
+                              "style": "dev.input",
+                              "slot": {
+                                "valign": "center",
+                                "width": 52
+                              },
+                              "bind": {
+                                "text": "UI.Arena.State.Current.Hotbar[7].Count fmt:int"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Type to search; Cell 1 is drawn when the fight starts.",
+                          "style": "dev.meta",
+                          "wrap": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ar-cheats",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Player",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-nodamage",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bNoDamage"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "No damage",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-stamina",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bInfiniteStamina"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "Infinite stamina",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Saved with the setup. F9 also puts you back on the start mark, heals you and clears projectiles. F7 and F8 switch the clock to day and night.",
+                          "style": "dev.meta",
+                          "wrap": true,
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ar-debug",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "AI debug",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-nameplates",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bAiNameplates"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "AI state nameplates",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-healthbars",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bEnemyHealthBars"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "Enemy health bars",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-hitboxes",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bAttackHitboxes"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "Attack hitboxes",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-hitreact",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bHitReactionDebug"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "Flinch / stagger",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 6,
+                          "children": [
+                            {
+                              "widget": "toggle",
+                              "id": "ar-record",
+                              "style": "dev.toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Arena.State.Current.bRecordFight"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "text": "Record fight",
+                              "style": "dev.body",
+                              "slot": {
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "text": "Saved with the setup and applied when the fight starts. A recording opens its replay on the next fight or the F9 reset.",
+                      "style": "dev.meta",
+                      "wrap": true
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ar-setups",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Setups",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Name",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 58,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "textfield",
+                          "id": "ar-name",
+                          "placeholder": "e.g. Two staff, crowbar",
+                          "min_width": 260,
+                          "style": "dev.input",
+                          "slot": {
+                            "valign": "center",
+                            "width": 260
+                          },
+                          "bind": {
+                            "text": "UI.Arena.State.Current.Name"
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Save",
+                          "style": "dev.button",
+                          "slot": {
+                            "valign": "center"
+                          },
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.Arena.Save",
+                              "args": {
+                                "Setup": {
+                                  "Name": "{#ar-name.value}",
+                                  "Enemies": [
+                                    {
+                                      "EnemyId": "{#ar-enemy-0.value}",
+                                      "VariantTier": "{#ar-tier-0.value}"
+                                    },
+                                    {
+                                      "EnemyId": "{#ar-enemy-1.value}",
+                                      "VariantTier": "{#ar-tier-1.value}"
+                                    },
+                                    {
+                                      "EnemyId": "{#ar-enemy-2.value}",
+                                      "VariantTier": "{#ar-tier-2.value}"
+                                    }
+                                  ],
+                                  "Equipment": [
+                                    "{#ar-gear-Head.value}",
+                                    "{#ar-gear-Body.value}",
+                                    "{#ar-gear-Legs.value}",
+                                    "{#ar-gear-Shoes.value}",
+                                    "{#ar-gear-Gloves.value}",
+                                    "{#ar-gear-Backpack.value}"
+                                  ],
+                                  "Hotbar": [
+                                    {
+                                      "ItemId": "{#ar-hot-0.value}",
+                                      "Count": "{#ar-count-0.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-1.value}",
+                                      "Count": "{#ar-count-1.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-2.value}",
+                                      "Count": "{#ar-count-2.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-3.value}",
+                                      "Count": "{#ar-count-3.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-4.value}",
+                                      "Count": "{#ar-count-4.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-5.value}",
+                                      "Count": "{#ar-count-5.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-6.value}",
+                                      "Count": "{#ar-count-6.value * 1}"
+                                    },
+                                    {
+                                      "ItemId": "{#ar-hot-7.value}",
+                                      "Count": "{#ar-count-7.value * 1}"
+                                    }
+                                  ],
+                                  "bNoDamage": "{#ar-nodamage.checked}",
+                                  "bInfiniteStamina": "{#ar-stamina.checked}",
+                                  "bAiNameplates": "{#ar-nameplates.checked}",
+                                  "bEnemyHealthBars": "{#ar-healthbars.checked}",
+                                  "bAttackHitboxes": "{#ar-hitboxes.checked}",
+                                  "bHitReactionDebug": "{#ar-hitreact.checked}",
+                                  "bRecordFight": "{#ar-record.checked}"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Saved per machine. Load fills the sheet; it does not start the fight.",
+                          "style": "dev.meta",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "list",
+                      "id": "ar-saved",
+                      "horizontal": true,
+                      "selectable": false,
+                      "empty_text": "No saved setups yet.",
+                      "row_key": "Name",
+                      "style": "dev.list.chips",
+                      "bind": {
+                        "items": "UI.Arena.State.Saved"
+                      },
+                      "template": {
+                        "widget": "panel",
+                        "layout": "horizontal",
+                        "gap": 4,
+                        "style": "dev.chip.saved",
+                        "children": [
+                          {
+                            "widget": "text",
+                            "style": "dev.body",
+                            "slot": {
+                              "valign": "center"
+                            },
+                            "bind": {
+                              "text": "item.Name"
+                            }
+                          },
+                          {
+                            "widget": "button",
+                            "label": "Load",
+                            "style": "dev.button.chip",
+                            "slot": {
+                              "valign": "center"
+                            },
+                            "on": {
+                              "click": {
+                                "cmd": "UI.Cmd.Arena.Load",
+                                "args": {
+                                  "Name": "{item.Name}"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "widget": "button",
+                            "label": "Delete",
+                            "style": "dev.button.chip",
+                            "confirm_label": "Sure?",
+                            "confirm_seconds": 2,
+                            "slot": {
+                              "valign": "center"
+                            },
+                            "on": {
+                              "click": {
+                                "cmd": "UI.Cmd.Arena.Delete",
+                                "args": {
+                                  "Name": "{item.Name}"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

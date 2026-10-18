@@ -1,0 +1,3975 @@
+{
+  "id": "UI_Settings_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Settings",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Settings",
+    "cancel": "UI.Cmd.Settings.Back",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      },
+      {
+        "action": "back",
+        "label": "Back"
+      }
+    ],
+    "uses": [
+      "UI.Settings.Value",
+      "UI.Settings.Footer",
+      "UI.Settings.VoiceDevices",
+      "UI.Settings.ControlsState",
+      "UI.Settings.RebindCapture"
+    ],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage.title",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 900
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "horizontal",
+              "slot": {
+                "padding": [
+                  22,
+                  18,
+                  22,
+                  10
+                ]
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true,
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "text.kicker",
+                      "text": "The Fine"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.masthead",
+                          "text": "Print",
+                          "line_height": 0.9
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.masthead",
+                          "text": ".",
+                          "line_height": 0.9,
+                          "bind": {
+                            "colour": "'#E60000'"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "align": "right",
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "style": "chip.badge",
+                      "slot": {
+                        "align": "right"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.badge",
+                          "text": "Dept. 88"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.date",
+                      "text": "SHOPPING, YOUR WAY.",
+                      "slot": {
+                        "align": "right"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "body",
+              "widget": "panel",
+              "layout": "vertical",
+              "slot": {
+                "padding": [
+                  22,
+                  4,
+                  12,
+                  0
+                ]
+              },
+              "children": [
+                {
+                  "id": "tabs",
+                  "widget": "tabbar",
+                  "tabs": [
+                    "Audio",
+                    "Video",
+                    "Gameplay",
+                    "Accessibility",
+                    "Keyboard & Mouse",
+                    "Controller"
+                  ],
+                  "selected_index": 0
+                },
+                {
+                  "id": "pages",
+                  "widget": "panel",
+                  "layout": "scroll",
+                  "slot": {
+                    "height": 440
+                  },
+                  "children": [
+                    {
+                      "id": "page-audio",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 0"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Levels",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Master volume",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 1,
+                              "step": 0.01,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[audio.master].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "audio.master",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "id": "audio-master"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Music volume",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "audio-music",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 1,
+                              "step": 0.01,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[audio.music].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "audio.music",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "SFX volume",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "audio-sfx",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 1,
+                              "step": 0.01,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[audio.sfx].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "audio.sfx",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Menu music volume",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "audio-menu-music",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 1,
+                              "step": 0.01,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[audio.menu_music].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "audio.menu_music",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Voice chat",
+                          "slot": {
+                            "padding": [
+                              0,
+                              22,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Voice chat",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "voice-enabled",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[voice.enabled].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "voice.enabled",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Microphone mode",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "voice-mode",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[voice.mode].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "voice.mode",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "ptt",
+                                  "label": "Push to talk"
+                                },
+                                {
+                                  "value": "toggle",
+                                  "label": "Toggle mute"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Voice volume",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "voice-output-volume",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 2,
+                              "step": 0.05,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[voice.output_volume].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "voice.output_volume",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Microphone",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Settings.VoiceDevices.Devices.Value",
+                                "options": "UI.Settings.VoiceDevices.Devices.Label",
+                                "value": "UI.Settings.Value[voice.input_device].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "voice.input_device",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "id": "voice-device"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "page-video",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 1"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Display",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Window mode",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[video.window_mode].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "video.window_mode",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "fullscreen",
+                                  "label": "Fullscreen"
+                                },
+                                {
+                                  "value": "borderless",
+                                  "label": "Borderless window"
+                                },
+                                {
+                                  "value": "windowed",
+                                  "label": "Windowed"
+                                }
+                              ],
+                              "id": "window-mode"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Resolution",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Settings.Value[video.resolution_options].Value.StringArray",
+                                "disabled": "UI.Settings.Value[video.resolution_locked].Value.Bool",
+                                "value": "UI.Settings.Value[video.resolution].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "video.resolution",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "id": "resolution"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "VSync",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-vsync",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[graphics.vsync].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.vsync",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Frame rate limit",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-fps-limit",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.fps_limit].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.fps_limit",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "30",
+                                  "label": "30 FPS"
+                                },
+                                {
+                                  "value": "60",
+                                  "label": "60 FPS"
+                                },
+                                {
+                                  "value": "90",
+                                  "label": "90 FPS"
+                                },
+                                {
+                                  "value": "120",
+                                  "label": "120 FPS"
+                                },
+                                {
+                                  "value": "144",
+                                  "label": "144 FPS"
+                                },
+                                {
+                                  "value": "165",
+                                  "label": "165 FPS"
+                                },
+                                {
+                                  "value": "200",
+                                  "label": "200 FPS"
+                                },
+                                {
+                                  "value": "240",
+                                  "label": "240 FPS"
+                                },
+                                {
+                                  "value": "0",
+                                  "label": "Unlimited"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Brightness (gamma)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-brightness",
+                              "widget": "slider",
+                              "min": 1.4,
+                              "max": 3,
+                              "step": 0.05,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.brightness].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.brightness",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "HDR output",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "video-hdr",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[video.hdr].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "video.hdr",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "bind": {
+                            "visible": "UI.Settings.Value[video.hdr_supported].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          },
+                          "bind": {
+                            "visible": "UI.Settings.Value[video.hdr_supported].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Graphics",
+                          "slot": {
+                            "padding": [
+                              0,
+                              22,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Detect optimal settings",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "button",
+                              "style": "button.sm",
+                              "label": "Detect",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "on": {
+                                "click": {
+                                  "cmd": "UI.Cmd.Settings.Action",
+                                  "args": {
+                                    "Key": "graphics.autodetect"
+                                  }
+                                }
+                              },
+                              "id": "autodetect"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Overall quality",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.quality].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.quality",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                },
+                                {
+                                  "value": "custom",
+                                  "label": "Custom"
+                                }
+                              ],
+                              "id": "quality"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Lumen quality",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-lumen",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.lumen].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.lumen",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low (Lumen Lite)"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium (Software)"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High (Hardware Ray Tracing)"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Upscaling",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "values": "UI.Settings.Value[graphics.upscaler_options].Value.StringArray",
+                                "value": "UI.Settings.Value[graphics.upscaler].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.upscaler",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "labels": {
+                                "tsr": "TSR (recommended)",
+                                "dlaa": "DLAA (native res, best quality)",
+                                "dlss_quality": "DLSS Quality",
+                                "dlss_balanced": "DLSS Balanced",
+                                "dlss_performance": "DLSS Performance",
+                                "dlss_ultra_performance": "DLSS Ultra Performance",
+                                "fsr_native_aa": "FSR Native AA (native res, best quality)",
+                                "fsr_quality": "FSR Quality",
+                                "fsr_balanced": "FSR Balanced",
+                                "fsr_performance": "FSR Performance",
+                                "fsr_ultra_performance": "FSR Ultra Performance"
+                              },
+                              "id": "upscaler"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "menu.text.hint",
+                          "text": "No hardware upscaler on this GPU; TSR is in use.",
+                          "slot": {
+                            "padding": [
+                              0,
+                              4,
+                              0,
+                              0
+                            ]
+                          },
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.dlss].Value.Bool ? false : !UI.Settings.Value[graphics.caps.fsr].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Render resolution (TSR)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-resolution-scale",
+                              "widget": "slider",
+                              "min": 50,
+                              "max": 100,
+                              "step": 1,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.resolution_scale].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.resolution_scale",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Frame generation (DLSS)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-frame-gen",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.frame_gen].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.frame_gen",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "off",
+                                  "label": "Off"
+                                },
+                                {
+                                  "value": "auto",
+                                  "label": "Auto"
+                                },
+                                {
+                                  "value": "2x",
+                                  "label": "2x"
+                                },
+                                {
+                                  "value": "3x",
+                                  "label": "3x"
+                                },
+                                {
+                                  "value": "4x",
+                                  "label": "4x"
+                                }
+                              ]
+                            }
+                          ],
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.frame_gen].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          },
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.frame_gen].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Frame generation (FSR)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-fsr-frame-gen",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[graphics.fsr_frame_gen].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.fsr_frame_gen",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.fsr].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          },
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.fsr].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "NVIDIA Reflex (low latency)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-reflex",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.reflex].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.reflex",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "off",
+                                  "label": "Off"
+                                },
+                                {
+                                  "value": "on",
+                                  "label": "On"
+                                },
+                                {
+                                  "value": "boost",
+                                  "label": "On + Boost"
+                                }
+                              ]
+                            }
+                          ],
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.reflex].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          },
+                          "bind": {
+                            "visible": "UI.Settings.Value[graphics.caps.reflex].Value.Bool"
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Motion blur",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-motion-blur",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[graphics.motion_blur].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.motion_blur",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Advanced quality",
+                          "slot": {
+                            "padding": [
+                              0,
+                              22,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "View distance",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-view-distance",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.view_distance].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.view_distance",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Shadows",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-shadows",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.shadows].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.shadows",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Textures",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-textures",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.textures].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.textures",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Effects",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-effects",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.effects].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.effects",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Post-processing",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-post-processing",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.post_processing].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.post_processing",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Foliage",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-foliage",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.foliage].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.foliage",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Shading",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-shading",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.shading].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.shading",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Reflections",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "graphics-reflections",
+                              "widget": "dropdown",
+                              "min_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[graphics.reflections].Value.String"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "graphics.reflections",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              },
+                              "options": [
+                                {
+                                  "value": "low",
+                                  "label": "Low"
+                                },
+                                {
+                                  "value": "medium",
+                                  "label": "Medium"
+                                },
+                                {
+                                  "value": "high",
+                                  "label": "High"
+                                },
+                                {
+                                  "value": "epic",
+                                  "label": "Epic"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "page-gameplay",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 2"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Interface",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Show tutorial objectives",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gameplay-show-tutorial",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[gameplay.show_tutorial].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gameplay.show_tutorial",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Show player nametags",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gameplay-player-nametags",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[gameplay.player_nametags].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gameplay.player_nametags",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Rotate minimap with player",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gameplay-minimap-rotate",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[gameplay.minimap_rotate].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gameplay.minimap_rotate",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Social",
+                          "slot": {
+                            "padding": [
+                              0,
+                              22,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Show game activity to friends (Discord, Steam)",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "social-rich-presence",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[social.rich_presence].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "social.rich_presence",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "page-accessibility",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 3"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Motion & comfort",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Screen shake intensity",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-shake-intensity",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 100,
+                              "step": 5,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[accessibility.shake_intensity].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.shake_intensity",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Head bob",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-head-bob",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.head_bob].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.head_bob",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Sprint field-of-view effect",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-sprint-fov",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.sprint_fov].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.sprint_fov",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Motion blur",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-motion-blur",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.motion_blur].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.motion_blur",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Pulsing screen effects",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-screen-pulse",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.screen_pulse].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.screen_pulse",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Reduce interface motion",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-reduce-motion",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.reduce_motion].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.reduce_motion",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Sprint comfort vignette",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-sprint-vignette",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.Value[accessibility.sprint_vignette].Value.Bool"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "accessibility.sprint_vignette",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Comfort preset",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "accessibility-reduce-motion-preset",
+                              "widget": "button",
+                              "style": "button.sm",
+                              "label": "Apply Reduce Motion",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "on": {
+                                "click": {
+                                  "cmd": "UI.Cmd.Settings.Action",
+                                  "args": {
+                                    "Key": "accessibility.reduce_motion_preset"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Camera",
+                          "slot": {
+                            "padding": [
+                              0,
+                              22,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Field of view",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gameplay-fov",
+                              "widget": "slider",
+                              "min": 60,
+                              "max": 120,
+                              "step": 1,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.Value[gameplay.fov].Value.Number"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gameplay.fov",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "page-kbm",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 4"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Mouse",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Mouse sensitivity",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "mouse-sensitivity",
+                              "widget": "slider",
+                              "min": 0.1,
+                              "max": 3,
+                              "step": 0.05,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.ControlsState.MouseSensitivity"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "mouse_sensitivity",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Invert mouse Y",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "invert-mouse-y",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.ControlsState.bInvertMouseY"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "invert_mouse_y",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 10,
+                          "slot": {
+                            "padding": [
+                              0,
+                              18,
+                              0,
+                              6
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "text.group",
+                              "text": "Bindings",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "style": "menu.text.col",
+                              "text": "Mode",
+                              "justify": "Center",
+                              "slot": {
+                                "width": 110,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "style": "menu.text.col",
+                              "text": "Binding",
+                              "justify": "Center",
+                              "slot": {
+                                "width": 148,
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "page-kbm-list",
+                          "widget": "list",
+                          "style": "list",
+                          "selectable": false,
+                          "row_key": "HotkeyId",
+                          "bind": {
+                            "items": "UI.Settings.ControlsState.Entries"
+                          },
+                          "template": {
+                            "id": "kbm-row",
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "gap": 10,
+                            "slot": {
+                              "padding": [
+                                0,
+                                6
+                              ]
+                            },
+                            "bind": {
+                              "visible": "item.bKeyboardRemappable ? true : item.KeyboardKeyText != ''"
+                            },
+                            "children": [
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "slot": {
+                                  "fill": true,
+                                  "valign": "center"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.field",
+                                    "bind": {
+                                      "text": "item.DisplayName"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.note",
+                                    "bind": {
+                                      "text": "item.Category != '' ? \"{item.Category} · {item.BehaviorsLabel}\" : item.BehaviorsLabel"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.conflict",
+                                    "bind": {
+                                      "visible": "item.KeyboardConflictsWith != ''",
+                                      "text": "\"Also bound to {item.KeyboardConflictsWith} in the same context\""
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.note",
+                                    "bind": {
+                                      "visible": "item.KeyboardSharedWith != ''",
+                                      "text": "\"Also used by {item.KeyboardSharedWith} (different context)\""
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 6,
+                                "slot": {
+                                  "width": 110,
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "visible": "item.bToggleable"
+                                },
+                                "children": [
+                                  {
+                                    "id": "kbm-row-toggle",
+                                    "widget": "toggle",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "checked": "item.HoldToggle == 1"
+                                    },
+                                    "on": {
+                                      "change": {
+                                        "cmd": "UI.Cmd.Settings.Set",
+                                        "args": {
+                                          "Key": "hold_toggle.{item.ToggleBehaviorTagName}",
+                                          "Value": "{self.checked}"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.mode",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.HoldToggle == 1 ? 'Toggle' : 'Hold'"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "slot": {
+                                  "width": 148,
+                                  "valign": "center"
+                                },
+                                "children": [
+                                  {
+                                    "id": "kbm-row-bind",
+                                    "widget": "button",
+                                    "style": "menu.button.bind",
+                                    "fill_width": true,
+                                    "slot": {
+                                      "fill": true
+                                    },
+                                    "bind": {
+                                      "label": "item.KeyboardKeyText == '' ? 'Unbound' : item.KeyboardKeyText",
+                                      "icon": "item.KeyboardKeyText == '' ? '' : \"key:pc/{item.KeyboardKeyText}\"",
+                                      "disabled": "!item.bKeyboardRemappable",
+                                      "style": "item.KeyboardConflictsWith != '' ? 'menu.button.bind.conflict' : 'menu.button.bind'"
+                                    },
+                                    "on": {
+                                      "click": {
+                                        "cmd": "UI.Cmd.Settings.BeginRebind",
+                                        "args": {
+                                          "HotkeyId": "{item.HotkeyId}",
+                                          "bGamepad": false
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "slot": {
+                            "padding": [
+                              0,
+                              14,
+                              0,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "id": "page-kbm-reset",
+                              "widget": "button",
+                              "style": "button.secondary.tight",
+                              "label": "Reset keyboard bindings",
+                              "on": {
+                                "click": {
+                                  "cmd": "UI.Cmd.Settings.ResetControls",
+                                  "args": {
+                                    "bGamepad": false
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "page-pad",
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "padding": [
+                          0,
+                          10,
+                          12,
+                          18
+                        ]
+                      },
+                      "bind": {
+                        "visible": "#tabs.value == 5"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.group",
+                          "text": "Gamepad",
+                          "slot": {
+                            "padding": [
+                              0,
+                              0,
+                              0,
+                              3
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "rule.dashed",
+                          "slot": {
+                            "height": 2
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Gamepad sensitivity",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gamepad-sensitivity",
+                              "widget": "slider",
+                              "min": 0.1,
+                              "max": 1,
+                              "step": 0.05,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.ControlsState.GamepadSensitivity"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gamepad_sensitivity",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Gamepad stick deadzone",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "gamepad-deadzone",
+                              "widget": "slider",
+                              "min": 0,
+                              "max": 0.9,
+                              "step": 0.01,
+                              "track_width": 240,
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "value": "UI.Settings.ControlsState.GamepadDeadzone"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "gamepad_deadzone",
+                                    "Value": "{self.value}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 16,
+                          "slot": {
+                            "padding": [
+                              8,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "menu.text.field",
+                              "text": "Invert gamepad Y",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "id": "invert-gamepad-y",
+                              "widget": "toggle",
+                              "slot": {
+                                "valign": "center"
+                              },
+                              "bind": {
+                                "checked": "UI.Settings.ControlsState.bInvertGamepadY"
+                              },
+                              "on": {
+                                "change": {
+                                  "cmd": "UI.Cmd.Settings.Set",
+                                  "args": {
+                                    "Key": "invert_gamepad_y",
+                                    "Value": "{self.checked}"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "panel",
+                          "style": "menu.rule.field",
+                          "slot": {
+                            "height": 1
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "gap": 10,
+                          "slot": {
+                            "padding": [
+                              0,
+                              18,
+                              0,
+                              6
+                            ]
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "style": "text.group",
+                              "text": "Bindings",
+                              "slot": {
+                                "fill": true,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "style": "menu.text.col",
+                              "text": "Mode",
+                              "justify": "Center",
+                              "slot": {
+                                "width": 110,
+                                "valign": "center"
+                              }
+                            },
+                            {
+                              "widget": "text",
+                              "style": "menu.text.col",
+                              "text": "Binding",
+                              "justify": "Center",
+                              "slot": {
+                                "width": 148,
+                                "valign": "center"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "page-pad-list",
+                          "widget": "list",
+                          "style": "list",
+                          "selectable": false,
+                          "row_key": "HotkeyId",
+                          "bind": {
+                            "items": "UI.Settings.ControlsState.Entries"
+                          },
+                          "template": {
+                            "id": "pad-row",
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "gap": 10,
+                            "slot": {
+                              "padding": [
+                                0,
+                                6
+                              ]
+                            },
+                            "bind": {
+                              "visible": "item.bGamepadRemappable ? true : item.GamepadKeyText != ''"
+                            },
+                            "children": [
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "slot": {
+                                  "fill": true,
+                                  "valign": "center"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.field",
+                                    "bind": {
+                                      "text": "item.DisplayName"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.note",
+                                    "bind": {
+                                      "text": "item.Category != '' ? \"{item.Category} · {item.BehaviorsLabel}\" : item.BehaviorsLabel"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.conflict",
+                                    "bind": {
+                                      "visible": "item.GamepadConflictsWith != ''",
+                                      "text": "\"Also bound to {item.GamepadConflictsWith} in the same context\""
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.bind.note",
+                                    "bind": {
+                                      "visible": "item.GamepadSharedWith != ''",
+                                      "text": "\"Also used by {item.GamepadSharedWith} (different context)\""
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 6,
+                                "slot": {
+                                  "width": 110,
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "visible": "item.bToggleable"
+                                },
+                                "children": [
+                                  {
+                                    "id": "pad-row-toggle",
+                                    "widget": "toggle",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "checked": "item.HoldToggle == 1"
+                                    },
+                                    "on": {
+                                      "change": {
+                                        "cmd": "UI.Cmd.Settings.Set",
+                                        "args": {
+                                          "Key": "hold_toggle.{item.ToggleBehaviorTagName}",
+                                          "Value": "{self.checked}"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.mode",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.HoldToggle == 1 ? 'Toggle' : 'Hold'"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "slot": {
+                                  "width": 148,
+                                  "valign": "center"
+                                },
+                                "children": [
+                                  {
+                                    "id": "pad-row-bind",
+                                    "widget": "button",
+                                    "style": "menu.button.bind",
+                                    "fill_width": true,
+                                    "slot": {
+                                      "fill": true
+                                    },
+                                    "bind": {
+                                      "label": "item.GamepadKeyText == '' ? 'Unbound' : item.GamepadKeyText",
+                                      "icon": "item.GamepadKeyText == '' ? '' : \"key:xb/{item.GamepadKeyText}\"",
+                                      "disabled": "!item.bGamepadRemappable",
+                                      "style": "item.GamepadConflictsWith != '' ? 'menu.button.bind.conflict' : 'menu.button.bind'"
+                                    },
+                                    "on": {
+                                      "click": {
+                                        "cmd": "UI.Cmd.Settings.BeginRebind",
+                                        "args": {
+                                          "HotkeyId": "{item.HotkeyId}",
+                                          "bGamepad": true
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "widget": "panel",
+                          "layout": "horizontal",
+                          "slot": {
+                            "padding": [
+                              0,
+                              14,
+                              0,
+                              0
+                            ]
+                          },
+                          "children": [
+                            {
+                              "id": "page-pad-reset",
+                              "widget": "button",
+                              "style": "button.secondary.tight",
+                              "label": "Reset controller bindings",
+                              "on": {
+                                "click": {
+                                  "cmd": "UI.Cmd.Settings.ResetControls",
+                                  "args": {
+                                    "bGamepad": true
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "status",
+              "widget": "panel",
+              "layout": "horizontal",
+              "style": "menu.panel.status",
+              "slot": {
+                "height": 34
+              },
+              "children": [
+                {
+                  "id": "restart-required",
+                  "widget": "text",
+                  "style": "menu.text.status",
+                  "text": "Restart required",
+                  "slot": {
+                    "valign": "center"
+                  },
+                  "bind": {
+                    "visible": "UI.Settings.Footer.bRestartRequired"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "rows",
+              "widget": "panel",
+              "layout": "vertical",
+              "focus": "group",
+              "slot": {
+                "padding": [
+                  4,
+                  6,
+                  4,
+                  10
+                ]
+              },
+              "children": [
+                {
+                  "id": "btn-back",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Back",
+                  "dept": "Fire Exit",
+                  "first_in_group": true,
+                  "focus": "initial",
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Settings.Back"
+                    }
+                  }
+                },
+                {
+                  "id": "btn-reset",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Reset to Defaults",
+                  "dept": "Dept. 88",
+                  "bind": {
+                    "visible": "#tabs.value < 4"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Settings.ResetDefaults",
+                      "args": {
+                        "PageId": "{#tabs.value == 0 ? 'AudioCollection' : #tabs.value == 1 ? 'VideoCollection' : #tabs.value == 2 ? 'GameplayCollection' : 'AccessibilityCollection'}"
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "btn-reset-kbm",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Reset Keyboard Bindings",
+                  "dept": "Dept. 88",
+                  "bind": {
+                    "visible": "#tabs.value == 4"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Settings.ResetControls",
+                      "args": {
+                        "bGamepad": false
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": "btn-reset-pad",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Reset Controller Bindings",
+                  "dept": "Dept. 88",
+                  "bind": {
+                    "visible": "#tabs.value == 5"
+                  },
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Settings.ResetControls",
+                      "args": {
+                        "bGamepad": true
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rebind-modal",
+          "widget": "panel",
+          "layout": "overlay",
+          "style": "menu.screen.modal",
+          "focus": "trap",
+          "bind": {
+            "visible": "UI.Settings.RebindCapture.bCapturing ? true : UI.Settings.RebindCapture.bConflict"
+          },
+          "on": {
+            "close": {
+              "cmd": "UI.Cmd.Settings.CancelRebind"
+            }
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "style": "menu.panel.modal",
+              "gap": 16,
+              "slot": {
+                "align": "center",
+                "valign": "center",
+                "width": 420
+              },
+              "children": [
+                {
+                  "id": "rebind-msg",
+                  "widget": "text",
+                  "style": "text.title.sm",
+                  "justify": "Center",
+                  "wrap": true,
+                  "text": "Press a key or button...  (Esc or Start to cancel)",
+                  "bind": {
+                    "visible": "UI.Settings.RebindCapture.bCapturing"
+                  }
+                },
+                {
+                  "id": "rebind-conflict",
+                  "widget": "text",
+                  "style": "text.body",
+                  "justify": "Center",
+                  "wrap": true,
+                  "bind": {
+                    "visible": "UI.Settings.RebindCapture.bConflict",
+                    "text": "\"{UI.Settings.RebindCapture.CapturedKeyText} is already bound to {ConflictHotkeyText} — replace?\""
+                  }
+                },
+                {
+                  "id": "rebind-actions",
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "gap": 8,
+                  "slot": {
+                    "align": "center"
+                  },
+                  "bind": {
+                    "visible": "UI.Settings.RebindCapture.bConflict"
+                  },
+                  "children": [
+                    {
+                      "id": "rebind-replace",
+                      "widget": "button",
+                      "label": "Replace",
+                      "focus": "initial",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.Settings.ConfirmRebind"
+                        }
+                      }
+                    },
+                    {
+                      "id": "rebind-cancel",
+                      "widget": "button",
+                      "style": "button.secondary",
+                      "label": "Cancel",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.Settings.CancelRebind"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "countdown-modal",
+          "widget": "panel",
+          "layout": "overlay",
+          "style": "menu.screen.modal",
+          "focus": "trap",
+          "bind": {
+            "visible": "UI.Settings.Value[video.countdown].Value.Number > 0"
+          },
+          "on": {
+            "close": {
+              "cmd": "UI.Cmd.Settings.Action",
+              "args": {
+                "Key": "video.revert"
+              }
+            }
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "style": "menu.panel.modal",
+              "gap": 12,
+              "slot": {
+                "align": "center",
+                "valign": "center",
+                "width": 380
+              },
+              "children": [
+                {
+                  "widget": "text",
+                  "style": "text.title.sm",
+                  "justify": "Center",
+                  "text": "Keep these settings?"
+                },
+                {
+                  "id": "countdown-seconds",
+                  "widget": "text",
+                  "style": "menu.text.status",
+                  "justify": "Center",
+                  "bind": {
+                    "text": "\"Reverting in {UI.Settings.Value[video.countdown].Value.Number}s\""
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "gap": 8,
+                  "slot": {
+                    "align": "center",
+                    "padding": [
+                      0,
+                      8,
+                      0,
+                      0
+                    ]
+                  },
+                  "children": [
+                    {
+                      "id": "popover-revert",
+                      "widget": "button",
+                      "style": "button.secondary",
+                      "label": "Revert",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.Settings.Action",
+                          "args": {
+                            "Key": "video.revert"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "id": "popover-keep",
+                      "widget": "button",
+                      "label": "Keep changes",
+                      "focus": "initial",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.Settings.Action",
+                          "args": {
+                            "Key": "video.confirm"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

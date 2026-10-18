@@ -1,0 +1,149 @@
+{
+  "id": "UI_LoreTablet_TH",
+  "class": "ScpUiThemeDefinition",
+  "properties": {
+    "extends": "UI_LorePaper_TH",
+    "colours": {
+      "lore.tablet.bezel": "#1c1f26",
+      "lore.tablet.ink.soft": "rgba(59, 47, 28, 0.55)",
+      "lore.tablet.chip.hover": "rgba(241, 229, 207, 0.32)",
+      "lore.tablet.chip.current": "rgba(241, 229, 207, 0.55)",
+      "lore.tablet.shadow": "rgba(35, 31, 24, 0.45)"
+    },
+    "styles": {
+      "lore.scrim": {
+        "background": "$colours.bg.overlay",
+        "padding": 40
+      },
+      "lore.frame": {
+        "background": "$colours.paper.cream",
+        "padding": 24,
+        "radius": "$radii.tablet.frame",
+        "border": {
+          "colour": "$colours.lore.tablet.bezel",
+          "width": 6
+        },
+        "shadow": {
+          "offset": [
+            0,
+            18
+          ],
+          "colour": "$colours.lore.tablet.shadow"
+        }
+      },
+      "lore.sheet": {
+        "background": "$colours.paper.cream",
+        "padding": [
+          0,
+          0,
+          6,
+          0
+        ],
+        "shadow": {
+          "offset": [
+            0,
+            0
+          ],
+          "colour": "$colours.paper.cream"
+        }
+      },
+      "lore.group": {
+        "font": "$fonts.body",
+        "size": 10,
+        "tracking": 0.3,
+        "case": "upper",
+        "colour": "$colours.lore.tablet.ink.soft"
+      },
+      "lore.heading": {
+        "font": "$fonts.body.black",
+        "size": 18,
+        "colour": "$colours.ink.night"
+      },
+      "lore.heading.gloria": {
+        "extends": "lore.heading",
+        "font": "$fonts.body.black",
+        "size": 18
+      },
+      "lore.heading.reenie": {
+        "extends": "lore.heading",
+        "font": "$fonts.body.black",
+        "size": 18
+      },
+      "lore.heading.plain": {
+        "font": "$fonts.body.black",
+        "size": 18,
+        "colour": "$colours.ink.night"
+      },
+      "lore.body": {
+        "font": "$fonts.body",
+        "size": 13,
+        "colour": "$colours.ink.night"
+      },
+      "lore.body.gloria": {
+        "extends": "lore.body",
+        "font": "$fonts.body",
+        "size": 13
+      },
+      "lore.body.reenie": {
+        "extends": "lore.body",
+        "font": "$fonts.body",
+        "size": 13
+      },
+      "lore.body.plain": {
+        "font": "$fonts.body",
+        "size": 13,
+        "colour": "$colours.ink.night"
+      },
+      "lore.index": {
+        "variant": "plate",
+        "font": "$fonts.body",
+        "size": 11,
+        "colour": "$colours.ink.night",
+        "background": "$colours.paper.cream",
+        "padding": [
+          2,
+          6
+        ],
+        "radius": 3,
+        "border": {
+          "colour": "$colours.paper.cream",
+          "width": 1
+        },
+        "min.height": 0,
+        "hover": {
+          "background": "$colours.lore.tablet.chip.hover"
+        },
+        "focus": {
+          "background": "$colours.lore.tablet.chip.hover"
+        },
+        "pressed": {
+          "background": "$colours.lore.tablet.chip.hover"
+        }
+      },
+      "lore.index.current": {
+        "extends": "lore.index",
+        "background": "$colours.lore.tablet.chip.current",
+        "colour": "$colours.ink.night",
+        "border": {
+          "colour": "$colours.lore.tablet.chip.current",
+          "width": 1
+        },
+        "hover": {
+          "background": "$colours.lore.tablet.chip.current"
+        },
+        "focus": {
+          "background": "$colours.lore.tablet.chip.current"
+        },
+        "pressed": {
+          "background": "$colours.lore.tablet.chip.current"
+        }
+      },
+      "lore.pageinfo": {
+        "font": "$fonts.body",
+        "size": 11,
+        "tracking": 0.04,
+        "colour": "$colours.lore.tablet.ink.soft"
+      }
+    }
+  }
+}

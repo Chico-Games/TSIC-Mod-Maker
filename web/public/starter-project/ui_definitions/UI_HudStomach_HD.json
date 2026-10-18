@@ -1,0 +1,32 @@
+{
+  "id": "UI_HudStomach_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Stomach.State" ],
+    "tree": {
+      "id": "stomach-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[stomach].bHidden ? false : !UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "stomach-column", "widget": "list", "style": "list", "selectable": false, "reverse_order": true,
+          "slot": { "anchor": "bottom-left", "offset": [230, -30] },
+          "bind": { "items": "UI.Stomach.State.Slots" },
+          "template": { "id": "stomach-slot", "widget": "panel", "layout": "overlay", "width": 42, "height": 42, "slot": { "padding": [0, 3, 0, 3] },
+            "bind": { "style": "item.ItemId == '' ? 'hud.slot.stomach.empty' : (item.bSelected ? 'hud.slot.stomach.selected' : 'hud.slot.stomach')" },
+            "children": [
+              { "id": "stomach-mark", "widget": "image", "source": "mod:icons/ui/stomach", "plate_when_missing": false, "slot": { "anchor": "center" },
+                "bind": { "size": "'24,24'", "visible": "item.ItemId == ''" } },
+              { "id": "stomach-icon", "widget": "image", "slot": { "anchor": "center" },
+                "bind": { "source": "\"item:{item.ItemId}\"", "size": "'30,30'", "visible": "item.ItemId != ''" } },
+              { "id": "stomach-digest", "widget": "panel", "layout": "vertical", "slot": { "align": "fill", "valign": "bottom" },
+                "bind": { "visible": "item.ItemId != '' ? item.Duration > 0 : false" },
+                "children": [
+                  { "id": "stomach-digest-level", "widget": "panel", "style": "hud.digest.level", "height": 2 },
+                  { "id": "stomach-digest-wash", "widget": "panel", "style": "hud.digest.wash",
+                    "bind": { "height": "item.Duration > 0 ? 36 * item.RemainingTime / item.Duration : 0" } }
+                ] }
+            ] } }
+      ]
+    }
+  }
+}

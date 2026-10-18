@@ -1,0 +1,30 @@
+{
+  "id": "UI_HudChat_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Chat.History", "UI.Hud.ChatInput" ],
+    "tree": {
+      "id": "chat-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[chat].bHidden ? false : (UI.Hud.Visibility[all].bHidden ? false : (UI.Hud.ChatInput.bOpen ? true : UI.Chat.History.Messages.Num > 0))" },
+      "children": [
+        { "id": "chat-stack", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 6, "slot": { "anchor": "bottom-left", "offset": [24, -260], "width": 380 },
+          "children": [
+            { "id": "chat-log", "widget": "list", "style": "hud.chat.log", "selectable": false, "reverse_order": true, "max_height": 240,
+              "bind": { "items": "UI.Chat.History.Messages", "visible": "UI.Chat.History.Messages.Num > 0" },
+              "template": { "id": "chat-line", "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "padding": [0, 2, 0, 2] },
+                "children": [
+                  { "widget": "text", "style": "hud.chat.sender", "case": "None", "slot": { "valign": "top" }, "bind": { "text": "\"{item.SenderName}:\"" } },
+                  { "widget": "text", "style": "hud.chat.text", "case": "None", "wrap": true, "wrap_at": 290, "slot": { "fill": true, "valign": "top" }, "bind": { "text": "item.Text" } }
+                ] } },
+            { "id": "chat-input-row", "widget": "panel", "layout": "horizontal", "style": "hud.chat.input.row", "gap": 6,
+              "bind": { "visible": "UI.Hud.ChatInput.bOpen" },
+              "children": [
+                { "id": "chat-prompt", "widget": "text", "style": "hud.chat.prompt", "text": ">", "case": "None", "slot": { "valign": "center" } },
+                { "id": "chat-input", "widget": "textfield", "style": "hud.chat.input", "placeholder": "Send a message…", "slot": { "fill": true, "valign": "center" } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

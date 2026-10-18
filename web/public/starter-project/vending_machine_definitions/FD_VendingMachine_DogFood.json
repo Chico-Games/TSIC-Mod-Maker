@@ -1,0 +1,31 @@
+{
+  "id": "FD_VendingMachine_DogFood",
+  "class": "UInteractableFurnitureDefinition",
+  "schema_version": 2,
+  "properties": {
+    "extends": "FD_VendingMachine_Base",
+    "display_name": "Canned Dog Food Vending Machine",
+    "static_mesh": "/Game/Fab/SUBURBS/VOL28_Vending/Meshes/NN/SM_Vending_Machine_NN_16a.SM_Vending_Machine_NN_16a",
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureType.VendingMachine",
+      "Tile.Difficulty.Easy"
+    ],
+    "station": {
+      "recipe_tag": "Station.Vending.DogFood",
+      "input": "coins",
+      "output": "tray",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "start_sound": "Container.Vending.Coin",
+        "craft_sound": "Shop.Buy",
+        "action_label": "Buy"
+      }
+    }
+  }
+}

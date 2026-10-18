@@ -1,0 +1,32 @@
+{
+  "id": "UI_HudHotbar_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Hotbar.Changed", "UI.Input.Mode.Changed" ],
+    "tree": {
+      "id": "hotbar-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[hotbar].bHidden ? false : (UI.Hud.Visibility[hotbar.idle].bHidden ? false : !UI.Hud.Visibility[all].bHidden)" },
+      "children": [
+        { "id": "hotbar-row", "widget": "list", "layout": "horizontal", "style": "list.hotbar", "selectable": false,
+          "slot": { "anchor": "bottom-center", "offset": [0, -24] },
+          "bind": { "items": "UI.Hotbar.Changed.Hooks" },
+          "template": { "id": "hotbar-slot", "widget": "panel", "layout": "overlay", "width": 56, "height": 56, "slot": { "padding": [4, 0, 4, 0] },
+            "bind": { "style": "item.SlotIndex == UI.Hotbar.Changed.SelectedSlot ? 'slot.hotbar.selected' : (item.SlotIndex == UI.Hotbar.Changed.SelectedSlotPending ? 'hud.slot.hotbar.pending' : 'slot.hotbar')" },
+            "on": { "click": { "cmd": "UI.Cmd.Hotbar.Select", "args": { "SlotIndex": "{item.SlotIndex}" } } },
+            "children": [
+              { "widget": "image", "slot": { "anchor": "center" },
+                "bind": { "source": "\"item:{item.ItemId}\"", "size": "'40,40'", "visible": "item.ItemId != ''" } },
+              { "widget": "text", "style": "hud.slot.count", "slot": { "anchor": "bottom-right", "offset": [-4, -3] },
+                "bind": { "text": "item.Count", "visible": "item.LoadedAmmo >= 0 ? false : item.Count > 1" } },
+              { "widget": "text", "style": "hud.slot.count", "slot": { "anchor": "bottom-right", "offset": [-4, -3] },
+                "bind": { "text": "\"{item.LoadedAmmo}/{item.SpareAmmo}\"", "visible": "item.LoadedAmmo >= 0" } },
+              { "widget": "progressbar", "style": "bar.durability", "slot": { "anchor": "bottom-center", "padding": [6, 0, 6, 2] },
+                "bind": { "progress": "item.Durability / item.MaxDurability", "visible": "item.MaxDurability > 0" } },
+              { "widget": "text", "style": "hud.slot.key", "slot": { "anchor": "top-left", "offset": [4, 3] },
+                "bind": { "text": "item.SlotIndex + 1 fmt:int", "visible": "UI.Input.Mode.Changed.Mode != 'Gamepad'" } }
+            ] } }
+      ]
+    }
+  }
+}

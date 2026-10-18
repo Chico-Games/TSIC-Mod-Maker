@@ -5,12 +5,54 @@
   "schema_version": 2,
   "properties": {
     "thumbnail": "mod:icons/id_woodenplank_cm",
-    "display_name": "Wooden Plank",
-    "description": "A sturdy plank, cut and sanded for construction.",
+    "display_name": "Splintered Board",
+    "description": "Crafting material. Used for Sawn Plank. Found all over the store.\nSnapped off something bigger. One edge is a mess of splinters.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_WoodenPlank_SI",
     "item_category_tag": "Entity.Inventory.Item.Category.CraftingMaterial",
-    "max_stack_size": 50
+    "max_stack_size": 3,
+    "inventory_layout": {
+      "cells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        }
+      ]
+    },
+    "presentations": [
+      {
+        "key": "lean",
+        "value": {
+          "rotation": {
+            "pitch": 0.0,
+            "yaw": 0.0,
+            "roll": 80.0
+          }
+        }
+      },
+      {
+        "key": "upright",
+        "value": {
+          "scale": 1.0
+        }
+      },
+      {
+        "key": "flat",
+        "value": {
+          "scale": 1.0
+        }
+      }
+    ],
+    "storage_class": "wood",
+    "material_class": "wood"
   }
 }

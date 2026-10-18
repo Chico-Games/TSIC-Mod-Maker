@@ -1,0 +1,13 @@
+{
+  "id": "UI_HudStealth_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": -3,
+    "uses": [ "UI.Hud.Visibility", "UI.Player.Tags" ],
+    "tree": {
+      "id": "stealth-shroud", "widget": "fade", "style": "hud.vignette.stealth", "mode": "Hold", "shape": "Vignette", "vignette_depth": 0.55, "peak": 1, "auto_play": false,
+      "bind": { "visible": "UI.Hud.Visibility[stealth].bHidden ? false : (UI.Hud.Visibility[all].bHidden ? false : UI.Player.Tags.Tags[Status.Stealth])" }
+    }
+  }
+}

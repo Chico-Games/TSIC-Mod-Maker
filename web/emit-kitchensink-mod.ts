@@ -3,11 +3,12 @@
 // byte-identical to what a modder gets out of the tool's Save.
 //
 // The mod deliberately touches every surface a mod can touch:
-//   items · furniture · loot spawn rates · enemy spawn rates · AI · UI · a map
+//   items · furniture · loot spawn rates · enemy spawn rates · AI · a UI script · a map
 //
 // usage: node --import tsx emit-kitchensink-mod.ts <mods-dir>
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { serializeRecord } from './src/modio/packer';
 import type { DefinitionRecord } from './src/store/definitionsStore';
 
@@ -16,6 +17,9 @@ if (!modsDir) {
   console.error('usage: emit-kitchensink-mod.ts <mods-dir>');
   process.exit(1);
 }
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const FIXTURES = join(HERE, 'fixtures', 'mods');
 
 const MOD_ID = 'com.test.kitchensink';
 const root = join(modsDir, MOD_ID);
@@ -129,10 +133,11 @@ for (const r of records) {
   writeFileSync(join(dir, `${r.id}.json`), serializeRecord(r));
 }
 
-// mod.json — the game's schema. "ui" is what lets the mod ship web/ content at
-// all. No `overrides`: this mod ADDS a file rather than shadowing a base one,
-// and declaring a base file it does not replace would be a lie the tooling is
-// meant to surface.
+// mod.json — the game's manifest (FScpModDiscovery::ReadModMetadata).
+// `capabilities` is the closed vocabulary the game enforces; "ui" is what
+// lets the mod run a UI-VM Lua script and ship ui_definitions/. `scripts`
+// names the Lua entry per VM, relative to the mod root and under scripts/;
+// a "ui" entry requires the "ui" capability and vice versa for "rules".
 mkdirSync(root, { recursive: true });
 writeFileSync(
   join(root, 'mod.json'),
@@ -141,20 +146,19 @@ writeFileSync(
       id: MOD_ID,
       displayName: 'Kitchen Sink Integration Fixture',
       version: '1.0.0',
-      permissions: ['ui'],
+      capabilities: ['ui'],
+      scripts: { ui: 'scripts/kitchensink.lua' },
     },
     null,
     2,
   ) + '\n',
 );
 
-// --- UI: a web overlay file ------------------------------------------------
-mkdirSync(join(root, 'web', 'shared'), { recursive: true });
-writeFileSync(
-  join(root, 'web', 'shared', 'mod-kitchensink.css'),
-  '/* Served from com.test.kitchensink instead of the default mod. */\n' +
-    ':root { --tsic-kitchensink-marker: 1; }\n',
-);
+// --- UI: a Lua script in the per-machine UI VM -----------------------------
+// Binds a UI.* event by hand, the same thing a declarative screen binding does,
+// so the content test can prove the sandbox and the read-only tsic table.
+mkdirSync(join(root, 'scripts'), { recursive: true });
+writeFileSync(join(root, 'scripts', 'kitchensink.lua'), readFileSync(join(FIXTURES, 'kitchensink.lua')));
 
 // --- MAP: a level shipped by the mod ---------------------------------------
 // Derived from a real base-game map rather than hand-rolled: the JSON-RLE
@@ -168,4 +172,4 @@ baseMap.metadata.description = 'Integration fixture map shipped by com.test.kitc
 mkdirSync(join(root, 'maps'), { recursive: true });
 writeFileSync(join(root, 'maps', 'KitchenSinkWorld.json'), JSON.stringify(baseMap, null, 2) + '\n');
 
-console.log(`wrote ${records.length} definitions + mod.json + web overlay + map to ${root}`);
+console.log(`wrote ${records.length} definitions + mod.json + UI script + map to ${root}`);

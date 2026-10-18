@@ -1,0 +1,365 @@
+{
+  "id": "UI_LoadSave_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "LoadSave",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.MainMenu",
+    "cancel": "UI.Cmd.Menu.Back",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Load"
+      },
+      {
+        "action": "back",
+        "label": "Back"
+      }
+    ],
+    "uses": [
+      "UI.Save.Slots"
+    ],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage.title",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 580
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 16,
+              "slot": {
+                "padding": [
+                  18,
+                  22,
+                  10,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true,
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "text.kicker",
+                      "text": "Pick up where"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "slot": {
+                        "padding": [
+                          -4,
+                          0,
+                          0,
+                          0
+                        ]
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.masthead",
+                          "text": "You Left Off",
+                          "line_height": 0.9
+                        },
+                        {
+                          "widget": "text",
+                          "style": "text.masthead",
+                          "text": ".",
+                          "line_height": 0.9,
+                          "bind": {
+                            "colour": "'#E60000'"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "align": "right",
+                    "valign": "top"
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "style": "chip.badge",
+                      "slot": {
+                        "align": "right"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.badge",
+                          "case": "None",
+                          "text": "Dept. 12"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.date",
+                      "text": "Welcome back!",
+                      "justify": "Right",
+                      "wrap": true,
+                      "slot": {
+                        "align": "right"
+                      },
+                      "case": "Upper"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "slots",
+              "widget": "list",
+              "style": "list",
+              "selectable": true,
+              "max_height": 380,
+              "empty_text": "No saves yet.",
+              "slot": {
+                "padding": [
+                  6,
+                  4,
+                  0,
+                  4
+                ]
+              },
+              "bind": {
+                "items": "UI.Save.Slots.Slots"
+              },
+              "on": {
+                "activate": {
+                  "cmd": "UI.Cmd.Menu.LoadSlot",
+                  "args": {
+                    "SlotId": "{item.SlotId}"
+                  }
+                }
+              },
+              "template": {
+                "widget": "panel",
+                "layout": "vertical",
+                "children": [
+                  {
+                    "widget": "panel",
+                    "layout": "horizontal",
+                    "style": "menu.panel.slot",
+                    "gap": 14,
+                    "children": [
+                      {
+                        "widget": "panel",
+                        "layout": "overlay",
+                        "style": "menu.panel.thumb",
+                        "slot": {
+                          "width": 84,
+                          "height": 56,
+                          "valign": "center"
+                        },
+                        "children": [
+                          {
+                            "widget": "text",
+                            "style": "menu.text.thumb",
+                            "text": "No photo",
+                            "slot": {
+                              "align": "center",
+                              "valign": "center"
+                            }
+                          },
+                          {
+                            "widget": "image",
+                            "slot": {
+                              "align": "fill",
+                              "valign": "fill"
+                            },
+                            "bind": {
+                              "source": "item.ThumbnailUrl"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "widget": "panel",
+                        "layout": "vertical",
+                        "gap": 2,
+                        "slot": {
+                          "fill": true,
+                          "valign": "center"
+                        },
+                        "children": [
+                          {
+                            "widget": "text",
+                            "style": "menu.text.slot.opened",
+                            "bind": {
+                              "text": "item.TimestampIso fmt:datetime"
+                            }
+                          },
+                          {
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "gap": 6,
+                            "children": [
+                              {
+                                "widget": "text",
+                                "style": "menu.text.slot.playtime",
+                                "text": "Playtime"
+                              },
+                              {
+                                "widget": "text",
+                                "style": "menu.text.slot.playtime",
+                                "bind": {
+                                  "text": "item.PlaytimeSeconds fmt:playtime"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "slot": {
+                              "padding": [
+                                2,
+                                0,
+                                0,
+                                0
+                              ]
+                            },
+                            "bind": {
+                              "visible": "item.GameModeDisplayName != '' ? item.GameModeDisplayName != 'Classic' : item.GameModeId != ''"
+                            },
+                            "children": [
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 4,
+                                "bind": {
+                                  "style": "item.bEndsRunOnDeath ? 'menu.chip.slot.mode.ironman' : 'menu.chip.slot.mode'"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.slot.mode",
+                                    "bind": {
+                                      "text": "item.GameModeDisplayName != '' ? item.GameModeDisplayName : item.GameModeId"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.slot.mode",
+                                    "text": "· Ironman",
+                                    "bind": {
+                                      "visible": "item.bEndsRunOnDeath"
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "menu.text.slot.mode",
+                                    "text": "· mod missing",
+                                    "bind": {
+                                      "visible": "item.GameModeDisplayName == ''"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "widget": "button",
+                        "style": "menu.button.delete",
+                        "label": "Delete",
+                        "confirm_label": "Sure?",
+                        "slot": {
+                          "valign": "center"
+                        },
+                        "on": {
+                          "click": {
+                            "cmd": "UI.Cmd.Save.DeleteSlot",
+                            "args": {
+                              "SlotId": "{item.SlotId}"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "widget": "panel",
+                    "style": "menu.rule.row",
+                    "slot": {
+                      "height": 2
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "rows",
+              "widget": "panel",
+              "layout": "vertical",
+              "focus": "group",
+              "slot": {
+                "padding": [
+                  6,
+                  4,
+                  10,
+                  4
+                ]
+              },
+              "children": [
+                {
+                  "id": "btn-back",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Back to Main",
+                  "dept": "Fire Exit",
+                  "first_in_group": true,
+                  "focus": "initial",
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Menu.Navigate",
+                      "args": {
+                        "Screen": "MainMenu"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

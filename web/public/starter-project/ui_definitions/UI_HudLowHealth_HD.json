@@ -1,0 +1,16 @@
+{
+  "id": "UI_HudLowHealth_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": -2,
+    "uses": [ "UI.Hud.Visibility", "UI.Player.Attribute" ],
+    "tree": {
+      "id": "low-health", "widget": "fade", "style": "hud.vignette.blood", "mode": "Hold", "shape": "Vignette", "vignette_depth": 0.32, "auto_play": false,
+      "bind": {
+        "visible": "UI.Hud.Visibility[lowhealth].bHidden ? false : (UI.Hud.Visibility[all].bHidden ? false : (UI.Player.Attribute[Health].Max > 0 ? UI.Player.Attribute[Health].Current / UI.Player.Attribute[Health].Max < 0.2 : false))",
+        "peak": "(0.2 - UI.Player.Attribute[Health].Current / UI.Player.Attribute[Health].Max) / 0.2"
+      }
+    }
+  }
+}

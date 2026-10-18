@@ -61,12 +61,16 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Bread",
-    "description": "Freshly baked bread. The loaf that makes a base feel like a home.",
+    "description": "Eat: Heals 12 instantly. +15 max health, +20 max stamina, stamina recovers 15% sooner for 14 min. Fills 50 hunger. Made at the Oven.\nFreshly baked bread. The loaf that makes a base feel like a home.",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_Bread_SI",
-    "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
+    "storage_class": "cold",
+    "material_class": "food",
     "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
-    "max_stack_size": 10
+    "max_stack_size": 3,
+    "inventory_layout": {
+      "cells": [ { "x": 0, "y": 0 }, { "x": 1, "y": 0 }, { "x": 0, "y": 1 }, { "x": 1, "y": 1 } ]
+    }
   }
 }

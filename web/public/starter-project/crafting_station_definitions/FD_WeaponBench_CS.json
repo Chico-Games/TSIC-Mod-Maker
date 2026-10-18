@@ -1,10 +1,9 @@
 {
   "id": "FD_WeaponBench_CS",
   "asset_path": "/Game/Furniture/CraftingBenches/WeaponCrafting/Construction/FD_WeaponBench_CS",
-  "class": "UCraftingStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "gameplay_event_tag": "UI.GameScreen.Crafting",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Craft at",
     "has_static_audio": false,
@@ -171,8 +170,44 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "available_recipe_rules_definition": "ARR_WeaponBenchRecipes",
     "constructable_item_to_grant": "ID_WeaponBench_CI",
-    "upgrade_recipe": "RD_WeaponBenchTier2_CN"
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "compartments": [
+      {
+        "id": "input",
+        "layout": "Grid",
+        "width": 14,
+        "height": 6,
+        "accepts": [
+          "fabric",
+          "fasteners",
+          "general",
+          "wood"
+        ],
+        "surface": {
+          "offset": {
+            "x": -1.0,
+            "y": 49.0,
+            "z": 94.4
+          },
+          "yaw": 90.0,
+          "width": 176,
+          "depth": 78
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.WeaponBench",
+      "input": "input",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "action_label": "Craft"
+      }
+    }
   }
 }

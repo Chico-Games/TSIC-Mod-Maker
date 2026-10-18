@@ -1,0 +1,147 @@
+{
+  "id": "UI_PauseMenu_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "PauseMenu",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Pause",
+    "cancel": "UI.Cmd.Pause.Resume",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Resume" } ],
+    "uses": [ "UI.Multiplayer.State", "UI.State.DevMode" ],
+    "tree": {
+      "id": "pause-overlay", "widget": "panel", "layout": "overlay", "style": "screen.dim",
+      "on": { "show": { "sound": "Pause.Open", "volume": 0.4 }, "hide": { "sound": "Pause.Close", "volume": 0.4 } },
+      "children": [
+        { "id": "pause-panel", "widget": "panel", "layout": "vertical", "style": "panel.cover", "slot": { "align": "center", "valign": "center", "width": 400 },
+          "children": [
+            { "id": "header", "widget": "panel", "layout": "horizontal", "slot": { "padding": [14, 16, 10, 16] },
+              "children": [
+                { "widget": "text", "style": "text.title.lg", "text": "Paused", "slot": { "fill": true, "valign": "center" }, "bind": { "colour": "'#E60000'" } },
+                { "widget": "panel", "layout": "vertical", "gap": 4, "slot": { "align": "right", "valign": "center" },
+                  "children": [
+                    { "widget": "panel", "style": "chip.badge", "slot": { "align": "right" }, "children": [ { "widget": "text", "style": "text.badge", "text": "Intermission" } ] },
+                    { "widget": "text", "style": "text.caption", "text": "SEE YOU SOON.", "slot": { "align": "right" } }
+                  ] }
+              ] },
+            { "widget": "panel", "style": "rule.panel", "slot": { "height": 4 } },
+
+            { "id": "body", "widget": "panel", "layout": "scroll", "slot": { "fill": true, "height": 560 },
+              "children": [
+                { "widget": "panel", "layout": "vertical", "gap": 8, "slot": { "padding": [6, 16, 18, 16] },
+                  "children": [
+                    { "id": "nav", "widget": "panel", "layout": "vertical", "focus": "group", "gap": 10,
+                      "children": [
+                        { "id": "btn-resume",         "widget": "button", "style": "button.primary",         "label": "Resume",                           "fill_width": true, "focus": "initial", "on": { "click": { "cmd": "UI.Cmd.Pause.Resume" } } },
+                        { "id": "btn-settings",       "widget": "button", "style": "button.secondary",       "label": "Settings",                         "fill_width": true, "on": { "click": { "cmd": "UI.Cmd.Pause.Settings" } } },
+                        { "id": "btn-bug-report",     "widget": "button", "style": "button.secondary",       "label": "Report a Bug",                     "fill_width": true, "on": { "click": { "cmd": "UI.Cmd.Pause.BugReport" } } },
+                        { "id": "btn-teleport-spawn", "widget": "button", "style": "button.secondary.tight", "label": "I'm Stuck (Teleport to Spawn Point)", "fill_width": true, "on": { "click": { "cmd": "UI.Cmd.Pause.TeleportToSpawn" } } },
+                        { "id": "btn-menu",           "widget": "button", "style": "button.secondary.tight", "label": "Save and Return to Main Menu",     "fill_width": true, "on": { "click": { "cmd": "UI.Cmd.Pause.QuitToMenu" } } },
+                        { "id": "btn-quit",           "widget": "button", "style": "button.secondary",       "label": "Save and Quit",                    "fill_width": true, "on": { "click": { "cmd": "UI.Cmd.Menu.Exit" } } },
+                        { "id": "btn-dev-cheats",     "widget": "button", "style": "button.secondary",       "label": "Cheat Menu (F1)",                  "fill_width": true,
+                          "bind": { "visible": "UI.State.DevMode.bDevBuild" },
+                          "on": { "click": { "cmd": "UI.Cmd.Pause.CheatMenu" } } }
+                      ] },
+
+                    { "widget": "panel", "style": "menu.live.rule.mp", "slot": { "height": 1, "padding": [8, 0, 0, 0] } },
+
+                    { "id": "mp", "widget": "panel", "layout": "vertical", "gap": 8,
+                      "children": [
+                        { "id": "mp-head", "widget": "panel", "layout": "horizontal",
+                          "children": [
+                            { "widget": "text", "style": "menu.live.text.mp.title", "text": "Multiplayer", "slot": { "fill": true, "valign": "bottom" } },
+                            { "id": "mp-day", "widget": "text", "style": "menu.live.text.mp.day", "slot": { "align": "right", "valign": "bottom" },
+                              "bind": { "text": "UI.Multiplayer.State.Day > 0 ? \"Day {UI.Multiplayer.State.Day}\" : ''" } }
+                          ] },
+
+                        { "id": "roster-box", "widget": "panel", "layout": "vertical", "style": "panel.roster",
+                          "children": [
+                            { "id": "players", "widget": "list", "style": "list.roster", "selectable": false, "max_height": 180, "empty_text": "No other players",
+                              "bind": { "items": "UI.Multiplayer.State.Players" },
+                              "template": { "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "padding": [0, 5] },
+                                "children": [
+                                  { "widget": "progressbar", "style": "menu.live.dot", "progress": 1, "width": 12, "slot": { "width": 12, "valign": "center" },
+                                    "bind": { "colour": "item.Color != '' ? item.Color : '#888888'" } },
+                                  { "widget": "panel", "layout": "vertical", "gap": 3, "slot": { "fill": true, "valign": "center" },
+                                    "children": [
+                                      { "widget": "panel", "layout": "horizontal", "gap": 5,
+                                        "children": [
+                                          { "widget": "text", "slot": { "valign": "center" },
+                                            "bind": { "text": "item.Name != '' ? item.Name : item.bIsHost ? 'Host' : 'Player'", "style": "item.bHasPawn ? 'menu.live.text.name' : item.bIsLocal ? 'menu.live.text.name' : 'menu.live.text.name.dim'" } },
+                                          { "widget": "panel", "style": "menu.live.chip.you", "slot": { "valign": "center" }, "bind": { "visible": "item.bIsLocal" },
+                                            "children": [ { "widget": "text", "style": "menu.live.chip.you", "text": "You" } ] },
+                                          { "widget": "panel", "style": "menu.live.chip.badge", "slot": { "valign": "center" }, "bind": { "visible": "item.bIsHost" },
+                                            "children": [ { "widget": "text", "style": "menu.live.chip.badge", "text": "Host" } ] },
+                                          { "widget": "panel", "style": "menu.live.chip.down", "slot": { "valign": "center" }, "bind": { "visible": "item.bIsDead" },
+                                            "children": [ { "widget": "text", "style": "menu.live.chip.down", "text": "Down" } ] }
+                                        ] },
+                                      { "widget": "progressbar", "progress": 0, "slot": { "align": "fill" },
+                                        "bind": { "visible": "item.bHasPawn ? item.MaxHealth > 0 : false", "progress": "item.HealthPct",
+                                                  "style": "item.HealthPct <= 0.25 ? 'menu.live.bar.hp.critical' : item.HealthPct <= 0.6 ? 'menu.live.bar.hp.hurt' : 'menu.live.bar.hp'" } },
+                                      { "widget": "panel", "layout": "horizontal", "gap": 4, "bind": { "visible": "item.bHasPawn ? item.MaxHealth > 0 : false" },
+                                        "children": [
+                                          { "widget": "text", "style": "menu.live.text.meta", "bind": { "text": "item.Health fmt:int" } },
+                                          { "widget": "text", "style": "menu.live.text.meta", "text": "/" },
+                                          { "widget": "text", "style": "menu.live.text.meta", "bind": { "text": "item.MaxHealth fmt:int" } },
+                                          { "widget": "text", "style": "menu.live.text.meta", "text": "·", "slot": { "padding": [0, 4] }, "bind": { "visible": "item.FloorLabel != ''" } },
+                                          { "widget": "text", "style": "menu.live.text.meta", "bind": { "text": "item.FloorLabel", "visible": "item.FloorLabel != ''" } }
+                                        ] },
+                                      { "widget": "text", "style": "menu.live.text.meta", "text": "Out of range",
+                                        "bind": { "visible": "!item.bHasPawn" } }
+                                    ] },
+                                  { "widget": "panel", "layout": "vertical", "gap": 1, "slot": { "width": 48, "valign": "center" },
+                                    "children": [
+                                      { "widget": "image", "style": "menu.live.image.bearing", "source": "mod:icons/ui/bearing-arrow", "slot": { "align": "center" },
+                                        "bind": { "size": "'16,16'", "visible": "item.bIsLocal ? false : item.bHasPawn", "rotation": "item.BearingDeg" } },
+                                      { "widget": "text", "style": "menu.live.text.dist", "justify": "Center", "text": "you", "bind": { "visible": "item.bIsLocal" } },
+                                      { "widget": "panel", "layout": "horizontal", "gap": 2, "slot": { "align": "center" }, "bind": { "visible": "item.bIsLocal ? false : item.bHasPawn" },
+                                        "children": [
+                                          { "widget": "text", "style": "menu.live.text.dist", "bind": { "text": "item.DistanceM fmt:int" } },
+                                          { "widget": "text", "style": "menu.live.text.dist", "text": "m" }
+                                        ] },
+                                      { "widget": "text", "style": "menu.live.text.dist", "justify": "Center", "text": "—", "bind": { "visible": "item.bIsLocal ? false : !item.bHasPawn" } }
+                                    ] },
+                                  { "widget": "button", "style": "menu.live.button.kick", "label": "Kick", "slot": { "valign": "center" },
+                                    "bind": { "visible": "UI.Multiplayer.State.bLocalIsHost ? !item.bIsHost : false" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Multiplayer.Kick", "args": { "PlayerId": "{item.Id}" } } } }
+                                ] } }
+                          ] },
+
+                        { "id": "mp-settings", "widget": "panel", "layout": "vertical", "focus": "group", "gap": 8,
+                          "children": [
+                            { "id": "mp-row-allow", "widget": "panel", "layout": "horizontal", "gap": 10,
+                              "children": [
+                                { "widget": "text", "style": "menu.live.text.mp.label", "text": "Allow friends to join", "slot": { "fill": true, "valign": "center" } },
+                                { "id": "mp-allow", "widget": "toggle", "slot": { "align": "right", "valign": "center" },
+                                  "bind": { "checked": "UI.Multiplayer.State.bAllowFriends", "disabled": "!UI.Multiplayer.State.bLocalIsHost" },
+                                  "on": { "change": { "cmd": "UI.Cmd.Multiplayer.Set", "args": {
+                                    "bAllowFriends": "{self.checked}", "bPasswordRequired": "{#mp-pw-toggle.checked}",
+                                    "Password": "{#mp-pw.value != '' ? #mp-pw.value : UI.Multiplayer.State.Password}" } } } }
+                              ] },
+                            { "id": "mp-row-pw", "widget": "panel", "layout": "horizontal", "gap": 10,
+                              "children": [
+                                { "widget": "text", "style": "menu.live.text.mp.label", "text": "Require password", "slot": { "fill": true, "valign": "center" } },
+                                { "id": "mp-pw-toggle", "widget": "toggle", "slot": { "align": "right", "valign": "center" },
+                                  "bind": { "checked": "UI.Multiplayer.State.bPasswordRequired", "disabled": "!UI.Multiplayer.State.bLocalIsHost" },
+                                  "on": { "change": { "cmd": "UI.Cmd.Multiplayer.Set", "args": {
+                                    "bAllowFriends": "{#mp-allow.checked}", "bPasswordRequired": "{self.checked}",
+                                    "Password": "{#mp-pw.value != '' ? #mp-pw.value : UI.Multiplayer.State.Password}" } } } }
+                              ] },
+                            { "id": "mp-pw", "widget": "textfield", "placeholder": "Password", "min_width": 0, "slot": { "align": "fill" },
+                              "bind": { "visible": "UI.Multiplayer.State.bPasswordRequired", "disabled": "!UI.Multiplayer.State.bLocalIsHost",
+                                        "placeholder": "UI.Multiplayer.State.Password != '' ? UI.Multiplayer.State.Password : 'Password'" },
+                              "on": { "commit": { "cmd": "UI.Cmd.Multiplayer.Set", "args": {
+                                "bAllowFriends": "{#mp-allow.checked}", "bPasswordRequired": "{#mp-pw-toggle.checked}", "Password": "{self.value}" } } } },
+                            { "id": "btn-invite", "widget": "button", "style": "button.secondary", "label": "Invite Friends", "fill_width": true,
+                              "bind": { "disabled": "!UI.Multiplayer.State.bCanInvite" },
+                              "on": { "click": { "cmd": "UI.Cmd.Multiplayer.Invite" } } },
+                            { "widget": "text", "style": "menu.text.hint", "wrap": true, "text": "No joinable session — the host has closed the game to friends.",
+                              "bind": { "visible": "!UI.Multiplayer.State.bCanInvite" } }
+                          ] }
+                      ] }
+                  ] }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

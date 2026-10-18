@@ -1,0 +1,31 @@
+{
+  "id": "FD_VendingMachine_FrozenHotDog",
+  "class": "UInteractableFurnitureDefinition",
+  "schema_version": 2,
+  "properties": {
+    "extends": "FD_VendingMachine_Base",
+    "display_name": "Frozen Hot Dog Vending Machine",
+    "static_mesh": "/Game/Fab/SUBURBS/VOL28_Vending/Meshes/NN/SM_Vending_Soda_NN_17a.SM_Vending_Soda_NN_17a",
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureType.VendingMachine",
+      "Tile.Difficulty.Normal"
+    ],
+    "station": {
+      "recipe_tag": "Station.Vending.FrozenHotDog",
+      "input": "coins",
+      "output": "tray",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "start_sound": "Container.Vending.Coin",
+        "craft_sound": "Shop.Buy",
+        "action_label": "Buy"
+      }
+    }
+  }
+}

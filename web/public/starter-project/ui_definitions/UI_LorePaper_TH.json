@@ -1,0 +1,168 @@
+{
+  "id": "UI_LorePaper_TH",
+  "class": "ScpUiThemeDefinition",
+  "properties": {
+    "extends": "UI_Default_TH",
+    "colours": {
+      "lore.paper": "#e9dcbb",
+      "lore.paper.ink": "#2a2114",
+      "lore.paper.ink.plain": "#1d1810",
+      "lore.paper.ink.soft": "rgba(42, 33, 20, 0.5)",
+      "lore.paper.shadow": "rgba(28, 22, 12, 0.5)",
+      "lore.chrome.text": "#efe6d2",
+      "lore.chrome.dim": "rgba(240, 232, 212, 0.6)",
+      "lore.chrome.bg": "rgba(20, 18, 14, 0.35)",
+      "lore.chrome.bg.strong": "rgba(20, 18, 14, 0.40)",
+      "lore.chrome.border": "rgba(240, 232, 212, 0.35)",
+      "lore.chrome.hover": "rgba(240, 232, 212, 0.16)",
+      "lore.toggle.on": "#ffcc00",
+      "lore.toggle.on.ink": "#1a1408"
+    },
+    "styles": {
+      "lore.scrim": {
+        "background": "$colours.bg.overlay",
+        "padding": 40
+      },
+      "lore.frame": {},
+      "lore.sheet": {
+        "background": "$colours.lore.paper",
+        "padding": [
+          16,
+          42,
+          20,
+          42
+        ],
+        "shadow": {
+          "offset": [
+            0,
+            10
+          ],
+          "colour": "$colours.lore.paper.shadow"
+        }
+      },
+      "lore.edge": {},
+      "lore.group": {
+        "font": "$fonts.body",
+        "size": 11,
+        "tracking": 0.36,
+        "case": "upper",
+        "colour": "$colours.lore.paper.ink.soft"
+      },
+      "lore.heading": {
+        "font": "$fonts.hand",
+        "size": 32,
+        "colour": "$colours.lore.paper.ink"
+      },
+      "lore.heading.gloria": {
+        "extends": "lore.heading",
+        "font": "$fonts.hand.gloria",
+        "size": 30
+      },
+      "lore.heading.reenie": {
+        "extends": "lore.heading",
+        "font": "$fonts.hand.reenie",
+        "size": 36
+      },
+      "lore.heading.plain": {
+        "font": "$fonts.body.black",
+        "size": 24,
+        "colour": "$colours.lore.paper.ink.plain"
+      },
+      "lore.body": {
+        "font": "$fonts.hand",
+        "size": 20,
+        "colour": "$colours.lore.paper.ink"
+      },
+      "lore.body.gloria": {
+        "extends": "lore.body",
+        "font": "$fonts.hand.gloria",
+        "size": 19
+      },
+      "lore.body.reenie": {
+        "extends": "lore.body",
+        "font": "$fonts.hand.reenie",
+        "size": 23
+      },
+      "lore.body.plain": {
+        "font": "$fonts.body",
+        "size": 16,
+        "colour": "$colours.lore.paper.ink.plain"
+      },
+      "lore.index": {
+        "variant": "plate",
+        "font": "$fonts.hand",
+        "size": 14,
+        "colour": "$colours.lore.chrome.text",
+        "background": "$colours.lore.chrome.bg",
+        "padding": [
+          3,
+          10
+        ],
+        "radius": 2,
+        "border": {
+          "colour": "$colours.lore.chrome.border",
+          "width": 1
+        },
+        "min.height": 0,
+        "hover": {
+          "background": "$colours.lore.chrome.hover"
+        },
+        "focus": {
+          "background": "$colours.lore.chrome.hover"
+        },
+        "pressed": {
+          "background": "$colours.lore.chrome.hover"
+        }
+      },
+      "lore.index.current": {
+        "extends": "lore.index",
+        "background": "$colours.accent",
+        "colour": "$colours.text",
+        "border": {
+          "colour": "$colours.accent",
+          "width": 1
+        },
+        "hover": {
+          "background": "$colours.accent"
+        },
+        "focus": {
+          "background": "$colours.accent"
+        },
+        "pressed": {
+          "background": "$colours.accent"
+        }
+      },
+      "lore.pageinfo": {
+        "font": "$fonts.terminal",
+        "size": 12,
+        "tracking": 0.04,
+        "colour": "$colours.lore.chrome.dim"
+      },
+      "lore.toggle.label": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "tracking": 0.04,
+        "colour": "$colours.lore.chrome.text"
+      },
+      "lore.toggle": {
+        "background": "$colours.lore.toggle.on",
+        "track": "$colours.lore.chrome.bg.strong",
+        "colour": "$colours.lore.chrome.text",
+        "radius": "$radii.switch",
+        "width": 44,
+        "height": 22,
+        "knob": 16
+      },
+      "lore.button": {
+        "extends": "button.primary",
+        "size": "$sizes.button.sm",
+        "padding": [
+          8,
+          18
+        ],
+        "min.height": 36
+      },
+      "lore.controls": {}
+    }
+  }
+}

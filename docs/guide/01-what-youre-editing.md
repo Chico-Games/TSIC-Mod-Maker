@@ -58,14 +58,17 @@ com.yourname.yourmod/
 falls back to the id, but write it anyway — it's what players see. The `id` is reverse-DNS by
 convention and must be unique: it's how servers and clients agree they're running the same content.
 
-Four more fields exist, all optional, none needed for a content mod:
+Three more fields exist, all optional, none needed for a content mod:
 
 | Field | What it does |
 |---|---|
-| `permissions` | Array from a closed set: `gameplay`, `ui`, `network`. An unknown name is an error, not a no-op. |
-| `scripts` | Entry point for gameplay scripting. Requires the `gameplay` permission, and that permission requires this — half-configured scripting is rejected. |
-| `overrides` | Paths under `web/` whose base-game version you're replacing. Requires the `ui` permission. Adding *new* UI files needs neither. |
+| `capabilities` | Array from a closed set: `gameplay` (the rules VM may call gameplay commands), `ui` (ship `ui_definitions/` and run a UI script), `rules` (register `tsic.rules.*` hooks), `cheats`, `console`; `network` is reserved. An unknown name is an error, not a no-op. |
+| `scripts` | Lua entry points, one per VM: `{ "rules": "scripts/main.lua", "ui": "scripts/ui.lua" }`, paths relative to the mod root and under `scripts/`. A `rules` entry needs `gameplay` or `rules`, and those capabilities need a `rules` entry; a `ui` entry needs `ui`. Half-configured scripting is rejected. |
 | `modio` | Written by the installer when a mod is downloaded. Don't hand-write it; it's stripped before the mod's content hash is computed. |
+
+A UI mod needs no `overrides` list: ship a `ui_definitions/UI_<Name>_SC.json` (screen),
+`UI_<Name>_HD.json` (HUD layer) or `UI_<Name>_TH.json` (theme) and the last mod in the load order
+with that path or id wins.
 
 The base game itself is a mod: `com.chicogames.default`, display name "TSIC Base Game". It ships
 about 3000 definitions across ~50 folders. Nothing about it is privileged — it's loaded through the
@@ -122,9 +125,14 @@ Definitions are the bulk of it, but the pipeline also handles:
 |---|---|
 | `*_definitions/*.json` | Definitions — the subject of this guide. |
 | `maps/*.json` | Whole world maps. Later load order wins, same as definitions. See [ch. 11](11-laying-out-the-world.md). |
-| `web/…` | The game's HTML/CSS/JS UI. Adding files is free; *replacing* a base file means listing it in `mod.json`'s `overrides` and taking the `ui` permission. |
+| `ui_definitions/*.json` | Screens, HUD layers and themes — the game's UI is JSON like everything else. Same path or same id as a base-game screen replaces it (last mod in the load order wins); takes the `ui` capability. |
+| `scripts/*.lua` | Lua, named from `mod.json`'s `scripts` block. Out of scope for this guide. |
+| `script_definitions/SCR_*.json` | Declares a script's VM side, capabilities and the rule hooks it registers. |
+| `icons/`, `fonts/` | PNG icons and font files, referenced as `mod:icons/<name>` / `mod:fonts/<name>` from definitions and themes. |
 | Art and audio files | Imported at load and addressable by your definitions — see below. |
-| `mod.json` → `scripts` | Gameplay scripting, if your mod declares it. Out of scope for this guide. |
+
+`web/` is a reserved folder name from the retired HTML UI: a mod that still ships one gets a warning
+and the folder is ignored.
 
 Anything else is ignored. A `.json` file counts as a definition unless it's `mod.json`, sits under
 `maps/` or `web/`, or any part of its path starts with `.` or `_` — which is why `_schema.json` and

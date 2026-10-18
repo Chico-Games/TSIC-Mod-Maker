@@ -1,0 +1,720 @@
+{
+  "id": "UI_Overlays_TH",
+  "class": "ScpUiThemeDefinition",
+  "properties": {
+    "extends": "UI_Default_TH",
+    "colours": {
+      "overlay.card": "rgba(252, 249, 241, 0.92)",
+      "overlay.card.solid": "rgba(252, 249, 241, 0.96)",
+      "overlay.card.shadow": "rgba(0, 0, 0, 0.35)",
+      "overlay.card.ink.soft": "rgba(26, 22, 17, 0.75)",
+      "overlay.card.ink.mute": "rgba(26, 22, 17, 0.55)",
+      "overlay.dark": "rgba(20, 17, 12, 0.72)",
+      "overlay.dark.strong": "rgba(20, 17, 12, 0.82)",
+      "overlay.dark.text": "#fffdf7",
+      "overlay.dark.text.dim": "rgba(255, 253, 247, 0.8)",
+      "overlay.dark.border": "rgba(255, 253, 247, 0.85)",
+      "overlay.amber": "#fbbf24",
+      "overlay.blue": "#1d4ed8",
+      "overlay.green": "#3fa34d",
+      "overlay.gold": "#d4a106",
+      "overlay.red": "#b91c1c",
+      "overlay.red.soft": "#fca5a5",
+      "overlay.violet": "#8b5cf6",
+      "overlay.grey": "#6b7280",
+      "overlay.brown": "#b45309",
+      "overlay.inspect.bg": "rgba(0, 0, 0, 0.55)",
+      "overlay.inspect.border": "rgba(255, 255, 255, 0.25)",
+      "overlay.inspect.dim": "rgba(255, 255, 255, 0.7)",
+      "overlay.weight.track": "rgba(20, 17, 12, 0.12)",
+      "overlay.dial.track": "rgba(241, 229, 207, 0.18)",
+      "overlay.sew.track": "rgba(20, 17, 12, 0.65)",
+      "cheat.root.bg": "rgba(30, 26, 20, 0.50)",
+      "cheat.title": "#c2410c",
+      "cheat.ready": "#86efac",
+      "cheat.pending": "#fca5a5",
+      "cheat.header.text": "rgba(255, 253, 247, 0.75)",
+      "cheat.keys.bg": "rgba(20, 17, 12, 0.55)",
+      "cheat.keys.text": "rgba(255, 253, 247, 0.6)",
+      "cheat.tab.bg": "rgba(255, 253, 247, 0.62)",
+      "cheat.tab.active": "#f5c518",
+      "cheat.section.bg": "rgba(252, 249, 241, 0.72)",
+      "cheat.section.ink": "rgba(59, 47, 28, 0.7)",
+      "cheat.meta.ink": "rgba(59, 47, 28, 0.6)",
+      "cheat.exec.bg": "#7c2d12",
+      "cheat.exec.border": "#c2410c",
+      "cheat.exec.text": "#fdf6e3",
+      "cheat.log.bg": "rgba(28, 25, 20, 0.82)",
+      "cheat.log.cmd": "#fb923c",
+      "cheat.log.out": "#cfd8c5",
+      "cheat.log.text": "#e7e2d4"
+    },
+    "styles": {
+      "overlay.clear": {
+        "background": "$colours.bg.clear"
+      },
+      "basket.badge": {
+        "font": "$fonts.body.bold",
+        "size": 13,
+        "colour": "$colours.overlay.dark.text",
+        "background": "$colours.overlay.dark.strong",
+        "padding": [
+          1,
+          6
+        ],
+        "radius": 12,
+        "border": {
+          "colour": "$colours.overlay.dark.border",
+          "width": 2
+        }
+      },
+      "basket.tip": {
+        "background": "$colours.overlay.card.solid",
+        "padding": [
+          6,
+          10
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 2
+        },
+        "shadow": {
+          "offset": [
+            3,
+            3
+          ],
+          "colour": "$colours.overlay.card.shadow"
+        }
+      },
+      "basket.tip.place": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.green",
+          "width": 2
+        }
+      },
+      "basket.tip.merge": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.green",
+          "width": 2
+        }
+      },
+      "basket.tip.partial": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.gold",
+          "width": 2
+        }
+      },
+      "basket.tip.swap": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.violet",
+          "width": 2
+        }
+      },
+      "basket.tip.blocked": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.red",
+          "width": 2
+        }
+      },
+      "basket.tip.takeonly": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.blue",
+          "width": 2
+        }
+      },
+      "basket.tip.locked": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.grey",
+          "width": 2
+        }
+      },
+      "basket.tip.world": {
+        "extends": "basket.tip",
+        "border": {
+          "colour": "$colours.overlay.brown",
+          "width": 2
+        }
+      },
+      "basket.tip.name": {
+        "font": "$fonts.body.bold",
+        "size": 14,
+        "colour": "$colours.ink.night"
+      },
+      "basket.tip.sub": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.card.ink.soft"
+      },
+      "basket.tip.icon": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "colour": "$colours.overlay.card.ink.soft"
+      },
+      "basket.status": {
+        "background": "$colours.overlay.card",
+        "padding": [
+          8,
+          12
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 2
+        }
+      },
+      "basket.status.title": {
+        "font": "$fonts.body.bold",
+        "size": 15,
+        "colour": "$colours.ink.night"
+      },
+      "basket.status.text": {
+        "font": "$fonts.body",
+        "size": 13,
+        "colour": "$colours.ink.night"
+      },
+      "basket.status.over": {
+        "font": "$fonts.body.bold",
+        "size": 13,
+        "colour": "$colours.overlay.red"
+      },
+      "basket.weight.bar": {
+        "colour": "$colours.overlay.green",
+        "track": "$colours.overlay.weight.track",
+        "thickness": 10,
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 2
+        }
+      },
+      "basket.weight.bar.tier1": {
+        "extends": "basket.weight.bar",
+        "colour": "$colours.overlay.gold"
+      },
+      "basket.weight.bar.tier2": {
+        "extends": "basket.weight.bar",
+        "colour": "$colours.overlay.red"
+      },
+      "basket.inspect": {
+        "background": "$colours.overlay.inspect.bg",
+        "padding": [
+          10,
+          18
+        ],
+        "border": {
+          "colour": "$colours.overlay.inspect.border",
+          "width": 1
+        }
+      },
+      "basket.inspect.name": {
+        "font": "$fonts.body.bold",
+        "size": 22,
+        "tracking": 0.05,
+        "colour": "$colours.text"
+      },
+      "basket.inspect.count": {
+        "font": "$fonts.body.bold",
+        "size": 34,
+        "colour": "$colours.overlay.amber"
+      },
+      "basket.inspect.cap": {
+        "font": "$fonts.body",
+        "size": 16,
+        "colour": "$colours.overlay.inspect.dim"
+      },
+      "basket.inspect.hint": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.inspect.dim"
+      },
+      "basket.tab": {
+        "variant": "plate",
+        "font": "$fonts.body.bold",
+        "size": 15,
+        "tracking": 0.07,
+        "case": "upper",
+        "colour": "$colours.ink.night",
+        "background": "$colours.overlay.card",
+        "padding": [
+          8,
+          18
+        ],
+        "min.height": 0,
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 2
+        },
+        "shadow": {
+          "offset": [
+            3,
+            3
+          ],
+          "colour": "$colours.overlay.card.shadow"
+        },
+        "hover": {
+          "background": "$colours.accent.warm"
+        },
+        "focus": {
+          "background": "$colours.accent.warm"
+        },
+        "pressed": {
+          "background": "$colours.accent.warm"
+        },
+        "disabled": {
+          "background": "$colours.paper.muted",
+          "colour": "$colours.ink.mute"
+        }
+      },
+      "basket.tab.active": {
+        "extends": "basket.tab",
+        "background": "$colours.overlay.blue",
+        "colour": "$colours.text",
+        "hover": {
+          "background": "$colours.overlay.blue"
+        },
+        "focus": {
+          "background": "$colours.overlay.blue"
+        },
+        "pressed": {
+          "background": "$colours.overlay.blue"
+        }
+      },
+      "basket.tab.count": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.card.ink.soft"
+      },
+      "basket.tab.count.active": {
+        "extends": "basket.tab.count",
+        "colour": "$colours.text"
+      },
+      "basket.peer": {
+        "background": "$colours.overlay.card",
+        "padding": [
+          10,
+          12
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 2
+        },
+        "shadow": {
+          "offset": [
+            3,
+            3
+          ],
+          "colour": "$colours.overlay.card.shadow"
+        }
+      },
+      "basket.peer.name": {
+        "font": "$fonts.body.bold",
+        "size": 16,
+        "tracking": 0.06,
+        "case": "upper",
+        "colour": "$colours.ink.night"
+      },
+      "basket.peer.fill": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.card.ink.soft"
+      },
+      "basket.peer.cooking": {
+        "font": "$fonts.body.bold",
+        "size": 13,
+        "tracking": 0.03,
+        "colour": "$colours.ink.night"
+      },
+      "basket.peer.preview": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "colour": "$colours.ink.night"
+      },
+      "basket.peer.preview.none": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.card.ink.mute"
+      },
+      "basket.dial": {
+        "colour": "$colours.accent.warm",
+        "thickness": 12,
+        "track": "$colours.overlay.dial.track"
+      },
+      "basket.dial.done": {
+        "extends": "basket.dial",
+        "colour": "$colours.overlay.green"
+      },
+      "basket.dial.time": {
+        "font": "$fonts.body.bold",
+        "size": 18,
+        "colour": "$colours.ink.night"
+      },
+      "basket.dial.verb": {
+        "font": "$fonts.body",
+        "size": 10,
+        "tracking": 0.06,
+        "case": "upper",
+        "colour": "$colours.overlay.card.ink.soft"
+      },
+      "basket.hints": {
+        "background": "$colours.overlay.dark",
+        "padding": [
+          8,
+          12
+        ],
+        "radius": 3
+      },
+      "basket.hints.text": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.dark.text"
+      },
+      "basket.hints.key": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "colour": "$colours.overlay.amber"
+      },
+      "basket.sew.line": {
+        "font": "$fonts.body.bold",
+        "size": 15,
+        "colour": "$colours.overlay.dark.text",
+        "shadow": {
+          "offset": [
+            0,
+            2
+          ],
+          "colour": "$colours.ink.night"
+        }
+      },
+      "basket.sew.line.bad": {
+        "extends": "basket.sew.line",
+        "colour": "$colours.overlay.red.soft"
+      },
+      "basket.sew.bar": {
+        "colour": "$colours.accent.warm",
+        "track": "$colours.overlay.sew.track",
+        "thickness": 8,
+        "border": {
+          "colour": "$colours.overlay.dark.border",
+          "width": 2
+        }
+      },
+      "basket.sew.makes": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.dark.text.dim"
+      },
+      "notebook.hint": {
+        "background": "$colours.paper",
+        "padding": [
+          6,
+          14
+        ],
+        "border": {
+          "colour": "$colours.ink",
+          "width": 2
+        },
+        "shadow": {
+          "offset": [
+            4,
+            4
+          ],
+          "colour": "$colours.ink"
+        }
+      },
+      "notebook.page": {
+        "font": "$fonts.display",
+        "size": 18,
+        "tracking": 0.04,
+        "case": "upper",
+        "colour": "$colours.ink"
+      },
+      "notebook.hint.text": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.ink"
+      },
+      "notebook.kbd": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "colour": "$colours.ink",
+        "padding": [
+          0,
+          5
+        ],
+        "radius": 3,
+        "border": {
+          "colour": "$colours.ink",
+          "width": 1
+        }
+      },
+      "cheat.root": {
+        "background": "$colours.cheat.root.bg",
+        "padding": [
+          12,
+          16,
+          14,
+          16
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 3
+        },
+        "shadow": {
+          "offset": [
+            -8,
+            0
+          ],
+          "colour": "$colours.overlay.card.shadow"
+        }
+      },
+      "cheat.title": {
+        "font": "$fonts.display",
+        "size": 26,
+        "tracking": 0.04,
+        "case": "upper",
+        "colour": "$colours.cheat.title"
+      },
+      "cheat.status": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "tracking": 0.17,
+        "case": "upper",
+        "colour": "$colours.cheat.ready",
+        "padding": [
+          4,
+          8
+        ],
+        "border": {
+          "colour": "$colours.cheat.ready",
+          "width": 1
+        }
+      },
+      "cheat.status.pending": {
+        "extends": "cheat.status",
+        "colour": "$colours.cheat.pending",
+        "border": {
+          "colour": "$colours.cheat.pending",
+          "width": 1
+        }
+      },
+      "cheat.label": {
+        "font": "$fonts.body",
+        "size": 11,
+        "tracking": 0.09,
+        "case": "upper",
+        "colour": "$colours.cheat.header.text"
+      },
+      "cheat.keys": {
+        "background": "$colours.cheat.keys.bg",
+        "padding": [
+          4,
+          8
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.keys.text": {
+        "font": "$fonts.body",
+        "size": 11,
+        "colour": "$colours.cheat.keys.text"
+      },
+      "cheat.tabs": {
+        "extends": "tabbar",
+        "size": 12,
+        "padding": [
+          6,
+          8
+        ],
+        "pressed": {
+          "background": "$colours.cheat.tab.active",
+          "colour": "$colours.ink.night"
+        }
+      },
+      "cheat.section": {
+        "background": "$colours.cheat.section.bg",
+        "padding": [
+          9,
+          11
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.section.title": {
+        "font": "$fonts.body.bold",
+        "size": 12,
+        "tracking": 0.25,
+        "case": "upper",
+        "colour": "$colours.cheat.section.ink"
+      },
+      "cheat.button": {
+        "extends": "button.primary",
+        "size": 13,
+        "padding": [
+          4,
+          10
+        ],
+        "min.height": 0,
+        "shadow": {
+          "offset": [
+            3,
+            3
+          ],
+          "colour": "$colours.ink.night"
+        }
+      },
+      "cheat.button.danger": {
+        "extends": "button.danger",
+        "size": 13,
+        "padding": [
+          4,
+          10
+        ],
+        "min.height": 0,
+        "shadow": {
+          "offset": [
+            3,
+            3
+          ],
+          "colour": "$colours.ink.night"
+        }
+      },
+      "cheat.exec": {
+        "variant": "plate",
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.cheat.exec.text",
+        "background": "$colours.cheat.exec.bg",
+        "padding": [
+          3,
+          10
+        ],
+        "min.height": 0,
+        "border": {
+          "colour": "$colours.cheat.exec.border",
+          "width": 1
+        },
+        "hover": {
+          "background": "$colours.cheat.exec.border"
+        },
+        "focus": {
+          "background": "$colours.cheat.exec.border"
+        },
+        "pressed": {
+          "background": "$colours.cheat.exec.border"
+        }
+      },
+      "cheat.input": {
+        "extends": "input",
+        "font": "$fonts.body",
+        "size": 12,
+        "tracking": 0,
+        "padding": [
+          2,
+          6
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.dropdown": {
+        "extends": "dropdown",
+        "font": "$fonts.body",
+        "size": 12,
+        "tracking": 0,
+        "case": "none",
+        "padding": [
+          2,
+          4
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.row.label": {
+        "font": "$fonts.body",
+        "size": 11,
+        "colour": "$colours.cheat.section.ink"
+      },
+      "cheat.readout": {
+        "font": "$fonts.body",
+        "size": 11,
+        "colour": "$colours.cheat.section.ink"
+      },
+      "cheat.meta": {
+        "font": "$fonts.body",
+        "size": 11,
+        "colour": "$colours.cheat.meta.ink"
+      },
+      "cheat.toggle.label": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.ink.night"
+      },
+      "cheat.toggle.label.light": {
+        "font": "$fonts.body",
+        "size": 12,
+        "colour": "$colours.overlay.dark.text"
+      },
+      "cheat.pill": {
+        "font": "$fonts.body.bold",
+        "size": 9,
+        "tracking": 0.1,
+        "colour": "$colours.cheat.section.ink",
+        "padding": [
+          0,
+          4
+        ],
+        "border": {
+          "colour": "$colours.cheat.section.ink",
+          "width": 1
+        }
+      },
+      "cheat.pill.on": {
+        "extends": "cheat.pill",
+        "colour": "$colours.ink.night",
+        "background": "$colours.accent.warm",
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.log": {
+        "background": "$colours.cheat.log.bg",
+        "padding": [
+          6,
+          8
+        ],
+        "border": {
+          "colour": "$colours.ink.night",
+          "width": 1
+        }
+      },
+      "cheat.log.cmd": {
+        "font": "$fonts.terminal",
+        "size": 13,
+        "colour": "$colours.cheat.log.cmd"
+      },
+      "cheat.log.out": {
+        "font": "$fonts.terminal",
+        "size": 13,
+        "colour": "$colours.cheat.log.out"
+      },
+      "cheat.log.empty": {
+        "font": "$fonts.terminal",
+        "size": 13,
+        "colour": "$colours.cheat.log.text"
+      }
+    }
+  }
+}

@@ -1,12 +1,9 @@
 {
   "id": "FD_Microwave_PS",
   "asset_path": "/Game/Furniture/Cooking/Microwave/Furniture/FD_Microwave_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_MicrowaveRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
@@ -28,16 +25,16 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 66,
-    "destructible_collection": "/Game/Fab/Suburban_Household/VOL9_Kitchen/Meshes/GeometryCollections/GCS_Microwave_NN_06j.GCS_Microwave_NN_06j",
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Microwave01_Closed.GCS_Microwave01_Closed",
     "loot_dropped_on_death": [],
     "constructable_item_to_grant": "ID_Microwave_CI",
     "deconstruction_tier": 2,
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": -0.0088,
-          "y": -0.0038,
-          "z": 17.9872
+          "x": -0.12,
+          "y": -8.01,
+          "z": 14.36
         },
         "rotation": {
           "pitch": 0,
@@ -45,18 +42,18 @@
           "roll": 0
         },
         "box_size": {
-          "x": 20.0673,
-          "y": 17.7639,
-          "z": 14.0489
+          "x": 23.6,
+          "y": 27.3,
+          "z": 14.35
         }
       }
     ],
     "support_collision_boxes": [
       {
         "offset": {
-          "x": -0.0088,
-          "y": -0.0038,
-          "z": 17.627
+          "x": -0.12,
+          "y": -8.01,
+          "z": 14.36
         },
         "rotation": {
           "pitch": 0,
@@ -64,9 +61,9 @@
           "roll": 0
         },
         "box_size": {
-          "x": 28.6676,
-          "y": 25.377,
-          "z": 18.0114
+          "x": 24.6,
+          "y": 28.3,
+          "z": 14.35
         }
       }
     ],
@@ -78,9 +75,9 @@
         "w": 1
       },
       "translation": {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "x": -0.12,
+        "y": -8.01,
+        "z": 0.11
       },
       "scale3_d": {
         "x": 1,
@@ -88,7 +85,6 @@
         "z": 1
       }
     },
-    "upgrade_recipe": "RD_MicrowaveTier2_CN",
     "is_draggable": true,
     "display_name": "Microwave",
     "description": "A simple microwave for basic cooking. Heats and cooks simple meals quickly.",
@@ -96,7 +92,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Fab/Suburban_Household/VOL9_Kitchen/Meshes/NN/SM_Microwave_NN_06j.SM_Microwave_NN_06j",
+    "static_mesh": "/Game/Furniture/MidCentury/Microwave01/SM_Microwave01_Closed.SM_Microwave01_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -108,34 +104,13 @@
           "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.2318,
-            "w": 0.9728
+            "z": 0.0,
+            "w": 1.0
           },
           "translation": {
-            "x": -5.2,
-            "y": 6.56,
-            "z": 1.13
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.9993,
-            "w": 0.0367
-          },
-          "translation": {
-            "x": 8.84,
-            "y": -0.13,
-            "z": 1.13
+            "x": -0.12,
+            "y": -8.01,
+            "z": 29.21
           },
           "scale3_d": {
             "x": 1.0,
@@ -160,6 +135,73 @@
     "gameplay_tags": [],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Microwave01/SK_Microwave01.SK_Microwave01",
+      "parts": [
+        {
+          "name": "Door",
+          "motion": "Hinge",
+          "range": 110.0,
+          "opens_for_screen": true
+        }
+      ]
+    },
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "compartments": [
+      {
+        "id": "tray",
+        "layout": "Grid",
+        "width": 3,
+        "height": 3,
+        "accepts": [
+          "cold",
+          "general"
+        ],
+        "gate": {
+          "part": "Door",
+          "min_open": 0.5
+        },
+        "surface": {
+          "offset": {
+            "x": -5.6,
+            "y": -1.0,
+            "z": 6.8
+          },
+          "yaw": 90.0,
+          "width": 29.0,
+          "depth": 25.0,
+          "camera_distance": 150.0,
+          "camera_pitch": -32.0
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.Microwave",
+      "input": "tray",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Timed",
+        "gate": "Door",
+        "on_gate_open": "Pause",
+        "offline": true
+      },
+      "burn": {
+        "after_seconds": 60.0,
+        "result": "ID_BurntPile_CM"
+      },
+      "feedback": {
+        "vibrate": {
+          "amplitude": 0.1,
+          "hz": 12.0
+        },
+        "complete_sound": "Recipe.Completed",
+        "action_label": "Cook",
+        "working_light": "Door",
+        "working_sound": "toggled_on_audio"
+      }
+    }
   }
 }

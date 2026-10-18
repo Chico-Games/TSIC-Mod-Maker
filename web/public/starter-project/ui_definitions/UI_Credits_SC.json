@@ -1,0 +1,310 @@
+{
+  "id": "UI_Credits_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Credits",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.MainMenu",
+    "cancel": "UI.Cmd.Menu.Back",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      },
+      {
+        "action": "back",
+        "label": "Back"
+      }
+    ],
+    "uses": [],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage.title",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 560
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 16,
+              "slot": {
+                "padding": [
+                  18,
+                  22,
+                  10,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true,
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "text.kicker",
+                      "text": "About"
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.masthead",
+                      "text": "The Brand.",
+                      "line_height": 0.9,
+                      "slot": {
+                        "padding": [
+                          -4,
+                          0,
+                          0,
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "align": "right",
+                    "valign": "top"
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "style": "chip.badge",
+                      "slot": {
+                        "align": "right"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.badge",
+                          "case": "None",
+                          "text": "Dept. 99"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.date",
+                      "text": "Treat our staff with mutual respect.",
+                      "justify": "Right",
+                      "wrap": true,
+                      "slot": {
+                        "align": "right"
+                      },
+                      "case": "Upper"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "body",
+              "widget": "panel",
+              "layout": "scroll",
+              "style": "menu.scroll.body",
+              "max_height": 320,
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "padding": [
+                      18,
+                      28,
+                      14,
+                      28
+                    ]
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.head",
+                      "text": "Design & Programming"
+                    },
+                    {
+                      "widget": "panel",
+                      "style": "rule.dashed",
+                      "slot": {
+                        "height": 2,
+                        "padding": [
+                          0,
+                          0,
+                          6,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.line",
+                      "text": "Chico Games"
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.head",
+                      "text": "Art",
+                      "slot": {
+                        "padding": [
+                          18,
+                          0,
+                          0,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "style": "rule.dashed",
+                      "slot": {
+                        "height": 2,
+                        "padding": [
+                          0,
+                          0,
+                          6,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.muted",
+                      "text": "—"
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.head",
+                      "text": "Special Thanks",
+                      "slot": {
+                        "padding": [
+                          18,
+                          0,
+                          0,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "style": "rule.dashed",
+                      "slot": {
+                        "height": 2,
+                        "padding": [
+                          0,
+                          0,
+                          6,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.muted",
+                      "text": "—"
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.head",
+                      "text": "Built With",
+                      "slot": {
+                        "padding": [
+                          18,
+                          0,
+                          0,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "style": "rule.dashed",
+                      "slot": {
+                        "height": 2,
+                        "padding": [
+                          0,
+                          0,
+                          6,
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.line",
+                      "text": "Unreal Engine 5.8"
+                    },
+                    {
+                      "widget": "text",
+                      "style": "menu.text.credits.line",
+                      "text": "mod.io"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "rows",
+              "widget": "panel",
+              "layout": "vertical",
+              "focus": "group",
+              "slot": {
+                "padding": [
+                  6,
+                  4,
+                  10,
+                  4
+                ]
+              },
+              "children": [
+                {
+                  "id": "btn-back",
+                  "widget": "button",
+                  "style": "button.row",
+                  "label": "Back to Main",
+                  "dept": "Fire Exit",
+                  "first_in_group": true,
+                  "focus": "initial",
+                  "on": {
+                    "click": {
+                      "cmd": "UI.Cmd.Menu.Navigate",
+                      "args": {
+                        "Screen": "MainMenu"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

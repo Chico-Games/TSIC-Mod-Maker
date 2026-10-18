@@ -1,0 +1,40 @@
+{
+  "id": "UI_HudUpgrade_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Upgrade.Target" ],
+    "tree": {
+      "id": "upgrade-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : (UI.Upgrade.Target.EntityId > 0 ? UI.Upgrade.Target.bHasUpgradeTool : false)" },
+      "children": [
+        { "id": "upgrade-card", "widget": "panel", "layout": "vertical", "style": "hud.upgrade.card", "gap": 2, "width": 240, "slot": { "anchor": "right-center", "offset": [-24, 0] },
+          "children": [
+            { "widget": "text", "style": "hud.upgrade.eyebrow", "text": "Upgrade" },
+            { "widget": "text", "style": "hud.upgrade.name", "wrap": true, "bind": { "text": "UI.Upgrade.Target.FurnitureName == '' ? 'Furniture' : UI.Upgrade.Target.FurnitureName" } },
+            { "widget": "text", "style": "hud.upgrade.arrow", "slot": { "padding": [0, 2, 0, 6] },
+              "bind": { "text": "\"becomes {UI.Upgrade.Target.UpgradedName}\"", "visible": "UI.Upgrade.Target.UpgradedName != ''" } },
+            { "id": "upgrade-costs", "widget": "list", "style": "list", "selectable": false,
+              "bind": { "items": "UI.Upgrade.Target.Costs" },
+              "template": { "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "padding": [0, 1, 0, 2] },
+                "children": [
+                  { "widget": "panel", "style": "hud.upgrade.icon", "width": 20, "height": 20, "slot": { "valign": "center" },
+                    "children": [ { "widget": "image", "bind": { "source": "\"item:{item.ItemId}\"", "size": "'18,18'" } } ] },
+                  { "widget": "text", "style": "hud.upgrade.cost", "slot": { "fill": true, "valign": "center" },
+                    "bind": { "text": "item.Name == '' ? item.ItemId : item.Name" } },
+                  { "widget": "text", "slot": { "valign": "center" },
+                    "bind": { "text": "\"{item.Owned} / {item.Required}\"", "style": "item.Owned < item.Required ? 'hud.upgrade.short' : 'hud.upgrade.ok'" } }
+                ] } },
+            { "widget": "text", "style": "hud.upgrade.ok", "text": "No materials required.", "case": "None",
+              "bind": { "visible": "UI.Upgrade.Target.Costs.Num == 0" } },
+            { "widget": "panel", "style": "rule.dashed", "height": 1, "slot": { "padding": [0, 7, 0, 6] } },
+            { "widget": "text", "wrap": true,
+              "bind": {
+                "text": "!UI.Upgrade.Target.bToolTierSufficient ? \"Needs a tier {UI.Upgrade.Target.RequiredTier} hammer (yours is tier {UI.Upgrade.Target.ToolTier})\" : (!UI.Upgrade.Target.bCanAfford ? 'Missing materials' : 'Hold to upgrade')",
+                "style": "!UI.Upgrade.Target.bToolTierSufficient ? 'hud.upgrade.block' : (!UI.Upgrade.Target.bCanAfford ? 'hud.upgrade.block' : 'hud.upgrade.ready')"
+              } }
+          ] }
+      ]
+    }
+  }
+}

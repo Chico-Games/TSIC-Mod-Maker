@@ -1,0 +1,75 @@
+{
+  "id": "UI_BugReport_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "BugReport",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.BugReport.Close",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Back" } ],
+    "uses": [ "UI.BugReport.FurnitureTarget" ],
+    "tree": {
+      "id": "scrim", "widget": "panel", "layout": "overlay", "style": "screen.scrim",
+      "on": { "show": { "cmd": "UI.Cmd.BugReport.RequestFurnitureTarget" } },
+      "children": [
+        { "id": "panel", "widget": "panel", "layout": "vertical", "style": "panel.page", "gap": 10, "slot": { "align": "center", "valign": "center", "width": 500 },
+          "children": [
+            { "id": "br-title", "widget": "text", "style": "text.title.sm", "text": "Report a Bug",
+              "bind": { "text": "#br-category.value == 'Suggestion' ? 'Suggest Something' : 'Report a Bug'" } },
+
+            { "id": "form", "widget": "panel", "layout": "vertical", "focus": "group", "gap": 4,
+              "children": [
+                { "widget": "text", "style": "menu.text.bugreport.label", "text": "Category", "slot": { "padding": [6, 0, 0, 0] } },
+                { "id": "br-category", "widget": "dropdown", "min_width": 200, "options": [ "Bug", "Suggestion" ], "selected_index": 0 },
+
+                { "id": "br-furniture", "widget": "panel", "layout": "vertical", "style": "menu.panel.bugreport.target", "gap": 3, "slot": { "padding": [10, 0, 0, 0], "height": 120 },
+                  "bind": { "visible": "#br-category.value != 'Suggestion'" },
+                  "children": [
+                    { "widget": "text", "style": "menu.text.bugreport.body", "text": "Looking for furniture...", "bind": { "visible": "!has:UI.BugReport.FurnitureTarget" } },
+                    { "widget": "text", "style": "menu.text.bugreport.body", "wrap": true, "text": "Nothing under the crosshair — the report will be sent without an object attached.",
+                      "bind": { "visible": "has:UI.BugReport.FurnitureTarget ? !UI.BugReport.FurnitureTarget.bHasTarget : false" } },
+                    { "widget": "text", "style": "menu.text.bugreport.label", "text": "Attaching what you are looking at", "bind": { "visible": "UI.BugReport.FurnitureTarget.bHasTarget" } },
+                    { "widget": "text", "style": "text.label", "wrap": true, "bind": { "visible": "UI.BugReport.FurnitureTarget.bHasTarget", "text": "UI.BugReport.FurnitureTarget.DisplayName != '' ? UI.BugReport.FurnitureTarget.DisplayName : UI.BugReport.FurnitureTarget.DefinitionId" } },
+                    { "widget": "text", "style": "menu.text.hint", "wrap": true, "bind": { "visible": "UI.BugReport.FurnitureTarget.bHasTarget", "text": "\"Definition {UI.BugReport.FurnitureTarget.DefinitionId} · Map {MapName} · Tile {TileIndex} ({TileCoord})\"" } },
+                    { "widget": "text", "style": "menu.text.hint", "bind": { "visible": "UI.BugReport.FurnitureTarget.bHasTarget", "text": "UI.BugReport.FurnitureTarget.bMoved ? 'Moved since the level generated it' : 'As the level generated it'" } }
+                  ] },
+
+                { "widget": "text", "style": "menu.text.bugreport.label", "text": "Description", "slot": { "padding": [10, 0, 0, 0] } },
+                { "id": "br-description", "widget": "textfield", "multi_line": true, "rows": 6, "min_width": 440, "placeholder": "What happened? Steps to reproduce...", "focus": "initial",
+                  "on": {
+                    "submit": [
+                      { "cmd": "UI.Cmd.BugReport.Submit", "sound": "BugReport.Submit", "volume": 0.45, "args": {
+                        "Category": "{#br-category.value}", "Description": "{self.value}",
+                        "bIncludeScreenshot": "{#br-screenshot.checked}", "bIncludeLog": "{#br-log.checked}" } },
+                      { "cmd": "UI.Cmd.BugReport.Close" } ],
+                    "reject": { "sound": "UI.Error", "volume": 0.4 } } },
+                { "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "padding": [8, 0, 0, 0] },
+                  "children": [
+                    { "id": "br-screenshot", "widget": "toggle", "style": "menu.toggle.check", "is_on": true, "slot": { "valign": "center" } },
+                    { "widget": "text", "style": "text.body", "text": "Include screenshot", "slot": { "valign": "center" } }
+                  ] },
+                { "widget": "panel", "layout": "horizontal", "gap": 8,
+                  "children": [
+                    { "id": "br-log", "widget": "toggle", "style": "menu.toggle.check", "is_on": true, "slot": { "valign": "center" } },
+                    { "widget": "text", "style": "text.body", "text": "Include game log", "slot": { "valign": "center" } }
+                  ] }
+              ] },
+
+            { "id": "actions", "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "padding": [12, 0, 0, 0] },
+              "children": [
+                { "widget": "text", "style": "menu.text.bugreport.label", "text": "Shift + Enter to send", "slot": { "fill": true, "valign": "center" } },
+                { "id": "btn-cancel", "widget": "button", "style": "button.primary", "label": "Cancel",
+                  "on": { "click": { "cmd": "UI.Cmd.BugReport.Close", "sound": "BugReport.Cancel", "volume": 0.4 } } },
+                { "id": "btn-submit", "widget": "button", "style": "button.primary", "label": "Submit",
+                  "on": { "click": [
+                    { "when": "!#br-description.empty", "cmd": "UI.Cmd.BugReport.Submit", "sound": "BugReport.Submit", "volume": 0.45, "args": {
+                      "Category": "{#br-category.value}", "Description": "{#br-description.value}",
+                      "bIncludeScreenshot": "{#br-screenshot.checked}", "bIncludeLog": "{#br-log.checked}" } },
+                    { "when": "!#br-description.empty", "cmd": "UI.Cmd.BugReport.Close" },
+                    { "when": "#br-description.empty", "sound": "UI.Error", "volume": 0.4 } ] } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

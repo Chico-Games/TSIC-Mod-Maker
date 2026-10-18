@@ -1,0 +1,235 @@
+{
+  "id": "UI_Mods_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Mods",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.MainMenu",
+    "cancel": "UI.Cmd.Menu.Back",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Back" } ],
+    "uses": [ "UI.Mods.Auth", "UI.Mods.Browse", "UI.Mods.Library", "UI.Mods.Tools", "UI.Mod.InstalledList", "UI.Mod.LoadOrder", "UI.Mod.Subscriptions", "UI.Mod.IoConfig" ],
+    "tree": {
+      "id": "stage", "widget": "panel", "layout": "overlay", "style": "panel.stage.title", "backdrop": "Maze",
+      "children": [
+        { "id": "cover", "widget": "panel", "layout": "vertical", "style": "panel.cover", "slot": { "align": "center", "valign": "fill", "width": 1500 },
+          "children": [
+            { "id": "masthead", "widget": "panel", "layout": "horizontal", "slot": { "padding": [22, 14, 22, 4] },
+              "children": [
+                { "widget": "panel", "layout": "vertical", "slot": { "fill": true, "valign": "bottom" },
+                  "children": [
+                    { "widget": "text", "style": "text.kicker", "text": "Special" },
+                    { "widget": "panel", "layout": "horizontal",
+                      "children": [
+                        { "widget": "text", "style": "text.masthead", "text": "Catalogues", "line_height": 0.9 },
+                        { "widget": "text", "style": "text.masthead", "text": ".", "line_height": 0.9, "bind": { "colour": "'#E60000'" } }
+                      ] }
+                  ] },
+                { "widget": "panel", "layout": "vertical", "gap": 4, "slot": { "align": "right", "valign": "bottom" },
+                  "children": [
+                    { "widget": "panel", "style": "chip.badge", "slot": { "align": "right" }, "children": [ { "widget": "text", "style": "text.badge", "text": "Dept. 33" } ] },
+                    { "widget": "text", "style": "text.date", "text": "A LITTLE SOMETHING EXTRA.", "slot": { "align": "right" } }
+                  ] }
+              ] },
+            { "widget": "panel", "style": "rule.panel", "slot": { "height": 4 } },
+
+            { "id": "body", "widget": "panel", "layout": "vertical", "gap": 10, "slot": { "fill": true, "padding": [22, 4, 22, 8] },
+              "children": [
+                { "id": "tabs", "widget": "tabbar", "tabs": [ "Browse & Install", "Definition Editor", "Map Editor" ], "selected_index": 0,
+                  "bind": { "selected_index": "UI.Mods.Tools.Tab" },
+                  "on": { "change": { "cmd": "UI.Cmd.Mod.OpenTool", "args": { "Tab": "{self.value}" } } } },
+                { "id": "tab-msg", "widget": "text", "style": "mods.text.error", "visible": "UI.Mods.Tools.Message != ''", "bind": { "text": "UI.Mods.Tools.Message" } },
+
+                { "id": "disco", "widget": "panel", "layout": "vertical", "style": "mods.panel", "focus": "group", "gap": 8,
+                  "children": [
+                    { "id": "disco-head", "widget": "panel", "layout": "horizontal", "gap": 12,
+                      "children": [
+                        { "widget": "panel", "layout": "horizontal", "gap": 6, "slot": { "fill": true, "valign": "center" },
+                          "children": [
+                            { "widget": "text", "style": "mods.text.disco.title", "text": "Mail-Order Catalogue" },
+                            { "widget": "text", "style": "mods.text.disco.sub", "text": "mod.io" }
+                          ] },
+
+                        { "id": "auth-disabled", "widget": "panel", "layout": "horizontal", "slot": { "valign": "center" }, "visible": "UI.Mods.Auth.State == 'disabled'",
+                          "children": [ { "widget": "text", "style": "mods.text.auth.note", "text": "mod.io is not configured for this project." } ] },
+
+                        { "id": "auth-signed-out", "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "valign": "center" },
+                          "visible": "UI.Mods.Auth.State == 'idle' ? true : UI.Mods.Auth.State == 'requesting'",
+                          "children": [
+                            { "widget": "text", "style": "mods.text.auth.note", "text": "Sign in to subscribe —", "slot": { "valign": "center" } },
+                            { "widget": "text", "style": "mods.text.auth.link", "text": "mod.io/join", "slot": { "valign": "center" } },
+                            { "id": "email", "widget": "textfield", "style": "mods.input", "placeholder": "you@example.com", "min_width": 190, "slot": { "valign": "center" },
+                              "on": { "commit": { "cmd": "UI.Cmd.Mod.RequestCode", "args": { "Email": "{self.value}" } } } },
+                            { "id": "btn-request", "widget": "button", "style": "mods.button.solid", "label": "Send code", "slot": { "valign": "center" },
+                              "bind": { "disabled": "UI.Mods.Auth.State == 'requesting'", "label": "UI.Mods.Auth.State == 'requesting' ? 'Sending…' : 'Send code'" },
+                              "on": { "click": { "cmd": "UI.Cmd.Mod.RequestCode", "args": { "Email": "{#email.value}" } } } }
+                          ] },
+
+                        { "id": "auth-awaiting", "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "valign": "center" },
+                          "visible": "UI.Mods.Auth.State == 'awaiting-code' ? true : UI.Mods.Auth.State == 'exchanging'",
+                          "children": [
+                            { "widget": "text", "style": "mods.text.auth.note", "text": "Code sent — check your inbox (and spam)", "slot": { "valign": "center" } },
+                            { "id": "code", "widget": "textfield", "style": "mods.input.code", "placeholder": "A1B2C", "min_width": 96, "slot": { "valign": "center" },
+                              "on": { "commit": { "cmd": "UI.Cmd.Mod.ExchangeCode", "args": { "Code": "{self.value}" } } } },
+                            { "id": "btn-exchange", "widget": "button", "style": "mods.button.solid", "label": "Sign in", "slot": { "valign": "center" },
+                              "bind": { "disabled": "UI.Mods.Auth.State == 'exchanging'", "label": "UI.Mods.Auth.State == 'exchanging' ? 'Signing in…' : 'Sign in'" },
+                              "on": { "click": { "cmd": "UI.Cmd.Mod.ExchangeCode", "args": { "Code": "{#code.value}" } } } },
+                            { "id": "btn-cancel-code", "widget": "button", "style": "mods.button.ghost", "label": "Cancel", "slot": { "valign": "center" },
+                              "on": { "click": { "cmd": "UI.Cmd.Mod.ClearToken", "args": {} } } }
+                          ] },
+
+                        { "id": "auth-signed-in", "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "valign": "center" }, "visible": "UI.Mods.Auth.State == 'signed-in'",
+                          "children": [
+                            { "id": "username", "widget": "text", "style": "mods.text.auth.user", "slot": { "valign": "center" },
+                              "bind": { "text": "UI.Mods.Auth.Username != '' ? UI.Mods.Auth.Username : 'mod.io user'" } },
+                            { "id": "btn-signout", "widget": "button", "style": "mods.button.ghost", "label": "Sign out", "slot": { "valign": "center" },
+                              "on": { "click": { "cmd": "UI.Cmd.Mod.ClearToken", "args": {} } } }
+                          ] }
+                      ] },
+
+                    { "id": "disco-controls", "widget": "panel", "layout": "horizontal", "gap": 8,
+                      "children": [
+                        { "id": "search", "widget": "textfield", "style": "mods.input", "placeholder": "Search the catalogue…", "min_width": 600, "slot": { "fill": true, "valign": "center" },
+                          "on": { "change": { "cmd": "UI.Cmd.Mod.Search", "args": { "Query": "{self.value}", "Sort": "{#sort.value}" } } } },
+                        { "id": "sort", "widget": "dropdown", "style": "dropdown", "min_width": 170, "slot": { "valign": "center" },
+                          "options": [
+                            { "value": "popular", "label": "Popular" },
+                            { "value": "-date_added", "label": "Recently Added" },
+                            { "value": "-downloads_total", "label": "Most Downloaded" },
+                            { "value": "-subscribers_total", "label": "Most Subscribed" },
+                            { "value": "-ratings_weighted_aggregate", "label": "Top Rated" } ],
+                          "on": { "change": { "cmd": "UI.Cmd.Mod.Search", "args": { "Query": "{#search.value}", "Sort": "{self.value}" } } } },
+                        { "widget": "text", "style": "mods.text.auth.note", "text": "Filters", "slot": { "valign": "center" } },
+                        { "id": "filters", "widget": "toggle", "style": "toggle", "slot": { "valign": "center" } }
+                      ] },
+
+                    { "id": "tag-tray", "widget": "list", "style": "list", "selectable": false, "wrap": true, "gap": 6, "row_key": "Tag",
+                      "visible": "#filters.checked",
+                      "bind": { "items": "UI.Mods.Browse.Tags", "empty_text": "UI.Mods.Browse.Tags.Num > 0 ? '' : 'No tags for this game yet.'" },
+                      "template": { "widget": "panel", "layout": "horizontal", "gap": 4,
+                        "bind": { "style": "item.bOn ? 'mods.chip.tag.on' : 'mods.chip.tag'" },
+                        "on": { "click": { "cmd": "UI.Cmd.Mod.ToggleTag", "args": { "Tag": "{item.Tag}" } } },
+                        "children": [
+                          { "widget": "text", "style": "mods.text.tag.group", "visible": "item.Group != ''", "bind": { "text": "\"{item.Group}:\"" } },
+                          { "widget": "text", "style": "mods.text.tag.group", "bind": { "text": "item.Tag", "colour": "item.bOn ? '#FFFDF3' : '#0A0A0A'" } }
+                        ] } },
+
+                    { "id": "rail-wrap", "widget": "panel", "layout": "horizontal", "gap": 8,
+                      "children": [
+                        { "id": "rail-scroll", "widget": "panel", "layout": "scroll", "horizontal_scroll": true, "slot": { "fill": true },
+                          "children": [
+                            { "id": "browse", "widget": "list", "layout": "horizontal", "style": "list", "selectable": false, "row_key": "NameId", "max_height": 190,
+                              "bind": { "items": "UI.Mods.Browse.Cards", "empty_text": "UI.Mods.Browse.bLoading ? 'Loading the catalogue…' : UI.Mods.Browse.Error != '' ? '' : 'Nothing in the catalogue matches.'" },
+                              "template": { "widget": "panel", "layout": "vertical", "gap": 5, "width": 180, "slot": { "padding": [0, 0, 8, 0] },
+                                "bind": { "style": "item.bInstalling ? 'mods.panel.card.installing' : 'mods.panel.card'" },
+                                "children": [
+                                  { "widget": "image", "style": "mods.image.logo", "size": {"x": 166, "y": 93}, "plate_when_missing": true, "bind": { "source": "item.Logo" } },
+                                  { "widget": "text", "style": "mods.text.card.name", "bind": { "text": "item.Name" } },
+                                  { "widget": "text", "style": "mods.text.card.summary", "wrap": true, "bind": { "text": "item.Summary" } },
+                                  { "widget": "progressbar", "style": "mods.bar.card", "visible": "item.bInstalling", "bind": { "progress": "item.Progress" } },
+                                  { "id": "card-busy", "widget": "button", "style": "mods.button.card.sub", "label": "Installing…", "disabled": true, "fill_width": true, "visible": "item.bInstalling" },
+                                  { "id": "card-subscribe", "widget": "button", "style": "mods.button.card", "label": "Subscribe", "fill_width": true,
+                                    "visible": "item.bInstalling ? false : !item.bSubscribed",
+                                    "bind": { "disabled": "!item.bCanSubscribe" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.Subscribe", "args": { "ModIoId": "{item.ModIoId}", "NameId": "{item.NameId}", "DisplayName": "{item.Name}" } } } },
+                                  { "id": "card-unsubscribe", "widget": "button", "style": "mods.button.card.sub", "label": "Unsubscribe", "fill_width": true,
+                                    "visible": "item.bInstalling ? false : item.bSubscribed ? !item.bInstalled : false",
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.Unsubscribe", "args": { "NameId": "{item.NameId}" } } } },
+                                  { "id": "card-uninstall", "widget": "button", "style": "mods.button.card.sub", "label": "Uninstall", "fill_width": true,
+                                    "visible": "item.bInstalling ? false : item.bInstalled",
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.Uninstall", "args": { "NameId": "{item.NameId}" } } } }
+                                ] } }
+                          ] },
+                        { "id": "btn-loadmore", "widget": "button", "style": "mods.button.more", "label": "More", "visible": "UI.Mods.Browse.bHasMore", "slot": { "valign": "fill" },
+                          "on": { "click": { "cmd": "UI.Cmd.Mod.Search", "args": { "Query": "{UI.Mods.Browse.Query}", "Sort": "{UI.Mods.Browse.Sort}", "bAppend": true } } } }
+                      ] },
+
+                    { "id": "auth-error", "widget": "text", "style": "mods.text.error", "visible": "UI.Mods.Auth.Error != ''", "bind": { "text": "UI.Mods.Auth.Error" } },
+                    { "id": "browse-error", "widget": "text", "style": "mods.text.error", "visible": "UI.Mods.Browse.Error != ''", "bind": { "text": "UI.Mods.Browse.Error" } },
+                    { "id": "install-error", "widget": "text", "style": "mods.text.error", "visible": "UI.Mods.Library.Error != ''", "bind": { "text": "UI.Mods.Library.Error" } }
+                  ] },
+
+                { "id": "library", "widget": "panel", "layout": "horizontal", "gap": 12, "slot": { "fill": true },
+                  "children": [
+                    { "id": "col-inactive", "widget": "panel", "layout": "vertical", "style": "mods.panel.column", "slot": { "fill": 1, "valign": "fill" },
+                      "children": [
+                        { "widget": "panel", "layout": "horizontal", "style": "mods.panel.column.head", "gap": 8,
+                          "children": [
+                            { "widget": "text", "style": "mods.text.column.title", "text": "Stockroom", "slot": { "valign": "center" } },
+                            { "widget": "text", "style": "mods.text.column.sub", "text": "Installed · not active", "slot": { "fill": true, "valign": "center" } },
+                            { "widget": "panel", "style": "mods.chip.count", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "mods.chip.count", "bind": { "text": "UI.Mods.Library.StockroomCount" } } ] }
+                          ] },
+                        { "widget": "panel", "style": "mods.rule.column", "slot": { "height": 2 } },
+                        { "id": "list-inactive", "widget": "list", "style": "list", "selectable": false, "row_key": "ModId", "focus": "group", "slot": { "fill": true, "padding": 8 },
+                          "bind": { "items": "UI.Mods.Library.Stockroom", "empty_text": "UI.Mods.Library.StockroomEmptyText" },
+                          "template": { "widget": "panel", "layout": "vertical", "slot": { "padding": [0, 3] },
+                            "bind": { "style": "item.bDownloading ? 'mods.panel.row.downloading' : 'mods.panel.row'" },
+                            "children": [
+                              { "widget": "panel", "layout": "horizontal", "gap": 7,
+                                "children": [
+                                  { "widget": "text", "style": "mods.text.row.name", "slot": { "valign": "center" }, "bind": { "text": "item.DisplayName" } },
+                                  { "widget": "text", "style": "mods.text.row.ver", "slot": { "fill": true, "valign": "center" }, "bind": { "text": "item.Version" } },
+                                  { "widget": "button", "style": "mods.button.update", "label": "Update", "slot": { "valign": "center" }, "visible": "item.bHasUpdate",
+                                    "bind": { "disabled": "item.bDownloading", "label": "item.bDownloading ? 'Updating…' : 'Update'" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.CheckUpdates", "args": { "NameId": "{item.ModId}" } } } },
+                                  { "widget": "button", "style": "mods.button.uninstall", "label": "Uninstall", "slot": { "valign": "center" }, "visible": "item.bCanUninstall",
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.Uninstall", "args": { "NameId": "{item.ModId}" } } } },
+                                  { "widget": "button", "style": "mods.button.move", "label": ">", "slot": { "valign": "center" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.SetEnabled", "args": { "ModId": "{item.ModId}", "Enabled": true } } } }
+                                ] },
+                              { "widget": "progressbar", "style": "mods.bar.download", "visible": "item.bDownloading", "slot": { "padding": [0, 4, 0, 0] }, "bind": { "progress": "item.Progress" } }
+                            ] } }
+                      ] },
+
+                    { "id": "col-active", "widget": "panel", "layout": "vertical", "style": "mods.panel.column", "slot": { "fill": 1, "valign": "fill" },
+                      "children": [
+                        { "widget": "panel", "layout": "horizontal", "style": "mods.panel.column.head.active", "gap": 8,
+                          "children": [
+                            { "widget": "text", "style": "mods.text.column.title.active", "text": "Shop Floor", "slot": { "valign": "center" } },
+                            { "widget": "text", "style": "mods.text.column.sub.active", "text": "Active · loads top to bottom", "slot": { "fill": true, "valign": "center" } },
+                            { "id": "lib-status", "widget": "text", "style": "mods.text.status", "text": "Checking…", "slot": { "valign": "center" }, "visible": "UI.Mods.Library.bChecking" },
+                            { "id": "btn-update-all", "widget": "button", "style": "mods.button.update.all", "label": "Update All", "slot": { "valign": "center" }, "visible": "UI.Mods.Library.bAnyUpdate",
+                              "on": { "click": { "cmd": "UI.Cmd.Mod.CheckUpdates", "args": { "NameId": "" } } } },
+                            { "widget": "panel", "style": "mods.chip.count.active", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "mods.chip.count", "bind": { "text": "UI.Mods.Library.ShopFloorCount" } } ] }
+                          ] },
+                        { "widget": "panel", "style": "mods.rule.column", "slot": { "height": 2 } },
+                        { "id": "list-active", "widget": "list", "style": "list", "selectable": false, "row_key": "ModId", "focus": "group", "slot": { "fill": true, "padding": 8 },
+                          "bind": { "items": "UI.Mods.Library.ShopFloor", "empty_text": "'Nothing on display. Move mods here to activate them.'" },
+                          "template": { "widget": "panel", "layout": "vertical", "slot": { "padding": [0, 3] },
+                            "bind": { "style": "item.bDownloading ? 'mods.panel.row.downloading' : 'mods.panel.row'" },
+                            "children": [
+                              { "widget": "panel", "layout": "horizontal", "gap": 7,
+                                "children": [
+                                  { "widget": "text", "style": "mods.text.lock", "text": "Locked", "slot": { "valign": "center" }, "visible": "item.bLocked" },
+                                  { "widget": "button", "style": "mods.button.move", "label": "<", "slot": { "valign": "center" }, "visible": "!item.bLocked",
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.SetEnabled", "args": { "ModId": "{item.ModId}", "Enabled": false } } } },
+                                  { "widget": "panel", "style": "mods.chip.ord", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "mods.chip.ord", "bind": { "text": "item.Ord" } } ] },
+                                  { "widget": "text", "style": "mods.text.row.name", "slot": { "valign": "center" }, "bind": { "text": "item.DisplayName" } },
+                                  { "widget": "text", "style": "mods.text.row.ver", "slot": { "fill": true, "valign": "center" }, "bind": { "text": "item.Version" } },
+                                  { "widget": "button", "style": "mods.button.update", "label": "Update", "slot": { "valign": "center" }, "visible": "item.bHasUpdate",
+                                    "bind": { "disabled": "item.bDownloading", "label": "item.bDownloading ? 'Updating…' : 'Update'" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.CheckUpdates", "args": { "NameId": "{item.ModId}" } } } },
+                                  { "widget": "button", "style": "mods.button.step", "label": "^", "slot": { "valign": "center" },
+                                    "bind": { "disabled": "!item.bCanMoveUp" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.SetLoadOrder", "args": { "Order": "{UI.Mod.LoadOrder.Order}", "MoveModId": "{item.ModId}", "MoveDelta": -1 } } } },
+                                  { "widget": "button", "style": "mods.button.step", "label": "v", "slot": { "valign": "center" },
+                                    "bind": { "disabled": "!item.bCanMoveDown" },
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.SetLoadOrder", "args": { "Order": "{UI.Mod.LoadOrder.Order}", "MoveModId": "{item.ModId}", "MoveDelta": 1 } } } },
+                                  { "widget": "button", "style": "mods.button.uninstall", "label": "Uninstall", "slot": { "valign": "center" }, "visible": "item.bCanUninstall",
+                                    "on": { "click": { "cmd": "UI.Cmd.Mod.Uninstall", "args": { "NameId": "{item.ModId}" } } } }
+                                ] },
+                              { "widget": "progressbar", "style": "mods.bar.download", "visible": "item.bDownloading", "slot": { "padding": [0, 4, 0, 0] }, "bind": { "progress": "item.Progress" } }
+                            ] } }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "rows", "widget": "panel", "layout": "vertical", "focus": "group", "slot": { "padding": [4, 6, 4, 10] },
+              "children": [
+                { "id": "btn-back", "widget": "button", "style": "button.row", "label": "Back to Main", "dept": "Fire Exit", "page": "PG. 01", "first_in_group": true, "focus": "initial",
+                  "on": { "click": { "cmd": "UI.Cmd.Menu.Navigate", "args": { "Screen": "MainMenu" } } } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "id": "FD_Counter_8_DF",
+  "asset_path": "/Game/Furniture/Counters/Furniture/FD_Counter_8_DF",
+  "class": "UStorageDefinition",
+  "schema_version": 2,
+  "properties": {
+    "compartments": [
+      {
+        "id": "main",
+        "layout": "Grid",
+        "width": 3,
+        "height": 2,
+        "accepts": [
+          "general",
+          "seed"
+        ],
+        "surface": {
+          "offset": {
+            "x": -0.2,
+            "y": 0.0,
+            "z": 23.15
+          },
+          "yaw": 0.0,
+          "width": 58.0,
+          "depth": 38.0,
+          "part": "Drawer"
+        },
+        "gate": {
+          "part": "Drawer",
+          "min_open": 0.5
+        },
+        "loot": {
+          "rolls": 1,
+          "chance": 0.4
+        }
+      }
+    ],
+    "layer_name": "UI.Layer.GameMenu",
+    "interaction_hold_time": 0.0,
+    "interaction_prompt_text": "Open",
+    "has_static_audio": false,
+    "has_toggled_on_audio": false,
+    "has_toggled_off_audio": false,
+    "has_static_lights": false,
+    "has_toggled_on_lights": false,
+    "has_toggled_off_lights": false,
+    "has_static_vfx": false,
+    "has_toggled_on_vfx": false,
+    "has_toggled_off_vfx": false,
+    "starting_health": 134,
+    "furniture_armour": 1,
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Shelf02_Closed.GCS_Shelf02_Closed",
+    "destruction_impulse_strength": 0,
+    "loot_dropped_on_death": [
+      "LD_CountersLoot"
+    ],
+    "constructable_item_to_grant": "ID_Counter_8_CI",
+    "deconstruction_tier": 2,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.66,
+          "y": 0.0,
+          "z": 65.3
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 24.6,
+          "y": 32.9,
+          "z": 65.3
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 1.66,
+          "y": 0.0,
+          "z": 65.3
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 25.6,
+          "y": 33.9,
+          "z": 65.3
+        }
+      }
+    ],
+    "effect_hitboxes": [],
+    "building_base": {
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "translation": {
+        "x": -0.74,
+        "y": 0,
+        "z": 0
+      },
+      "scale3_d": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
+    },
+    "construction_category_tag": "",
+    "is_draggable": true,
+    "drag_tier": 2,
+    "drag_mass": 1,
+    "friction": 0.699999988079071,
+    "restitution": 0.30000001192092896,
+    "drag_linear_damping": 5,
+    "drag_angular_damping": 1.25,
+    "drag_max_angular_velocity": 90,
+    "release_linear_damping": 0.009999999776482582,
+    "release_angular_damping": 0.05000000074505806,
+    "display_name": "Counter",
+    "description": "Store furniture.",
+    "level": 1,
+    "gameplay_tags": [
+      "Entity.RandomGeneration.CanBeRandom",
+      "Entity.RandomGeneration.FurnitureCategory.Kitchen",
+      "Entity.RandomGeneration.FurnitureType.Counter",
+      "Entity.RandomGeneration.Materials.Metal",
+      "Entity.RandomGeneration.Size.Medium",
+      "Tile.Biome.Restaurant"
+    ],
+    "default_world_gen_gameplay_tags": [],
+    "meta_tags": [],
+    "is_pingable": false,
+    "static_mesh": "/Game/Furniture/MidCentury/Shelf02/SM_Shelf02_Closed.SM_Shelf02_Closed",
+    "casts_shadow": true,
+    "collision_profile_name": {
+      "name": "Furniture"
+    },
+    "random_material_overrides": [],
+    "loot_positions": [
+      {
+        "local_transform": {
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+          },
+          "translation": {
+            "x": 1.66,
+            "y": 0.0,
+            "z": 131.1
+          },
+          "scale3_d": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        },
+        "weight": 1000
+      }
+    ],
+    "loot_position_chance": 0.3,
+    "weighted_chance": 1000,
+    "world_gen_priority": 7000,
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Shelf02/SK_Shelf02.SK_Shelf02",
+      "parts": [
+        {
+          "name": "Drawer",
+          "motion": "Slide",
+          "range": 38.0
+        }
+      ]
+    },
+    "container_view": {
+      "location": {
+        "x": 95.2,
+        "y": 42.2,
+        "z": 260.1
+      },
+      "rotation": {
+        "pitch": -74.8,
+        "yaw": 179.2,
+        "roll": 0
+      }
+    }
+  }
+}

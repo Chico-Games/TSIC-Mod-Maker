@@ -1,0 +1,131 @@
+{
+  "id": "UI_Character_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Character",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.MainMenu",
+    "cancel": "UI.Cmd.Menu.Back",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Back" } ],
+    "uses": [ "UI.Menu.Characters" ],
+    "tree": {
+      "id": "root", "widget": "panel", "layout": "horizontal",
+      "children": [
+
+        { "id": "rail", "widget": "panel", "layout": "vertical", "style": "character.rail", "slot": { "width": 340, "valign": "fill" },
+          "children": [
+            { "id": "head", "widget": "panel", "layout": "vertical", "gap": 2, "slot": { "padding": [24, 20, 24, 14] },
+              "children": [
+                { "widget": "text", "style": "character.text.title.hand", "text": "Customise" },
+                { "widget": "panel", "layout": "horizontal",
+                  "children": [
+                    { "widget": "text", "style": "character.text.masthead", "text": "Character", "line_height": 0.9 },
+                    { "widget": "text", "style": "character.text.masthead", "text": ".", "line_height": 0.9, "bind": { "colour": "'#E60000'" } }
+                  ] },
+                { "widget": "text", "style": "character.text.lede", "wrap": true, "slot": { "padding": [0, 8, 0, 0] },
+                  "text": "Who you turn up as. Travels with you into any store, including someone else's." }
+              ] },
+            { "widget": "panel", "style": "character.rule", "slot": { "height": 2 } },
+
+            { "id": "slots", "widget": "panel", "layout": "scroll", "focus": "group", "slot": { "fill": true, "padding": [18, 12, 18, 12] },
+              "children": [
+                { "id": "slots-body", "widget": "panel", "layout": "vertical", "gap": 12,
+                  "children": [
+                    { "id": "empty", "widget": "text", "style": "character.text.empty", "wrap": true, "slot": { "padding": [4, 14] },
+                      "text": "No uniform on file. The mod ships no character parts.",
+                      "visible": "UI.Menu.Characters.Slots.Num == 0" },
+
+                    { "id": "btn-group-back", "widget": "button", "style": "character.button.back", "label": "< Back", "fill_width": true,
+                      "visible": "UI.Menu.Characters.OpenGroup != ''",
+                      "bind": { "label": "\"< {UI.Menu.Characters.OpenGroupName}\"" },
+                      "on": { "click": { "cmd": "UI.Cmd.Menu.OpenCharacterGroup", "args": { "Group": "" } } } },
+
+                    { "id": "sections", "widget": "list", "style": "list", "selectable": false, "row_key": "Slot",
+                      "bind": { "items": "UI.Menu.Characters.View" },
+                      "template": { "widget": "panel", "layout": "vertical", "gap": 6, "slot": { "padding": [0, 0, 0, 8] },
+                        "children": [
+                          { "widget": "text", "style": "character.text.slot.label", "visible": "item.bShowLabel", "bind": { "text": "item.DisplayName" } },
+                          { "widget": "panel", "style": "character.rule", "visible": "item.bShowLabel", "slot": { "height": 1 } },
+
+                          { "id": "swatches", "widget": "list", "style": "list", "selectable": false, "wrap": true, "gap": 5, "visible": "item.bIsColor",
+                            "bind": { "items": "item.Parts" },
+                            "template": { "widget": "panel", "layout": "overlay",
+                              "children": [
+                                { "id": "swatch-colour", "widget": "panel", "layout": "vertical",
+                                  "visible": "item.Swatch == 'wheel' ? false : item.Swatch != 'match'",
+                                  "bind": { "style": "item.bSelected ? 'character.swatch.selected' : 'character.swatch'" },
+                                  "on": { "click": { "cmd": "UI.Cmd.Menu.SelectCharacterPart", "args": { "Slot": "{item.Slot}", "Id": "{item.Id}" } } },
+                                  "children": [ { "widget": "image", "size": {"x": 30, "y": 30}, "bind": { "source": "item.Swatch" } } ] },
+                                { "id": "swatch-match", "widget": "panel", "layout": "vertical", "width": 34, "height": 34, "center_content": true,
+                                  "visible": "item.Swatch == 'match'",
+                                  "bind": { "style": "item.bSelected ? 'character.swatch.selected' : 'character.swatch'" },
+                                  "on": { "click": { "cmd": "UI.Cmd.Menu.SelectCharacterPart", "args": { "Slot": "{item.Slot}", "Id": "{item.Id}" } } },
+                                  "children": [ { "widget": "text", "style": "character.text.swatch.match", "text": "Match" } ] },
+                                { "id": "swatch-wheel", "widget": "panel", "layout": "vertical", "width": 34, "height": 34, "center_content": true,
+                                  "visible": "item.Swatch == 'wheel'",
+                                  "bind": { "style": "item.bSelected ? 'character.swatch.selected' : 'character.swatch'" },
+                                  "on": { "click": { "cmd": "UI.Cmd.Menu.OpenTintWheel", "args": { "Slot": "{item.Slot}" } } },
+                                  "children": [ { "widget": "text", "style": "character.text.swatch.match", "text": "Mix" } ] }
+                              ] } },
+
+                          { "id": "tiles", "widget": "list", "style": "list", "selectable": false, "wrap": true, "gap": 6, "visible": "!item.bIsColor",
+                            "bind": { "items": "item.Parts" },
+                            "template": { "widget": "panel", "layout": "vertical", "width": 92,
+                              "bind": { "style": "item.bSelected ? 'character.tile.selected' : 'character.tile'" },
+                              "on": { "click": { "cmd": "UI.Cmd.Menu.SelectCharacterPart", "args": { "Slot": "{item.Slot}", "Id": "{item.Id}" } } },
+                              "children": [
+                                { "widget": "image", "style": "character.image.tile", "size": {"x": 90, "y": 78}, "plate_when_missing": true,
+                                  "bind": { "source": "item.ThumbnailUrl" } },
+                                { "widget": "text", "style": "character.text.tile.name", "wrap": true, "visible": "item.ThumbnailUrl == ''", "bind": { "text": "item.DisplayName" } }
+                              ] } }
+                        ] } },
+
+                    { "id": "groups", "widget": "list", "style": "list", "selectable": false, "row_key": "Group",
+                      "visible": "UI.Menu.Characters.OpenGroup == ''",
+                      "bind": { "items": "UI.Menu.Characters.Groups" },
+                      "template": { "widget": "panel", "layout": "horizontal", "style": "character.panel.menu", "gap": 10, "slot": { "padding": [0, 3] },
+                        "on": { "click": { "cmd": "UI.Cmd.Menu.OpenCharacterGroup", "args": { "Group": "{item.Group}" } } },
+                        "children": [
+                          { "widget": "text", "style": "character.text.menu.name", "slot": { "fill": true, "valign": "bottom" }, "bind": { "text": "item.GroupName" } },
+                          { "widget": "text", "style": "character.text.menu.worn", "slot": { "valign": "bottom" }, "bind": { "text": "item.Worn" } }
+                        ] } },
+
+                    { "id": "wheel", "widget": "panel", "layout": "vertical", "style": "character.panel.wheel", "focus": "trap", "gap": 6,
+                      "visible": "UI.Menu.Characters.WheelSlot != ''",
+                      "children": [
+                        { "widget": "text", "style": "character.text.slot.label", "text": "Mix a colour" },
+                        { "widget": "text", "style": "character.text.lede", "text": "Hue" },
+                        { "id": "tint-h", "widget": "slider", "min": 0, "max": 360, "step": 1, "track_width": 220, "value_format": "{0}",
+                          "bind": { "value": "UI.Menu.Characters.WheelHue" },
+                          "on": { "commit": { "cmd": "UI.Cmd.Menu.SetCharacterTint", "args": { "Slot": "{UI.Menu.Characters.WheelSlot}", "Hue": "{#tint-h.value}", "Saturation": "{#tint-s.value}", "Value": "{#tint-v.value}" } } } },
+                        { "widget": "text", "style": "character.text.lede", "text": "Saturation" },
+                        { "id": "tint-s", "widget": "slider", "min": 0, "max": 1, "step": 0.01, "track_width": 220, "show_value": false,
+                          "bind": { "value": "UI.Menu.Characters.WheelSaturation" },
+                          "on": { "commit": { "cmd": "UI.Cmd.Menu.SetCharacterTint", "args": { "Slot": "{UI.Menu.Characters.WheelSlot}", "Hue": "{#tint-h.value}", "Saturation": "{#tint-s.value}", "Value": "{#tint-v.value}" } } } },
+                        { "widget": "text", "style": "character.text.lede", "text": "Brightness" },
+                        { "id": "tint-v", "widget": "slider", "min": 0, "max": 1, "step": 0.01, "track_width": 220, "show_value": false,
+                          "bind": { "value": "UI.Menu.Characters.WheelValue" },
+                          "on": { "commit": { "cmd": "UI.Cmd.Menu.SetCharacterTint", "args": { "Slot": "{UI.Menu.Characters.WheelSlot}", "Hue": "{#tint-h.value}", "Saturation": "{#tint-s.value}", "Value": "{#tint-v.value}" } } } },
+                        { "id": "btn-wheel-done", "widget": "button", "style": "button.sm", "label": "Done", "slot": { "align": "right", "padding": [0, 6, 0, 0] },
+                          "on": { "click": { "cmd": "UI.Cmd.Menu.OpenTintWheel", "args": { "Slot": "" } } } }
+                      ] }
+                  ] }
+              ] },
+
+            { "id": "foot", "widget": "panel", "layout": "vertical", "focus": "group", "slot": { "padding": [18, 0, 18, 18] },
+              "children": [
+                { "id": "btn-back", "widget": "button", "style": "button.row", "label": "Back to Main", "dept": "Fire Exit", "page": "PG. 01", "first_in_group": true, "focus": "initial",
+                  "on": { "click": { "cmd": "UI.Cmd.Menu.Navigate", "args": { "Screen": "MainMenu" } } } }
+              ] }
+          ] },
+
+        { "id": "stage", "widget": "panel", "layout": "overlay", "style": "character.stage", "slot": { "fill": true, "valign": "fill" },
+          "children": [
+            { "id": "stage-img", "widget": "image", "source": "rt:character-preview", "fill": true, "slot": { "align": "fill", "valign": "fill" },
+              "on": { "drag": { "cmd": "UI.Cmd.Menu.RotateCharacter", "args": { "Yaw": "{self.yaw}" } } } },
+            { "id": "hint", "widget": "text", "style": "character.text.hint", "text": "Drag to turn", "slot": { "align": "center", "valign": "bottom", "padding": [0, 0, 0, 14] } }
+          ] }
+      ]
+    }
+  }
+}

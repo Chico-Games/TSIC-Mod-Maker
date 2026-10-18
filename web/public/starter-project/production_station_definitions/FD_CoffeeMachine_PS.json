@@ -1,12 +1,9 @@
 {
   "id": "FD_CoffeeMachine_PS",
   "asset_path": "/Game/Furniture/Cooking/CoffeeMachine/Furniture/FD_CoffeeMachine_PS",
-  "class": "UProductionStationDefinition",
+  "class": "UInteractableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "available_recipe_rules_definition": "ARR_CoffeeMachineRecipes",
-    "max_recipes": 5,
-    "gameplay_event_tag": "UI.GameScreen.Production",
     "interaction_hold_time": 0,
     "interaction_prompt_text": "Use",
     "has_static_audio": false,
@@ -88,7 +85,6 @@
         "z": 1
       }
     },
-    "upgrade_recipe": "RD_CoffeeMachineTier2_CN",
     "is_draggable": true,
     "display_name": "Coffee Machine",
     "description": "A simple microwave for basic cooking. Heats and cooks simple meals quickly.",
@@ -123,6 +119,76 @@
     ],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "gameplay_event_tag": "UI.GameScreen.Inventory",
+    "compartments": [
+      {
+        "id": "input",
+        "layout": "Grid",
+        "width": 3,
+        "height": 4,
+        "accepts": [
+          "cold"
+        ],
+        "surface": {
+          "offset": {
+            "x": -10.0,
+            "y": -7.0,
+            "z": 65.2
+          },
+          "yaw": 90.0,
+          "width": 32,
+          "depth": 48
+        }
+      },
+      {
+        "id": "output",
+        "layout": "Grid",
+        "width": 1,
+        "height": 4,
+        "accepts": [
+          "cold"
+        ],
+        "take_only": true,
+        "visible_when_empty": false,
+        "surface": {
+          "offset": {
+            "x": 16.5,
+            "y": -7.0,
+            "z": 65.2
+          },
+          "yaw": 90.0,
+          "width": 17,
+          "depth": 48
+        }
+      }
+    ],
+    "station": {
+      "recipe_tag": "Station.CoffeeMachine",
+      "input": "input",
+      "output": "output",
+      "trigger": {
+        "type": "Click_Bench"
+      },
+      "work": {
+        "type": "Instant"
+      },
+      "feedback": {
+        "action_label": "Craft",
+        "working_sound": "toggled_on_audio"
+      }
+    },
+    "container_view": {
+      "location": {
+        "x": -36.3,
+        "y": 130.1,
+        "z": 233.1
+      },
+      "rotation": {
+        "pitch": -53.6,
+        "yaw": -90.4,
+        "roll": 0
+      }
+    }
   }
 }

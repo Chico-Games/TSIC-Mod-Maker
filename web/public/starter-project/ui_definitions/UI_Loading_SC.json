@@ -1,0 +1,178 @@
+{
+  "id": "UI_Loading_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Loading",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "",
+    "actions": [],
+    "uses": [
+      "UI.Loading.Progress"
+    ],
+    "tree": {
+      "id": "stage",
+      "widget": "panel",
+      "layout": "overlay",
+      "style": "panel.stage.title",
+      "backdrop": "Maze",
+      "children": [
+        {
+          "id": "cover",
+          "widget": "panel",
+          "layout": "vertical",
+          "style": "panel.cover",
+          "slot": {
+            "align": "center",
+            "valign": "center",
+            "width": 420
+          },
+          "children": [
+            {
+              "id": "masthead",
+              "widget": "panel",
+              "layout": "horizontal",
+              "gap": 16,
+              "slot": {
+                "padding": [
+                  18,
+                  22,
+                  10,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "slot": {
+                    "fill": true,
+                    "valign": "bottom"
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "text.masthead",
+                      "text": "Loading\nWorld",
+                      "line_height": 0.9,
+                      "wrap": true
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "slot": {
+                    "align": "right",
+                    "valign": "top"
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "style": "chip.badge",
+                      "slot": {
+                        "align": "right"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "text.badge",
+                          "case": "None",
+                          "text": "Vol. 1"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "text",
+                      "style": "text.date",
+                      "text": "Preparing your order.",
+                      "justify": "Right",
+                      "wrap": true,
+                      "slot": {
+                        "align": "right"
+                      },
+                      "case": "Upper"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "style": "rule.panel",
+              "slot": {
+                "height": 4
+              }
+            },
+            {
+              "id": "body",
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 14,
+              "slot": {
+                "padding": [
+                  12,
+                  22,
+                  22,
+                  22
+                ]
+              },
+              "children": [
+                {
+                  "id": "status",
+                  "widget": "text",
+                  "style": "menu.text.loading",
+                  "justify": "Center",
+                  "case": "Upper",
+                  "wrap": true,
+                  "cycle_seconds": 6.5,
+                  "cycle": [
+                    "Assembling the flat-pack wardrobes...",
+                    "Fluffing the display cushions...",
+                    "Testing the recliners...",
+                    "Building the showroom kitchens...",
+                    "Searching for the last allen key...",
+                    "Steaming the curtains...",
+                    "Rotating the mattress display...",
+                    "Arranging the scatter cushions...",
+                    "Polishing the dining tables...",
+                    "Naming the bookshelves...",
+                    "Untangling the fairy lights...",
+                    "Bouncing on the mattresses...",
+                    "Straightening the picture frames...",
+                    "Re-stuffing the sofas...",
+                    "Spinning the office chairs...",
+                    "Vacuuming the showroom rugs...",
+                    "Tightening the bed frames...",
+                    "Dressing the showroom bedrooms...",
+                    "Labelling the drawer units...",
+                    "Checking under the beds...",
+                    "Closing the wardrobe doors...",
+                    "Counting the mannequins..."
+                  ],
+                  "slot": {
+                    "align": "fill"
+                  }
+                },
+                {
+                  "id": "progress",
+                  "widget": "progressbar",
+                  "style": "menu.bar.loading",
+                  "width": 260,
+                  "slot": {
+                    "align": "center"
+                  },
+                  "bind": {
+                    "progress": "UI.Loading.Progress.Progress",
+                    "visible": "UI.Loading.Progress.Progress > 0"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

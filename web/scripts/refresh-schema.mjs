@@ -26,9 +26,15 @@
  *
  * Config (env or flags):
  *   TSIC_PROJECT_DIR   default: C:/Users/Administrator/Documents/Unreal Projects/TSIC
- *   TSIC_PACK_DIR      default: <project>/Content/DefinitionPacks/DefaultProject
- *   --source <dir>     overrides the pack dir (e.g. a fresh test-output/Definitions)
+ *   TSIC_PACK_DIR      default: vendor/default-mod (the pinned tsic-default-mod
+ *                      submodule, which IS the pack: it ships _schema.json and the
+ *                      dotted sidecars that `Tools/Export/gen_schema.py` writes)
+ *   --source <dir>     overrides the pack dir (e.g. the TSIC checkout's
+ *                      Mods/com.chicogames.default after a gen_schema run)
  *   --no-scan          skip the Python property-meta regen, keep existing file
+ *
+ * A pack without `.class-hierarchy.json` is fine: the hierarchy is derived from
+ * `_schema.json` (`classes[].parents`) plus the folders the pack data uses.
  *
  * Usage:  npm run refresh-schema  [-- --source <dir>] [--no-scan]
  */
@@ -48,9 +54,10 @@ const opt = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1
 
 const TSIC_PROJECT_DIR = process.env.TSIC_PROJECT_DIR
   || 'C:/Users/Administrator/Documents/Unreal Projects/TSIC';
+const SUBMODULE_PACK = join(dirname(WEB_DIR), 'vendor', 'default-mod');
 const PACK_DIR = opt('--source')
   || process.env.TSIC_PACK_DIR
-  || join(TSIC_PROJECT_DIR, 'Content', 'DefinitionPacks', 'DefaultProject');
+  || SUBMODULE_PACK;
 const HEADER_DIR = join(TSIC_PROJECT_DIR, 'Source', 'TSIC', 'Public');
 const SCANNER = join(TSIC_PROJECT_DIR, 'Tools', 'Export', 'scan_property_meta.py');
 const DO_SCAN = !flag('--no-scan');
@@ -81,8 +88,15 @@ log(`  headers: ${HEADER_DIR}`);
 log(`  -> web/public/schema, web/public/starter-project\n`);
 
 if (!existsSync(PACK_DIR)) die(`pack dir not found: ${PACK_DIR}\n  Set TSIC_PACK_DIR or pass --source <dir>.`);
-if (!existsSync(join(PACK_DIR, '.class-hierarchy.json'))) die(`pack is missing .class-hierarchy.json — not a valid export pack.`);
+if (!existsSync(join(PACK_DIR, '_schema.json'))) die(`pack is missing _schema.json — not a definition pack (run Tools/Export/gen_schema.py in TSIC).`);
 mkdirSync(WEB_SCHEMA, { recursive: true });
+
+// The pack's own schema: the lean⇆envelope converter's source of truth, and
+// the authority on which keys a class that compiles its own JSON (UI screens
+// and themes, AI2 definitions — `compiled: true`) accepts. Those keys have no
+// UPROPERTY, so the header scan can never see them.
+const packSchema = readJSON(join(PACK_DIR, '_schema.json'));
+const schemaClasses = packSchema.classes || {};
 
 // ── 1. property-meta.json (regen from headers, best-effort) ─────────────────
 log('1) property-meta.json');
@@ -180,8 +194,6 @@ function resolveChain(cls, parentMap) {
 
 // ── 2. class-hierarchy.json (copy + self-heal) ──────────────────────────────
 log('2) class-hierarchy.json');
-const hierarchy = readJSON(join(PACK_DIR, '.class-hierarchy.json'));
-hierarchy.classes = hierarchy.classes || {};
 // Classes actually used by the pack data, with their folder + count.
 const dataClasses = new Map(); // Ufull -> {folder, count}
 for (const folder of listDefFolders(PACK_DIR)) {
@@ -194,6 +206,26 @@ for (const folder of listDefFolders(PACK_DIR)) {
     e.count++; dataClasses.set(full, e);
   }
 }
+// The pack's hierarchy sidecar when it ships one (gen_schema.py writes it beside
+// _schema.json); otherwise derived from the schema's own parent chains so a bare
+// pack still refreshes.
+let hierarchy;
+if (existsSync(join(PACK_DIR, '.class-hierarchy.json'))) {
+  hierarchy = readJSON(join(PACK_DIR, '.class-hierarchy.json'));
+} else {
+  log('   pack has no .class-hierarchy.json — deriving it from _schema.json');
+  hierarchy = { schema_version: packSchema.schema_version ?? 2, generated_at: packSchema.generated_at ?? '', classes: {} };
+  for (const [full, cls] of Object.entries(schemaClasses)) {
+    const used = dataClasses.get(full);
+    hierarchy.classes[full] = {
+      folder: used?.folder ?? null,
+      instance_count: used?.count ?? 0,
+      parents: cls.parents || ['UDataAsset', 'UObject'],
+      family_root: full,
+    };
+  }
+}
+hierarchy.classes = hierarchy.classes || {};
 // Merge editor-side parent chains BEFORE the self-heal below, so a class with an
 // override gets its real family chain instead of the degraded [UDataAsset,
 // UObject] fallback. Precedence: pack > overrides > self-heal.
@@ -340,7 +372,9 @@ const structural = []; // missing required fields (id/asset_path/class) the edit
 for (const folder of listDefFolders(WEB_STARTER)) {
   for (const name of listJsonFiles(join(WEB_STARTER, folder))) {
     let j; try { j = readJSON(join(WEB_STARTER, folder, name)); } catch { continue; }
-    for (const field of ['id', 'asset_path', 'class']) {
+    // `asset_path` is optional (hand-authored definitions have no backing
+    // .uasset) — mirrors src/persistence/structuralValidator.ts.
+    for (const field of ['id', 'class']) {
       if (typeof j[field] !== 'string' || !j[field]) structural.push(`${folder}/${name} — missing ${field}`);
     }
     const c = j.class;
@@ -350,8 +384,13 @@ for (const folder of listDefFolders(WEB_STARTER)) {
     const props = j.properties;
     if (!props || typeof props !== 'object') continue;
     const bc = chainOf(full).map(bare);
+    // Keys _schema.json lists for the class are known by definition — this is
+    // how a compiled class's authored keys (`tree`, `colours`, `roots`) pass,
+    // since no header declares them for the property-meta scan to find.
+    const schemaProps = schemaClasses[full]?.properties || {};
     for (const p of Object.keys(props)) {
       if (PACK_DIRECTIVE_PROPS.has(p)) continue;
+      if (p in schemaProps) continue;
       if (!bc.some((cc) => pmKeys.has(`${cc}.${p}`))) {
         const k = `${bare(full)}.${p}`;
         unknownProp[k] = (unknownProp[k] || 0) + 1;
@@ -388,6 +427,15 @@ if (nUC === 0 && nUP === 0 && structural.length === 0) {
       log('   JSON, they belong in schema/property-meta.overrides.json instead.');
     }
   }
-  console.error('\n⚠ Issues remain. If drift: re-run the in-editor game export. If structural: the pack has files missing id/asset_path/class.');
-  process.exit(2);
+  // Unknown PROPERTIES are pack data the game itself skips (keys spelled the
+  // way the retired exporter wrote them; tracked as TSIC #750). The bundle is
+  // still correct and complete, so that alone is a warning. An unknown CLASS
+  // or a file missing id/class would break the editor's load and stays fatal.
+  if (nUC === 0 && structural.length === 0) {
+    console.warn('\n⚠ Pack drift: the keys above are data the game does not read (TSIC #750); python Tools/Export/gen_schema.py --verify in TSIC names the files. Bundle written.');
+    log('Done. Hard-reload the editor (Ctrl+Shift+R) to pick up the new schema.');
+  } else {
+    console.error('\n✖ Issues remain. If unknown-class: regenerate the pack schema (python Tools/Export/gen_schema.py in TSIC). If structural: the pack has files missing id/class.');
+    process.exit(2);
+  }
 }

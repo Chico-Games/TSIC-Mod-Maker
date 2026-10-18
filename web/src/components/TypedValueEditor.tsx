@@ -141,7 +141,8 @@ function typeColorClass(typed: any): string {
     case 'gameplay_tag':
     case 'gameplay_tag_container': return 'def-type-color-tag';
     case 'definition_ref': return 'def-type-color-ref';
-    case 'struct': return 'def-type-color-struct';
+    case 'struct':
+    case 'json': return 'def-type-color-struct';
     case 'array':
     case 'set': return 'def-type-color-array';
     case 'map': return 'def-type-color-map';
@@ -1210,6 +1211,45 @@ function UnknownTypeEditor({ label, typed, onChange, onDelete }: FieldProps) {
   );
 }
 
+/** `json` kind: an opaque value the game's definition class compiles itself
+ *  (a UI screen's `tree`, a theme's `colours`, an AI2 behaviour's `roots`).
+ *  The schema gives it no structure, so it is edited as JSON text; only the
+ *  value changes, the envelope stays `{type:'json'}`. */
+function JsonValueEditor({ label, typed, onChange, onDelete }: FieldProps) {
+  const [text, setText] = useState(() => JSON.stringify(typed?.value ?? null, null, 2));
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <div className="def-field">
+      <FieldHead
+        label={label}
+        type="json"
+        controls={
+          onDelete ? (
+            <button type="button" className="danger" onClick={onDelete} title="Remove">
+              ×
+            </button>
+          ) : null
+        }
+      />
+      <textarea
+        rows={Math.min(30, Math.max(4, text.split('\n').length))}
+        value={text}
+        spellCheck={false}
+        onChange={(e) => {
+          setText(e.target.value);
+          try {
+            onChange({ ...typed, value: JSON.parse(e.target.value) });
+            setErr(null);
+          } catch (ex) {
+            setErr((ex as Error).message);
+          }
+        }}
+      />
+      {err && <div className="def-raw-err">{err}</div>}
+    </div>
+  );
+}
+
 export function TypedField(props: FieldProps) {
   const { typed } = props;
   if (!isTypedEnvelope(typed)) {
@@ -1317,6 +1357,8 @@ export function TypedField(props: FieldProps) {
         return <TransformEditor {...props} />;
       }
       return <StructRows {...props} />;
+    case 'json':
+      return <JsonValueEditor {...props} />;
     case 'array':
     case 'set':
       return <ContainerEditor {...props} />;

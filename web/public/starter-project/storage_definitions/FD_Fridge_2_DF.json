@@ -4,12 +4,79 @@
   "class": "UStorageDefinition",
   "schema_version": 2,
   "properties": {
-    "inventory_rules_definition": "IRD_StorageTier1_2",
-    "inventory_loot": {
-      "rolls": 2,
-      "chance_per_roll": 0.5
-    },
-    "gameplay_event_tag": "UI.GameScreen.Storage",
+    "compartments": [
+      {
+        "id": "bottom",
+        "layout": "Grid",
+        "width": 6,
+        "height": 3,
+        "accepts": [
+          "cold"
+        ],
+        "surface": {
+          "offset": {
+            "x": -0.5,
+            "y": 16.5,
+            "z": 41.5
+          },
+          "yaw": 90.0,
+          "width": 70.0,
+          "depth": 32.0,
+          "camera_distance": 240.0,
+          "camera_pitch": -38.0
+        },
+        "gate": {
+          "part": "DoorLower",
+          "min_open": 0.5
+        },
+        "loot": {
+          "rolls": 2,
+          "chance": 0.5
+        }
+      },
+      {
+        "id": "top",
+        "layout": "Grid",
+        "width": 4,
+        "height": 2,
+        "accepts": [
+          "cold"
+        ],
+        "surface": {
+          "offset": {
+            "x": 0,
+            "y": 9.5,
+            "z": 129
+          },
+          "yaw": 90.0,
+          "width": 68.0,
+          "depth": 44.0,
+          "camera_distance": 240.0,
+          "camera_pitch": -38.0
+        },
+        "gate": {
+          "part": "DoorUpper",
+          "min_open": 0.5
+        },
+        "presentation_overrides": [
+          {
+            "key": "ID_CookingOil_CN",
+            "value": {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 2.0263
+              },
+              "rotation": {
+                "pitch": 0,
+                "yaw": 0,
+                "roll": 90
+              }
+            }
+          }
+        ]
+      }
+    ],
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Open",
@@ -24,7 +91,7 @@
     "has_toggled_off_vfx": false,
     "starting_health": 134,
     "furniture_armour": 2,
-    "destructible_collection": "/Game/Furniture/Fridges/GeometryCollections/GCS_Fridge.GCS_Fridge",
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Fridge02_Closed.GCS_Fridge02_Closed",
     "destruction_impulse_strength": 0,
     "loot_dropped_on_death": [
       "LD_FridgesLoot"
@@ -34,9 +101,9 @@
     "blocking_collision_boxes": [
       {
         "offset": {
-          "x": 0.6579100669188152,
-          "y": 3.811477000000057,
-          "z": 80.98609196720115
+          "x": -0.28,
+          "y": 3.56,
+          "z": 90.33
         },
         "rotation": {
           "pitch": 0,
@@ -44,18 +111,18 @@
           "roll": 0
         },
         "box_size": {
-          "x": 26.824172157772068,
-          "y": 19.561121636184602,
-          "z": 44.72846844729614
+          "x": 45.0,
+          "y": 47.15,
+          "z": 90.3
         }
       }
     ],
     "support_collision_boxes": [
       {
         "offset": {
-          "x": 1.250898097986897,
-          "y": -1.3324602791240558,
-          "z": 75.01965413833318
+          "x": -0.28,
+          "y": 3.56,
+          "z": 90.33
         },
         "rotation": {
           "pitch": 0,
@@ -63,9 +130,9 @@
           "roll": 0
         },
         "box_size": {
-          "x": 45.329368451337814,
-          "y": 36.4301917626009,
-          "z": 76.73988063996416
+          "x": 46.0,
+          "y": 48.15,
+          "z": 90.3
         }
       }
     ],
@@ -78,9 +145,9 @@
         "w": 1
       },
       "translation": {
-        "x": 0,
-        "y": 0,
-        "z": 0
+        "x": 45.82,
+        "y": -28.69,
+        "z": -0.07
       },
       "scale3_d": {
         "x": 1,
@@ -89,7 +156,6 @@
       }
     },
     "construction_category_tag": "",
-    "upgrade_recipe": "RD_Fridge_2_CN",
     "is_draggable": true,
     "drag_tier": 2,
     "drag_mass": 1,
@@ -115,7 +181,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Fridges/Meshes/SM_Fridge.SM_Fridge",
+    "static_mesh": "/Game/Furniture/MidCentury/Fridge02/SM_Fridge02_Closed.SM_Fridge02_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -127,34 +193,13 @@
           "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.6879,
-            "w": 0.7258
+            "z": 0.0,
+            "w": 1.0
           },
           "translation": {
-            "x": -6.49,
-            "y": 5.21,
-            "z": 3.43
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.9838,
-            "w": 0.1791
-          },
-          "translation": {
-            "x": 5.02,
-            "y": -7.74,
-            "z": 3.43
+            "x": -0.28,
+            "y": 3.56,
+            "z": 181.13
           },
           "scale3_d": {
             "x": 1.0,
@@ -169,6 +214,33 @@
     "weighted_chance": 1000,
     "world_gen_priority": 6000,
     "open_sound": "Container.Open.Locker",
-    "close_sound": "Container.Close.Locker"
+    "close_sound": "Container.Close.Locker",
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Fridge02/SK_Fridge02.SK_Fridge02",
+      "parts": [
+        {
+          "name": "DoorLower",
+          "motion": "Hinge",
+          "range": -110.0
+        },
+        {
+          "name": "DoorUpper",
+          "motion": "Hinge",
+          "range": -110.0
+        }
+      ]
+    },
+    "container_view": {
+      "location": {
+        "x": -39.9,
+        "y": 251.8,
+        "z": 245.1
+      },
+      "rotation": {
+        "pitch": -33.4,
+        "yaw": -91.4,
+        "roll": 0
+      }
+    }
   }
 }

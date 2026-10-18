@@ -114,8 +114,9 @@ The game log is explicit about mods — the category is `LogScpMods`. Look for:
 - `mod '<id>' is on disk but not in any load order — inactive` — you forgot to enable it.
 - `mod '<id>' is in load order but not on disk locally — skipped` — nothing under `Mods/` declares
   that id. Check the `id` in `mod.json`, not the folder name.
-- `mod '<id>' metadata rejected — scripting disabled: <reason>` — `mod.json` has a bad `permissions`,
-  `scripts` or `overrides` block. Content still loads; scripting doesn't.
+- `mod '<id>' metadata rejected — scripting disabled: <reason>` — `mod.json` has a bad `capabilities`
+  or `scripts` block (an unknown capability, a `rules` entry without `gameplay`/`rules`, a `ui` entry
+  without `ui`, or a capability with no entry). Content still loads; scripting doesn't.
 
 Those lines answer nearly every "why isn't my mod working" question.
 

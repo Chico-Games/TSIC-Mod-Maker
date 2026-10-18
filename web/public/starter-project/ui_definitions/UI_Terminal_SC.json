@@ -1,0 +1,2059 @@
+{
+  "id": "UI_Terminal_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Terminal",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Terminal",
+    "cancel": "UI.Cmd.Terminal.Close",
+    "actions": [
+      {
+        "action": "back",
+        "label": "Log off"
+      }
+    ],
+    "uses": [
+      "UI.Terminal.State"
+    ],
+    "tree": {
+      "widget": "panel",
+      "layout": "overlay",
+      "id": "term-root",
+      "style": "screen.clear",
+      "on": {
+        "show": {
+          "cmd": "UI.Cmd.Terminal.RequestState"
+        }
+      },
+      "children": [
+        {
+          "widget": "panel",
+          "layout": "vertical",
+          "id": "t1",
+          "style": "term.t1.screen",
+          "slot": {
+            "align": "fill",
+            "valign": "fill"
+          },
+          "bind": {
+            "visible": "UI.Terminal.State.Tier == 1",
+            "style": "UI.Terminal.State.Theme == 'red' ? 'term.t1.screen.red' : 'term.t1.screen'"
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 0,
+              "slot": {
+                "padding": [
+                  24,
+                  20,
+                  24,
+                  20
+                ],
+                "fill": true
+              },
+              "children": [
+                {
+                  "widget": "list",
+                  "id": "t1-lines",
+                  "selectable": false,
+                  "row_key": "Key",
+                  "style": "term.list",
+                  "slot": {
+                    "fill": true
+                  },
+                  "bind": {
+                    "items": "UI.Terminal.State.Lines"
+                  },
+                  "template": {
+                    "widget": "text",
+                    "style": "term.t1.text",
+                    "wrap": true,
+                    "bind": {
+                      "text": "item.Text",
+                      "style": "item.Kind == 'err' ? 'term.t1.text.err' : item.Kind == 'echo' ? 'term.t1.text.echo' : item.Kind == 'danger' ? 'term.t1.text.danger' : item.Kind == 'ok' ? 'term.t1.text.ok' : item.Kind == 'warn' ? 'term.t1.text.danger' : item.Kind == 'banner' ? 'term.t1.text.banner' : 'term.t1.text'"
+                    }
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "t1-prompt",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "term.t1.text",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.Prompt",
+                        "visible": "UI.Terminal.State.bPromptVisible"
+                      }
+                    },
+                    {
+                      "widget": "textfield",
+                      "id": "t1-input",
+                      "style": "term.t1.input",
+                      "min_width": 200,
+                      "focus": "initial",
+                      "slot": {
+                        "fill": true,
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.InputText"
+                      },
+                      "on": {
+                        "commit": {
+                          "cmd": "UI.Cmd.Terminal.Submit",
+                          "args": {
+                            "Window": "main",
+                            "Text": "{self.value}"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "widget": "panel",
+          "layout": "overlay",
+          "id": "t2",
+          "style": "term.t2.desktop",
+          "slot": {
+            "align": "fill",
+            "valign": "fill"
+          },
+          "bind": {
+            "visible": "UI.Terminal.State.Tier == 2"
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 0,
+              "slot": {
+                "align": "fill",
+                "valign": "fill"
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "t2-menubar",
+                  "gap": 12,
+                  "style": "term.t2.menubar",
+                  "slot": {
+                    "padding": [
+                      10,
+                      2
+                    ]
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "▤ Durham OS",
+                      "style": "term.t2.brand",
+                      "slot": {
+                        "valign": "center"
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "About",
+                      "style": "term.t2.menuitem",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.Terminal.About"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "term.t2.text",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.Clock"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "overlay",
+                  "slot": {
+                    "fill": true
+                  },
+                  "children": [
+                    {
+                      "widget": "list",
+                      "id": "t2-icons",
+                      "horizontal": true,
+                      "selectable": false,
+                      "row_key": "Id",
+                      "style": "term.list",
+                      "slot": {
+                        "align": "left",
+                        "valign": "top",
+                        "padding": [
+                          12,
+                          12
+                        ]
+                      },
+                      "bind": {
+                        "items": "UI.Terminal.State.Desktop"
+                      },
+                      "template": {
+                        "widget": "panel",
+                        "layout": "vertical",
+                        "gap": 2,
+                        "style": "term.t2.icon",
+                        "slot": {
+                          "padding": [
+                            6,
+                            4
+                          ]
+                        },
+                        "on": {
+                          "click": {
+                            "cmd": "UI.Cmd.Terminal.Launch",
+                            "args": {
+                              "ProgramId": "{item.Id}"
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "widget": "panel",
+                            "layout": "overlay",
+                            "style": "term.t2.icon.tile",
+                            "slot": {
+                              "align": "center"
+                            },
+                            "bind": {
+                              "style": "item.bLocked ? 'term.t2.icon.tile.locked' : 'term.t2.icon.tile'"
+                            },
+                            "children": [
+                              {
+                                "widget": "text",
+                                "style": "term.t2.icon.glyph",
+                                "justify": "Center",
+                                "bind": {
+                                  "text": "item.Icon == 'terminal' ? '>_' : item.Icon == 'logs' ? '≡' : item.Icon == 'stock' ? '▦' : item.Icon == 'folder' ? '▭' : item.Glyph"
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "style": "term.badge",
+                                "slot": {
+                                  "align": "right",
+                                  "valign": "top"
+                                },
+                                "bind": {
+                                  "visible": "item.Badge != ''"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "term.badge",
+                                    "bind": {
+                                      "text": "item.Badge"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "widget": "text",
+                            "style": "term.t2.icon.label",
+                            "justify": "Center",
+                            "wrap": true,
+                            "bind": {
+                              "text": "item.Name"
+                            }
+                          },
+                          {
+                            "widget": "text",
+                            "text": "LOCKED",
+                            "style": "term.t2.icon.lock",
+                            "justify": "Center",
+                            "bind": {
+                              "visible": "item.bLocked"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "text": "No programs installed. Insert a floppy disk.",
+                      "style": "term.t2.text.empty",
+                      "slot": {
+                        "align": "left",
+                        "valign": "top",
+                        "padding": [
+                          160,
+                          24
+                        ]
+                      },
+                      "bind": {
+                        "visible": "!UI.Terminal.State.bHasPrograms"
+                      }
+                    },
+                    {
+                      "widget": "list",
+                      "id": "windows",
+                      "selectable": false,
+                      "overlay_rows": true,
+                      "row_key": "Key",
+                      "style": "term.list",
+                      "slot": {
+                        "align": "fill",
+                        "valign": "fill"
+                      },
+                      "bind": {
+                        "items": "UI.Terminal.State.Windows"
+                      },
+                      "template": {
+                        "widget": "panel",
+                        "layout": "vertical",
+                        "gap": 0,
+                        "style": "term.t2.window",
+                        "slot": {
+                          "align": "center",
+                          "valign": "center",
+                          "width": 640
+                        },
+                        "bind": {
+                          "style": "item.bFocused ? (UI.Terminal.State.Tier == 3 ? 'term.t3.window.focused' : 'term.t2.window.focused') : (UI.Terminal.State.Tier == 3 ? 'term.t3.window' : 'term.t2.window')"
+                        },
+                        "children": [
+                          {
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "gap": 4,
+                            "style": "term.t2.titlebar",
+                            "slot": {
+                              "padding": [
+                                6,
+                                2,
+                                2,
+                                2
+                              ]
+                            },
+                            "bind": {
+                              "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.titlebar' : 'term.t2.titlebar'"
+                            },
+                            "on": {
+                              "click": {
+                                "cmd": "UI.Cmd.Terminal.FocusWindow",
+                                "args": {
+                                  "Key": "{item.Key}"
+                                }
+                              }
+                            },
+                            "children": [
+                              {
+                                "widget": "text",
+                                "style": "term.t2.title",
+                                "slot": {
+                                  "fill": true,
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "text": "UI.Terminal.State.Tier == 3 ? \"+ [ {item.Title} ]\" : item.Title",
+                                  "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.title' : 'term.t2.title'"
+                                }
+                              },
+                              {
+                                "widget": "button",
+                                "label": "×",
+                                "style": "term.t2.close",
+                                "slot": {
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.close' : 'term.t2.close'"
+                                },
+                                "on": {
+                                  "click": {
+                                    "cmd": "UI.Cmd.Terminal.CloseWindow",
+                                    "args": {
+                                      "Key": "{item.Key}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "widget": "panel",
+                            "layout": "vertical",
+                            "gap": 4,
+                            "slot": {
+                              "padding": [
+                                8,
+                                6,
+                                8,
+                                8
+                              ],
+                              "fill": true
+                            },
+                            "children": [
+                              {
+                                "widget": "list",
+                                "selectable": false,
+                                "row_key": "Key",
+                                "style": "term.list",
+                                "max_height": 250,
+                                "bind": {
+                                  "items": "item.Lines",
+                                  "visible": "item.Gui == 'none' ? true : item.Gui == 'console' ? true : item.Gui == 'about' ? true : item.Gui == 'gui'"
+                                },
+                                "template": {
+                                  "widget": "text",
+                                  "style": "term.t2.text",
+                                  "wrap": true,
+                                  "bind": {
+                                    "text": "item.Text",
+                                    "style": "item.Kind == 'err' ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.danger' : 'term.t2.text.err') : item.Kind == 'echo' ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.echo') : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                  }
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 6,
+                                "bind": {
+                                  "visible": "item.Gui == 'console' ? true : item.bPromptVisible"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "term.t2.text",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.Prompt",
+                                      "visible": "item.Prompt != '' ? item.bPromptVisible : false",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                    }
+                                  },
+                                  {
+                                    "widget": "textfield",
+                                    "style": "term.t2.input",
+                                    "min_width": 120,
+                                    "slot": {
+                                      "fill": true,
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.InputText",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.input' : 'term.t2.input'"
+                                    },
+                                    "on": {
+                                      "commit": {
+                                        "cmd": "UI.Cmd.Terminal.Submit",
+                                        "args": {
+                                          "Window": "{item.Key}",
+                                          "Text": "{self.value}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "list",
+                                "horizontal": true,
+                                "selectable": false,
+                                "row_key": "Id",
+                                "style": "term.list",
+                                "bind": {
+                                  "items": "item.Icons",
+                                  "visible": "item.Gui == 'folder'"
+                                },
+                                "template": {
+                                  "widget": "panel",
+                                  "layout": "vertical",
+                                  "gap": 2,
+                                  "style": "term.t2.icon",
+                                  "slot": {
+                                    "padding": [
+                                      6,
+                                      4
+                                    ]
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "cmd": "UI.Cmd.Terminal.Launch",
+                                      "args": {
+                                        "ProgramId": "{item.Id}"
+                                      }
+                                    }
+                                  },
+                                  "children": [
+                                    {
+                                      "widget": "panel",
+                                      "layout": "overlay",
+                                      "style": "term.t2.icon.tile",
+                                      "slot": {
+                                        "align": "center"
+                                      },
+                                      "bind": {
+                                        "style": "item.bLocked ? 'term.t2.icon.tile.locked' : 'term.t2.icon.tile'"
+                                      },
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.icon.glyph",
+                                          "justify": "Center",
+                                          "bind": {
+                                            "text": "item.Icon == 'terminal' ? '>_' : item.Icon == 'logs' ? '≡' : item.Icon == 'stock' ? '▦' : item.Icon == 'folder' ? '▭' : item.Glyph"
+                                          }
+                                        },
+                                        {
+                                          "widget": "panel",
+                                          "layout": "vertical",
+                                          "style": "term.badge",
+                                          "slot": {
+                                            "align": "right",
+                                            "valign": "top"
+                                          },
+                                          "bind": {
+                                            "visible": "item.Badge != ''"
+                                          },
+                                          "children": [
+                                            {
+                                              "widget": "text",
+                                              "style": "term.badge",
+                                              "bind": {
+                                                "text": "item.Badge"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "widget": "text",
+                                      "style": "term.t2.icon.label",
+                                      "justify": "Center",
+                                      "wrap": true,
+                                      "bind": {
+                                        "text": "item.Name"
+                                      }
+                                    },
+                                    {
+                                      "widget": "text",
+                                      "text": "LOCKED",
+                                      "style": "term.t2.icon.lock",
+                                      "justify": "Center",
+                                      "bind": {
+                                        "visible": "item.bLocked"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 0,
+                                "bind": {
+                                  "visible": "item.Gui == 'logs'"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "list",
+                                    "selectable": true,
+                                    "row_key": "Key",
+                                    "style": "term.list",
+                                    "max_height": 330,
+                                    "slot": {
+                                      "width": 220
+                                    },
+                                    "bind": {
+                                      "items": "item.Items"
+                                    },
+                                    "on": {
+                                      "activate": {
+                                        "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                        "args": {
+                                          "Window": "",
+                                          "Event": "select",
+                                          "Arg": "{item.Key}"
+                                        }
+                                      }
+                                    },
+                                    "template": {
+                                      "widget": "panel",
+                                      "layout": "horizontal",
+                                      "gap": 4,
+                                      "slot": {
+                                        "padding": [
+                                          4,
+                                          4
+                                        ]
+                                      },
+                                      "bind": {
+                                        "style": "item.bActive ? (UI.Terminal.State.Tier == 3 ? 'term.t3.row.selected' : 'term.t2.row.selected') : 'term.row'"
+                                      },
+                                      "style": "term.row",
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "fill": true,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.Label",
+                                            "style": "item.bActive ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.selected' : 'term.t2.text.selected') : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                          }
+                                        },
+                                        {
+                                          "widget": "panel",
+                                          "layout": "vertical",
+                                          "style": "term.badge",
+                                          "slot": {
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "visible": "item.Badge != ''"
+                                          },
+                                          "children": [
+                                            {
+                                              "widget": "text",
+                                              "style": "term.badge",
+                                              "bind": {
+                                                "text": "item.Badge"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "widget": "panel",
+                                    "layout": "vertical",
+                                    "gap": 3,
+                                    "slot": {
+                                      "fill": true,
+                                      "padding": [
+                                        10,
+                                        0,
+                                        0,
+                                        0
+                                      ]
+                                    },
+                                    "children": [
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text.accent",
+                                        "bind": {
+                                          "text": "item.ReaderTitle",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text.accent'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text.dim",
+                                        "bind": {
+                                          "text": "item.ReaderMeta",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.dim'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "list",
+                                        "selectable": false,
+                                        "row_key": "Key",
+                                        "style": "term.list",
+                                        "max_height": 280,
+                                        "bind": {
+                                          "items": "item.ReaderLines"
+                                        },
+                                        "template": {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "wrap": true,
+                                          "bind": {
+                                            "text": "item.Text != '' ? item.Text : ' '",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "gap": 4,
+                                "bind": {
+                                  "visible": "item.Gui == 'table'"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "panel",
+                                    "layout": "horizontal",
+                                    "gap": 8,
+                                    "children": [
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text",
+                                        "slot": {
+                                          "fill": true,
+                                          "valign": "center"
+                                        },
+                                        "bind": {
+                                          "text": "item.Title",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "textfield",
+                                        "placeholder": "search SKU or item…",
+                                        "style": "term.t2.input",
+                                        "min_width": 200,
+                                        "slot": {
+                                          "valign": "center"
+                                        },
+                                        "bind": {
+                                          "text": "item.Search",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.input' : 'term.t2.input'"
+                                        },
+                                        "on": {
+                                          "commit": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "search",
+                                              "Arg": "{self.value}"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "widget": "panel",
+                                    "layout": "horizontal",
+                                    "gap": 0,
+                                    "children": [
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 110
+                                        },
+                                        "bind": {
+                                          "label": "item.H0",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "0"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "fill": true
+                                        },
+                                        "bind": {
+                                          "label": "item.H1",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "1"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 130
+                                        },
+                                        "bind": {
+                                          "label": "item.H2",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "2"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 150
+                                        },
+                                        "bind": {
+                                          "label": "item.H3",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "3"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "widget": "list",
+                                    "selectable": false,
+                                    "row_key": "Key",
+                                    "style": "term.list",
+                                    "max_height": 300,
+                                    "bind": {
+                                      "items": "item.Rows"
+                                    },
+                                    "template": {
+                                      "widget": "panel",
+                                      "layout": "horizontal",
+                                      "gap": 0,
+                                      "style": "term.row",
+                                      "slot": {
+                                        "padding": [
+                                          1,
+                                          0
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text.sku",
+                                          "slot": {
+                                            "width": 110,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C0",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text.sku'"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "fill": true,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C1",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "justify": "Right",
+                                          "slot": {
+                                            "width": 130,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C2",
+                                            "style": "item.bBump ? 'term.text.bump' : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "width": 150,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C3",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "term.t2.text.dim",
+                                    "bind": {
+                                      "text": "item.Status",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.dim'"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "t2-statusbar",
+                  "gap": 10,
+                  "style": "term.t2.statusbar",
+                  "slot": {
+                    "padding": [
+                      10,
+                      2
+                    ]
+                  },
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "term.t2.text.status",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.HardwareName"
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "text": "DISK A:",
+                      "style": "term.t2.text.status",
+                      "slot": {
+                        "valign": "center"
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "term.t2.text.status",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "\"TIER {UI.Terminal.State.Tier}\""
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "layout": "overlay",
+              "id": "t2-boot",
+              "style": "term.t2.desktop",
+              "slot": {
+                "align": "fill",
+                "valign": "fill"
+              },
+              "bind": {
+                "visible": "UI.Terminal.State.bBooting"
+              },
+              "on": {
+                "click": {
+                  "cmd": "UI.Cmd.Terminal.SkipBoot"
+                }
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "gap": 0,
+                  "style": "term.t2.window",
+                  "slot": {
+                    "align": "center",
+                    "valign": "center",
+                    "width": 360
+                  },
+                  "children": [
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "style": "term.t2.titlebar",
+                      "slot": {
+                        "padding": [
+                          8,
+                          3
+                        ]
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Durham OS",
+                          "style": "term.t2.title"
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "slot": {
+                        "padding": [
+                          20,
+                          14,
+                          20,
+                          18
+                        ]
+                      },
+                      "children": [
+                        {
+                          "widget": "panel",
+                          "layout": "vertical",
+                          "style": "term.t2.boot.marktile",
+                          "slot": {
+                            "align": "center"
+                          },
+                          "children": [
+                            {
+                              "widget": "text",
+                              "text": "▤",
+                              "style": "term.t2.boot.mark",
+                              "justify": "Center"
+                            }
+                          ]
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Welcome to Durham OS",
+                          "style": "term.t2.boot.welcome",
+                          "justify": "Center"
+                        },
+                        {
+                          "widget": "text",
+                          "text": "Version 2.0 — Experimental Build",
+                          "style": "term.t2.text",
+                          "justify": "Center"
+                        },
+                        {
+                          "widget": "text",
+                          "text": "© 1984 Durham Systems, Inc.",
+                          "style": "term.t2.text.dim",
+                          "justify": "Center"
+                        },
+                        {
+                          "widget": "list",
+                          "horizontal": true,
+                          "selectable": false,
+                          "style": "term.list",
+                          "row_style": "term.t2.boot.module",
+                          "slot": {
+                            "align": "center"
+                          },
+                          "bind": {
+                            "items": "UI.Terminal.State.BootModules"
+                          }
+                        },
+                        {
+                          "widget": "progressbar",
+                          "progress": 0,
+                          "style": "term.t2.boot.bar",
+                          "slot": {
+                            "align": "fill",
+                            "height": 14,
+                            "padding": [
+                              0,
+                              8,
+                              0,
+                              0
+                            ]
+                          },
+                          "bind": {
+                            "progress": "UI.Terminal.State.BootProgress"
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "term.t2.text.dim",
+                          "justify": "Center",
+                          "bind": {
+                            "text": "UI.Terminal.State.BootStatus"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "widget": "panel",
+          "layout": "overlay",
+          "id": "t3",
+          "style": "term.t3.screen",
+          "slot": {
+            "align": "fill",
+            "valign": "fill"
+          },
+          "bind": {
+            "visible": "UI.Terminal.State.Tier == 3",
+            "style": "UI.Terminal.State.Theme == 'red' ? 'term.t3.screen.breach' : 'term.t3.screen'"
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 0,
+              "slot": {
+                "align": "fill",
+                "valign": "fill"
+              },
+              "children": [
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "t3-hud-top",
+                  "style": "term.t3.hud",
+                  "slot": {
+                    "padding": [
+                      12,
+                      4
+                    ]
+                  },
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "[ SCiPnet // RAISA-04 TOPOLOGY ]",
+                      "style": "term.t3.text.dim",
+                      "slot": {
+                        "valign": "center"
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "style": "term.t3.text.dim",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.Clock"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "overlay",
+                  "slot": {
+                    "fill": true
+                  },
+                  "children": [
+                    {
+                      "widget": "list",
+                      "id": "t3-nodes",
+                      "horizontal": true,
+                      "selectable": false,
+                      "row_key": "Id",
+                      "style": "term.list",
+                      "slot": {
+                        "align": "center",
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "items": "UI.Terminal.State.Desktop"
+                      },
+                      "template": {
+                        "widget": "panel",
+                        "layout": "vertical",
+                        "gap": 2,
+                        "style": "term.t3.icon",
+                        "slot": {
+                          "padding": [
+                            6,
+                            4
+                          ]
+                        },
+                        "on": {
+                          "click": {
+                            "cmd": "UI.Cmd.Terminal.Launch",
+                            "args": {
+                              "ProgramId": "{item.Id}"
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "widget": "panel",
+                            "layout": "overlay",
+                            "style": "term.t3.icon.tile",
+                            "slot": {
+                              "align": "center"
+                            },
+                            "bind": {
+                              "style": "item.bLocked ? 'term.t3.icon.tile.locked' : 'term.t3.icon.tile'"
+                            },
+                            "children": [
+                              {
+                                "widget": "text",
+                                "style": "term.t3.icon.glyph",
+                                "justify": "Center",
+                                "bind": {
+                                  "text": "item.Icon == 'terminal' ? '>_' : item.Icon == 'logs' ? '≡' : item.Icon == 'stock' ? '▦' : item.Icon == 'folder' ? '▭' : item.Glyph"
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "style": "term.badge",
+                                "slot": {
+                                  "align": "right",
+                                  "valign": "top"
+                                },
+                                "bind": {
+                                  "visible": "item.Badge != ''"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "term.badge",
+                                    "bind": {
+                                      "text": "item.Badge"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "widget": "text",
+                            "style": "term.t3.icon.label",
+                            "justify": "Center",
+                            "wrap": true,
+                            "bind": {
+                              "text": "item.Name"
+                            }
+                          },
+                          {
+                            "widget": "text",
+                            "text": "LOCKED",
+                            "style": "term.t3.icon.lock",
+                            "justify": "Center",
+                            "bind": {
+                              "visible": "item.bLocked"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "widget": "list",
+                      "id": "t3-telemetry",
+                      "selectable": false,
+                      "row_key": "Key",
+                      "style": "term.list",
+                      "max_height": 400,
+                      "slot": {
+                        "align": "right",
+                        "valign": "bottom",
+                        "width": 150,
+                        "padding": [
+                          0,
+                          0,
+                          8,
+                          8
+                        ]
+                      },
+                      "bind": {
+                        "items": "UI.Terminal.State.Telemetry"
+                      },
+                      "template": {
+                        "widget": "text",
+                        "style": "term.t3.text.tele",
+                        "bind": {
+                          "text": "item.Text",
+                          "style": "item.Kind == 'warn' ? 'term.t3.text.danger' : 'term.t3.text.tele'"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "list",
+                      "id": "windows-t3",
+                      "selectable": false,
+                      "overlay_rows": true,
+                      "row_key": "Key",
+                      "style": "term.list",
+                      "slot": {
+                        "align": "fill",
+                        "valign": "fill"
+                      },
+                      "bind": {
+                        "items": "UI.Terminal.State.Windows"
+                      },
+                      "template": {
+                        "widget": "panel",
+                        "layout": "vertical",
+                        "gap": 0,
+                        "style": "term.t2.window",
+                        "slot": {
+                          "align": "center",
+                          "valign": "center",
+                          "width": 640
+                        },
+                        "bind": {
+                          "style": "item.bFocused ? (UI.Terminal.State.Tier == 3 ? 'term.t3.window.focused' : 'term.t2.window.focused') : (UI.Terminal.State.Tier == 3 ? 'term.t3.window' : 'term.t2.window')"
+                        },
+                        "children": [
+                          {
+                            "widget": "panel",
+                            "layout": "horizontal",
+                            "gap": 4,
+                            "style": "term.t2.titlebar",
+                            "slot": {
+                              "padding": [
+                                6,
+                                2,
+                                2,
+                                2
+                              ]
+                            },
+                            "bind": {
+                              "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.titlebar' : 'term.t2.titlebar'"
+                            },
+                            "on": {
+                              "click": {
+                                "cmd": "UI.Cmd.Terminal.FocusWindow",
+                                "args": {
+                                  "Key": "{item.Key}"
+                                }
+                              }
+                            },
+                            "children": [
+                              {
+                                "widget": "text",
+                                "style": "term.t2.title",
+                                "slot": {
+                                  "fill": true,
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "text": "UI.Terminal.State.Tier == 3 ? \"+ [ {item.Title} ]\" : item.Title",
+                                  "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.title' : 'term.t2.title'"
+                                }
+                              },
+                              {
+                                "widget": "button",
+                                "label": "×",
+                                "style": "term.t2.close",
+                                "slot": {
+                                  "valign": "center"
+                                },
+                                "bind": {
+                                  "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.close' : 'term.t2.close'"
+                                },
+                                "on": {
+                                  "click": {
+                                    "cmd": "UI.Cmd.Terminal.CloseWindow",
+                                    "args": {
+                                      "Key": "{item.Key}"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "widget": "panel",
+                            "layout": "vertical",
+                            "gap": 4,
+                            "slot": {
+                              "padding": [
+                                8,
+                                6,
+                                8,
+                                8
+                              ],
+                              "fill": true
+                            },
+                            "children": [
+                              {
+                                "widget": "list",
+                                "selectable": false,
+                                "row_key": "Key",
+                                "style": "term.list",
+                                "max_height": 250,
+                                "bind": {
+                                  "items": "item.Lines",
+                                  "visible": "item.Gui == 'none' ? true : item.Gui == 'console' ? true : item.Gui == 'about' ? true : item.Gui == 'gui'"
+                                },
+                                "template": {
+                                  "widget": "text",
+                                  "style": "term.t2.text",
+                                  "wrap": true,
+                                  "bind": {
+                                    "text": "item.Text",
+                                    "style": "item.Kind == 'err' ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.danger' : 'term.t2.text.err') : item.Kind == 'echo' ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.echo') : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                  }
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 6,
+                                "bind": {
+                                  "visible": "item.Gui == 'console' ? true : item.bPromptVisible"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "text",
+                                    "style": "term.t2.text",
+                                    "slot": {
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.Prompt",
+                                      "visible": "item.Prompt != '' ? item.bPromptVisible : false",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                    }
+                                  },
+                                  {
+                                    "widget": "textfield",
+                                    "style": "term.t2.input",
+                                    "min_width": 120,
+                                    "slot": {
+                                      "fill": true,
+                                      "valign": "center"
+                                    },
+                                    "bind": {
+                                      "text": "item.InputText",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.input' : 'term.t2.input'"
+                                    },
+                                    "on": {
+                                      "commit": {
+                                        "cmd": "UI.Cmd.Terminal.Submit",
+                                        "args": {
+                                          "Window": "{item.Key}",
+                                          "Text": "{self.value}"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "list",
+                                "horizontal": true,
+                                "selectable": false,
+                                "row_key": "Id",
+                                "style": "term.list",
+                                "bind": {
+                                  "items": "item.Icons",
+                                  "visible": "item.Gui == 'folder'"
+                                },
+                                "template": {
+                                  "widget": "panel",
+                                  "layout": "vertical",
+                                  "gap": 2,
+                                  "style": "term.t2.icon",
+                                  "slot": {
+                                    "padding": [
+                                      6,
+                                      4
+                                    ]
+                                  },
+                                  "on": {
+                                    "click": {
+                                      "cmd": "UI.Cmd.Terminal.Launch",
+                                      "args": {
+                                        "ProgramId": "{item.Id}"
+                                      }
+                                    }
+                                  },
+                                  "children": [
+                                    {
+                                      "widget": "panel",
+                                      "layout": "overlay",
+                                      "style": "term.t2.icon.tile",
+                                      "slot": {
+                                        "align": "center"
+                                      },
+                                      "bind": {
+                                        "style": "item.bLocked ? 'term.t2.icon.tile.locked' : 'term.t2.icon.tile'"
+                                      },
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.icon.glyph",
+                                          "justify": "Center",
+                                          "bind": {
+                                            "text": "item.Icon == 'terminal' ? '>_' : item.Icon == 'logs' ? '≡' : item.Icon == 'stock' ? '▦' : item.Icon == 'folder' ? '▭' : item.Glyph"
+                                          }
+                                        },
+                                        {
+                                          "widget": "panel",
+                                          "layout": "vertical",
+                                          "style": "term.badge",
+                                          "slot": {
+                                            "align": "right",
+                                            "valign": "top"
+                                          },
+                                          "bind": {
+                                            "visible": "item.Badge != ''"
+                                          },
+                                          "children": [
+                                            {
+                                              "widget": "text",
+                                              "style": "term.badge",
+                                              "bind": {
+                                                "text": "item.Badge"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "widget": "text",
+                                      "style": "term.t2.icon.label",
+                                      "justify": "Center",
+                                      "wrap": true,
+                                      "bind": {
+                                        "text": "item.Name"
+                                      }
+                                    },
+                                    {
+                                      "widget": "text",
+                                      "text": "LOCKED",
+                                      "style": "term.t2.icon.lock",
+                                      "justify": "Center",
+                                      "bind": {
+                                        "visible": "item.bLocked"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "horizontal",
+                                "gap": 0,
+                                "bind": {
+                                  "visible": "item.Gui == 'logs'"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "list",
+                                    "selectable": true,
+                                    "row_key": "Key",
+                                    "style": "term.list",
+                                    "max_height": 330,
+                                    "slot": {
+                                      "width": 220
+                                    },
+                                    "bind": {
+                                      "items": "item.Items"
+                                    },
+                                    "on": {
+                                      "activate": {
+                                        "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                        "args": {
+                                          "Window": "",
+                                          "Event": "select",
+                                          "Arg": "{item.Key}"
+                                        }
+                                      }
+                                    },
+                                    "template": {
+                                      "widget": "panel",
+                                      "layout": "horizontal",
+                                      "gap": 4,
+                                      "slot": {
+                                        "padding": [
+                                          4,
+                                          4
+                                        ]
+                                      },
+                                      "bind": {
+                                        "style": "item.bActive ? (UI.Terminal.State.Tier == 3 ? 'term.t3.row.selected' : 'term.t2.row.selected') : 'term.row'"
+                                      },
+                                      "style": "term.row",
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "fill": true,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.Label",
+                                            "style": "item.bActive ? (UI.Terminal.State.Tier == 3 ? 'term.t3.text.selected' : 'term.t2.text.selected') : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                          }
+                                        },
+                                        {
+                                          "widget": "panel",
+                                          "layout": "vertical",
+                                          "style": "term.badge",
+                                          "slot": {
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "visible": "item.Badge != ''"
+                                          },
+                                          "children": [
+                                            {
+                                              "widget": "text",
+                                              "style": "term.badge",
+                                              "bind": {
+                                                "text": "item.Badge"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "widget": "panel",
+                                    "layout": "vertical",
+                                    "gap": 3,
+                                    "slot": {
+                                      "fill": true,
+                                      "padding": [
+                                        10,
+                                        0,
+                                        0,
+                                        0
+                                      ]
+                                    },
+                                    "children": [
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text.accent",
+                                        "bind": {
+                                          "text": "item.ReaderTitle",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text.accent'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text.dim",
+                                        "bind": {
+                                          "text": "item.ReaderMeta",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.dim'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "list",
+                                        "selectable": false,
+                                        "row_key": "Key",
+                                        "style": "term.list",
+                                        "max_height": 280,
+                                        "bind": {
+                                          "items": "item.ReaderLines"
+                                        },
+                                        "template": {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "wrap": true,
+                                          "bind": {
+                                            "text": "item.Text != '' ? item.Text : ' '",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "widget": "panel",
+                                "layout": "vertical",
+                                "gap": 4,
+                                "bind": {
+                                  "visible": "item.Gui == 'table'"
+                                },
+                                "children": [
+                                  {
+                                    "widget": "panel",
+                                    "layout": "horizontal",
+                                    "gap": 8,
+                                    "children": [
+                                      {
+                                        "widget": "text",
+                                        "style": "term.t2.text",
+                                        "slot": {
+                                          "fill": true,
+                                          "valign": "center"
+                                        },
+                                        "bind": {
+                                          "text": "item.Title",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                        }
+                                      },
+                                      {
+                                        "widget": "textfield",
+                                        "placeholder": "search SKU or item…",
+                                        "style": "term.t2.input",
+                                        "min_width": 200,
+                                        "slot": {
+                                          "valign": "center"
+                                        },
+                                        "bind": {
+                                          "text": "item.Search",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.input' : 'term.t2.input'"
+                                        },
+                                        "on": {
+                                          "commit": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "search",
+                                              "Arg": "{self.value}"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "widget": "panel",
+                                    "layout": "horizontal",
+                                    "gap": 0,
+                                    "children": [
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 110
+                                        },
+                                        "bind": {
+                                          "label": "item.H0",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "0"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "fill": true
+                                        },
+                                        "bind": {
+                                          "label": "item.H1",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "1"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 130
+                                        },
+                                        "bind": {
+                                          "label": "item.H2",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "2"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "widget": "button",
+                                        "label": "",
+                                        "style": "term.t2.head",
+                                        "slot": {
+                                          "width": 150
+                                        },
+                                        "bind": {
+                                          "label": "item.H3",
+                                          "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.head' : 'term.t2.head'"
+                                        },
+                                        "on": {
+                                          "click": {
+                                            "cmd": "UI.Cmd.Terminal.GuiEvent",
+                                            "args": {
+                                              "Window": "",
+                                              "Event": "sort",
+                                              "Arg": "3"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "widget": "list",
+                                    "selectable": false,
+                                    "row_key": "Key",
+                                    "style": "term.list",
+                                    "max_height": 300,
+                                    "bind": {
+                                      "items": "item.Rows"
+                                    },
+                                    "template": {
+                                      "widget": "panel",
+                                      "layout": "horizontal",
+                                      "gap": 0,
+                                      "style": "term.row",
+                                      "slot": {
+                                        "padding": [
+                                          1,
+                                          0
+                                        ]
+                                      },
+                                      "children": [
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text.sku",
+                                          "slot": {
+                                            "width": 110,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C0",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text.sku'"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "fill": true,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C1",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "justify": "Right",
+                                          "slot": {
+                                            "width": 130,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C2",
+                                            "style": "item.bBump ? 'term.text.bump' : (UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text')"
+                                          }
+                                        },
+                                        {
+                                          "widget": "text",
+                                          "style": "term.t2.text",
+                                          "slot": {
+                                            "width": 150,
+                                            "valign": "center"
+                                          },
+                                          "bind": {
+                                            "text": "item.C3",
+                                            "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text' : 'term.t2.text'"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "widget": "text",
+                                    "style": "term.t2.text.dim",
+                                    "bind": {
+                                      "text": "item.Status",
+                                      "style": "UI.Terminal.State.Tier == 3 ? 'term.t3.text.dim' : 'term.t2.text.dim'"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "t3-hud-bottom",
+                  "style": "term.t3.hud",
+                  "slot": {
+                    "padding": [
+                      12,
+                      4
+                    ]
+                  },
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "text",
+                      "style": "term.t3.text.dim",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "bind": {
+                        "text": "UI.Terminal.State.SysStatus"
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true
+                      }
+                    },
+                    {
+                      "widget": "text",
+                      "text": "CLEARANCE: L-4 // KATIE//ROOT",
+                      "style": "term.t3.text.dim",
+                      "slot": {
+                        "valign": "center"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "widget": "panel",
+              "layout": "overlay",
+              "id": "t3-boot",
+              "style": "term.t3.screen",
+              "slot": {
+                "align": "fill",
+                "valign": "fill"
+              },
+              "bind": {
+                "visible": "UI.Terminal.State.bBooting",
+                "style": "UI.Terminal.State.bBreach ? 'term.t3.screen.breach' : 'term.t3.screen'"
+              },
+              "on": {
+                "click": {
+                  "cmd": "UI.Cmd.Terminal.SkipBoot"
+                }
+              },
+              "children": [
+                {
+                  "widget": "list",
+                  "selectable": false,
+                  "row_key": "Key",
+                  "style": "term.list",
+                  "slot": {
+                    "align": "left",
+                    "valign": "bottom",
+                    "padding": [
+                      40,
+                      0,
+                      0,
+                      40
+                    ]
+                  },
+                  "bind": {
+                    "items": "UI.Terminal.State.BootLines"
+                  },
+                  "template": {
+                    "widget": "text",
+                    "style": "term.t3.text",
+                    "bind": {
+                      "text": "item.Text",
+                      "style": "item.Kind == 'danger' ? 'term.t3.text.danger' : item.Kind == 'ok' ? 'term.t3.text.ok' : 'term.t3.text'"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

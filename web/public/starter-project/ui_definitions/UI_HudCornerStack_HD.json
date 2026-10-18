@@ -1,0 +1,20 @@
+{
+  "id": "UI_HudCornerStack_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 8,
+    "uses": [ "UI.Hud.Visibility" ],
+    "tree": {
+      "id": "corner-stack-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "!UI.Hud.Visibility[all].bHidden" },
+      "children": [
+        { "id": "corner-stack", "widget": "panel", "layout": "vertical", "gap": 8, "slot": { "anchor": "top-left", "offset": [24, 24] },
+          "children": [
+            { "id": "toasts", "widget": "toaststack", "style": "hud.toast", "listen_toasts": true, "max_toasts": 5, "width": 320 },
+            { "id": "notifications", "widget": "toaststack", "style": "hud.notification", "listen_notifications": true, "max_toasts": 5, "width": 380 }
+          ] }
+      ]
+    }
+  }
+}

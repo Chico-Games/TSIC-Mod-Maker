@@ -1,0 +1,55 @@
+{
+  "id": "ED_Snail",
+  "class": "UEnemyDefinition",
+  "schema_version": 2,
+  "properties": {
+    "gameplay_tags": [],
+    "display_name": "the Snail",
+    "enemy_class": "/Game/Characters/Enemies/Snail/Blueprints/CH_Snail.CH_Snail_C",
+    "death_drop_table": [],
+    "weighted_chance": 0,
+    "world_gen_priority": 0,
+    "persistent": true,
+    "invulnerable": true,
+    "ai_stack": "v2",
+    "behavior": "BHV_Snail",
+    "perception": "PRC_Snail",
+    "attacks": [
+      {
+        "ability": "AI.Snail.Attack.Crush",
+        "weight": 1
+      }
+    ],
+    "movement_profiles": [
+      {
+        "name": "walk",
+        "max_speed": 30,
+        "accel": 60,
+        "rotation_rate": 90,
+        "braking_deceleration": 75
+      },
+      {
+        "name": "walk_medium",
+        "max_speed": 30,
+        "accel": 60,
+        "rotation_rate": 90,
+        "braking_deceleration": 75
+      },
+      {
+        "name": "hurry",
+        "max_speed": 30,
+        "accel": 60,
+        "rotation_rate": 90,
+        "braking_deceleration": 75
+      },
+      {
+        "name": "sprint",
+        "max_speed": 30,
+        "accel": 60,
+        "rotation_rate": 90,
+        "braking_deceleration": 75
+      }
+    ],
+    "token_cost": 1
+  }
+}

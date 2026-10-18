@@ -4,12 +4,36 @@
   "class": "UStorageDefinition",
   "schema_version": 2,
   "properties": {
-    "inventory_rules_definition": "IRD_StorageTier1_2",
-    "inventory_loot": {
-      "rolls": 2,
-      "chance_per_roll": 0.5
-    },
-    "gameplay_event_tag": "UI.GameScreen.Storage",
+    "compartments": [
+      {
+        "id": "main",
+        "layout": "Grid",
+        "width": 2,
+        "height": 2,
+        "accepts": [
+          "general",
+          "seed"
+        ],
+        "surface": {
+          "offset": {
+            "x": -8.5,
+            "y": -26.75,
+            "z": 40.45
+          },
+          "yaw": 0.0,
+          "width": 50.0,
+          "depth": 46.0
+        },
+        "gate": {
+          "part": "Door",
+          "min_open": 0.5
+        },
+        "loot": {
+          "rolls": 2,
+          "chance": 0.5
+        }
+      }
+    ],
     "layer_name": "UI.Layer.GameMenu",
     "interaction_hold_time": 0.0,
     "interaction_prompt_text": "Open",
@@ -23,11 +47,10 @@
     "has_toggled_on_vfx": false,
     "has_toggled_off_vfx": false,
     "starting_health": 200.0,
-    "destructible_collection": "/Game/Furniture/Shelves/GeometryCollections/GCS_Bookcase04_Vol1.GCS_Bookcase04_Vol1",
+    "destructible_collection": "/Game/Furniture/MidCentury/GeometryCollections/GCS_Shelf13_Closed.GCS_Shelf13_Closed",
     "loot_dropped_on_death": [],
     "deconstruction_tier": 2,
     "constructable_item_to_grant": "ID_Bookcase_4_CI",
-    "upgrade_recipe": "RD_Bookcase_4_CN",
     "building_base": {
       "rotation": {
         "x": 0.0,
@@ -38,7 +61,7 @@
       "translation": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.14
       },
       "scale3_d": {
         "x": 1.0,
@@ -53,7 +76,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/Shelves/Meshes/SM_Bookcase04_Vol1.SM_Bookcase04_Vol1",
+    "static_mesh": "/Game/Furniture/MidCentury/Shelf13/SM_Shelf13_Closed.SM_Shelf13_Closed",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -65,118 +88,13 @@
           "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.7868,
-            "w": 0.6172
+            "z": 0.0,
+            "w": 1.0
           },
           "translation": {
-            "x": -11.52,
-            "y": 21.67,
-            "z": -0.0
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.9316,
-            "w": -0.3634
-          },
-          "translation": {
-            "x": 20.06,
-            "y": 26.97,
-            "z": -0.0
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.9898,
-            "w": -0.1423
-          },
-          "translation": {
-            "x": -23.4,
-            "y": 19.54,
-            "z": 41.47
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0639,
-            "w": -0.998
-          },
-          "translation": {
-            "x": 19.75,
-            "y": 21.48,
-            "z": 41.47
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.652,
-            "w": 0.7582
-          },
-          "translation": {
-            "x": -14.97,
-            "y": 19.52,
-            "z": 78.51
-          },
-          "scale3_d": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "weight": 1000
-      },
-      {
-        "local_transform": {
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.8287,
-            "w": -0.5597
-          },
-          "translation": {
-            "x": 7.66,
-            "y": 19.23,
-            "z": 78.51
+            "z": 190.44
           },
           "scale3_d": {
             "x": 1.0,
@@ -205,11 +123,71 @@
       "Entity.RandomGeneration.FurnitureType.Shelf.Floor",
       "Entity.RandomGeneration.Materials.Glass",
       "Entity.RandomGeneration.Materials.Wood",
-      "Entity.RandomGeneration.Size.Medium",
+      "Entity.RandomGeneration.Size.Large",
       "Tile.Biome.ShowFloor"
     ],
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
-    "restitution": 0.30000001192092896
+    "restitution": 0.30000001192092896,
+    "blocking_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 94.99
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 35.3,
+          "y": 57.7,
+          "z": 94.95
+        }
+      }
+    ],
+    "support_collision_boxes": [
+      {
+        "offset": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 94.99
+        },
+        "rotation": {
+          "pitch": 0,
+          "yaw": 0,
+          "roll": 0
+        },
+        "box_size": {
+          "x": 36.3,
+          "y": 58.7,
+          "z": 94.95
+        }
+      }
+    ],
+    "rig": {
+      "skeletal_mesh": "/Game/Furniture/MidCentury/Shelf13/SK_Shelf13.SK_Shelf13",
+      "parts": [
+        {
+          "name": "Door",
+          "motion": "Hinge",
+          "range": -100.0
+        }
+      ]
+    },
+    "container_view": {
+      "location": {
+        "x": 217.4,
+        "y": 6.1,
+        "z": 181.4
+      },
+      "rotation": {
+        "pitch": -30,
+        "yaw": 178.8,
+        "roll": 0
+      }
+    }
   }
 }

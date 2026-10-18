@@ -1,0 +1,22 @@
+{
+  "id": "UI_HudConstructionPreview_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "uses": [ "UI.Hud.Visibility", "UI.Construction.PreviewState" ],
+    "tree": {
+      "id": "construction-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : UI.Construction.PreviewState.bActive" },
+      "children": [
+        { "id": "construction-pill", "widget": "panel", "layout": "horizontal", "width": 280, "slot": { "anchor": "top-center", "offset": [0, 24] },
+          "children": [
+            { "id": "construction-text", "widget": "text", "justify": "Center", "slot": { "fill": true },
+              "bind": {
+                "text": "UI.Construction.PreviewState.bCanPlace ? 'Ready' : (UI.Construction.PreviewState.FailureReason == '' ? 'Blocked' : UI.Construction.PreviewState.FailureReason)",
+                "style": "UI.Construction.PreviewState.bCanPlace ? 'hud.construction.ready' : 'hud.construction.blocked'"
+              } }
+          ] }
+      ]
+    }
+  }
+}

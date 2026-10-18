@@ -127,6 +127,11 @@ export function kindToSkeleton(
       return { type: 'definition_ref', class: bareClass(kind.class) };
     case 'object': case 'soft_object': case 'class': case 'soft_class':
       return { type: 'soft_asset_ref', class: bareClass(kind.class) || 'Object' };
+    case 'json':
+      // An opaque value the definition class compiles itself (a UI screen's
+      // `tree`, a theme's `colours`, an AI2 behaviour's `roots`). The editor
+      // shows it as JSON text and never restructures it.
+      return { type: 'json' };
     default:
       return null;
   }
@@ -206,6 +211,8 @@ export function leanToEnvelope(value: any, kind: SchemaKind | null, schema: Lean
       return { type: 'definition_ref', class: bareClass(kind.class), value };
     case 'object': case 'soft_object': case 'class': case 'soft_class':
       return { type: 'soft_asset_ref', class: bareClass(kind.class) || 'Object', value };
+    case 'json':
+      return { type: 'json', value };
     case 'array': case 'set': {
       const el = kind.element ?? null;
       const arr = Array.isArray(value) ? value : [];
@@ -253,7 +260,7 @@ export function envelopeToLean(env: any, schema: LeanSchema): any {
       return env.value;
     case 'gameplay_tag_container':
       return Array.isArray(env.value) ? env.value : [];
-    case 'definition_ref': case 'soft_asset_ref':
+    case 'definition_ref': case 'soft_asset_ref': case 'json':
       return env.value;
     case 'enum': {
       const memberName = env.value;
@@ -299,7 +306,7 @@ export function envelopeToLean(env: any, schema: LeanSchema): any {
 const ENVELOPE_TYPES = new Set([
   'bool', 'int', 'float', 'string', 'name', 'text',
   'gameplay_tag', 'gameplay_tag_container', 'enum', 'struct',
-  'array', 'set', 'map', 'definition_ref', 'soft_asset_ref',
+  'array', 'set', 'map', 'definition_ref', 'soft_asset_ref', 'json',
 ]);
 
 /** Whether a `properties` map looks lean (no `{type}` envelopes). Used to make

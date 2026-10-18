@@ -6,7 +6,8 @@
 //
 // usage: node --import tsx emit-test-mods.ts <mods-dir>
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { serializeRecord } from './src/modio/packer';
 import type { DefinitionRecord } from './src/store/definitionsStore';
 
@@ -16,6 +17,9 @@ if (!modsDir) {
   process.exit(1);
 }
 
+const HERE = dirname(fileURLToPath(import.meta.url));
+const FIXTURES = join(HERE, 'fixtures', 'mods');
+
 function rec(folder: string, id: string, cls: string, properties: unknown): DefinitionRecord {
   const json = { id, class: cls, schema_version: 2, properties };
   return { folder, id, json, originalText: '', diskId: id, diskFolder: folder } as DefinitionRecord;
@@ -24,10 +28,16 @@ function rec(folder: string, id: string, cls: string, properties: unknown): Defi
 interface ModSpec {
   id: string;
   displayName: string;
-  permissions?: string[];
+  version?: string;
+  /** The game's closed vocabulary: gameplay, ui, rules, cheats, console (network reserved). */
+  capabilities?: string[];
+  /** Lua entry points under scripts/, per VM. Both-or-neither with the capability. */
+  scripts?: { rules?: string; ui?: string };
   records?: DefinitionRecord[];
-  /** Extra non-definition files, relative to the mod root. */
+  /** Extra text files, relative to the mod root. */
   files?: Record<string, string>;
+  /** Extra binary files copied from fixtures/mods, relative to the mod root. */
+  fixtureFiles?: Record<string, string>;
   /** Copy a base-game map under a new name. */
   map?: string;
 }
@@ -157,17 +167,65 @@ const MODS: ModSpec[] = [
   },
 
   // --- UI ------------------------------------------------------------------
+  // A screen, a theme and an icon: the three things a UI mod ships. The theme
+  // extends the base game's and only overrides the accent; the screen draws
+  // the mod's own PNG through a `mod:` ref. Both are definitions the game
+  // compiles itself (`compiled` classes in _schema.json), so their `tree` and
+  // `colours` are opaque JSON to the editor.
   {
     id: 'com.test.ui',
     displayName: 'Test Mod — UI',
-    permissions: ['ui'],
-    files: {
-      'web/shared/mod-test-ui.css':
-        '/* Served from com.test.ui through the CEF scheme handler. */\n' +
-        ':root { --tsic-test-ui-marker: 1; }\n',
-      'web/shared/mod-test-ui.js':
-        '// Loaded from a mod\'s web overlay root.\n' +
-        'window.TSIC_TEST_UI_MARKER = true;\n',
+    capabilities: ['ui'],
+    records: [
+      rec('ui_definitions', 'UI_TestUi_TH', 'ScpUiThemeDefinition', {
+        extends: 'UI_Default_TH',
+        colours: {
+          accent: '#00c853',
+          'accent.hover': '#1de37a',
+        },
+      }),
+      rec('ui_definitions', 'UI_TestUiBadge_SC', 'ScpUiScreenDefinition', {
+        screen: 'TestUiBadge',
+        layer: 'menu',
+        theme: 'UI_TestUi_TH',
+        input_mode: 'InputMode.Menu.MainMenu',
+        cancel: 'UI.Cmd.Menu.Back',
+        actions: [{ action: 'back', label: 'Back' }],
+        uses: [],
+        tree: {
+          id: 'stage', widget: 'panel', layout: 'overlay', style: 'screen.dim',
+          children: [
+            {
+              id: 'card', widget: 'panel', layout: 'vertical', style: 'panel.page', gap: 12,
+              slot: { align: 'center', valign: 'center', width: 420 },
+              children: [
+                { id: 'title', widget: 'text', style: 'text.title', text: 'Mod screen' },
+                { id: 'badge', widget: 'image', source: 'mod:icons/ui/test-badge', slot: { align: 'center' }, bind: { size: "'64,64'" } },
+                { id: 'blurb', widget: 'text', style: 'text.body', wrap: true, text: "A screen, a theme and an icon shipped by com.test.ui. The title is drawn in this mod's accent colour; the badge is this mod's PNG." },
+                { id: 'close', widget: 'button', style: 'button.primary', label: 'Close', focus: 'initial', slot: { align: 'center' }, on: { click: { cmd: 'UI.Cmd.Menu.Back' } } },
+              ],
+            },
+          ],
+        },
+      }),
+    ],
+    fixtureFiles: {
+      'icons/ui/test-badge.png': 'test-badge.png',
+    },
+  },
+
+  // --- SCRIPTING -----------------------------------------------------------
+  // A rules-VM Lua script on the listen-server host. "gameplay" is what lets
+  // it call the gameplay commands (spawn, grant, schedule); the manifest is
+  // rejected if the capability and the entry do not come as a pair.
+  {
+    id: 'com.test.scripting',
+    displayName: 'Mod Scripting Fixture',
+    version: '0.2.0',
+    capabilities: ['gameplay'],
+    scripts: { rules: 'scripts/main.lua' },
+    fixtureFiles: {
+      'scripts/main.lua': 'scripting-main.lua',
     },
   },
 
@@ -179,6 +237,12 @@ const MODS: ModSpec[] = [
   },
 ];
 
+function writeRelative(root: string, rel: string, contents: string | Buffer): void {
+  const parts = rel.split('/');
+  mkdirSync(join(root, ...parts.slice(0, -1)), { recursive: true });
+  writeFileSync(join(root, ...parts), contents);
+}
+
 for (const spec of MODS) {
   const root = join(modsDir, spec.id);
   mkdirSync(root, { recursive: true });
@@ -189,10 +253,9 @@ for (const spec of MODS) {
     writeFileSync(join(dir, `${r.id}.json`), serializeRecord(r));
   }
 
-  for (const [rel, contents] of Object.entries(spec.files ?? {})) {
-    const parts = rel.split('/');
-    mkdirSync(join(root, ...parts.slice(0, -1)), { recursive: true });
-    writeFileSync(join(root, ...parts), contents);
+  for (const [rel, contents] of Object.entries(spec.files ?? {})) writeRelative(root, rel, contents);
+  for (const [rel, fixture] of Object.entries(spec.fixtureFiles ?? {})) {
+    writeRelative(root, rel, readFileSync(join(FIXTURES, fixture)));
   }
 
   if (spec.map) {
@@ -211,14 +274,16 @@ for (const spec of MODS) {
   const modJson: Record<string, unknown> = {
     id: spec.id,
     displayName: spec.displayName,
-    version: '1.0.0',
+    version: spec.version ?? '1.0.0',
   };
-  if (spec.permissions) modJson.permissions = spec.permissions;
+  if (spec.capabilities) modJson.capabilities = spec.capabilities;
+  if (spec.scripts) modJson.scripts = spec.scripts;
   writeFileSync(join(root, 'mod.json'), JSON.stringify(modJson, null, 2) + '\n');
 
   const count = (spec.records ?? []).length;
+  const extras = Object.keys(spec.files ?? {}).length + Object.keys(spec.fixtureFiles ?? {}).length;
   console.log(`${spec.id}: ${count} definition(s)` +
-    (spec.files ? `, ${Object.keys(spec.files).length} web file(s)` : '') +
+    (extras ? `, ${extras} extra file(s)` : '') +
     (spec.map ? `, map "${spec.map}"` : ''));
 }
 console.log(`wrote ${MODS.length} mods to ${modsDir}`);

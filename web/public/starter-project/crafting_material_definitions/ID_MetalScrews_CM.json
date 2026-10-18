@@ -5,12 +5,28 @@
   "schema_version": 2,
   "properties": {
     "display_name": "Metal Screws",
-    "description": "A handful of assorted screws.",
+    "description": "Crafting material. Used for Basic Trap, Chainsaw, Containment Sledgehammer and more. Found in the car park, lost & found, the showroom, the staff rooms and the warehouse. Dropped by Bone Heads and staff.\nA handful of assorted screws.",
     "thumbnail": "/Game/Items/CraftingMaterials/Screws/Textures/T_Thumb_box_of_nails_photoscan_lowpoly.T_Thumb_box_of_nails_photoscan_lowpoly",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_MetalScrews_SI",
     "item_category_tag": "Entity.Inventory.Item.Category.CraftingMaterial",
-    "max_stack_size": 50
+    "max_stack_size": 50,
+    "storage_class": "fasteners",
+    "material_class": "metal",
+    "presentations": [
+      {
+        "key": "box",
+        "value": {
+          "mesh": "/Game/Items/CraftingMaterials/HardwareBoxes/Meshes/SM_MetalScrew.SM_MetalScrew"
+        }
+      },
+      {
+        "key": "carton",
+        "value": {
+          "mesh": "/Game/Items/CraftingMaterials/HardwareBoxes/Meshes/SM_ScrewCarton.SM_ScrewCarton"
+        }
+      }
+    ]
   }
 }

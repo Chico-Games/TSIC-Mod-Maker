@@ -1,0 +1,41 @@
+{
+  "id": "UI_HudHotbarWheel_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 40,
+    "uses": [ "UI.Hud.Visibility", "UI.Hud.Wheel", "UI.Hotbar.Changed", "UI.Input.Mode.Changed" ],
+    "tree": {
+      "id": "hotbar-wheel-root", "widget": "panel", "layout": "overlay", "style": "hud.wheel.scrim",
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : UI.Hud.Wheel[hotbar].bOpen" },
+      "children": [
+        { "id": "wheel", "widget": "panel", "layout": "overlay", "style": "panel.flat", "slot": { "anchor": "center" },
+          "children": [
+            { "id": "wheel-slots", "widget": "list", "layout": "radial", "style": "hud.overlay.rows", "selectable": false,
+              "radius": 132, "radial_start_deg": 90, "radial_skip": 1, "radial_margin": 84,
+              "bind": { "items": "UI.Hotbar.Changed.Hooks" },
+              "template": { "id": "wheel-slot", "widget": "panel", "layout": "overlay", "width": 62, "height": 62,
+                "bind": { "style": "item.SlotIndex == UI.Hud.Wheel[hotbar].Selected ? 'hud.wheel.slot.aim' : (item.SlotIndex == UI.Hotbar.Changed.SelectedSlot ? 'hud.wheel.slot.current' : 'hud.wheel.slot')" },
+                "children": [
+                  { "widget": "image", "slot": { "anchor": "center" },
+                    "bind": { "source": "\"item:{item.ItemId}\"", "size": "'44,44'", "visible": "item.ItemId != ''" } },
+                  { "widget": "text", "style": "hud.slot.count", "slot": { "anchor": "bottom-right", "offset": [-4, -3] },
+                    "bind": { "text": "item.Count", "visible": "item.Count > 1" } },
+                  { "widget": "text", "style": "hud.slot.key", "slot": { "anchor": "top-left", "offset": [4, 3] },
+                    "bind": { "text": "item.SlotIndex + 1 fmt:int", "visible": "UI.Input.Mode.Changed.Mode != 'Gamepad'" } }
+                ] } },
+            { "id": "wheel-fists", "widget": "panel", "layout": "overlay", "width": 62, "height": 62, "slot": { "anchor": "center", "offset": [0, 132] },
+              "bind": { "style": "UI.Hud.Wheel[hotbar].bFists ? 'hud.wheel.slot.aim' : 'hud.wheel.slot'" },
+              "children": [
+                { "widget": "image", "source": "mod:icons/ui/fists", "style": "hud.wheel.fists", "slot": { "anchor": "center" }, "bind": { "size": "'38,38'" } }
+              ] },
+            { "id": "wheel-label", "widget": "panel", "layout": "vertical", "style": "panel.flat", "gap": 2, "slot": { "anchor": "center" },
+              "children": [
+                { "id": "wheel-name", "widget": "text", "style": "hud.wheel.label", "justify": "Center", "case": "None", "bind": { "text": "UI.Hud.Wheel[hotbar].SelectedLabel" } },
+                { "id": "wheel-hint", "widget": "text", "style": "hud.wheel.hint", "justify": "Center", "bind": { "text": "UI.Hud.Wheel[hotbar].SelectedHint" } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

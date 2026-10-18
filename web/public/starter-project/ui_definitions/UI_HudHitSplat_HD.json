@@ -1,0 +1,13 @@
+{
+  "id": "UI_HudHitSplat_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": -1,
+    "uses": [ "UI.Hud.Visibility" ],
+    "tree": {
+      "id": "hit-splat", "widget": "fade", "style": "hud.hitsplat", "mode": "Flash", "shape": "Vignette", "vignette_depth": 0.45, "peak": 0.8, "auto_play": false, "listen_channel": "UI.Player.Hit",
+      "bind": { "visible": "UI.Hud.Visibility[hitreaction].bHidden ? false : !UI.Hud.Visibility[all].bHidden" }
+    }
+  }
+}

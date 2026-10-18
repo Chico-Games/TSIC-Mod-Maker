@@ -1,0 +1,93 @@
+{
+  "id": "UI_WelcomeBulletin_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "WelcomeBulletin",
+    "layer": "overlay",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.Overlay.Pop",
+    "actions": [ { "action": "accept", "label": "Close" }, { "action": "back", "label": "Close" } ],
+    "uses": [ "UI.Bulletin.State" ],
+    "tree": {
+      "id": "scrim", "widget": "panel", "layout": "overlay", "style": "screen.scrim",
+      "children": [
+        { "id": "notice", "widget": "panel", "layout": "vertical", "style": "panel.card", "focus": "trap", "gap": 10,
+          "slot": { "align": "center", "valign": "center", "width": 1020, "height": 700 },
+          "children": [
+            { "widget": "panel", "layout": "horizontal",
+              "children": [
+                { "widget": "panel", "layout": "vertical", "slot": { "fill": true, "valign": "bottom" },
+                  "children": [
+                    { "widget": "text", "style": "text.title.sm", "text": "Welcome to the", "bind": { "colour": "'#E60000'" } },
+                    { "widget": "panel", "layout": "horizontal",
+                      "children": [
+                        { "widget": "text", "style": "text.title.lg", "text": "Closed Alpha", "line_height": 0.9 },
+                        { "widget": "text", "style": "text.title.lg", "text": ".", "line_height": 0.9, "bind": { "colour": "'#E60000'" } }
+                      ] }
+                  ] },
+                { "widget": "panel", "layout": "vertical", "gap": 4, "slot": { "align": "right", "valign": "bottom" },
+                  "children": [
+                    { "widget": "panel", "style": "chip.badge", "slot": { "align": "right" }, "children": [ { "widget": "text", "style": "text.badge", "bind": { "text": "UI.Bulletin.State.IssueLine" } } ] },
+                    { "widget": "text", "style": "text.date", "slot": { "align": "right" }, "bind": { "text": "UI.Bulletin.State.DateLine" } }
+                  ] }
+              ] },
+            { "widget": "panel", "style": "rule.panel", "slot": { "height": 4 } },
+            { "widget": "text", "style": "text.body", "wrap": true, "bind": { "text": "UI.Bulletin.State.Intro" } },
+
+            { "id": "split", "widget": "panel", "layout": "horizontal", "gap": 12, "slot": { "fill": true },
+              "children": [
+                { "widget": "panel", "layout": "vertical", "gap": 6, "slot": { "fill": 1.1 },
+                  "children": [
+                    { "widget": "text", "style": "text.eyebrow", "text": "What's new" },
+                    { "widget": "panel", "style": "rule.dashed", "slot": { "height": 2 } },
+                    { "id": "whats-new", "widget": "list", "style": "menu.list.bulletin", "selectable": false, "empty_text": "Nothing new to report.", "slot": { "fill": true },
+                      "bind": { "items": "UI.Bulletin.State.Rows" },
+                      "template": { "widget": "panel", "layout": "vertical", "slot": { "padding": [4, 2] },
+                        "children": [
+                          { "widget": "panel", "layout": "horizontal", "gap": 10, "slot": { "padding": [10, 0, 4, 0] }, "bind": { "visible": "item.Kind == 'head'" },
+                            "children": [
+                              { "widget": "panel", "style": "chip.badge", "slot": { "valign": "center" }, "children": [ { "widget": "text", "style": "text.badge", "bind": { "text": "item.Date" } } ] },
+                              { "widget": "text", "style": "text.title.sm", "slot": { "fill": true, "valign": "center" }, "bind": { "text": "item.Text" } },
+                              { "widget": "text", "style": "text.caption", "slot": { "align": "right", "valign": "center" }, "bind": { "text": "item.Sha" } }
+                            ] },
+                          { "widget": "text", "style": "text.eyebrow", "slot": { "padding": [8, 0, 0, 0] }, "bind": { "text": "item.Text", "visible": "item.Kind == 'cat'", "colour": "'#E60000'" } },
+                          { "widget": "text", "style": "text.caption", "slot": { "padding": [2, 0, 0, 16] }, "bind": { "text": "item.Text", "visible": "item.Kind == 'scope'" } },
+                          { "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "padding": [2, 0, 2, 16] }, "bind": { "visible": "item.Kind == 'item'" },
+                            "children": [
+                              { "widget": "text", "style": "text.mono", "text": ">>", "bind": { "colour": "'#E60000'" } },
+                              { "widget": "text", "style": "text.body", "wrap": true, "slot": { "fill": true }, "bind": { "text": "item.Text" } }
+                            ] }
+                        ] } }
+                  ] },
+                { "widget": "panel", "layout": "vertical", "gap": 6, "slot": { "fill": 1.0 },
+                  "children": [
+                    { "widget": "text", "style": "text.eyebrow", "text": "Known issues" },
+                    { "widget": "panel", "style": "rule.dashed", "slot": { "height": 2 } },
+                    { "id": "known-issues", "widget": "list", "style": "menu.list.bulletin", "selectable": false, "empty_text": "Nothing tracked for this build.", "slot": { "fill": true },
+                      "bind": { "items": "UI.Bulletin.State.KnownIssues" },
+                      "template": { "widget": "panel", "layout": "vertical", "slot": { "padding": [12, 0] },
+                        "children": [
+                          { "widget": "panel", "layout": "horizontal", "gap": 10, "slot": { "padding": [0, 8] },
+                            "children": [
+                              { "widget": "text", "style": "text.eyebrow", "slot": { "width": 80 }, "bind": { "text": "item.Scope", "colour": "'#E60000'" } },
+                              { "widget": "text", "style": "text.body", "wrap": true, "slot": { "fill": true }, "bind": { "text": "item.Text" } },
+                              { "widget": "text", "style": "text.caption", "slot": { "valign": "center" }, "bind": { "text": "item.Ref != '' ? \"#{item.Ref}\" : ''" } }
+                            ] },
+                          { "widget": "panel", "style": "rule.dashed", "slot": { "height": 1 } }
+                        ] } },
+                    { "widget": "text", "style": "menu.text.hint", "wrap": true, "slot": { "padding": [6, 0, 0, 0] },
+                      "text": "Found something that is not on this list? Press F8 in game to file it — the report carries your seed and the last few seconds of the log, which is the difference between a fix and a guess." }
+                  ] }
+              ] },
+
+            { "widget": "panel", "layout": "horizontal", "slot": { "padding": [8, 0, 0, 0] },
+              "children": [
+                { "widget": "text", "style": "text.caption", "text": "F8 FILES A REPORT · ENTER OR ESC TO CLOSE", "slot": { "fill": true, "valign": "bottom" } },
+                { "id": "btn-close", "widget": "button", "style": "button.lg", "label": "Close", "focus": "initial", "slot": { "align": "right", "valign": "bottom" },
+                  "on": { "click": { "cmd": "UI.Cmd.Overlay.Pop", "args": { "Name": "WelcomeBulletin" } } } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

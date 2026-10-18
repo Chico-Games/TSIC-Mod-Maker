@@ -4,11 +4,11 @@
   "class": "UPlantRecipeDefinition",
   "schema_version": 2,
   "properties": {
-    "grow_stages": [
+    "growth_stages": [
       {
+        "at": 0,
         "mesh": "/Game/Fab/UltimateFarming/Meshes/SM_Onion_Starter.SM_Onion_Starter",
-        "ratio": 1.0,
-        "start_scale": {
+        "scale": {
           "x": 0.33,
           "y": 0.33,
           "z": 0.33
@@ -20,9 +20,9 @@
         }
       },
       {
+        "at": 0.5,
         "mesh": "/Game/Fab/UltimateFarming/Meshes/SM_Onion_A.SM_Onion_A",
-        "ratio": 1.0,
-        "start_scale": {
+        "scale": {
           "x": 0.38,
           "y": 0.38,
           "z": 0.38
@@ -34,11 +34,14 @@
         }
       }
     ],
+    "stations": [
+      "Station.Planter.T1"
+    ],
     "recipe_tags": [],
     "input": [
       {
-        "key": "ID_HighQualityCompost_CM",
-        "value": 1
+        "key": "ID_FertilizerBag_CM",
+        "value": 3
       },
       {
         "key": "ID_BananaSeeds_SD",
@@ -55,7 +58,6 @@
         "value": 2
       }
     ],
-    "duration": 600.0,
-    "level": 3
+    "duration": 600
   }
 }

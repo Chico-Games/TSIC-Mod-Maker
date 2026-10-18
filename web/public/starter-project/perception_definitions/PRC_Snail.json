@@ -1,0 +1,32 @@
+{
+  "id": "PRC_Snail",
+  "class": "ScpPerceptionDefinition",
+  "properties": {
+    "extends": "PRC_BaseHostile",
+    "sight": {
+      "cone_angle": 180,
+      "range": 6000,
+      "peripheral_cone_angle": 180,
+      "peripheral_range": 6000,
+      "peripheral_gain": 1.0,
+      "auto_detect_radius": 600,
+      "time_to_spot": 0.2,
+      "time_to_forget_glimpse": 60,
+      "memory_seconds": 600,
+      "ghost_track_seconds": 600
+    },
+    "stalemate": {
+      "give_up_seconds": 600,
+      "resume_seconds": 1,
+      "search_near_spawn": false
+    },
+    "targeting": {
+      "target_priority": [
+        "closest_spotted"
+      ],
+      "switch_damage": 25,
+      "alert_allies_radius": 0,
+      "patrol_return_distance": 100000
+    }
+  }
+}

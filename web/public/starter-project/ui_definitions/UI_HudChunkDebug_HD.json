@@ -1,0 +1,19 @@
+{
+  "id": "UI_HudChunkDebug_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 1,
+    "uses": [ "UI.Hud.Visibility", "UI.Debug.Overlay", "UI.State.DevMode" ],
+    "tree": {
+      "id": "chunk-debug-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "bind": { "visible": "UI.Hud.Visibility[all].bHidden ? false : (UI.State.DevMode.bDevBuild ? UI.Debug.Overlay[chunks].bVisible : false)" },
+      "children": [
+        { "id": "chunk-debug", "widget": "panel", "layout": "overlay", "style": "hud.chunk.debug", "width": 140, "height": 140, "slot": { "anchor": "top-right", "offset": [-24, 214] },
+          "children": [
+            { "id": "chunk-debug-tex", "widget": "image", "source": "rt:world-debug-chunks", "slot": { "anchor": "center" }, "bind": { "size": "'138,138'" } }
+          ] }
+      ]
+    }
+  }
+}

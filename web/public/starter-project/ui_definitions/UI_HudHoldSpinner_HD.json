@@ -1,0 +1,23 @@
+{
+  "id": "UI_HudHoldSpinner_HD",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "layer": "hud",
+    "order": 5,
+    "uses": [ "UI.HoldSpinner.State" ],
+    "tree": {
+      "id": "hold-spinner-root", "widget": "panel", "layout": "overlay", "style": "panel.flat",
+      "children": [
+        { "id": "hold-spinner", "widget": "worldmarker", "use_screen_fraction": true,
+          "slot": { "anchor": "top-left" },
+          "bind": {
+            "visible": "UI.HoldSpinner.State.bActive",
+            "screen_fraction": "\"{UI.HoldSpinner.State.X},{UI.HoldSpinner.State.Y}\""
+          },
+          "children": [
+            { "id": "hold-ring", "widget": "progressring", "style": "ring.hold", "size": 44, "bind": { "progress": "UI.HoldSpinner.State.Progress" } }
+          ] }
+      ]
+    }
+  }
+}

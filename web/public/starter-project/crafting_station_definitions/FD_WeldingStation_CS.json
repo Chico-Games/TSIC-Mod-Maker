@@ -1,21 +1,9 @@
 {
   "id": "FD_WeldingStation_CS",
   "asset_path": "/Game/Furniture/CraftingBenches/Welding/Construction/FD_WeldingStation_CS",
-  "class": "UCraftingStationDefinition",
+  "class": "UDamageableFurnitureDefinition",
   "schema_version": 2,
   "properties": {
-    "gameplay_event_tag": "UI.GameScreen.Crafting",
-    "interaction_hold_time": 0.0,
-    "interaction_prompt_text": "Weld",
-    "has_static_audio": false,
-    "has_toggled_on_audio": false,
-    "has_toggled_off_audio": false,
-    "has_static_lights": false,
-    "has_toggled_on_lights": false,
-    "has_toggled_off_lights": false,
-    "has_static_vfx": false,
-    "has_toggled_on_vfx": false,
-    "has_toggled_off_vfx": false,
     "starting_health": 1200.0,
     "loot_dropped_on_death": [
       "LD_CraftingBenchTierOneLoot"
@@ -26,7 +14,7 @@
         "offset": {
           "x": 0.0,
           "y": 0.0,
-          "z": 111.13
+          "z": 59.89
         },
         "rotation": {
           "pitch": 0,
@@ -34,9 +22,9 @@
           "roll": 0
         },
         "box_size": {
-          "x": 57.68,
-          "y": 23.66,
-          "z": 56.79
+          "x": 35.7,
+          "y": 33.7,
+          "z": 39.3
         }
       }
     ],
@@ -45,7 +33,7 @@
         "offset": {
           "x": 0.0,
           "y": 0.0,
-          "z": 93.5
+          "z": 59.28
         },
         "rotation": {
           "pitch": 0,
@@ -53,9 +41,9 @@
           "roll": 0
         },
         "box_size": {
-          "x": 99.45,
-          "y": 40.8,
-          "z": 97.92
+          "x": 51.0,
+          "y": 48.14,
+          "z": 60.47
         }
       }
     ],
@@ -67,8 +55,8 @@
         "w": 1.0
       },
       "translation": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": -50.0,
+        "y": -47.2,
         "z": 0.0
       },
       "scale3_d": {
@@ -84,7 +72,7 @@
     "default_world_gen_gameplay_tags": [],
     "meta_tags": [],
     "is_pingable": false,
-    "static_mesh": "/Game/Furniture/CraftingBenches/Welding/Meshes/SM_WeldingStation.SM_WeldingStation",
+    "static_mesh": "/Game/Fab/INDUSTRIAL/VOL4_Consoles/Meshes/LP/SM_Consoles_Industrial_12e.SM_Consoles_Industrial_12e",
     "casts_shadow": true,
     "collision_profile_name": {
       "name": "Furniture"
@@ -105,9 +93,7 @@
     "release_angular_damping": 0.05000000074505806,
     "release_linear_damping": 0.009999999776482582,
     "restitution": 0.30000001192092896,
-    "available_recipe_rules_definition": "ARR_WeldingStationRecipes",
     "constructable_item_to_grant": "ID_WeldingStation_CI",
-    "upgrade_recipe": "RD_WeldingStationTier2_CN",
-    "open_sound": "Station.Welding.Open"
+    "destructible_collection": "/Game/Fab/INDUSTRIAL/VOL4_Consoles/Meshes/GeometryCollections/GCS_Consoles_Industrial_12e.GCS_Consoles_Industrial_12e"
   }
 }

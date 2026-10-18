@@ -1,0 +1,79 @@
+{
+  "id": "UI_Lore_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "Lore",
+    "layer": "menu",
+    "theme": "UI_LorePaper_TH",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.Pause.Resume",
+    "actions": [ { "action": "accept", "label": "Select" }, { "action": "back", "label": "Close" } ],
+    "uses": [ "UI.Lore.State" ],
+    "tree": {
+      "id": "lore-scrim", "widget": "panel", "layout": "overlay", "style": "lore.scrim",
+      "children": [
+        { "id": "lore-frame", "widget": "panel", "layout": "vertical", "style": "lore.frame", "gap": 10, "focus": "group", "slot": { "align": "center", "valign": "center" },
+          "bind": { "width": "UI.Lore.State.ScreenKind == 'Screen' ? 720 : UI.Lore.State.ScreenKind == 'Tablet' ? 480 : 560" },
+          "children": [
+            { "id": "lore-sheet", "widget": "panel", "layout": "vertical",
+              "children": [
+                { "id": "lore-edge-top", "widget": "image", "style": "lore.edge", "source": "mod:icons/ui/lore-paper-top", "size": { "x": 560, "y": 22 },
+                  "bind": { "visible": "UI.Lore.State.ScreenKind == 'Paper'" } },
+                { "id": "lore-paper", "widget": "panel", "layout": "vertical", "style": "lore.sheet",
+                  "children": [
+                    { "id": "lore-scroll", "widget": "panel", "layout": "scroll", "gap": 0,
+                      "bind": { "height": "UI.Lore.State.BodyLength > 500 ? 400 : 0" },
+                      "children": [
+                        { "id": "lore-group", "widget": "text", "style": "lore.group", "slot": { "padding": [0, 0, 0, 12] },
+                          "bind": { "text": "UI.Lore.State.GroupTitle", "visible": "UI.Lore.State.GroupTitle != ''" } },
+                        { "id": "lore-heading", "widget": "text", "style": "lore.heading", "wrap": true, "line_height": 1.1, "slot": { "padding": [0, 0, 0, 16] },
+                          "bind": {
+                            "text": "UI.Lore.State.Heading",
+                            "visible": "UI.Lore.State.Heading != ''",
+                            "style": "#lore-readable.checked ? 'lore.heading.plain' : UI.Lore.State.Hand == 1 ? 'lore.heading.gloria' : UI.Lore.State.Hand == 2 ? 'lore.heading.reenie' : 'lore.heading'"
+                          } },
+                        { "id": "lore-body", "widget": "text", "style": "lore.body", "wrap": true, "line_height": 1.7,
+                          "bind": {
+                            "text": "UI.Lore.State.Body",
+                            "style": "#lore-readable.checked ? 'lore.body.plain' : UI.Lore.State.Hand == 1 ? 'lore.body.gloria' : UI.Lore.State.Hand == 2 ? 'lore.body.reenie' : 'lore.body'"
+                          } }
+                      ] }
+                  ] },
+                { "id": "lore-edge-bottom", "widget": "image", "style": "lore.edge", "source": "mod:icons/ui/lore-paper-bottom", "size": { "x": 560, "y": 22 },
+                  "bind": { "visible": "UI.Lore.State.ScreenKind == 'Paper'" } }
+              ] },
+
+            { "id": "lore-index-list", "widget": "list", "layout": "horizontal", "style": "list", "selectable": false, "row_key": "Index", "slot": { "align": "center" },
+              "bind": { "items": "UI.Lore.State.Entries", "visible": "UI.Lore.State.Count > 1" },
+              "template": { "widget": "panel", "layout": "overlay", "slot": { "padding": [3, 0] },
+                "children": [
+                  { "id": "lore-index", "widget": "button", "style": "lore.index",
+                    "bind": { "label": "item.Label", "style": "item.bCurrent ? 'lore.index.current' : 'lore.index'" },
+                    "on": { "click": { "cmd": "UI.Cmd.LoreScreen.Select", "args": { "Index": "{item.Index}" } } } }
+                ] } },
+
+            { "id": "lore-controls", "widget": "panel", "layout": "horizontal", "style": "lore.controls", "gap": 8,
+              "children": [
+                { "id": "lore-readable-row", "widget": "panel", "layout": "horizontal", "gap": 8, "slot": { "valign": "center" },
+                  "bind": { "visible": "UI.Lore.State.ScreenKind == 'Paper'" },
+                  "children": [
+                    { "id": "lore-readable", "widget": "toggle", "style": "lore.toggle", "slot": { "valign": "center" } },
+                    { "widget": "text", "style": "lore.toggle.label", "text": "Easy-read font", "slot": { "valign": "center" } }
+                  ] },
+                { "widget": "panel", "slot": { "fill": true } },
+                { "id": "lore-pageinfo", "widget": "text", "style": "lore.pageinfo", "slot": { "valign": "center", "padding": [0, 0, 6, 0] },
+                  "bind": { "text": "UI.Lore.State.PageInfo" } },
+                { "id": "lore-prev", "widget": "button", "style": "lore.button", "label": "‹ Prev", "slot": { "valign": "center" },
+                  "bind": { "disabled": "!UI.Lore.State.bHasPrev" },
+                  "on": { "click": { "cmd": "UI.Cmd.LoreScreen.Select", "args": { "Index": "{UI.Lore.State.Index - 1}" } } } },
+                { "id": "lore-next", "widget": "button", "style": "lore.button", "label": "Next ›", "slot": { "valign": "center" },
+                  "bind": { "disabled": "!UI.Lore.State.bHasNext" },
+                  "on": { "click": { "cmd": "UI.Cmd.LoreScreen.Select", "args": { "Index": "{UI.Lore.State.Index + 1}" } } } },
+                { "id": "lore-close", "widget": "button", "style": "lore.button", "label": "Close", "focus": "initial", "slot": { "valign": "center" },
+                  "on": { "click": [ { "cmd": "UI.Cmd.LoreScreen.Close" }, { "cmd": "UI.Cmd.Pause.Resume" } ] } }
+              ] }
+          ] }
+      ]
+    }
+  }
+}

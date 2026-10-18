@@ -1,0 +1,1047 @@
+{
+  "id": "UI_HitTuner_SC",
+  "class": "ScpUiScreenDefinition",
+  "properties": {
+    "screen": "HitTuner",
+    "layer": "menu",
+    "input_mode": "InputMode.Menu.Generic",
+    "cancel": "UI.Cmd.HitTuner.Toggle",
+    "actions": [
+      {
+        "action": "accept",
+        "label": "Select"
+      },
+      {
+        "action": "back",
+        "label": "Close"
+      }
+    ],
+    "uses": [
+      "UI.HitTuner.State"
+    ],
+    "tree": {
+      "widget": "panel",
+      "layout": "overlay",
+      "id": "ht-root",
+      "style": "screen.clear",
+      "on": {
+        "show": {
+          "cmd": "UI.Cmd.HitTuner.RequestState"
+        }
+      },
+      "children": [
+        {
+          "widget": "panel",
+          "layout": "scroll",
+          "id": "ht-panel",
+          "style": "dev.panel.dock",
+          "slot": {
+            "align": "right",
+            "valign": "fill",
+            "width": 420
+          },
+          "children": [
+            {
+              "widget": "panel",
+              "layout": "vertical",
+              "gap": 8,
+              "slot": {
+                "padding": [
+                  14,
+                  12,
+                  14,
+                  16
+                ]
+              },
+              "children": [
+                {
+                  "widget": "text",
+                  "text": "Hit reaction tuner",
+                  "style": "dev.title.tuner.arena"
+                },
+                {
+                  "widget": "text",
+                  "bind": {
+                    "text": "!has:UI.HitTuner.State ? '' : UI.HitTuner.State.Message != '' ? UI.HitTuner.State.Message : UI.HitTuner.State.bHasOverride ? 'Clip has its own values.' : 'Clip is on its tier default.'",
+                    "style": "has:UI.HitTuner.State ? (!UI.HitTuner.State.bHasTuner ? 'dev.status.bad' : 'dev.status') : 'dev.status'"
+                  }
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "widget": "button",
+                      "label": "<",
+                      "style": "dev.button",
+                      "id": "ht-prev",
+                      "focus": "initial",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.HitTuner.Nav",
+                          "args": {
+                            "Delta": -1
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "vertical",
+                      "slot": {
+                        "fill": true,
+                        "valign": "center"
+                      },
+                      "children": [
+                        {
+                          "widget": "text",
+                          "style": "dev.label.strong",
+                          "justify": "Center",
+                          "bind": {
+                            "text": "UI.HitTuner.State.Count > 0 ? \"{UI.HitTuner.State.Index + 1} / {UI.HitTuner.State.Count}  -  {UI.HitTuner.State.Label}\" : '-'"
+                          }
+                        },
+                        {
+                          "widget": "text",
+                          "style": "dev.meta",
+                          "justify": "Center",
+                          "wrap": true,
+                          "bind": {
+                            "text": "UI.HitTuner.State.MontageName != '' ? \"{UI.HitTuner.State.MontageName}  ({UI.HitTuner.State.ClipSeconds}s clip)\" : ''"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "button",
+                      "label": ">",
+                      "style": "dev.button",
+                      "id": "ht-next",
+                      "slot": {
+                        "valign": "center"
+                      },
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.HitTuner.Nav",
+                          "args": {
+                            "Delta": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ht-dummy",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Dummy",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "button",
+                          "label": "Idle",
+                          "style": "dev.button",
+                          "bind": {
+                            "style": "UI.HitTuner.State.Locomotion == 'Idle' ? 'dev.button.on' : 'dev.button'"
+                          },
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.HitTuner.SetLocomotion",
+                              "args": {
+                                "Mode": "Idle"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Walk",
+                          "style": "dev.button",
+                          "bind": {
+                            "style": "UI.HitTuner.State.Locomotion == 'Walk' ? 'dev.button.on' : 'dev.button'"
+                          },
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.HitTuner.SetLocomotion",
+                              "args": {
+                                "Mode": "Walk"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Run",
+                          "style": "dev.button",
+                          "bind": {
+                            "style": "UI.HitTuner.State.Locomotion == 'Run' ? 'dev.button.on' : 'dev.button'"
+                          },
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.HitTuner.SetLocomotion",
+                              "args": {
+                                "Mode": "Run"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "widget": "button",
+                          "label": "Replay now",
+                          "style": "dev.button",
+                          "on": {
+                            "click": {
+                              "cmd": "UI.Cmd.HitTuner.Replay"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Replay every (s)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-interval",
+                          "min": 0,
+                          "max": 10,
+                          "step": 0.5,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.IntervalSeconds"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetInterval",
+                              "args": {
+                                "Seconds": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ht-sections",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Body sections",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Head",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Head",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Head"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Head",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Neck",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Neck",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Neck"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Neck",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Shoulders",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Shoulders",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Shoulders"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Shoulders",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Arms",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Arms",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Arms"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Arms",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Upper spine",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-SpineUpper",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.SpineUpper"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "SpineUpper",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Mid spine",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-SpineMid",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.SpineMid"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "SpineMid",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Lower spine",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-SpineLower",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.SpineLower"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "SpineLower",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Pelvis",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Pelvis",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Pelvis"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Pelvis",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Legs",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-Legs",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.Legs"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "Legs",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ht-timing",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Timing",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Play rate",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-PlayRate",
+                          "min": 0.1,
+                          "max": 3,
+                          "step": 0.05,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.PlayRate"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "PlayRate",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Duration (s, 0 = full clip)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-DurationSeconds",
+                          "min": 0,
+                          "max": 6,
+                          "step": 0.05,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.DurationSeconds"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "DurationSeconds",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Blend in (s)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-BlendInSeconds",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.BlendInSeconds"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "BlendInSeconds",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Blend out (s)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-BlendOutSeconds",
+                          "min": 0,
+                          "max": 1.5,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.BlendOutSeconds"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "BlendOutSeconds",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "vertical",
+                  "id": "ht-physics",
+                  "style": "dev.section",
+                  "gap": 5,
+                  "focus": "group",
+                  "children": [
+                    {
+                      "widget": "text",
+                      "text": "Physics",
+                      "style": "dev.section.head"
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Physics blend",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-PhysicsBlendWeight",
+                          "min": 0,
+                          "max": 1,
+                          "step": 0.01,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.PhysicsBlendWeight"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "PhysicsBlendWeight",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Hit kick",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-PhysicsKick",
+                          "min": 0,
+                          "max": 4,
+                          "step": 0.05,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.PhysicsKick"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "PhysicsKick",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "widget": "panel",
+                      "layout": "horizontal",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "widget": "text",
+                          "text": "Physics decay (s)",
+                          "style": "dev.label",
+                          "slot": {
+                            "width": 118,
+                            "valign": "center"
+                          }
+                        },
+                        {
+                          "widget": "slider",
+                          "id": "ht-PhysicsSeconds",
+                          "min": 0.05,
+                          "max": 3,
+                          "step": 0.05,
+                          "track_width": 180,
+                          "show_value": true,
+                          "value_format": "{0}",
+                          "style": "dev.slider.orange",
+                          "slot": {
+                            "fill": true,
+                            "valign": "center"
+                          },
+                          "bind": {
+                            "value": "UI.HitTuner.State.Tuning.PhysicsSeconds"
+                          },
+                          "on": {
+                            "commit": {
+                              "cmd": "UI.Cmd.HitTuner.SetValue",
+                              "args": {
+                                "Field": "PhysicsSeconds",
+                                "Value": "{self.value}"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "widget": "panel",
+                  "layout": "horizontal",
+                  "id": "ht-buttons",
+                  "focus": "group",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "widget": "button",
+                      "label": "Reset to tier default",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.HitTuner.Reset"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "Apply to whole tier",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.HitTuner.ApplyToTier"
+                        }
+                      }
+                    },
+                    {
+                      "widget": "button",
+                      "label": "Close",
+                      "style": "dev.button",
+                      "on": {
+                        "click": {
+                          "cmd": "UI.Cmd.HitTuner.Toggle"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "widget": "text",
+                  "style": "dev.text.json",
+                  "wrap": true,
+                  "bind": {
+                    "text": "UI.HitTuner.State.JsonPath != '' ? \"Saved live to {UI.HitTuner.State.JsonPath}\" : ''"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -61,13 +61,18 @@
     "has_ammo": false,
     "max_ammo": 0,
     "display_name": "Cooking Oil",
-    "description": "Bottle of vegetable oil. Essential for cooking. Grim on its own.",
+    "description": "Cooking ingredient. Cook it into Baked Potato, Caramelized Onions, French Fries and more. Eaten raw: -6 max health for 3 min. Fills 10 hunger. Found in the restaurant.\nBottle of vegetable oil. Essential for cooking. Grim on its own.",
     "thumbnail": "/Game/Items/Consumables/UncookedFood/CookingOil/Textures/T_Thumb_SM_Bottle_Oil.T_Thumb_SM_Bottle_Oil",
     "stackable": true,
     "weight": 0.10000000149011612,
     "static_item_definition": "FD_CookingOil_SI",
-    "equipment_slot": "Entity.Inventory.Item.Equipment.Slot.Weapon",
+    "storage_class": "cold",
+    "material_class": "liquid",
     "item_category_tag": "Entity.Inventory.Item.Category.Consumable",
-    "max_stack_size": 10
+    "max_stack_size": 10,
+    "inventory_layout": {
+      "cells": [ { "x": 0, "y": 0 }, { "x": 1, "y": 0 }, { "x": 2, "y": 0 } ]
+    },
+    "presentations": [ { "key": "default", "value": { "rotation": { "pitch": 0.0, "yaw": 0.0, "roll": 90.0 } } } ]
   }
 }
