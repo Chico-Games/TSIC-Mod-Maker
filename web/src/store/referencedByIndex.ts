@@ -1,4 +1,5 @@
 import type { DefinitionRecord, DefinitionsKey } from './definitionsStore';
+import { getExtendsId } from './inheritance';
 
 /** One incoming reference into a target asset. */
 export interface IncomingRef {
@@ -14,7 +15,7 @@ export type ReferencedByIndex = Map<string, IncomingRef[]>;
 export function buildReferencedByIndex(definitions: Map<DefinitionsKey, DefinitionRecord>): ReferencedByIndex {
   const out: ReferencedByIndex = new Map();
   for (const [ownerKey, rec] of definitions) {
-    walk(rec.json?.properties, [], (targetId, path) => {
+    walkRecord(rec.json?.properties, (targetId, path) => {
       const list = out.get(targetId) ?? [];
       list.push({ ownerKey, path: ['properties', ...path], ownerFolder: rec.folder });
       out.set(targetId, list);
@@ -41,11 +42,22 @@ export function reindexRecord(
     else if (filtered.length !== list.length) index.set(targetId, filtered);
   }
   // Add new entries.
-  walk(newProperties, [], (targetId, path) => {
+  walkRecord(newProperties, (targetId, path) => {
     const list = index.get(targetId) ?? [];
     list.push({ ownerKey, path: ['properties', ...path], ownerFolder });
     index.set(targetId, list);
   });
+}
+
+/** Walk one record's `properties`: every definition_ref envelope, plus the
+ *  `extends` parent. `extends` has no schema kind, so it is a plain string
+ *  envelope the generic walk would skip — but a child depends on its parent
+ *  at least as hard as on anything it references, so it belongs in the
+ *  "referenced by" index (where-used, delete/rename impact). */
+function walkRecord(properties: any, visit: (targetId: string, path: (string | number)[]) => void): void {
+  const parentId = getExtendsId({ id: '', json: { properties } });
+  if (parentId) visit(parentId, ['extends']);
+  walk(properties, [], visit);
 }
 
 /** Recursively walk a typed-envelope value, calling visit(targetId, path)

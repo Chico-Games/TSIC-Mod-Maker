@@ -11,6 +11,8 @@ import { useHybridSearch } from '../search/hybrid';
 import { useJumpToDefinition } from './useJumpToDefinition';
 import { AddPicker } from './AddPicker';
 import { SearchBox } from './SearchBox';
+import { ItemIcon } from './ItemIcon';
+import '../styles-loot.css';
 
 const RECIPE_FOLDERS = new Set([
   'craft_recipe_definitions',
@@ -496,7 +498,7 @@ function PaletteItem({ id, folder, cls, ranges, recipeUse, totalUse, onClick, on
       onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); onMiddleClick(id); } }}
       onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); /* suppress autoscroll */ }}
     >
-      <span className="emoji" aria-hidden>{t.emoji}</span>
+      <ItemIcon id={id} size={22} />
       <span className="label"><HighlightedText text={humanizeAssetId(id)} ranges={ranges} /></span>
       <span className="palette-counts">
         {recipeUse > 0 && <span className="palette-here" title={`${recipeUse} in selected recipe`}>{recipeUse}</span>}

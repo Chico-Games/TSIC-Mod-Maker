@@ -326,6 +326,12 @@ if (existsSync(CATALOG_OVERRIDES)) {
   }
   if (mergedEntries) log(`   merged ${mergedEntries} asset-catalog override entr${mergedEntries === 1 ? 'y' : 'ies'} from asset-catalog.overrides.json`);
 }
+// Item icons: re-encode the pack's 256px PNGs small enough to bundle. The
+// starter-project wipe above removed the previous set, so always rebuild.
+{
+  const r = spawnSync(process.execPath, [join(HERE, 'build-icons.mjs'), '--source', PACK_DIR], { stdio: 'inherit' });
+  if (r.status !== 0) warn('build-icons failed — the editor will fall back to folder glyphs');
+}
 // Restore default.json (or seed one so DefaultProjectMeta has a value).
 if (defaultJson != null) writeFileSync(join(WEB_STARTER, 'default.json'), defaultJson);
 else writeJSON(join(WEB_STARTER, 'default.json'), { schema_version: 1, version: 0, label: 'Default Project', published_at: new Date(0).toISOString() });

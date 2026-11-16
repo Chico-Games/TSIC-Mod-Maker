@@ -10,6 +10,22 @@ export interface FolderTheme {
 const DEFAULT: FolderTheme = { emoji: '📁', color: '#5fb3ff' };
 
 const THEMES: Record<string, FolderTheme> = {
+  behavior_definitions: { emoji: '🧠', color: '#b78cff' },
+  boss_summon_recipe_definitions: { emoji: '🕯️', color: '#c06cd8' },
+  boss_summoner_definitions: { emoji: '👑', color: '#c06cd8' },
+  computer_terminal_definitions: { emoji: '🖥️', color: '#7ad6e8' },
+  enemy_spawn_parameter_definitions: { emoji: '📈', color: '#d57171' },
+  hotkey_definitions: { emoji: '⌨️', color: '#9bb1c8' },
+  input_behavior_definitions: { emoji: '🎮', color: '#9bb1c8' },
+  outfit_definitions: { emoji: '🥼', color: '#7aa6d6' },
+  perception_definitions: { emoji: '👁️', color: '#b78cff' },
+  random_event_definitions: { emoji: '🎲', color: '#e8c45e' },
+  repair_station_definitions: { emoji: '🔩', color: '#ff9b54' },
+  shoe_definitions: { emoji: '🥾', color: '#b08968' },
+  situation_definitions: { emoji: '🚨', color: '#ef6c6c' },
+  skill_definitions: { emoji: '🥋', color: '#b78cff' },
+  sound_definitions: { emoji: '🔊', color: '#7ec5b1' },
+  world_rules_definitions: { emoji: '🌍', color: '#6dc4a0' },
   ammo_definitions: { emoji: '🔫', color: '#c9a36b' },
   available_recipe_rules_definitions: { emoji: '📜', color: '#b78cff' },
   biome_definitions: { emoji: '🏔️', color: '#6dc4a0' },

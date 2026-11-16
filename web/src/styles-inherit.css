@@ -1,0 +1,144 @@
+/* ───────────── Definition inheritance (`extends`) ─────────────
+   Banner above the property grid + per-row provenance tags. Imported by
+   components/InheritanceUI.tsx. Uses the palette variables from styles.css. */
+
+.inh-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 8px;
+  padding: 7px 10px;
+  background: rgba(183, 140, 255, 0.07);
+  border: 1px solid rgba(183, 140, 255, 0.28);
+  border-left: 3px solid #b78cff;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--text);
+}
+.inh-banner.has-error {
+  border-color: var(--error);
+  border-left-color: var(--error);
+  background: rgba(239, 108, 108, 0.07);
+}
+.inh-banner-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+}
+.inh-banner-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.inh-chain-step { display: inline-flex; align-items: center; gap: 6px; }
+.inh-arrow { color: var(--muted); }
+.inh-counts { margin-left: auto; color: var(--muted); white-space: nowrap; }
+.inh-counts b { color: var(--text); font-weight: 600; }
+.inh-muted { color: var(--muted); }
+.inh-error { color: var(--error); }
+.inh-badge {
+  padding: 1px 6px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  color: var(--warn);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inh-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+.inh-chip:hover:not(:disabled) { border-color: #b78cff; color: #fff; }
+.inh-chip.missing { border-color: var(--error); color: var(--error); cursor: default; }
+.inh-chip-id {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.inh-more {
+  padding: 1px 6px;
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 11px;
+  cursor: pointer;
+}
+.inh-more:hover { text-decoration: underline; }
+
+/* ── Rows ── */
+.inh-row { display: flex; flex-direction: column; }
+.inh-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 1px 6px 1px 9px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: var(--muted);
+  background: var(--panel-2);
+}
+.inh-row > .inh-tag + .inh-row-body > .def-field,
+.inh-row > .inh-tag + .inh-row-body > * > .def-field:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.inh-tag-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inh-tag-link {
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+.inh-tag-link:hover { color: var(--text); }
+.inh-tag-action {
+  flex: none;
+  padding: 0 7px;
+  line-height: 16px;
+  font-size: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  cursor: pointer;
+}
+.inh-tag-action:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Inherited: muted + inert until overridden. */
+.inh-inherited > .inh-tag { border-style: dashed; border-bottom: none; }
+.inh-inherited > .inh-row-body {
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  filter: saturate(0.5);
+}
+
+/* Class-browser spreadsheet: a value the row inherits rather than authors. */
+.spreadsheet-cell.inh-cell { color: var(--muted); font-style: italic; }
+
+/* Override: a normal editable row, tagged in the inheritance accent. */
+.inh-override > .inh-tag {
+  color: #c9a8ff;
+  border-color: rgba(183, 140, 255, 0.35);
+  background: rgba(183, 140, 255, 0.08);
+}

@@ -10,6 +10,7 @@ import type { AssetCatalogEntry } from '../../../persistence/dataSource';
 import { allQueriesMatch } from './proxySearchQuery';
 import { buildSearchTree, defsMatchingAllQueries } from './searchTree';
 import { makeStream, pickFloat, pickIndex } from './randomStream';
+import { getExtendsId, resolveInherited } from '../../../store/inheritance';
 
 export type ResolveContext = {
   layoutObject: LayoutObject;
@@ -99,7 +100,10 @@ export function resolve(ctx: ResolveContext): ResolvedActor {
 
   if (actorType === 'ProxyActor') {
     const defRec = ctx.definitions.get(chosenDefId);
-    const sm = defRec?.json?.properties?.static_mesh;
+    // Resolve through `extends`: Tier-2 furniture children inherit their mesh.
+    const sm = defRec && getExtendsId(defRec)
+      ? resolveInherited(defRec, (id) => ctx.definitions.get(id)).properties.static_mesh
+      : defRec?.json?.properties?.static_mesh;
     const meshPath = (sm?.value as string | null | undefined) ?? null;
     if (!meshPath) {
       out.status = { kind: 'missing-mesh', chosenDefinitionId: chosenDefId };

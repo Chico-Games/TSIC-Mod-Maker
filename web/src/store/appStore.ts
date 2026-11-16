@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 
-export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'definitions' | 'layouts' | 'ai' | 'validations';
+export type AppTab = 'recipes-loot' | 'items' | 'furniture' | 'systems' | 'definitions' | 'layouts' | 'ai' | 'validations';
+/** The three tabs that are a rail of definition folders over a class browser. */
+export type RailHome = 'items' | 'furniture' | 'systems';
 export type AiSubTab = 'sandbox' | 'scenarios' | 'behavior' | 'perception' | 'attacks';
-export type RecipesSubTab = 'stations' | 'furniture' | 'tech-tree' | 'enemies' | 'biome';
+export type RecipesSubTab = 'stations' | 'furniture' | 'loot' | 'tech-tree' | 'enemies' | 'biome';
 
 export type ItemsSubTab =
   | 'crafting-materials' | 'consumables' | 'constructables' | 'equippables'
@@ -70,6 +72,12 @@ interface AppStore {
   itemsSubTab: ItemsSubTab;
   furnitureSubTab: FurnitureSubTab;
   aiSubTab: AiSubTab;
+  /** A loot table another view asked the Loot sub-tab to open. The Loot tab
+   *  consumes it (selects the table) and clears it. */
+  lootFocus: { kind: 'drop' | 'world' | 'enemy'; id: string } | null;
+  /** Folder shown in each rail tab. Folders are discovered from the loaded
+   *  project, so this is a folder name rather than a fixed sub-tab id. */
+  railFolder: Record<RailHome, string | null>;
   searchOpen: boolean;
 
   /** Station rail selection on the Stations sub-tab — also used by
@@ -89,6 +97,10 @@ interface AppStore {
   setItemsSubTab: (t: ItemsSubTab) => void;
   setFurnitureSubTab: (t: FurnitureSubTab) => void;
   setAiSubTab: (t: AiSubTab) => void;
+  setRailFolder: (home: RailHome, folder: string) => void;
+  /** Jump to Recipes & Loot › Loot with this table selected. */
+  openLoot: (kind: 'drop' | 'world' | 'enemy', id: string) => void;
+  clearLootFocus: () => void;
   setSearchOpen: (open: boolean) => void;
 
   selectStation: (k: string | null) => void;
@@ -110,6 +122,7 @@ function loadTab(): AppTab {
       v === 'recipes-loot' ||
       v === 'items' ||
       v === 'furniture' ||
+      v === 'systems' ||
       v === 'definitions' ||
       v === 'layouts' ||
       v === 'ai' ||
@@ -125,7 +138,7 @@ function loadTab(): AppTab {
 function loadSub(): RecipesSubTab {
   try {
     const v = localStorage.getItem(LS_SUB);
-    if (v === 'stations' || v === 'furniture' || v === 'tech-tree' || v === 'enemies' || v === 'biome') return v;
+    if (v === 'stations' || v === 'furniture' || v === 'loot' || v === 'tech-tree' || v === 'enemies' || v === 'biome') return v;
   } catch { /* noop */ }
   return 'stations';
 }
@@ -151,7 +164,40 @@ function loadFurnSub(): FurnitureSubTab {
   return 'furniture';
 }
 
+const LS_RAIL = 'tsic.app.railFolder.v1';
+function loadRailFolder(): Record<RailHome, string | null> {
+  const out: Record<RailHome, string | null> = {
+    items: ITEMS_SUBTAB_FOLDER[loadItemsSub()],
+    furniture: FURNITURE_SUBTAB_FOLDER[loadFurnSub()],
+    systems: null,
+  };
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS_RAIL) ?? 'null');
+    if (raw && typeof raw === 'object') {
+      for (const h of ['items', 'furniture', 'systems'] as RailHome[]) {
+        if (typeof raw[h] === 'string' && raw[h]) out[h] = raw[h];
+      }
+    }
+  } catch { /* noop */ }
+  return out;
+}
+function saveRailFolder(v: Record<RailHome, string | null>) {
+  try { localStorage.setItem(LS_RAIL, JSON.stringify(v)); } catch { /* noop */ }
+}
+
 export const useAppStore = create<AppStore>((set) => ({
+  railFolder: loadRailFolder(),
+  lootFocus: null,
+  openLoot: (kind, id) => {
+    try { localStorage.setItem(LS_TAB, 'recipes-loot'); localStorage.setItem(LS_SUB, 'loot'); } catch { /* noop */ }
+    set({ tab: 'recipes-loot', recipesSubTab: 'loot', lootFocus: { kind, id } });
+  },
+  clearLootFocus: () => set({ lootFocus: null }),
+  setRailFolder: (home, folder) => set((s) => {
+    const railFolder = { ...s.railFolder, [home]: folder };
+    saveRailFolder(railFolder);
+    return { railFolder };
+  }),
   tab: loadTab(),
   recipesSubTab: loadSub(),
   itemsSubTab: loadItemsSub(),
@@ -172,11 +218,19 @@ export const useAppStore = create<AppStore>((set) => ({
   },
   setItemsSubTab: (t) => {
     try { localStorage.setItem(LS_ITEMS_SUB, t); } catch { /* noop */ }
-    set({ itemsSubTab: t });
+    set((s) => {
+      const railFolder = { ...s.railFolder, items: ITEMS_SUBTAB_FOLDER[t] };
+      saveRailFolder(railFolder);
+      return { itemsSubTab: t, railFolder };
+    });
   },
   setFurnitureSubTab: (t) => {
     try { localStorage.setItem(LS_FURN_SUB, t); } catch { /* noop */ }
-    set({ furnitureSubTab: t });
+    set((s) => {
+      const railFolder = { ...s.railFolder, furniture: FURNITURE_SUBTAB_FOLDER[t] };
+      saveRailFolder(railFolder);
+      return { furnitureSubTab: t, railFolder };
+    });
   },
   setAiSubTab: (t) => {
     try { localStorage.setItem(LS_AI_SUB, t); } catch { /* noop */ }

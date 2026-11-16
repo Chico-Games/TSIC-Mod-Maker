@@ -1,5 +1,6 @@
 import type { ProxySearchTreeQuery } from '../types';
 import { allQueriesMatch } from './proxySearchQuery';
+import { getExtendsId, isAbstract, resolveInherited } from '../../../store/inheritance';
 
 /** A def that the resolver might pick. We hold a thin reference to its
  *  JSON; the resolver pulls bounds/mesh/etc. from other stores as needed. */
@@ -41,13 +42,30 @@ export function buildSearchTree(
   const norm = (s: string | undefined) => (s ? (s.startsWith('U') ? s : 'U' + s) : '');
   const target = norm(klass);
   const allDefs: SearchTreeDef[] = [];
+  // `extends` parents are looked up by bare id; the incoming map may be keyed
+  // by id or by folder/id, so index it by `rec.id` (lazily — most packs have
+  // no children of the searched class).
+  let byId: Map<string, { id: string; json: any }> | null = null;
+  const lookup = (id: string) => {
+    if (!byId) {
+      byId = new Map();
+      for (const [, r] of defs) if (!byId.has(r.id)) byId.set(r.id, r);
+    }
+    return byId.get(id);
+  };
   for (const [, rec] of defs) {
     const recClass = norm(rec.json?.class);
     if (!recClass) continue;
+    // Abstract definitions are merge sources only — the game never registers
+    // them, so it can never pick one.
+    if (isAbstract(rec)) continue;
     const parents = (rec.json?.parent_classes as string[] | undefined) ?? [];
     const matches = recClass === target || parents.some((p) => norm(p) === target);
     if (!matches) continue;
-    const tags = tagStrings(rec.json?.properties?.gameplay_tags);
+    // Tags as the game sees them: a child that doesn't author `gameplay_tags`
+    // matches on its parent's.
+    const props = getExtendsId(rec) ? resolveInherited(rec, lookup).properties : rec.json?.properties;
+    const tags = tagStrings(props?.gameplay_tags);
     allDefs.push({ id: rec.id, tags, json: rec.json });
   }
   return { klass, allDefs, allDefIds: allDefs.map((d) => d.id) };

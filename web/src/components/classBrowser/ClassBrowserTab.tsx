@@ -11,6 +11,7 @@ import { HighlightedText } from '../HighlightedText';
 import { type RankedHit } from '../../search/fuzzy';
 import { useHybridSearch } from '../../search/hybrid';
 import { useJumpToDefinition } from '../useJumpToDefinition';
+import { resolvedJson, resolvedProps } from '../../store/inheritedView';
 import { SearchBox } from '../SearchBox';
 import { useRefAdapter } from '../useRefAdapter';
 import { PropertyEchoProvider, usePropertyEcho } from './PropertyEchoContext';
@@ -128,13 +129,17 @@ export function ClassBrowserTab({ folder, config }: Props) {
   const [railCollapsed, setRailCollapsed] = useState<boolean>(() => {
     try { return localStorage.getItem(RAIL_COLLAPSED_LS) === '1'; } catch { return false; }
   });
-  const [paletteCollapsed, setPaletteCollapsed] = useState<boolean>(() => {
+  // A folder whose records never hold item references (sound slots, hotkeys…)
+  // has no use for an item palette; don't offer one.
+  const paletteHidden = config.paletteFolders !== undefined && config.paletteFolders.length === 0;
+  const [paletteCollapsedPref, setPaletteCollapsed] = useState<boolean>(() => {
     try { return localStorage.getItem(PALETTE_COLLAPSED_LS) === '1'; } catch { return false; }
   });
   useEffect(() => { try { localStorage.setItem(RAIL_W_LS, String(railWidth)); } catch { /* noop */ } }, [railWidth]);
   useEffect(() => { try { localStorage.setItem(PALETTE_W_LS, String(paletteWidth)); } catch { /* noop */ } }, [paletteWidth]);
   useEffect(() => { try { localStorage.setItem(RAIL_COLLAPSED_LS, railCollapsed ? '1' : '0'); } catch { /* noop */ } }, [railCollapsed]);
-  useEffect(() => { try { localStorage.setItem(PALETTE_COLLAPSED_LS, paletteCollapsed ? '1' : '0'); } catch { /* noop */ } }, [paletteCollapsed]);
+  useEffect(() => { try { localStorage.setItem(PALETTE_COLLAPSED_LS, paletteCollapsedPref ? '1' : '0'); } catch { /* noop */ } }, [paletteCollapsedPref]);
+  const paletteCollapsed = paletteCollapsedPref || paletteHidden;
 
   // Pin + split state — per-folder.
   const [pinnedKey, setPinnedKey] = useState<DefinitionsKey | null>(() => {
@@ -264,7 +269,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
       const tier = chain.find((m) => m.id === h.item.id)?.tier ?? 0;
       const fk = chainId ?? nameFamilyKey(h.item.id);
       const dn = (() => {
-        const v = (rec.json as any)?.properties?.display_name;
+        const v = resolvedProps(rec).display_name;
         return v && typeof v === 'object' && typeof v.value === 'string' && v.value
           ? v.value
           : humanizeAssetId(h.item.id);
@@ -518,7 +523,7 @@ export function ClassBrowserTab({ folder, config }: Props) {
           />
         )}
 
-        {paletteCollapsed ? (
+        {paletteHidden ? <span /> : paletteCollapsed ? (
           <CollapseStrip side="right" onExpand={() => setPaletteCollapsed(false)} label="Expand item palette" />
         ) : (
           <ItemPalette
@@ -626,7 +631,7 @@ function RailColumn(props: {
             while (findKeyById(id)) { n++; id = tpl(n); }
             const k = createDefinitionForClass(config.newRecordClass, id);
             if (k) setSelectedKey(k);
-          }}>＋ New {config.label}</button>
+          }}>＋ New {config.newLabel ?? config.label}</button>
         </div>
       </div>
       {filtered.length === 0 ? (
@@ -654,7 +659,7 @@ function RailColumn(props: {
           keyOf={(h: any) => h.item.key}
           renderItem={(h: any) => {
             const rec = definitions.get(h.item.key);
-            const echoVal = echo && rec ? fmtEcho(valueAtPath(rec.json, echo.path)) : null;
+            const echoVal = echo && rec ? fmtEcho(valueAtPath(resolvedJson(rec), echo.path)) : null;
             const ws = warningsForRow(h.item.key);
             const top = ws.length ? ws.sort((a, b) => severityOrder(b.rule.severity) - severityOrder(a.rule.severity))[0] : null;
             return (

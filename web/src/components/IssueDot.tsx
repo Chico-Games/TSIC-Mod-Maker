@@ -14,6 +14,8 @@ function describe(i: ValidationIssue): string {
       return `Asset GUID mismatch at ${i.path}`;
     case 'dangling-definition-ref':
       return `Reference does not resolve: ${i.assetClass} → ${i.targetId}`;
+    case 'broken-extends':
+      return `Broken inheritance: ${i.detail} — the game drops this definition`;
   }
 }
 

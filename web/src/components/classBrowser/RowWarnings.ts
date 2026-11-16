@@ -1,10 +1,13 @@
 import type { DefinitionRecord } from '../../store/definitionsStore';
 import type { WarningRule, WarningCtx } from './types';
+import { describeInheritError, getExtendsId } from '../../store/inheritance';
+import { resolveRecord, resolvedProps } from '../../store/inheritedView';
 
-/** Helper — read a typed-envelope value at a property path inside record.json.properties.
- *  Returns undefined if any path segment is missing. */
+/** Helper — read a typed-envelope value at a property path inside the record's
+ *  properties AS THE GAME SEES THEM (own values merged over the `extends`
+ *  chain). Returns undefined if any path segment is missing. */
 export function readPropertyValue(rec: DefinitionRecord, path: string[]): any {
-  let cur: any = rec.json?.properties;
+  let cur: any = resolvedProps(rec);
   for (const seg of path) {
     if (cur == null) return undefined;
     cur = cur[seg];
@@ -56,7 +59,8 @@ export const DEFAULT_WARNINGS: WarningRule[] = [
     id: 'missing-display-name',
     severity: 'info',
     test: (rec) => {
-      const dn = rec.json?.properties?.display_name;
+      // Resolved, not own: a child that inherits its name is not missing one.
+      const dn = resolvedProps(rec).display_name;
       const v = dn?.value;
       return typeof v === 'string' && v.length > 0 ? null : 'no display_name';
     },
@@ -66,7 +70,7 @@ export const DEFAULT_WARNINGS: WarningRule[] = [
     severity: 'warn',
     test: (rec, ctx) => {
       // Only fires for records that have the slot at all; configured per-folder via hasStaticPartner.
-      const slot = rec.json?.properties?.static_item_definition;
+      const slot = resolvedProps(rec).static_item_definition;
       if (!slot || slot.type !== 'definition_ref') return null;
       const v = slot.value;
       if (typeof v !== 'string' || !v) return 'no static partner';
@@ -96,6 +100,16 @@ export const DEFAULT_WARNINGS: WarningRule[] = [
         if (!ctx.findKeyById(id)) unresolved = id;
       });
       return unresolved ? `unresolved ref: ${unresolved}` : null;
+    },
+  },
+  {
+    // The game drops a definition whose `extends` chain is broken.
+    id: 'broken-extends',
+    severity: 'error',
+    test: (rec) => {
+      if (!getExtendsId(rec)) return null;
+      const err = resolveRecord(rec).error;
+      return err ? describeInheritError(rec.id, err) : null;
     },
   },
 ];

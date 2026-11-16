@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { ItemIcon } from './ItemIcon';
+import '../styles-loot.css';
 import { useDndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
@@ -182,7 +184,7 @@ export function DefRefSlot(props: Props) {
         className="def-ref-grab"
         title={refValue || 'empty slot'}
       >
-        <span className="emoji" aria-hidden>{theme.emoji}</span>
+        {targetRec ? <ItemIcon id={refValue} size={22} /> : <span className="emoji" aria-hidden>{theme.emoji}</span>}
       </span>
       <SearchableSelect
         value={refValue}

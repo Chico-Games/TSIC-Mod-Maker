@@ -4,6 +4,7 @@ import type { DefinitionRecord, DefinitionsKey } from '../../store/definitionsSt
 import { humanizeAssetId } from '../definitionsNaming';
 import { TypedFieldCell } from '../TypedFieldCell';
 import type { RefAdapter } from '../TypedValueEditor';
+import { resolvedJson } from '../../store/inheritedView';
 
 interface Props {
   rows: { key: DefinitionsKey; rec: DefinitionRecord }[];
@@ -15,6 +16,15 @@ interface Props {
 
 function readPath(rec: DefinitionRecord, path: string[]): any {
   let cur: any = rec.json;
+  for (const seg of path) { if (cur == null) return undefined; cur = cur[seg]; }
+  return cur;
+}
+
+/** Same walk, but over the record as the GAME sees it (own values merged over
+ *  the `extends` chain). For display and sorting only — edits must target the
+ *  record's own envelope, which `readPath` returns. */
+function readResolvedPath(rec: DefinitionRecord, path: string[]): any {
+  let cur: any = resolvedJson(rec);
   for (const seg of path) { if (cur == null) return undefined; cur = cur[seg]; }
   return cur;
 }
@@ -55,8 +65,10 @@ export function SpreadsheetView({ rows, config, refAdapter, onChange, onPickRow 
       { key: 'id', label: 'ID', path: ['id'], kind: 'string' },
       { key: 'display_name', label: 'Name', path: ['properties','display_name','value'], kind: 'string' },
     ];
-    const hasLevel = rows.some((r) => readPath(r.rec, ['properties','level','value']) != null);
-    if (hasLevel) defaults.push({ key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 });
+    const hasLevel = rows.some((r) => readResolvedPath(r.rec, ['properties','level','value']) != null);
+    // Several configs already declare their own `level` column; adding a second
+    // one duplicated the column and its React key.
+    if (hasLevel && !config.columns.some((c) => c.key === 'level')) defaults.push({ key: 'level', label: 'Lvl', path: ['properties','level','value'], kind: 'number', width: 60 });
     return [...defaults, ...config.columns];
   }, [rows, config.columns]);
 
@@ -64,8 +76,8 @@ export function SpreadsheetView({ rows, config, refAdapter, onChange, onPickRow 
     const col = allCols.find((c) => c.key === sortKey) ?? allCols[0];
     const dir = sortDir === 'asc' ? 1 : -1;
     return [...rows].sort((a, b) => {
-      const va = readPath(a.rec, col.path);
-      const vb = readPath(b.rec, col.path);
+      const va = readResolvedPath(a.rec, col.path);
+      const vb = readResolvedPath(b.rec, col.path);
       if (va == null && vb == null) return 0;
       if (va == null) return -1 * dir;
       if (vb == null) return 1 * dir;
@@ -110,9 +122,19 @@ export function SpreadsheetView({ rows, config, refAdapter, onChange, onPickRow 
               const env = envPath ? readPath(rec, envPath) : null;
               const editable = isTypedEnvelope(env);
               if (!editable) {
-                const raw = readPath(rec, c.path);
+                // Not authored on this record: show what it inherits through
+                // `extends` (read-only here — override it from the detail grid).
+                const raw = readResolvedPath(rec, c.path);
+                const inherited = raw != null && readPath(rec, c.path) == null;
                 const display = c.key === 'display_name' ? (raw ?? humanizeAssetId(rec.id)) : fmt(raw, c.kind);
-                return <div key={c.key} className="spreadsheet-cell" style={{ width: c.width }}>{display as string}</div>;
+                return (
+                  <div
+                    key={c.key}
+                    className={`spreadsheet-cell ${inherited ? 'inh-cell' : ''}`}
+                    style={{ width: c.width }}
+                    title={inherited ? 'Inherited through extends — open the record to override it' : undefined}
+                  >{display as string}</div>
+                );
               }
               return (
                 <div key={c.key} className="spreadsheet-cell editable" style={{ width: c.width }}>

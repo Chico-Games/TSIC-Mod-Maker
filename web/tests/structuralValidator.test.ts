@@ -120,3 +120,20 @@ test('blockingKeys excludes id-mismatch (non-blocking)', async () => {
   assert.equal(blockers.size, 1);
   assert.ok(blockers.has('a/bad.json'));
 });
+
+test('dotted slot ids match their flattened, class-prefixed filename', () => {
+  const snd = (id: string) => JSON.stringify({ id, class: 'SoundSlotDefinition' });
+  const issues = validateBatch([
+    { folder: 'sound_definitions', name: 'SND_Consume_Drink.json', text: snd('Consume.Drink') },
+    { folder: 'sound_definitions', name: 'Container_Open_Car.json', text: snd('Container.Open.Car') },
+  ]);
+  assert.deepEqual(issues, []);
+});
+
+test('a dotted id in an unrelated file is still a mismatch', () => {
+  const issues = validateBatch([
+    { folder: 'sound_definitions', name: 'SND_Consume_Eat.json', text: JSON.stringify({ id: 'Consume.Drink', class: 'SoundSlotDefinition' }) },
+  ]);
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].kind, 'id-mismatch');
+});

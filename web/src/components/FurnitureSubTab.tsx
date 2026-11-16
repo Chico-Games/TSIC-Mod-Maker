@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ItemIcon, presentedName } from './ItemIcon';
+import { readDropRows } from './loot/lootModel';
+import '../styles-loot.css';
 import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
 import { useAppSchemaStore } from '../store/appSchemaStore';
 import { humanizeAssetId } from './definitionsNaming';
@@ -19,6 +22,7 @@ import { inferAcceptedFolders } from '../inferFolders';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { useAppStore } from '../store/appStore';
+import { resolvedProps } from '../store/inheritedView';
 
 const FURNITURE_FOLDER = 'damageable_furniture_definitions';
 
@@ -33,8 +37,11 @@ interface FurnitureRow {
   tier: number;
 }
 
-function readDisplayName(json: any): string {
-  const dn = json?.properties?.display_name;
+/** Display name as the game resolves it — through the `extends` chain, so a
+ *  Tier-2 child that inherits its name doesn't fall back to its raw id. */
+function readDisplayName(rec: { id: string; json: any }): string {
+  const json = rec.json;
+  const dn = resolvedProps(rec).display_name;
   if (dn && typeof dn === 'object' && typeof dn.value === 'string' && dn.value) return dn.value;
   return humanizeAssetId(String(json?.id ?? ''));
 }
@@ -91,7 +98,7 @@ export function FurnitureSubTab() {
       out.push({
         key: k,
         id: rec.id,
-        displayName: readDisplayName(rec.json),
+        displayName: readDisplayName(rec),
         familyKey: chainId ?? nameFamilyKey(rec.id),
         tier,
       });
@@ -256,7 +263,7 @@ export function FurnitureSubTab() {
               <div className="station-sub">
                 <span className="muted">id:</span> <code>{selected.id}</code>
                 {' · '}
-                <span className="muted">health:</span> {Number(props?.starting_health?.value ?? 0)}
+                <span className="muted">health:</span> {Number(resolvedProps(selected).starting_health?.value ?? 0)}
               </div>
             </header>
 
@@ -305,6 +312,23 @@ export function FurnitureSubTab() {
                         defaultClass="LootDefinition"
                         onRemove={() => removeLoot(i)}
                       />
+                      {lootRec && (
+                        <>
+                          <span className="death-loot-preview">
+                            {readDropRows(lootRec).slice(0, 6).map((r, n) => (
+                              <span key={n} className="death-loot-chip" title={`${r.count}× ${presentedName(definitions, r.item)} — ${Math.round(r.chance * 100)}% chance`}>
+                                <ItemIcon id={r.item} size={20} />
+                                <span>{r.count}×{r.chance < 1 ? ` ${Math.round(r.chance * 100)}%` : ''}</span>
+                              </span>
+                            ))}
+                          </span>
+                          <button
+                            className="death-loot-edit"
+                            onClick={() => useAppStore.getState().openLoot('drop', refValue)}
+                            title="Edit this drop table in the Loot tab"
+                          >Edit loot</button>
+                        </>
+                      )}
                     </div>
                     {isExpanded && lootKey && lootRec && (
                       <div className="death-loot-row-body">

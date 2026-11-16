@@ -14,6 +14,7 @@ import { TransformEditor } from './TransformEditor';
 import { TagPicker } from './pickers/TagPicker';
 import { AssetRefPicker } from './pickers/AssetRefPicker';
 import { VirtualBlocks } from './VirtualBlocks';
+import { InheritanceBanner, InheritedRowTag, useInheritedGrid } from './InheritanceUI';
 
 /** Above this many rows in a single property group, the grid switches from a
  *  flat render to VirtualBlocks windowing. Small lists (the overwhelming
@@ -1210,7 +1211,73 @@ function UnknownTypeEditor({ label, typed, onChange, onDelete }: FieldProps) {
   );
 }
 
+/** Containers with more values than this start collapsed. */
+const HEAVY_NODES = 400;
+
+/** Count the nodes under `v`, giving up as soon as `cap` is reached. */
+function nodeCountUpTo(v: any, cap: number): number {
+  let n = 0;
+  const stack: any[] = [v];
+  while (stack.length > 0 && n < cap) {
+    const cur = stack.pop();
+    if (!cur || typeof cur !== 'object') continue;
+    n++;
+    if (Array.isArray(cur)) { for (const e of cur) stack.push(e); continue; }
+    for (const k of Object.keys(cur)) stack.push(cur[k]);
+  }
+  return n;
+}
+
+/** A container too big to draw eagerly: a one-line summary with a Show
+ *  button. Every nested field goes back through `TypedField`, so opening one
+ *  reveals its children with their own oversized parts still folded — the
+ *  cost of looking inside is always one level, never the whole subtree. */
+function HeavyField(props: FieldProps) {
+  const [open, setOpen] = useState(false);
+  const { typed } = props;
+  if (open) {
+    return (
+      <div className="def-heavy-open">
+        <button type="button" className="def-heavy-toggle" onClick={() => setOpen(false)}>
+          ▾ Hide {props.label ?? 'table'}
+        </button>
+        <TypedFieldInner {...props} />
+      </div>
+    );
+  }
+  const size = Array.isArray(typed.value)
+    ? `${typed.value.length} ${typed.value.length === 1 ? 'entry' : 'entries'}`
+    : `${Object.keys(typed.value ?? {}).length} fields`;
+  return (
+    <div className={`def-field def-heavy def-type-color-${typed.type}`}>
+      <FieldHead
+        label={props.label}
+        type={`${typed.type}${typed.struct_name ? ' · ' + typed.struct_name : ''} · ${size} · large`}
+        propertyName={props.propertyName}
+        pinAdapter={props.pinAdapter}
+        controls={
+          <button type="button" onClick={() => setOpen(true)} title="This table is large, so it starts folded">
+            ▸ Show
+          </button>
+        }
+      />
+    </div>
+  );
+}
+
 export function TypedField(props: FieldProps) {
+  const { typed } = props;
+  if (
+    isTypedEnvelope(typed)
+    && (typed.type === 'struct' || typed.type === 'array' || typed.type === 'map' || typed.type === 'set')
+    && nodeCountUpTo(typed.value, HEAVY_NODES) >= HEAVY_NODES
+  ) {
+    return <HeavyField {...props} />;
+  }
+  return <TypedFieldInner {...props} />;
+}
+
+function TypedFieldInner(props: FieldProps) {
   const { typed } = props;
   if (!isTypedEnvelope(typed)) {
     return <UnknownTypeEditor {...props} />;
@@ -1340,7 +1407,17 @@ export function TypedField(props: FieldProps) {
  *  `groupBy` reorders the rendered list:
  *   - `default`  : alphabetical by raw name (current behavior)
  *   - `type`     : grouped under the typed-envelope `type` tag
- *   - `category` : grouped under UPROPERTY Category from .property-meta */
+ *   - `category` : grouped under UPROPERTY Category from .property-meta
+ *
+ *  Inheritance: when `ownerKey` names a record whose own `properties` object
+ *  is the one being edited and that record `extends` another, the grid also
+ *  draws the keys it INHERITS — muted, read-only, tagged with the ancestor
+ *  they come from, with an "Override" action that copies the resolved value
+ *  into the record. Own keys that shadow an ancestor get "Reset to
+ *  inherited", which removes the key again. Nothing is written for rows the
+ *  user doesn't touch. */
+const NOOP_CHANGE = () => {};
+
 export function TypedPropertiesEditor({
   properties,
   onChange,
@@ -1365,7 +1442,12 @@ export function TypedPropertiesEditor({
    *  land directly on it. */
   ownerKey?: string;
 }) {
-  const allKeys = Object.keys(properties ?? {}).sort();
+  const inh = useInheritedGrid(ownerKey, properties);
+  const jumpToAncestor = refAdapter.navigate;
+  // `view` is what the grid READS (types, gates, the inherited rows' values);
+  // `properties` stays the only thing it WRITES.
+  const view: Record<string, any> = inh ? inh.resolved.properties : properties;
+  const allKeys = Object.keys(view ?? {}).sort();
   const noisyFiltered = showAllFields ? allKeys : allKeys.filter((k) => !isNoisyProperty(k));
   const q = propertySearch.trim().toLowerCase();
   const searchFiltered = q
@@ -1384,7 +1466,7 @@ export function TypedPropertiesEditor({
     const meta = refAdapter.getPropertyMeta(parentTypeName, k);
     const cond = meta?.edit_condition;
     if (!cond) return false;
-    const gate = readGateValue(properties, cond);
+    const gate = readGateValue(view, cond);
     return gate === false;
   };
 
@@ -1403,7 +1485,7 @@ export function TypedPropertiesEditor({
     for (const k of unpinnedKeys) {
       let label = '';
       if (groupBy === 'type') {
-        const t = properties?.[k]?.type;
+        const t = view?.[k]?.type;
         label = typeof t === 'string' ? t : 'unknown';
       } else {
         const meta = refAdapter.getPropertyMeta(parentTypeName, k);
@@ -1416,29 +1498,73 @@ export function TypedPropertiesEditor({
     return [...buckets.entries()]
       .map(([label, keys]) => ({ label, keys }))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [groupBy, unpinnedKeys, properties, refAdapter, parentTypeName]);
+  }, [groupBy, unpinnedKeys, view, refAdapter, parentTypeName]);
 
-  const renderField = (k: string) => (
+  const renderField = (k: string) => {
+    // Provenance of this row when the record extends another: an ancestor id
+    // for an inherited (not authored here) key, else the ancestor an own key
+    // shadows, else nothing.
+    const from = inh?.resolved.origin[k];
+    const inheritedFrom = inh && from && from !== 'own' ? from : null;
+    const overrideOf = inh && !inheritedFrom ? inh.resolved.overrides[k] ?? null : null;
+    const field = (
+      <TypedField
+        label={humanizeProperty(k)}
+        typed={inheritedFrom ? view[k] : properties[k]}
+        propertyName={k}
+        parentTypeName={parentTypeName}
+        onChange={inheritedFrom ? NOOP_CHANGE : (v) => onChange({ ...properties, [k]: v })}
+        refAdapter={refAdapter}
+        path={[k]}
+        // Inherited rows are not drop targets: a drop would write a partial
+        // value at a path the record doesn't own.
+        pathFromRoot={ownerKey && !inheritedFrom ? ['properties', k] : undefined}
+        ownerKey={inheritedFrom ? undefined : ownerKey}
+        pinAdapter={pinAdapter}
+      />
+    );
     // data-prop-path here marks each TOP-LEVEL property row so that the
     // ClassBrowser's EchoPublishingPane can pick up the clicked field path
     // and broadcast it to rail rows. We deliberately do NOT add this
     // attribute inside nested struct/array editors — only the top-level
     // properties of a record are echoed.
-    <div key={k} data-prop-path={JSON.stringify(['properties', k])}>
-      <TypedField
-        label={humanizeProperty(k)}
-        typed={properties[k]}
-        propertyName={k}
-        parentTypeName={parentTypeName}
-        onChange={(v) => onChange({ ...properties, [k]: v })}
-        refAdapter={refAdapter}
-        path={[k]}
-        pathFromRoot={ownerKey ? ['properties', k] : undefined}
-        ownerKey={ownerKey}
-        pinAdapter={pinAdapter}
-      />
-    </div>
-  );
+    const propPath = JSON.stringify(['properties', k]);
+    if (inh && inheritedFrom) {
+      return (
+        <div key={k} data-prop-path={propPath} data-inherit="inherited" className="inh-row inh-inherited">
+          <InheritedRowTag
+            kind="inherited"
+            fromId={inheritedFrom}
+            fromName={inh.nameOf(inheritedFrom)}
+            onJump={jumpToAncestor}
+            onAction={() => onChange({ ...properties, [k]: structuredClone(view[k]) })}
+          />
+          {/* `inert` keeps the muted editor out of the tab order and
+              unclickable; React 18 has no typed prop for it yet. */}
+          <div className="inh-row-body" aria-disabled {...({ inert: '' } as object)}>{field}</div>
+        </div>
+      );
+    }
+    if (inh && overrideOf) {
+      return (
+        <div key={k} data-prop-path={propPath} data-inherit="override" className="inh-row inh-override">
+          <InheritedRowTag
+            kind="override"
+            fromId={overrideOf}
+            fromName={inh.nameOf(overrideOf)}
+            onJump={jumpToAncestor}
+            onAction={() => {
+              const next = { ...properties };
+              delete next[k];
+              onChange(next);
+            }}
+          />
+          <div className="inh-row-body">{field}</div>
+        </div>
+      );
+    }
+    return <div key={k} data-prop-path={propPath}>{field}</div>;
+  };
 
   // Window a single group's key list once it gets large; below the
   // threshold render flat so common records keep their exact prior layout.
@@ -1457,6 +1583,7 @@ export function TypedPropertiesEditor({
 
   return (
     <div className="def-properties">
+      <InheritanceBanner ownerKey={ownerKey} properties={properties} />
       {visible.length === 0 && allKeys.length === 0 && (
         <div className="def-empty">(no properties)</div>
       )}

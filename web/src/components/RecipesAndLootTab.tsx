@@ -4,10 +4,12 @@ import { FurnitureSubTab } from './FurnitureSubTab';
 import { TechTreeSubTab } from './techtree/TechTreeSubTab';
 import { EnemiesSubTab } from './EnemiesSubTab';
 import { BiomeSubTab } from './BiomeSubTab';
+import { LootSubTab } from './loot/LootSubTab';
 
 const SUB_TABS: Array<{ id: RecipesSubTab; label: string; emoji: string }> = [
   { id: 'stations', label: 'Stations', emoji: '🛠️' },
   { id: 'furniture', label: 'Furniture', emoji: '🪑' },
+  { id: 'loot', label: 'Loot', emoji: '💰' },
   { id: 'tech-tree', label: 'Tech Tree', emoji: '🌳' },
   { id: 'enemies', label: 'Enemies', emoji: '👹' },
   { id: 'biome', label: 'Biome', emoji: '✨' },
@@ -33,6 +35,7 @@ export function RecipesAndLootTab() {
       <div className="subtab-body">
         {sub === 'stations' && <StationsSubTab />}
         {sub === 'furniture' && <FurnitureSubTab />}
+        {sub === 'loot' && <LootSubTab />}
         {sub === 'tech-tree' && <TechTreeSubTab />}
         {sub === 'enemies' && <EnemiesSubTab />}
         {sub === 'biome' && <BiomeSubTab />}

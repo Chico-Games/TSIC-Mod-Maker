@@ -130,8 +130,14 @@ editing it there does affect everyone. Where-Used first.)
 >
 > The rules are strict, and each has its own load error: the parent must exist
 > (`extends unknown definition`), must be **the same class** (`extends '…' of a different class`),
-> and the chain must not loop (`extends cycle`). This is an AI-definition feature — items, furniture
-> and recipes have no equivalent.
+> and the chain must not loop (`extends cycle`). The game drops a definition that breaks any of them,
+> and [Validations](12-validations.md) reports all three.
+>
+> `extends` works on **every** definition class, not just AI ones — the base game's Tier 2 furniture
+> is written this way, each a few lines on top of its Tier 1 parent. Wherever a record extends
+> another, the property editor shows an **Inherits from** banner, lists the inherited properties
+> dimmed with the parent they come from, and offers **Override** to give the child its own value (and
+> a reset to hand it back to the parent).
 
 Perception is where most enemy "feel" lives. A cone that's too wide makes an enemy omniscient; too
 narrow and it walks past the player. Tune here, then verify in the *Blind corner* scene.

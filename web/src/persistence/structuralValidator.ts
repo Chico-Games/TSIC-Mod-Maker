@@ -9,6 +9,21 @@ interface InputFile {
   text: string;
 }
 
+/** Does a record's `id` agree with the file it lives in?
+ *
+ *  Asset-backed definitions use the asset name for both, so the two are equal.
+ *  JSON-native definitions keyed by a dotted slot name cannot: `Consume.Drink`
+ *  is not a usable filename stem, so the game pack writes it as
+ *  `SND_Consume_Drink.json` — a class prefix, then the id with every
+ *  non-identifier character flattened to `_`. Both spellings are the same
+ *  record, so neither is a mismatch. */
+export function idMatchesFileStem(id: string, fileStem: string): boolean {
+  if (id === fileStem) return true;
+  const flat = id.replace(/[^A-Za-z0-9_]/g, '_');
+  if (flat === id) return false; // nothing was flattened: a plain rename, a real mismatch
+  return fileStem === flat || fileStem.endsWith(`_${flat}`);
+}
+
 export function validateBatch(files: InputFile[]): StructuralIssue[] {
   const issues: StructuralIssue[] = [];
   for (const f of files) {
@@ -41,7 +56,7 @@ export function validateBatch(files: InputFile[]): StructuralIssue[] {
     }
     if (typeof r.id === 'string' && r.id) {
       const fileId = f.name.replace(/\.json$/i, '');
-      if (r.id !== fileId) {
+      if (!idMatchesFileStem(r.id, fileId)) {
         issues.push({
           kind: 'id-mismatch',
           folder: f.folder,

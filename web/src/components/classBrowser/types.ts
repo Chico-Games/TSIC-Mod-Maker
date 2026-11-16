@@ -39,6 +39,8 @@ export interface ClassBrowserConfig {
   paletteFolders?: string[];
   hasStaticPartner?: boolean;
   newRecordClass: string;
+  /** Singular noun for the "＋ New …" button when `label` is a plural. */
+  newLabel?: string;
   idTemplate?: (n: number) => string;
   /** When true, the rail groups rows by upgrade-chain family and renders
    *  a tier-pill strip per family with an inline + Add-tier button —

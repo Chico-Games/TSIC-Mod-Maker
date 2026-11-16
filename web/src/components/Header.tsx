@@ -178,14 +178,15 @@ export function Header() {
   const dirtyCount = dirty.size;
   const fsa = typeof (window as any).showDirectoryPicker === 'function';
 
-  const tabs: Array<{ id: AppTab; label: string; badge?: number }> = [
-    { id: 'recipes-loot', label: 'Recipes & Loot' },
-    { id: 'items', label: 'Items' },
-    { id: 'furniture', label: 'Furniture' },
-    { id: 'definitions', label: 'Definitions' },
-    { id: 'layouts', label: 'Layouts' },
-    { id: 'ai', label: 'AI' },
-    { id: 'validations', label: 'Validations' },
+  const tabs: Array<{ id: AppTab; label: string; icon: string; hint: string; badge?: number }> = [
+    { id: 'recipes-loot', label: 'Recipes & Loot', icon: '🛠️', hint: 'Stations and their recipes, furniture upgrades, loot tables, enemies, biomes' },
+    { id: 'items', label: 'Items', icon: '🎒', hint: 'Everything that can sit in an inventory' },
+    { id: 'furniture', label: 'Furniture', icon: '🪑', hint: 'Everything placed in the world' },
+    { id: 'systems', label: 'Systems', icon: '🎛️', hint: 'World rules, events, sounds, input and other game-wide data' },
+    { id: 'definitions', label: 'Definitions', icon: '🗂️', hint: 'Every definition in the project, by folder' },
+    { id: 'layouts', label: 'Layouts', icon: '🗺️', hint: 'Tile layouts and what spawns in them' },
+    { id: 'ai', label: 'AI', icon: '🧠', hint: 'Enemy behaviour, perception and attacks' },
+    { id: 'validations', label: 'Validations', icon: '🩺', hint: 'Problems found in the project' },
   ];
 
   // Derive the display name for file-info line.
@@ -199,7 +200,9 @@ export function Header() {
             key={t.id}
             className={`tab ${tab === t.id ? 'active' : ''}`}
             onClick={() => setTab(t.id)}
+            title={t.hint}
           >
+            <span className="tab-icon" aria-hidden>{t.icon}</span>
             {t.label}
             {t.badge != null && t.badge > 0 && <span className="badge">{t.badge}</span>}
           </button>

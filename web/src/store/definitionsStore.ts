@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { deleteHandle, ensurePermission, getHandle, putHandle } from '../handleStore';
 import { fuzzyMatch } from '../search/fuzzy';
 import { buildReferencedByIndex, reindexRecord } from './referencedByIndex';
+import { childrenOf, getExtendsId, retargetExtends } from './inheritance';
 import { isFuture, SUPPORTED_VERSION } from '../persistence/schemaVersion';
 import { validateBatch, type StructuralIssue } from '../persistence/structuralValidator';
 import { clearDraft, loadDraft, projectKey, saveDraft } from '../persistence/draftStore';
@@ -297,6 +298,9 @@ export interface DefinitionsStore {
 
   /** Find the storage key for a bare asset name (cross-reference resolver).
    *  Returns null if not found in any folder. */
+  /** Schema/asset drift found inside the bundled Default Project on load.
+   *  Informational: shown in the Validations tab rather than as a load gate. */
+  baselineDriftIssues: DriftIssue[];
   findKeyById: (assetId: string) => DefinitionsKey | null;
 
   /** Look up which records reference a given asset id. Returns [] when the
@@ -1172,7 +1176,23 @@ async function loadFromDataSource(
     const refIssues = validateAssetRefs(defs, catalogsMap, expectedGuids);
 
     const allDriftIssues = [...driftIssues, ...refIssues];
-    if (allDriftIssues.length > 0) {
+    // The bundled Default Project is the baseline every mod is diffed against,
+    // not something the person opening the editor authored or can fix. Drift
+    // inside it (typically an asset catalogue that lags the definitions by a
+    // game build) is recorded for the Validations tab and the console, but it
+    // must not greet a first-time modder with a wall of warnings they can only
+    // click through. Projects the user opens themselves still get the gate.
+    const isBaseline = preloadedTexts !== undefined;
+    if (isBaseline) set({ baselineDriftIssues: allDriftIssues });
+    if (allDriftIssues.length > 0 && isBaseline) {
+      console.groupCollapsed(
+        `%c[schema] ${allDriftIssues.length} drift note(s) in the bundled Default Project (non-blocking)`,
+        'color:#e5c07b',
+      );
+      for (const i of allDriftIssues) console.warn(i.kind, i.recordKey, i);
+      console.groupEnd();
+    }
+    if (allDriftIssues.length > 0 && !isBaseline) {
       console.groupCollapsed(
         `%c[schema] ${allDriftIssues.length} schema-drift issue(s) loading "${ds.displayName}"`,
         'color:#e5c07b;font-weight:bold',
@@ -2637,6 +2657,7 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     }
   },
 
+  baselineDriftIssues: [],
   findKeyById: (assetId) => {
     const { definitions } = get();
     if (!assetId) return null;
@@ -2701,6 +2722,16 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     for (const [refKey, refRec] of nextDefs) {
       if (refKey === newKey) continue;
       const out = retargetRefs(refRec.json, rec.id, fullId);
+      // `extends` is a plain string, not a definition_ref envelope, so the
+      // walker above can't see it — children of the renamed record would be
+      // left pointing at an id that no longer exists (and the game drops a
+      // definition whose parent is unknown).
+      const reparented = retargetExtends(out.next, rec.id, fullId);
+      if (reparented !== out.next) {
+        out.next = reparented;
+        out.changed = true;
+        out.touchedCount++;
+      }
       if (out.changed) {
         nextDefs.set(refKey, { ...refRec, json: out.next });
         nextDirty.add(refKey);
@@ -2711,6 +2742,10 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     set({
       definitions: nextDefs,
       dirty: nextDirty,
+      // The record's key changed and every referrer was retargeted, so the
+      // where-used index is stale on both sides (owner keys and target ids).
+      // Renames are rare; rebuild rather than patch.
+      referencedByIndex: buildReferencedByIndex(nextDefs),
       selectedKey: cur.selectedKey === k ? newKey : cur.selectedKey,
       toast: {
         kind: 'info',
@@ -2850,10 +2885,26 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const { definitions } = get();
     const want = `U${bareClassName}`;
     const out: string[] = [];
+    // Lean packs carry no per-record `parent_classes`; the hierarchy lives in
+    // the schema. Without consulting it, a slot typed to a base class (a
+    // recipe input expecting any ItemDefinition) matched nothing but exact
+    // instances of the base — so its picker came up empty and the slot showed
+    // the raw id. Resolve once per class, not once per record.
+    const classNodes = useAppSchemaStore.getState().classNodes;
+    const verdict = new Map<string, boolean>();
+    const isA = (cls: string): boolean => {
+      let v = verdict.get(cls);
+      if (v === undefined) {
+        const node = classNodes.get(cls) ?? classNodes.get(cls.replace(/^U/, ''));
+        v = cls === want || (node?.parents ?? []).some((p) => p === want || `U${p}` === want);
+        verdict.set(cls, v);
+      }
+      return v;
+    };
     for (const rec of definitions.values()) {
       const cls = String(rec.json?.class ?? '');
       if (!cls) continue;
-      if (cls === want) {
+      if (isA(cls)) {
         out.push(rec.id);
         continue;
       }
@@ -3029,6 +3080,24 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const { directoryHandle, definitions, dirty } = get();
     const rec = definitions.get(k);
     if (!rec) return;
+    // A definition other records `extends` cannot be deleted out from under
+    // them: the game drops every definition whose parent is unknown, and this
+    // action removes the file from disk immediately. Unlike a definition_ref
+    // (which the cascade below can blank), there is no safe value to scrub an
+    // `extends` to — clearing it would silently turn each child into a
+    // near-empty standalone record. So refuse, and name the children.
+    const heirs = childrenOf(rec.id, definitions.values()).filter((id) => id !== rec.id);
+    if (heirs.length > 0) {
+      const shown = heirs.slice(0, 4).join(', ');
+      const more = heirs.length > 4 ? ` and ${heirs.length - 4} more` : '';
+      set({
+        toast: {
+          kind: 'error',
+          text: `Can't delete ${rec.id}: ${heirs.length} definition${heirs.length === 1 ? ' extends' : 's extend'} it (${shown}${more}). Delete or re-parent ${heirs.length === 1 ? 'it' : 'them'} first.`,
+        },
+      });
+      return;
+    }
     pushHistory(get, set);
     // Remove from disk if it was ever saved (originalText non-empty means it
     // existed on disk).
@@ -3330,6 +3399,17 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
         targetKey,
       });
     });
+    // The `extends` parent is a reference too (a plain string, so the envelope
+    // walk above doesn't see it).
+    const parentId = getExtendsId(rec);
+    if (parentId) {
+      out.push({
+        refClass: String(rec.json?.class ?? '').replace(/^U/, ''),
+        refValue: parentId,
+        refPath: 'properties.extends',
+        targetKey: get().findKeyById(parentId),
+      });
+    }
     // Sort: resolved first, then by class+value.
     out.sort((a, b) => {
       if (!!a.targetKey !== !!b.targetKey) return a.targetKey ? -1 : 1;
@@ -3347,6 +3427,15 @@ export const useDefinitionsStore = create<DefinitionsStore>((set, get) => ({
     const out: Array<{ sourceKey: DefinitionsKey; sourceFolder: string; sourceId: string; refClass: string; refPath: string }> = [];
     for (const [sk, rec] of definitions) {
       if (sk === k) continue;
+      if (getExtendsId(rec) === targetId) {
+        out.push({
+          sourceKey: sk,
+          sourceFolder: rec.folder,
+          sourceId: rec.id,
+          refClass: String(rec.json?.class ?? '').replace(/^U/, ''),
+          refPath: 'properties.extends',
+        });
+      }
       walkTypedEnvelopes(rec.json?.properties ?? {}, ['properties'], (typed, path) => {
         if (typed.type !== 'definition_ref') return;
         if (typed.value !== targetId) return;

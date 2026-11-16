@@ -11,18 +11,19 @@
 
 ---
 
-## The seven tabs
+## The eight tabs
 
 ```ui-header
-tabs: Recipes & Loot | Items | Furniture | Definitions | Layouts | AI | Validations
+tabs: Recipes & Loot | Items | Furniture | Systems | Definitions | Layouts | AI | Validations
 active: Recipes & Loot
 ```
 
 | Tab | Use it for |
 |---|---|
-| **Recipes & Loot** | Crafting stations, furniture loot, the tech tree, enemy drops, biome loot. The task-oriented view. |
+| **Recipes & Loot** | Crafting stations, furniture upgrades, loot tables, the tech tree, enemies, biomes. The task-oriented view. |
 | **Items** | Everything the player can carry, craft, wear or consume. |
 | **Furniture** | Everything placed in the world. |
+| **Systems** | Game-wide data that is neither an item nor furniture: world rules, random events, situations, inventory rules, sound slots, hotkeys. |
 | **Definitions** | The universal editor. Any record, any class, full property list. Authoritative when a specialised tab doesn't cover what you need. |
 | **Layouts** | The 3D room editor. [Chapter 11](11-laying-out-the-world.md). |
 | **AI** | Enemy behaviour, perception and attack tuning, with a live sandbox. [Chapter 9](09-enemies-and-ai.md). |

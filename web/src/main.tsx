@@ -6,6 +6,7 @@ import './store/validationStore';
 import './styles.css';
 import './styles-new.css';
 import './styles-ai.css';
+import './styles-shell.css';
 
 // The static #tsic-boot spinner in index.html is up before any JS runs.
 // Tear it down as soon as the first load completes (definitions populated

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useDefinitionsStore } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
+import { buildInheritanceIssues } from '../store/validationStore';
 import { getFolderTheme } from './folderTheme';
 
 interface Issue {
@@ -29,6 +30,7 @@ export function ValidationsTab() {
   const selectFolder = useDefinitionsStore((s) => s.selectFolder);
   const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
   const setTab = useAppStore((s) => s.setTab);
+  const baselineDrift = useDefinitionsStore((s) => s.baselineDriftIssues);
 
   const issues = useMemo<Issue[]>(() => {
     const out: Issue[] = [];
@@ -40,6 +42,16 @@ export function ValidationsTab() {
         category: 'orphan ref',
         detail: `${o.id} → ${o.refValue} (${o.refPath}) does not resolve`,
         jumpKey: o.key,
+      });
+    }
+    // 1b) Broken `extends` chains — unknown parent, cycle, or a parent of a
+    //     different class. The game drops such a definition outright.
+    for (const i of buildInheritanceIssues(definitions)) {
+      out.push({
+        severity: 'error',
+        category: 'broken inheritance (game drops the definition)',
+        detail: `${i.recordKey.split('/').pop()} ${i.detail}`,
+        jumpKey: i.recordKey,
       });
     }
     // 2) Item↔StaticItem partners.
@@ -159,7 +171,8 @@ export function ValidationsTab() {
       // walk for ref where class is LootDefinition.
       const walk = (v: any) => {
         if (!v || typeof v !== 'object') return;
-        if (v.type === 'definition_ref' && v.class === 'LootDefinition' && typeof v.value === 'string' && v.value) {
+        // The pack types these as soft references; older data used definition_ref.
+        if ((v.type === 'definition_ref' || v.type === 'soft_asset_ref') && v.class === 'LootDefinition' && typeof v.value === 'string' && v.value) {
           lootRefs.add(v.value);
           return;
         }
@@ -183,8 +196,19 @@ export function ValidationsTab() {
       }
     }
 
+    // 8) Drift inside the bundled Default Project (recorded at load, not gated).
+    for (const d of baselineDrift) {
+      if (d.recordKey === '__and_more__') continue;
+      const detail =
+        d.kind === 'unknown-class' ? `${d.recordKey}: class ${d.className} is not in the editor schema`
+        : d.kind === 'unknown-property' ? `${d.recordKey}: ${d.parentType}.${d.propertyName} is not in the editor schema`
+        : d.kind === 'missing-asset-ref' ? `${d.recordKey}: ${d.assetClass} ${d.path.split('/').pop()?.split('.')[0]} is not in the asset catalogue`
+        : `${d.recordKey}: ${d.path.split('/').pop()?.split('.')[0]} resolves to a different asset than recorded`;
+      out.push({ severity: 'warning', category: 'base game data (not yours to fix)', detail, jumpKey: d.recordKey });
+    }
+
     return out;
-  }, [definitions, findKeyById, findOrphanReferences, findItemStaticOrphans]);
+  }, [definitions, findKeyById, findOrphanReferences, findItemStaticOrphans, baselineDrift]);
 
   const grouped = useMemo(() => {
     const m = new Map<string, Issue[]>();

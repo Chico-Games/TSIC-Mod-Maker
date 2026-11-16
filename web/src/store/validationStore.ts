@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import type { DefinitionsKey } from './definitionsStore';
+import type { DefinitionRecord, DefinitionsKey } from './definitionsStore';
+import { describeInheritError, getExtendsId, type InheritError } from './inheritance';
+import { resolveRecord } from './inheritedView';
 import { useDefinitionsStore } from './definitionsStore';
 import { useAppSchemaStore } from './appSchemaStore';
 import {
@@ -16,6 +18,15 @@ export type ValidationIssue =
       path: string;
       assetClass: string;
       targetId: string;
+    }
+  | {
+      /** The record's `extends` chain is broken — the game drops it. */
+      recordKey: DefinitionsKey;
+      kind: 'broken-extends';
+      path: string;
+      error: InheritError;
+      /** Ready-made sentence ("extends "X", which does not exist"). */
+      detail: string;
     };
 
 type State = {
@@ -48,6 +59,29 @@ function buildDanglingRefIssues(): ValidationIssue[] {
   return out;
 }
 
+/** Every record whose `extends` chain has an unknown parent, a cycle, or a
+ *  parent of a different class. All three make the game drop the definition,
+ *  so they are errors, not hints. A record downstream of a broken ancestor is
+ *  reported too (it is dropped just the same). */
+export function buildInheritanceIssues(
+  defs: Map<DefinitionsKey, DefinitionRecord> = useDefinitionsStore.getState().definitions,
+): Extract<ValidationIssue, { kind: 'broken-extends' }>[] {
+  const out: Extract<ValidationIssue, { kind: 'broken-extends' }>[] = [];
+  for (const [key, rec] of defs) {
+    if (!getExtendsId(rec)) continue;
+    const error = resolveRecord(rec, defs).error;
+    if (!error) continue;
+    out.push({
+      recordKey: key,
+      kind: 'broken-extends',
+      path: 'properties.extends',
+      error,
+      detail: describeInheritError(rec.id, error),
+    });
+  }
+  return out;
+}
+
 export const useValidationStore = create<State>((set) => ({
   issuesByKey: new Map(),
   lastBuiltAt: 0,
@@ -57,7 +91,8 @@ export const useValidationStore = create<State>((set) => ({
     const drift = validateSchemaDrift(defs, classNodes, propertyMeta);
     const dangling = buildDanglingRefIssues();
     const map = new Map<DefinitionsKey, ValidationIssue[]>();
-    for (const i of [...drift, ...dangling]) {
+    const inheritance = buildInheritanceIssues(defs);
+    for (const i of [...drift, ...dangling, ...inheritance]) {
       if (i.recordKey === '__and_more__') continue;
       const arr = map.get(i.recordKey) ?? [];
       arr.push(i);

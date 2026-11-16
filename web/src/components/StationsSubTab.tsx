@@ -17,6 +17,7 @@ import { AssetTitle } from './AssetTitle';
 import { AddPicker } from './AddPicker';
 import { SearchBox } from './SearchBox';
 import { inferAcceptedFolders } from '../inferFolders';
+import { resolvedProps } from '../store/inheritedView';
 
 type StationGroup = 'crafting' | 'production' | 'shop' | 'plantable';
 
@@ -57,8 +58,9 @@ interface StationRow {
   tier: number;
 }
 
-function readDisplayName(json: any): string {
-  const dn = json?.properties?.display_name;
+function readDisplayName(rec: { id: string; json: any }): string {
+  const json = rec.json;
+  const dn = resolvedProps(rec).display_name;
   if (dn && typeof dn === 'object' && typeof dn.value === 'string' && dn.value) return dn.value;
   return humanizeAssetId(String(json?.id ?? ''));
 }
@@ -139,7 +141,7 @@ export function StationsSubTab() {
         id: rec.id,
         folder: rec.folder,
         group,
-        displayName: readDisplayName(rec.json),
+        displayName: readDisplayName(rec),
         arrValue,
         recipeCount,
         familyKey: chainId ?? nameFamilyKey(rec.id),

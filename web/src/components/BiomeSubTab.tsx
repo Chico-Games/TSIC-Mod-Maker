@@ -1,320 +1,378 @@
 import { useMemo, useState } from 'react';
-import { useDefinitionsStore, type DefinitionsKey } from '../store/definitionsStore';
+import { useDefinitionsStore, type DefinitionRecord, type DefinitionsKey } from '../store/definitionsStore';
 import { useAppStore } from '../store/appStore';
-import { useAppSchemaStore } from '../store/appSchemaStore';
-import { ItemPalette } from './ItemPalette';
 import { TypedPropertiesEditor } from './TypedValueEditor';
 import { useRefAdapter } from './useRefAdapter';
 import { HighlightedText } from './HighlightedText';
 import { useHybridSearch } from '../search/hybrid';
-import { inferAcceptedFolders } from '../inferFolders';
 import { SearchBox } from './SearchBox';
+import { useJumpToDefinition } from './useJumpToDefinition';
+import { humanizeAssetId, humanizeProperty } from './definitionsNaming';
+import { ItemIcon, presentedName } from './ItemIcon';
+import { DIFFICULTY_LABEL, readWorldLoot } from './loot/lootModel';
+import '../styles-loot.css';
+
+// A biome is three things to a modder: how it looks on the map, how its maze
+// is shaped, and what you find lying around in it. The first two are a handful
+// of scalar properties; the third is up to three world-loot tables, one per
+// place loot can appear. The generic property grid is used for the scalars
+// only — a biome also carries a per-rotation colour table with several
+// thousand entries that the grid would render in full (it used to: this tab
+// took the better part of a minute to open).
 
 const LSP_FOLDER = 'loot_spawn_point_definitions';
 const BD_FOLDER = 'biome_definitions';
 
-interface BiomeRow {
-  biome: string;
-  bdKey: DefinitionsKey | null;
-  floorKey: DefinitionsKey | null;
-  furnitureKey: DefinitionsKey | null;
-  /** True when this biome has Floor/Furniture LSPs but no BiomeDefinition
-   *  envelope yet — surfaced in the rail with a warning glyph so it's
-   *  obvious which biomes still need migration to the BD-based source of
-   *  truth. */
-  orphanLsp: boolean;
+const LOOT_SLOTS = [
+  { prop: 'floor_lsp', suffix: 'Floor', source: 'FLOOR', label: 'On the floor', hint: 'Loose items lying on the ground' },
+  { prop: 'furniture_lsp', suffix: 'Furniture', source: 'FURNITURE', label: 'On furniture', hint: 'Items sitting on shelves, tables and counters' },
+  { prop: 'container_loot_table', suffix: 'Container', source: 'CONTAINER', label: 'In containers', hint: 'What you find when you open a box, locker or drawer' },
+] as const;
+type Slot = (typeof LOOT_SLOTS)[number];
+
+/** Properties too large to be worth drawing as a form. */
+const HEAVY_CHARS = 6000;
+
+const stemOf = (bdId: string) => bdId.replace(/^BD_/, '');
+
+function colourOf(rec: DefinitionRecord | null | undefined): string | null {
+  const c = rec?.json?.properties?.map_color?.value;
+  const ch = (k: string) => {
+    const v = c?.[k]?.value;
+    return typeof v === 'number' ? Math.round(Math.max(0, Math.min(1, v)) * 255) : null;
+  };
+  const r = ch('r'); const g = ch('g'); const b = ch('b');
+  return r == null || g == null || b == null ? null : `rgb(${r}, ${g}, ${b})`;
 }
 
-const LSP_NAME_RE = /^LSP_(.+?)_(Floor|Furniture)$/;
-const BD_NAME_RE = /^BD_(.+)$/;
+function displayNameOf(rec: DefinitionRecord): string {
+  const dn = rec.json?.properties?.display_name?.value;
+  return typeof dn === 'string' && dn.trim() ? dn : humanizeAssetId(rec.id);
+}
 
 export function BiomeSubTab() {
   const definitions = useDefinitionsStore((s) => s.definitions);
   const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
   const findKeyById = useDefinitionsStore((s) => s.findKeyById);
   const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
-  const createDefinition = useDefinitionsStore((s) => s.createDefinition);
-  const classNodes = useAppSchemaStore((s) => s.classNodes);
-  const selectFolder = useDefinitionsStore((s) => s.selectFolder);
-  const selectDefinition = useDefinitionsStore((s) => s.selectDefinition);
-  const setTab = useAppStore((s) => s.setTab);
-
-  const refAdapter = useRefAdapter((id) => {
-    const k = findKeyById(id);
-    if (!k) return;
-    const rec = definitions.get(k);
-    if (!rec) return;
-    selectFolder(rec.folder);
-    selectDefinition(k);
-    setTab('definitions');
-  });
+  const openLoot = useAppStore((s) => s.openLoot);
+  const jump = useJumpToDefinition();
+  const refAdapter = useRefAdapter((id) => jump(id));
 
   const [filter, setFilter] = useState('');
-  const [selectedBiome, setSelectedBiome] = useState<string | null>(null);
+  const [selectedKey, setSelectedKey] = useState<DefinitionsKey | null>(null);
 
-  const biomes = useMemo<BiomeRow[]>(() => {
-    const map = new Map<string, BiomeRow>();
-    // Pass 1 — BiomeDefinition envelopes are the source of truth. Each
-    // BD_<Name>.json seeds a row keyed by its stem.
-    for (const [k, rec] of definitions) {
-      if (rec.folder !== BD_FOLDER) continue;
-      const m = rec.id.match(BD_NAME_RE);
-      if (!m) continue;
-      const biome = m[1];
-      if (!map.has(biome)) {
-        map.set(biome, { biome, bdKey: k, floorKey: null, furnitureKey: null, orphanLsp: false });
-      }
+  type Row = { key: DefinitionsKey; id: string; name: string; colour: string | null; tables: number };
+  const rows = useMemo<Row[]>(() => {
+    const out: Row[] = [];
+    for (const [key, rec] of definitions) {
+      if (rec.folder !== BD_FOLDER || !rec.json) continue;
+      const tables = LOOT_SLOTS.filter((s) => resolveSlot(rec, s, findKeyById) != null).length;
+      out.push({ key, id: rec.id, name: displayNameOf(rec), colour: colourOf(rec), tables });
     }
-    // Pass 2 — enrich with LSP_<Name>_{Floor,Furniture} pairs. LSPs that
-    // don't have a matching BD become "orphan" rows so unmigrated biomes
-    // are still visible.
-    for (const [k, rec] of definitions) {
-      if (rec.folder !== LSP_FOLDER) continue;
-      const m = rec.id.match(LSP_NAME_RE);
-      if (!m) continue;
-      const biome = m[1];
-      const which = m[2] as 'Floor' | 'Furniture';
-      let row = map.get(biome);
-      if (!row) {
-        row = { biome, bdKey: null, floorKey: null, furnitureKey: null, orphanLsp: true };
-        map.set(biome, row);
-      }
-      if (which === 'Floor') row.floorKey = k;
-      else row.furnitureKey = k;
-    }
-    return [...map.values()].sort((a, b) => a.biome.localeCompare(b.biome));
+    return out.sort((a, b) => a.name.localeCompare(b.name));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [definitions]);
 
-  // Biomes don't have a single asset key (each is a Floor + Furniture
-  // pair) — pass the floor key as the semantic key so 'desert' →
-  // matches the LSP_Desert_Floor embedding.
-  const filtered = useHybridSearch(
-    biomes,
-    filter,
-    (b) => [b.biome],
-    { semanticKey: (b) => b.floorKey ?? b.furnitureKey ?? null },
-  );
+  const lspIds = useMemo(() => {
+    const out: string[] = [];
+    for (const rec of definitions.values()) if (rec.folder === LSP_FOLDER && rec.json) out.push(rec.id);
+    return out.sort();
+  }, [definitions]);
 
-  if (selectedBiome == null && biomes.length > 0) setSelectedBiome(biomes[0].biome);
+  const hits = useHybridSearch(rows, filter, (r) => [r.name, r.id], { semanticKey: (r) => r.key });
 
-  /** Mint a BD_<stem>.json envelope for an existing orphan biome whose
-   *  Floor/Furniture LSPs already live on disk. Mirrors the "New biome"
-   *  button's BD template but reuses the LSP paths the orphan already
-   *  points at so the freshly-minted BD lines up with reality. */
-  const createBdForOrphan = (stem: string) => {
-    if (findKeyById(`BD_${stem}`)) return;
-    const bdTemplate = {
-      id: `BD_${stem}`,
-      asset_path: `/Game/WorldGeneration/Biomes/${stem}/BD_${stem}`,
-      class: 'UBiomeDefinition',
-      parent_classes: ['UPrimaryDataAsset', 'UDataAsset', 'UObject'],
-      properties: {
-        biome_tag_name: { type: 'name', value: `Tile.Biome.${stem}` },
-        display_name: { type: 'text', value: stem },
-        role: { type: 'enum', value: 'EBiomeRole::Environmental' },
-        map_color: { type: 'linear_color', value: '(R=0.5,G=0.5,B=0.5,A=1.0)' },
-        maze_openness: { type: 'float', value: 0.5 },
-        loot_multiplier: { type: 'float', value: 1.0 },
-        floor_lsp: {
-          type: 'soft_asset_ref',
-          value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Floor`,
-        },
-        furniture_lsp: {
-          type: 'soft_asset_ref',
-          value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Furniture`,
-        },
-      },
-    };
-    createDefinition(BD_FOLDER, `BD_${stem}`, bdTemplate, { select: false });
+  const activeKey = selectedKey && definitions.get(selectedKey)?.json ? selectedKey : rows[0]?.key ?? null;
+  const rec = activeKey ? definitions.get(activeKey) ?? null : null;
+
+  const newBiome = () => {
+    let n = 1;
+    while (findKeyById(`BD_New${n}`)) n++;
+    const stem = `New${n}`;
+    const k = createDefinitionForClass('BiomeDefinition', `BD_${stem}`);
+    if (!k) return;
+    const set = (prop: string, env: any) => updateValueAtPath(k, ['properties', prop], env);
+    set('display_name', { type: 'text', value: `New biome ${n}` });
+    set('biome_tag_name', { type: 'name', value: `Tile.Biome.${stem}` });
+    set('biome_tag', { type: 'gameplay_tag', value: `Tile.Biome.${stem}` });
+    set('loot_multiplier', { type: 'float', value: 1 });
+    set('maze_openness', { type: 'float', value: 0.5 });
+    setSelectedKey(k);
+    setFilter('');
   };
 
-  const selected = selectedBiome ? biomes.find((b) => b.biome === selectedBiome) ?? null : null;
-  const bdRec = selected?.bdKey ? definitions.get(selected.bdKey) : null;
-  const floorRec = selected?.floorKey ? definitions.get(selected.floorKey) : null;
-  const furnRec = selected?.furnitureKey ? definitions.get(selected.furnitureKey) : null;
-
-  const paletteAutoFolders = useMemo<Set<string> | null>(() => {
-    if (!floorRec && !furnRec) return null;
-    const lookups = { records: definitions, findKeyById, classNodes };
-    const a = floorRec ? inferAcceptedFolders(floorRec, lookups) : null;
-    const b = furnRec ? inferAcceptedFolders(furnRec, lookups) : null;
-    if (!a && !b) return null;
-    const out = new Set<string>();
-    if (a) for (const f of a) out.add(f);
-    if (b) for (const f of b) out.add(f);
-    return out;
-  }, [definitions, findKeyById, classNodes, floorRec, furnRec]);
-
   return (
-    <div className="biome-layout">
+    <div className="bm-layout">
       <aside className="rail">
         <div className="rail-header">
           <h3>Biomes</h3>
-          <SearchBox value={filter} onChange={setFilter} placeholder="search…" />
+          <SearchBox value={filter} onChange={setFilter} placeholder="Search biomes…" />
           <div className="rail-add-row">
-            <button className="add-row" onClick={() => {
-              let n = 1;
-              while (
-                findKeyById(`BD_New${n}`) ||
-                findKeyById(`LSP_New${n}_Floor`) ||
-                findKeyById(`LSP_New${n}_Furniture`)
-              ) n++;
-              const stem = `New${n}`;
-              // 1. Mint the BiomeDefinition envelope. This is the new
-              //    source of truth for biome rows.
-              const bdTemplate = {
-                id: `BD_${stem}`,
-                asset_path: `/Game/WorldGeneration/Biomes/${stem}/BD_${stem}`,
-                class: 'UBiomeDefinition',
-                parent_classes: ['UPrimaryDataAsset', 'UDataAsset', 'UObject'],
-                properties: {
-                  biome_tag_name: { type: 'name', value: `Tile.Biome.${stem}` },
-                  display_name: { type: 'text', value: stem },
-                  role: { type: 'enum', value: 'EBiomeRole::Environmental' },
-                  map_color: { type: 'linear_color', value: '(R=0.5,G=0.5,B=0.5,A=1.0)' },
-                  maze_openness: { type: 'float', value: 0.5 },
-                  loot_multiplier: { type: 'float', value: 1.0 },
-                  floor_lsp: {
-                    type: 'soft_asset_ref',
-                    value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Floor`,
-                  },
-                  furniture_lsp: {
-                    type: 'soft_asset_ref',
-                    value: `/Game/WorldGeneration/SpawnPoints/Items/${stem}/LSP_${stem}_Furniture`,
-                  },
-                },
-              };
-              const bdKey = createDefinition(BD_FOLDER, `BD_${stem}`, bdTemplate, { select: false });
-              // 2. Mint the matching Floor + Furniture LSP pair.
-              const floorKey = createDefinitionForClass('LootSpawnPointDefinition', `LSP_${stem}_Floor`);
-              const furnKey = createDefinitionForClass('LootSpawnPointDefinition', `LSP_${stem}_Furniture`);
-              if (bdKey || floorKey || furnKey) setSelectedBiome(stem);
-            }} title="Mint a BiomeDefinition + Floor/Furniture LSP triple for a new biome">＋ New biome</button>
+            <button className="add-row" onClick={newBiome}>＋ New biome</button>
           </div>
         </div>
-        <div className="rail-body">
-          {filtered.map((h) => (
+        <div className="rail-body lt-rail-body">
+          {hits.map((h) => (
             <button
-              key={h.item.biome}
-              className={`rail-row ${selectedBiome === h.item.biome ? 'selected' : ''}`}
-              onClick={() => setSelectedBiome(h.item.biome)}
-              style={{
-                borderLeft: '3px solid #f0d77a',
-                ...(h.item.orphanLsp ? { opacity: 0.85 } : {}),
-              }}
-              title={
-                h.item.orphanLsp
-                  ? `${h.item.biome}\n⚠ No BiomeDefinition (BD_${h.item.biome}) — legacy LSP-only biome.\nMiddle-click to open in Definitions`
-                  : `${h.item.biome}\nMiddle-click to open BD/LSP in Definitions`
-              }
-              onAuxClick={(e) => {
-                if (e.button !== 1) return;
-                e.preventDefault();
-                const target = h.item.bdKey ?? h.item.floorKey ?? h.item.furnitureKey;
-                if (!target) return;
-                const rec = definitions.get(target);
-                if (!rec) return;
-                selectFolder(rec.folder);
-                selectDefinition(target);
-                setTab('definitions');
-              }}
-              onMouseDown={(e) => { if (e.button === 1) e.preventDefault(); }}
+              key={h.item.key}
+              className={`rail-row lt-rail-row ${activeKey === h.item.key ? 'selected' : ''}`}
+              onClick={() => setSelectedKey(h.item.key)}
+              onAuxClick={(e) => { if (e.button === 1) { e.preventDefault(); jump(h.item.id); } }}
+              title={`${h.item.id}\nMiddle-click to open in Definitions`}
             >
-              <span className="emoji" aria-hidden>{h.item.orphanLsp ? '⚠️' : '✨'}</span>
-              <span className="label"><HighlightedText text={h.item.biome} ranges={h.ranges} /></span>
-              <span className="muted small">
-                {h.item.bdKey ? '📘' : '·'}{h.item.floorKey ? '🟫' : '·'}{h.item.furnitureKey ? '🪑' : '·'}
+              <span className="bm-swatch" style={{ background: h.item.colour ?? 'transparent' }} aria-hidden />
+              <span className="label">
+                <HighlightedText text={h.item.name} ranges={h.ranges} />
+                <span className="lt-rail-sub">
+                  {h.item.tables === 0 ? 'no loot' : `${h.item.tables} loot table${h.item.tables === 1 ? '' : 's'}`}
+                </span>
               </span>
             </button>
           ))}
-          {filtered.length === 0 && <div className="empty-state-mini">No biomes loaded.</div>}
+          {hits.length === 0 && <div className="empty-state-mini">{filter ? 'Nothing matches.' : 'No biomes loaded.'}</div>}
         </div>
       </aside>
 
-      <section className="biome-pane">
-        {selected ? (
+      <section className="lt-pane bm-pane">
+        {!rec || !activeKey ? (
+          <div className="lt-empty"><h2>✨ Biomes</h2><p>Pick a biome on the left, or make a new one.</p></div>
+        ) : (
           <>
-            <header className="station-header">
-              <div className="station-title">
-                <span aria-hidden>✨</span>
-                <h2>{selected.biome}</h2>
+            <header className="lt-header">
+              <div className="lt-title">
+                <span className="bm-swatch big" style={{ background: colourOf(rec) ?? 'transparent' }} aria-hidden />
+                <h2>{displayNameOf(rec)}</h2>
+                <code className="lt-id">{rec.id}</code>
+                <span className="lt-spacer" />
+                <button onClick={() => jump(rec.id)} title="Open the full property editor">All properties</button>
               </div>
             </header>
 
-            <div className="biome-cols">
-              <section className="biome-col biome-col-bd">
-                <h3>BiomeDefinition (BD_{selected.biome})</h3>
-                {bdRec && selected.bdKey ? (
-                  <TypedPropertiesEditor
-                    parentTypeName={String(bdRec.json?.class ?? '').replace(/^U/, '')}
-                    properties={bdRec.json?.properties ?? {}}
-                    showAllFields={false}
-                    onChange={(next) => updateValueAtPath(selected.bdKey!, ['properties'], next)}
-                    refAdapter={refAdapter}
-                    ownerKey={selected.bdKey}
+            <section className="bm-section">
+              <h3>Loot</h3>
+              <p className="lt-explain">
+                What can be found in this biome, by where it turns up. Every count is scaled by the biome's
+                <b> loot multiplier</b> below.
+              </p>
+              <div className="bm-slots">
+                {LOOT_SLOTS.map((slot) => (
+                  <LootSlotCard
+                    key={slot.prop}
+                    slot={slot}
+                    biome={rec}
+                    biomeKey={activeKey}
+                    lspIds={lspIds}
+                    onEdit={(id) => openLoot('world', id)}
                   />
-                ) : (
-                  <div className="biome-pane-empty">
-                    <p>
-                      No <code>BD_{selected.biome}</code> envelope — this biome is
-                      an orphan with LSPs but no BiomeDefinition.
-                    </p>
-                    <button
-                      className="add-row"
-                      onClick={() => createBdForOrphan(selected.biome)}
-                      title="Mint BD_<biome>.json wired to the existing Floor/Furniture LSPs"
-                    >
-                      ＋ Create BiomeDefinition
-                    </button>
-                  </div>
-                )}
-              </section>
+                ))}
+              </div>
+            </section>
 
-              <section className="biome-col biome-col-lsps">
-                <section className="biome-sub-col">
-                  <h3>Floor (LSP_{selected.biome}_Floor)</h3>
-                  {floorRec && selected.floorKey ? (
-                    <TypedPropertiesEditor
-                      parentTypeName={String(floorRec.json?.class ?? '').replace(/^U/, '')}
-                      properties={floorRec.json?.properties ?? {}}
-                      showAllFields={false}
-                      onChange={(next) => updateValueAtPath(selected.floorKey!, ['properties'], next)}
-                      refAdapter={refAdapter}
-                      ownerKey={selected.floorKey}
-                    />
-                  ) : (
-                    <div className="muted">No LSP_{selected.biome}_Floor asset.</div>
-                  )}
-                </section>
-
-                <section className="biome-sub-col">
-                  <h3>Furniture (LSP_{selected.biome}_Furniture)</h3>
-                  {furnRec && selected.furnitureKey ? (
-                    <TypedPropertiesEditor
-                      parentTypeName={String(furnRec.json?.class ?? '').replace(/^U/, '')}
-                      properties={furnRec.json?.properties ?? {}}
-                      showAllFields={false}
-                      onChange={(next) => updateValueAtPath(selected.furnitureKey!, ['properties'], next)}
-                      refAdapter={refAdapter}
-                      ownerKey={selected.furnitureKey}
-                    />
-                  ) : (
-                    <div className="muted">No LSP_{selected.biome}_Furniture asset.</div>
-                  )}
-                </section>
-              </section>
-            </div>
+            <BiomeBasics rec={rec} recKey={activeKey} refAdapter={refAdapter} onOpenFull={() => jump(rec.id)} />
           </>
-        ) : (
-          <div className="empty-state-mini">Pick a biome from the rail.</div>
         )}
       </section>
-
-      <ItemPalette
-        folders={['loot_definitions']}
-        title="Loot tables"
-        autoFolders={paletteAutoFolders}
-      />
     </div>
   );
+}
+
+/** The loot table a slot points at: the biome's own reference when it has one,
+ *  else the conventionally named table if it exists. */
+function resolveSlot(
+  biome: DefinitionRecord,
+  slot: Slot,
+  findKeyById: (id: string) => DefinitionsKey | null,
+): { id: string; key: DefinitionsKey; byName: boolean } | null {
+  const explicit = biome.json?.properties?.[slot.prop]?.value;
+  if (typeof explicit === 'string' && explicit) {
+    // Older packs stored a full object path; the id is its last segment.
+    const id = explicit.split('/').pop()!.split('.').pop()!;
+    const key = findKeyById(id);
+    return key ? { id, key, byName: false } : null;
+  }
+  const guess = `LSP_${stemOf(biome.id)}_${slot.suffix}`;
+  const key = findKeyById(guess);
+  return key ? { id: guess, key, byName: true } : null;
+}
+
+function LootSlotCard({ slot, biome, biomeKey, lspIds, onEdit }: {
+  slot: Slot; biome: DefinitionRecord; biomeKey: DefinitionsKey; lspIds: string[]; onEdit: (id: string) => void;
+}) {
+  const definitions = useDefinitionsStore((s) => s.definitions);
+  const findKeyById = useDefinitionsStore((s) => s.findKeyById);
+  const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
+  const createDefinitionForClass = useDefinitionsStore((s) => s.createDefinitionForClass);
+
+  const resolved = resolveSlot(biome, slot, findKeyById);
+  const explicit = biome.json?.properties?.[slot.prop]?.value;
+  const dangling = typeof explicit === 'string' && explicit && !resolved;
+  const table = resolved ? definitions.get(resolved.key) ?? null : null;
+  const loot = table ? readWorldLoot(table) : null;
+
+  const point = (id: string) => {
+    const cur = biome.json?.properties?.[slot.prop];
+    updateValueAtPath(biomeKey, ['properties', slot.prop], {
+      ...(cur && typeof cur === 'object' ? cur : { type: 'definition_ref', class: 'LootSpawnPointDefinition' }),
+      value: id,
+    });
+  };
+
+  const create = () => {
+    let id = `LSP_${stemOf(biome.id)}_${slot.suffix}`;
+    let n = 2;
+    while (findKeyById(id)) id = `LSP_${stemOf(biome.id)}_${slot.suffix}_${n++}`;
+    const k = createDefinitionForClass('LootSpawnPointDefinition', id);
+    if (!k) return;
+    const made = useDefinitionsStore.getState().definitions.get(k);
+    if (made?.json?.properties?.loot_by_difficulty) updateValueAtPath(k, ['properties', 'loot_by_difficulty', 'value'], []);
+    const src = made?.json?.properties?.source_type;
+    updateValueAtPath(k, ['properties', 'source_type'], { ...(src ?? { type: 'enum', enum_name: 'ELootSource' }), value: slot.source });
+    updateValueAtPath(k, ['properties', 'accumulate_previous_tiers'], { type: 'bool', value: true });
+    point(id);
+    onEdit(id);
+  };
+
+  // Up to nine distinct items across the tiers, for an at-a-glance preview.
+  const preview: string[] = [];
+  if (loot) {
+    for (const t of loot.tiers) for (const r of t.rows) {
+      if (r.item && !preview.includes(r.item)) preview.push(r.item);
+    }
+  }
+  const authored = loot ? loot.tiers.filter((t) => t.index >= 0) : [];
+
+  return (
+    <div className={`bm-slot ${resolved ? '' : 'unset'}`}>
+      <div className="bm-slot-head">
+        <div>
+          <div className="bm-slot-label">{slot.label}</div>
+          <div className="bm-slot-hint">{slot.hint}</div>
+        </div>
+      </div>
+
+      {resolved && loot ? (
+        <>
+          <button className="bm-slot-table" onClick={() => onEdit(resolved.id)} title="Edit this loot table">
+            <span className="bm-slot-name">{humanizeAssetId(resolved.id)}</span>
+            <span className="bm-slot-tiers">
+              {authored.length === 0
+                ? 'empty — nothing spawns'
+                : authored.map((t) => `${DIFFICULTY_LABEL[t.difficulty] ?? t.difficulty} ${Math.round(t.spawnChance * 100)}%`).join(' · ')}
+            </span>
+            {preview.length > 0 && (
+              <span className="bm-slot-icons">
+                {preview.slice(0, 9).map((id) => (
+                  <span key={id} title={presentedName(definitions, id)}><ItemIcon id={id} size={26} /></span>
+                ))}
+                {preview.length > 9 && <span className="bm-slot-more">+{preview.length - 9}</span>}
+              </span>
+            )}
+          </button>
+          {resolved.byName && (
+            <div className="bm-slot-note">
+              Matched by name only — the biome doesn't reference it, so the game won't use it.{' '}
+              <button className="link" onClick={() => point(resolved.id)}>Link it</button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="bm-slot-none">
+          {dangling ? <>Points at <code>{String(explicit)}</code>, which doesn't exist.</> : 'Nothing spawns here.'}
+        </div>
+      )}
+
+      <div className="bm-slot-actions">
+        {resolved
+          ? <button className="primary" onClick={() => onEdit(resolved.id)}>Edit loot</button>
+          : <button className="primary" onClick={create}>＋ New table</button>}
+        <select
+          value={resolved && !resolved.byName ? resolved.id : ''}
+          onChange={(e) => point(e.target.value)}
+          aria-label={`${slot.label}: choose loot table`}
+          title="Use an existing loot table"
+        >
+          <option value="">{resolved && !resolved.byName ? 'None' : 'Use existing…'}</option>
+          {lspIds.map((id) => <option key={id} value={id}>{humanizeAssetId(id)}</option>)}
+        </select>
+      </div>
+    </div>
+  );
+}
+
+function BiomeBasics({ rec, recKey, refAdapter, onOpenFull }: {
+  rec: DefinitionRecord; recKey: DefinitionsKey; refAdapter: any; onOpenFull: () => void;
+}) {
+  const updateValueAtPath = useDefinitionsStore((s) => s.updateValueAtPath);
+  const props: Record<string, any> = rec.json?.properties ?? {};
+
+  const { shown, hidden } = useMemo(() => {
+    const lootProps = new Set<string>(LOOT_SLOTS.map((s) => s.prop));
+    const shown: Record<string, any> = {};
+    const hidden: string[] = [];
+    for (const [k, v] of Object.entries(props)) {
+      if (lootProps.has(k)) continue;
+      if (JSON.stringify(v ?? null).length > HEAVY_CHARS) { hidden.push(k); continue; }
+      shown[k] = v;
+    }
+    return { shown, hidden };
+  }, [props]);
+
+  // The grid hands back only the keys it was given. Fold its edits into the
+  // full property set without disturbing key order — order is what keeps a
+  // save from rewriting lines the user never touched.
+  const onChange = (next: Record<string, any>) => {
+    const merged: Record<string, any> = {};
+    for (const k of Object.keys(props)) {
+      if (k in shown) { if (next[k] !== undefined) merged[k] = next[k]; }
+      else merged[k] = props[k];
+    }
+    for (const k of Object.keys(next)) if (!(k in props) && next[k] !== undefined) merged[k] = next[k];
+    updateValueAtPath(recKey, ['properties'], merged);
+  };
+
+  // The grid sorts alphabetically, which buries the five things people come
+  // here to change under audio and tag plumbing. Lead with those.
+  const primary: Record<string, any> = {};
+  const rest: Record<string, any> = {};
+  for (const [k, v] of Object.entries(shown)) (PRIMARY.has(k) ? primary : rest)[k] = v;
+  const editor = (subset: Record<string, any>) => (
+    <TypedPropertiesEditor
+      parentTypeName={String(rec.json?.class ?? '').replace(/^U/, '')}
+      properties={subset}
+      showAllFields={false}
+      onChange={(next) => onChange({ ...shown, ...next, ...deletions(subset, next) })}
+      refAdapter={refAdapter}
+      ownerKey={recKey}
+    />
+  );
+
+  return (
+    <section className="bm-section">
+      <h3>Map &amp; maze</h3>
+      {editor(primary)}
+      {Object.keys(rest).length > 0 && (
+        <details className="bm-more">
+          <summary>Tags, audio and layouts <span className="muted">({Object.keys(rest).length})</span></summary>
+          {editor(rest)}
+        </details>
+      )}
+      {hidden.length > 0 && (
+        <p className="bm-hidden-note">
+          Not shown here because {hidden.length === 1 ? 'it is a large generated table' : 'they are large generated tables'}:{' '}
+          {hidden.map((h) => humanizeProperty(h)).join(', ')}.{' '}
+          <button className="link" onClick={onOpenFull}>Open in Definitions</button>
+        </p>
+      )}
+    </section>
+  );
+}
+
+const PRIMARY = new Set(['display_name', 'role', 'map_color', 'loot_multiplier', 'maze_openness', 'is_maze_border', 'hides_maze_walls']);
+
+/** Keys the grid removed from `subset`, as explicit `undefined`s so a spread
+ *  over the full set doesn't resurrect them. */
+function deletions(subset: Record<string, any>, next: Record<string, any>): Record<string, undefined> {
+  const out: Record<string, undefined> = {};
+  for (const k of Object.keys(subset)) if (!(k in next)) out[k] = undefined;
+  return out;
 }

@@ -244,9 +244,14 @@ export function leanToEnvelope(value: any, kind: SchemaKind | null, schema: Lean
 export function envelopeToLean(env: any, schema: LeanSchema): any {
   if (env === null || env === undefined) return env;
   if (typeof env !== 'object' || typeof env.type !== 'string') return env; // already lean
-  if (env.value === null && env.type !== 'struct' && env.type !== 'array' && env.type !== 'set' && env.type !== 'map') {
-    return null;
-  }
+  // An explicit null survives for EVERY kind, containers included. In a
+  // definition that `extends` another, `"loot": null` means "clear to the class
+  // default" while an absent key means "inherit" and `[]`/`{}` means "empty" —
+  // three different things to the game. Collapsing a null container to `[]` or
+  // `{}` (as this used to) silently changed which one the file says. Only a
+  // strict `null` counts: blank containers built by the UI carry `[]`/`{}`,
+  // and skeletons carry no `value` at all, so neither is affected.
+  if (env.value === null) return null;
   switch (env.type) {
     case 'bool': case 'int': case 'float': case 'string':
     case 'name': case 'text': case 'gameplay_tag':

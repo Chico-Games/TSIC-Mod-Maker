@@ -24,6 +24,7 @@ import { RecipesAndLootTab } from './components/RecipesAndLootTab';
 import { ValidationsTab } from './components/ValidationsTab';
 import { ItemsTab } from './components/ItemsTab';
 import { FurnitureTab } from './components/FurnitureTab';
+import { SystemsTab } from './components/SystemsTab';
 import { LayoutsTab } from './components/layouts/LayoutsTab';
 import { AiTab } from './components/ai/AiTab';
 import { useAppStore, type AppTab } from './store/appStore';
@@ -276,6 +277,7 @@ export function App() {
       case 'recipes-loot': return <RecipesAndLootTab />;
       case 'items': return <ItemsTab />;
       case 'furniture': return <FurnitureTab />;
+      case 'systems': return <SystemsTab />;
       case 'definitions': return <DefinitionsTab />;
       case 'layouts': return <LayoutsTab />;
       case 'ai': return <AiTab />;
